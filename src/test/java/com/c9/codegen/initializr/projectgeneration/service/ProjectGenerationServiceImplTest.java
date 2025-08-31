@@ -73,7 +73,7 @@ class ProjectGenerationServiceImplTest {
         .dependencies(List.of(dependencySpringBootStarterWeb, dependencySpringBootStarterTest));
 
     SpringBootJavaProjectMetadata springBootJavaProjectMetadata =
-        projectMetadataBuilder.springBootVersion("3.2.6").javaVersion("21").build();
+        projectMetadataBuilder.springBootVersion("3.5.5").javaVersion("21").build();
 
     archivedProjectPath =
         projectGenerationService.generateProject(
@@ -87,8 +87,8 @@ class ProjectGenerationServiceImplTest {
         extractedDir.exists() && !FileUtils.isEmptyDirectory(extractedDir),
         "Archived file was corrupted!");
 
-    String archievedProjectName = archivedProjectFile.getName().replace(".zip", "");
-    File extractedProjectDir = new File(extractedDir, archievedProjectName);
+    String archived = archivedProjectFile.getName().replace(".zip", "");
+    File extractedProjectDir = new File(extractedDir, archived);
 
     String gitIgnoreFileName = ".gitignore";
     File gitIgnoreFileFromUnarchived = new File(extractedProjectDir, gitIgnoreFileName);

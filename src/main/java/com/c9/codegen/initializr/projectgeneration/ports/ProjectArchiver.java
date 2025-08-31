@@ -6,5 +6,5 @@ import java.nio.file.Path;
 
 public interface ProjectArchiver {
 
-  public Path archiveProject(File projectDestination, String projectName) throws IOException;
+  Path archiveProject(File projectDestination, String projectName) throws IOException;
 }

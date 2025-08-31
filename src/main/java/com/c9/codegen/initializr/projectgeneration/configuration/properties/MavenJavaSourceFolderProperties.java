@@ -3,7 +3,7 @@ package com.c9.codegen.initializr.projectgeneration.configuration.properties;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "maven.sourcefolder")
+@ConfigurationProperties(prefix = "maven.source-folder")
 public record MavenJavaSourceFolderProperties(
     String srcMainJava,
     String srcMainResources,

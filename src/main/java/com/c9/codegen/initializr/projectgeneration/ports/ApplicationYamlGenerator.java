@@ -4,8 +4,8 @@ import com.c9.codegen.initializr.projectgeneration.model.ProjectMetadata;
 import java.io.File;
 import java.io.IOException;
 
-public interface ApplicationPropertiesGenerator {
+public interface ApplicationYamlGenerator {
 
-  void generateApplicationProperties(File projectDestination, ProjectMetadata projectMetadata)
+  void generateApplicationYaml(File projectDestination, ProjectMetadata projectMetadata)
       throws IOException;
 }

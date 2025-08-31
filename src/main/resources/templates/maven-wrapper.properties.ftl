@@ -15,5 +15,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# Maven Wrapper core version (kept for visibility & tests)
 wrapperVersion=${wrapperVersion}
+
+# Maven distribution to be used by the wrapper
 distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${mavenVersion}/apache-maven-${mavenVersion}-bin.zip
+<#-- Optional checksum for Maven distribution -->
+<#if distributionSha256Sum?? && distributionSha256Sum?has_content>
+    distributionSha256Sum=${distributionSha256Sum}
+</#if>
+
+# Maven Wrapper JAR location (aligns with wrapperVersion above)
+wrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/${wrapperVersion}/maven-wrapper-${wrapperVersion}.jar
+<#-- Optional checksum for Wrapper jar -->
+<#if wrapperSha256Sum?? && wrapperSha256Sum?has_content>
+    wrapperSha256Sum=${wrapperSha256Sum}
+</#if>

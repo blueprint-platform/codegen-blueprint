@@ -4,6 +4,7 @@ import com.c9.codegen.initializr.projectgeneration.generator.ProjectGenerator;
 import com.c9.codegen.initializr.projectgeneration.model.ProjectMetadata;
 import com.c9.codegen.initializr.projectgeneration.model.ProjectType;
 import com.c9.codegen.initializr.projectgeneration.registry.ProjectGeneratorRegistry;
+import com.c9.codegen.initializr.projectgeneration.service.exception.ProjectGenerationException;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class ProjectGenerationServiceImpl implements ProjectGenerationService {
     try {
       return projectGenerator.generateProject(projectMetadata);
     } catch (IOException e) {
-      throw new RuntimeException("Error generating project: " + e.getMessage(), e);
+      throw new ProjectGenerationException("Error generating project: " + e.getMessage(), e);
     }
   }
 }

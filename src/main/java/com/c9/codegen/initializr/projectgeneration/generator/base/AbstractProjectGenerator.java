@@ -2,7 +2,7 @@ package com.c9.codegen.initializr.projectgeneration.generator.base;
 
 import com.c9.codegen.initializr.projectgeneration.generator.ProjectGenerator;
 import com.c9.codegen.initializr.projectgeneration.model.ProjectMetadata;
-import com.c9.codegen.initializr.projectgeneration.ports.ApplicationPropertiesGenerator;
+import com.c9.codegen.initializr.projectgeneration.ports.ApplicationYamlGenerator;
 import com.c9.codegen.initializr.projectgeneration.ports.FrameworkProjectStarterClassGenerator;
 import com.c9.codegen.initializr.projectgeneration.ports.FrameworkSpecificTestUnitGenerator;
 import com.c9.codegen.initializr.projectgeneration.ports.GitIgnoreGenerator;
@@ -16,19 +16,18 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class AbstractProjectGenerator implements ProjectGenerator {
 
-  private ProjectDirectoryInitializer projectDirectoryInitializer;
-  private GitIgnoreGenerator gitIgnoreGenerator;
-  private ProjectArchiver projectArchiver;
-  private ProjectLayoutGenerator projectLayoutGenerator;
-  private ProjectBuildGenerator projectBuildGenerator;
-  private ApplicationPropertiesGenerator applicationPropertiesGenerator;
-  private FrameworkProjectStarterClassGenerator frameworkProjectStarterClassGenerator;
-  private FrameworkSpecificTestUnitGenerator frameworkSpecificTestUnitGenerator;
-  private ProjectDocumentationGenerator projectDocumentationGenerator;
+  private final ProjectDirectoryInitializer projectDirectoryInitializer;
+  private final GitIgnoreGenerator gitIgnoreGenerator;
+  private final ProjectArchiver projectArchiver;
+  private final ProjectLayoutGenerator projectLayoutGenerator;
+  private final ProjectBuildGenerator projectBuildGenerator;
+  private final ApplicationYamlGenerator applicationYamlGenerator;
+  private final FrameworkProjectStarterClassGenerator frameworkProjectStarterClassGenerator;
+  private final FrameworkSpecificTestUnitGenerator frameworkSpecificTestUnitGenerator;
+  private final ProjectDocumentationGenerator projectDocumentationGenerator;
 
   protected AbstractProjectGenerator(
       ProjectDirectoryInitializer projectDirectoryInitializer,
@@ -36,7 +35,7 @@ public abstract class AbstractProjectGenerator implements ProjectGenerator {
       ProjectArchiver projectArchiver,
       ProjectLayoutGenerator projectLayoutGenerator,
       ProjectBuildGenerator projectBuildGenerator,
-      ApplicationPropertiesGenerator applicationPropertiesGenerator,
+      ApplicationYamlGenerator applicationYamlGenerator,
       FrameworkProjectStarterClassGenerator frameworkProjectStarterClassGenerator,
       FrameworkSpecificTestUnitGenerator frameworkSpecificTestUnitGenerator,
       ProjectDocumentationGenerator projectDocumentationGenerator) {
@@ -45,7 +44,7 @@ public abstract class AbstractProjectGenerator implements ProjectGenerator {
     this.projectArchiver = projectArchiver;
     this.projectLayoutGenerator = projectLayoutGenerator;
     this.projectBuildGenerator = projectBuildGenerator;
-    this.applicationPropertiesGenerator = applicationPropertiesGenerator;
+    this.applicationYamlGenerator = applicationYamlGenerator;
     this.frameworkProjectStarterClassGenerator = frameworkProjectStarterClassGenerator;
     this.frameworkSpecificTestUnitGenerator = frameworkSpecificTestUnitGenerator;
     this.projectDocumentationGenerator = projectDocumentationGenerator;
@@ -67,12 +66,18 @@ public abstract class AbstractProjectGenerator implements ProjectGenerator {
   }
 
   protected Path initializeProjectDirectory(ProjectMetadata projectMetadata) throws IOException {
-    return projectDirectoryInitializer.initializeProjectDirectory(projectMetadata.getArtifactId());
+    if (projectMetadata.getProjectLocation() != null) {
+      return projectDirectoryInitializer.initializeProjectDirectory(
+          projectMetadata.getArtifactId(), projectMetadata.getProjectLocation());
+    } else {
+      return projectDirectoryInitializer.initializeProjectDirectory(
+          projectMetadata.getArtifactId());
+    }
   }
 
   protected void generateGitIgnoreContent(File projectDestination) throws IOException {
     List<String> ignoreList = Collections.emptyList();
-    gitIgnoreGenerator.generateGitIgnoreContent(projectDestination, Optional.of(ignoreList));
+    gitIgnoreGenerator.generateGitIgnoreContent(projectDestination, ignoreList);
   }
 
   protected void generateProjectLayout(File projectDestination, ProjectMetadata projectMetadata)
@@ -87,8 +92,7 @@ public abstract class AbstractProjectGenerator implements ProjectGenerator {
 
   protected void generateApplicationProperties(
       File projectDestination, ProjectMetadata projectMetadata) throws IOException {
-    applicationPropertiesGenerator.generateApplicationProperties(
-        projectDestination, projectMetadata);
+    applicationYamlGenerator.generateApplicationYaml(projectDestination, projectMetadata);
   }
 
   protected void generateProjectStarterClass(

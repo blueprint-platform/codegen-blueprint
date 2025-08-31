@@ -5,10 +5,10 @@ import java.util.Map;
 
 public class MavenPlugin {
 
-  private String groupId;
-  private String artifactId;
-  private String version;
-  private Map<String, Object> configuration = new LinkedHashMap<>();
+  private final String groupId;
+  private final String artifactId;
+  private final String version;
+  private final Map<String, Object> configuration;
 
   private MavenPlugin(MavenPluginBuilder builder) {
     this.groupId = builder.groupId;
@@ -34,10 +34,10 @@ public class MavenPlugin {
   }
 
   public static class MavenPluginBuilder {
+    private final Map<String, Object> configuration = new LinkedHashMap<>();
     private String groupId;
     private String artifactId;
     private String version;
-    private Map<String, Object> configuration = new LinkedHashMap<>();
 
     public MavenPluginBuilder groupId(String groupId) {
       this.groupId = groupId;

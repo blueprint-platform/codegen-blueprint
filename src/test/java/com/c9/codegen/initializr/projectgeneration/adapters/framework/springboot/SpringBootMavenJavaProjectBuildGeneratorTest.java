@@ -23,7 +23,7 @@ class SpringBootMavenJavaProjectBuildGeneratorTest {
   private static final String POM_FILE_NAME = "pom.xml";
   private static final String WRAPPER_FILE_DIR = ".mvn/wrapper";
   private static final String WRAPPER_FILE_NAME = "maven-wrapper.properties";
-  private static final String WRAPPER_VERSION = "3.1.1";
+  private static final String WRAPPER_VERSION = "3.3.3";
 
   @Autowired private SpringBootMavenJavaProjectBuildGenerator generator;
 
@@ -55,7 +55,7 @@ class SpringBootMavenJavaProjectBuildGeneratorTest {
         .dependencies(List.of(dependencySpringBootStarterWeb, dependencySpringBootStarterTest));
 
     SpringBootJavaProjectMetadata springBootJavaProjectMetadata =
-        projectMetadataBuilder.springBootVersion("3.2.6").javaVersion("21").build();
+        projectMetadataBuilder.springBootVersion("3.5.5").javaVersion("21").build();
 
     File projectDestination = tempFolder.toFile();
 
@@ -97,7 +97,7 @@ class SpringBootMavenJavaProjectBuildGeneratorTest {
         .dependencies(List.of(dependencySpringBootStarterWeb, dependencySpringBootStarterTest));
 
     String javaVersion = "21";
-    String springBootVersion = "3.2.6";
+    String springBootVersion = "3.5.5";
     SpringBootJavaProjectMetadata springBootJavaProjectMetadata =
         projectMetadataBuilder
             .springBootVersion(springBootVersion)
@@ -122,7 +122,7 @@ class SpringBootMavenJavaProjectBuildGeneratorTest {
 		  <parent>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-parent</artifactId>
-			<version>3.2.6</version>
+			<version>3.5.5</version>
 			<relativePath/>
 		  </parent>
 		""";

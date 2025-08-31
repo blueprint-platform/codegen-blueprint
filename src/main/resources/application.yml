@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: codegen-initializr-core
+
+freemarker:
+  encoding: UTF-8
+  template-exception-handler: RETHROW_HANDLER
+  template-path: /templates
+
+maven:
+  source-folder:
+    src-main-java: src/main/java
+    src-main-resources: src/main/resources
+    src-test-java: src/test/java
+    src-test-resources: src/test/resources
+    src-gen-java: src/gen/java

@@ -20,7 +20,7 @@ class MavenBuildWrapperGeneratorTest {
 
   private static final String WRAPPER_FILE_DIR = ".mvn/wrapper";
   private static final String WRAPPER_FILE_NAME = "maven-wrapper.properties";
-  private static final String WRAPPER_VERSION = "3.1.1";
+  private static final String WRAPPER_VERSION = "3.3.3";
   @TempDir public Path tempFolder;
   @Autowired private MavenBuildWrapperGenerator generator;
 

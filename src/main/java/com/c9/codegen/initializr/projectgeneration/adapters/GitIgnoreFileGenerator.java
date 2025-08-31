@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component("gitIgnoreFileGenerator")
@@ -22,11 +21,11 @@ public class GitIgnoreFileGenerator implements GitIgnoreGenerator {
   }
 
   @Override
-  public void generateGitIgnoreContent(File projectDestination, Optional<List<String>> ignoreList)
+  public void generateGitIgnoreContent(File projectDestination, List<String> ignoreList)
       throws IOException {
 
     Map<String, Object> gitIgnoreData = new HashMap<>();
-    gitIgnoreData.put("ignoreList", ignoreList.orElse(Collections.emptyList()));
+    gitIgnoreData.put("ignoreList", ignoreList != null ? ignoreList : Collections.emptyList());
 
     freeMarkerTemplateEngine.generateFileFromTemplate(
         TemplateType.GITIGNORE, gitIgnoreData, projectDestination);

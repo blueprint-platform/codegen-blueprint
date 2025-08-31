@@ -5,8 +5,7 @@ public enum TemplateType {
   SPRING_BOOT_JAVA_POM("pom.xml", "springBootJavaPom.xml.ftl"),
   SPRING_BOOT_MAVEN_JAVA_README("README.md", "springBootMavenJavaReadMe.ftl"),
   MAVEN_WRAPPER("maven-wrapper.properties", "maven-wrapper.properties.ftl"),
-  SPRING_BOOT_APPLICATION_PROPERTIES(
-      "application.properties", "springBootApplication.properties.ftl");
+  SPRING_BOOT_APPLICATION_YAML("application.yml", "springBootApplication.yml.ftl");
 
   private final String fileName;
   private final String templateFileName;

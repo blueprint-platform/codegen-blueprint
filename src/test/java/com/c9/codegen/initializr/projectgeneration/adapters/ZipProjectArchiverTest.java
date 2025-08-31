@@ -77,14 +77,14 @@ class ZipProjectArchiverTest {
         extractedDir.exists() && !FileUtils.isEmptyDirectory(extractedDir),
         "Archived file was corrupted!");
 
-    String archievedProjectName = archivedProjectFile.getName().replace(".zip", "");
-    File extractedProjectDir = new File(extractedDir, archievedProjectName);
-    String enterprise01FileNameFromArchieved = "enterprise_01.txt";
+    String archivedProjectName = archivedProjectFile.getName().replace(".zip", "");
+    File extractedProjectDir = new File(extractedDir, archivedProjectName);
+    String enterprise01FileNameFromArchived = "enterprise_01.txt";
     File enterprise01FileFromUnarchived =
-        new File(extractedProjectDir, enterprise01FileNameFromArchieved);
+        new File(extractedProjectDir, enterprise01FileNameFromArchived);
     assertTrue(
         enterprise01FileFromUnarchived.exists(),
-        "Archived project file does not contain " + enterprise01FileNameFromArchieved);
+        "Archived project file does not contain " + enterprise01FileNameFromArchived);
   }
 
   @Test

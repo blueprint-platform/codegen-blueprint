@@ -1,7 +1,5 @@
 package com.c9.codegen.initializr.projectgeneration.adapters.framework.springboot;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
@@ -20,30 +17,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringBootApplicationPropertiesGeneratorTest {
+class SpringBootApplicationYamlGeneratorTest {
 
-  private static final String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";
+  private static final String APPLICATION_YAML_FILE_NAME = "application.yml";
   private static final String EXPECTED_APPLICATION_NAME = "codegen-demo";
   private static final String SRC_MAIN_RESOURCES = "src/main/resources";
 
-  @Autowired private SpringBootApplicationPropertiesGenerator applicationPropertiesGenerator;
+  @Autowired private SpringBootApplicationYamlGenerator applicationYamlGenerator;
 
   @TempDir private Path tempFolder;
 
   @Test
-  void testGenerateApplicationProperties_CreatesCorrectFileStructureAndFileName()
-      throws IOException {
+  void testGenerateApplicationYaml_CreatesCorrectFileStructureAndFileName() throws IOException {
     ProjectMetadata projectMetadata =
         new ProjectMetadata.ProjectMetadataBuilder().name("codegen-demo").build();
 
     File projectDestination = tempFolder.toFile();
 
-    applicationPropertiesGenerator.generateApplicationProperties(
-        projectDestination, projectMetadata);
+    applicationYamlGenerator.generateApplicationYaml(projectDestination, projectMetadata);
 
     File srcMainResourcesFileDestination = new File(projectDestination, SRC_MAIN_RESOURCES);
-    File generatedFile =
-        new File(srcMainResourcesFileDestination, APPLICATION_PROPERTIES_FILE_NAME);
+    File generatedFile = new File(srcMainResourcesFileDestination, APPLICATION_YAML_FILE_NAME);
     assertTrue(generatedFile.exists());
 
     String content = Files.readString(generatedFile.toPath());
@@ -51,34 +45,36 @@ class SpringBootApplicationPropertiesGeneratorTest {
   }
 
   @Test
-  void testGenerateApplicationProperties_CreatesFileAndVerifiesContent() throws IOException {
+  void testGenerateApplicationYaml_CreatesFileAndVerifiesContent() throws IOException {
     ProjectMetadata projectMetadata =
         new ProjectMetadata.ProjectMetadataBuilder().name("codegen-demo").build();
 
     File projectDestination = tempFolder.toFile();
 
-    applicationPropertiesGenerator.generateApplicationProperties(
-        projectDestination, projectMetadata);
+    applicationYamlGenerator.generateApplicationYaml(projectDestination, projectMetadata);
 
     File srcMainResourcesFileDestination = new File(projectDestination, SRC_MAIN_RESOURCES);
-    File generatedFile =
-        new File(srcMainResourcesFileDestination, APPLICATION_PROPERTIES_FILE_NAME);
+    File generatedFile = new File(srcMainResourcesFileDestination, APPLICATION_YAML_FILE_NAME);
     assertTrue(generatedFile.exists());
 
-    List<String> appPropertiesList = Files.readAllLines(generatedFile.toPath());
-    assertThat(appPropertiesList, hasItem("spring.application.name=" + EXPECTED_APPLICATION_NAME));
+    String yml = Files.readString(generatedFile.toPath());
+
+    assertTrue(yml.contains("spring:"), "YAML should contain 'spring:'");
+    assertTrue(yml.contains("application:"), "YAML should contain 'application:'");
+    assertTrue(
+        yml.contains("name: " + EXPECTED_APPLICATION_NAME), "YAML should set application name");
   }
 
   @Test
-  void testGenerateApplicationProperties_ThrowsExceptionOnTemplateEngineError() throws Exception {
+  void testGenerateApplicationYaml_ThrowsExceptionOnTemplateEngineError() throws Exception {
     ProjectMetadata projectMetadata =
         new ProjectMetadata.ProjectMetadataBuilder().name("codegen-demo").build();
 
     File projectDestination = tempFolder.toFile();
 
     FreeMarkerTemplateEngine mockEngine = Mockito.mock(FreeMarkerTemplateEngine.class);
-    SpringBootApplicationPropertiesGenerator generatorLocal =
-        new SpringBootApplicationPropertiesGenerator(mockEngine);
+    SpringBootApplicationYamlGenerator generatorLocal =
+        new SpringBootApplicationYamlGenerator(mockEngine);
 
     Mockito.doThrow(new IOException("Template processing error"))
         .when(mockEngine)
@@ -86,6 +82,6 @@ class SpringBootApplicationPropertiesGeneratorTest {
 
     assertThrows(
         IOException.class,
-        () -> generatorLocal.generateApplicationProperties(projectDestination, projectMetadata));
+        () -> generatorLocal.generateApplicationYaml(projectDestination, projectMetadata));
   }
 }

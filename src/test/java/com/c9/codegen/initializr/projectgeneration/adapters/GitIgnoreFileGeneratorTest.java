@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
@@ -31,8 +31,7 @@ class GitIgnoreFileGeneratorTest {
 
   @Test
   void testGenerateGitIgnoreContent_CreatesCorrectFileWithEmptyIgnoreList() throws IOException {
-    Optional<List<String>> emptyList = Optional.empty();
-    gitIgnoreFileGenerator.generateGitIgnoreContent(tempFolder.toFile(), emptyList);
+    gitIgnoreFileGenerator.generateGitIgnoreContent(tempFolder.toFile(), Collections.emptyList());
 
     Path generatedFile = tempFolder.resolve(GITIGNORE_FILE_NAME);
     assertTrue(Files.exists(generatedFile));
@@ -43,8 +42,7 @@ class GitIgnoreFileGeneratorTest {
   @Test
   void testGenerateGitIgnoreContent_CreatesCorrectFileWithSomeIgnoreList() throws IOException {
     List<String> ignoreList = Arrays.asList("*.pyc", "__pycache__");
-    Optional<List<String>> optionalIgnoreList = Optional.of(ignoreList);
-    gitIgnoreFileGenerator.generateGitIgnoreContent(tempFolder.toFile(), optionalIgnoreList);
+    gitIgnoreFileGenerator.generateGitIgnoreContent(tempFolder.toFile(), ignoreList);
 
     Path generatedFile = tempFolder.resolve(GITIGNORE_FILE_NAME);
     assertTrue(Files.exists(generatedFile));
@@ -58,9 +56,7 @@ class GitIgnoreFileGeneratorTest {
     File projectDestination = tempFolder.toFile();
 
     List<String> additionalIgnorePatterns = List.of("*.md");
-    Optional<List<String>> optionalIgnoreList = Optional.of(additionalIgnorePatterns);
-
-    gitIgnoreFileGenerator.generateGitIgnoreContent(projectDestination, optionalIgnoreList);
+    gitIgnoreFileGenerator.generateGitIgnoreContent(projectDestination, additionalIgnorePatterns);
 
     File generatedFile = new File(projectDestination, GITIGNORE_FILE_NAME);
     assertTrue(generatedFile.exists(), "Generated file should be created!");
@@ -76,8 +72,6 @@ class GitIgnoreFileGeneratorTest {
 
   @Test
   void testGenerateGitIgnoreContent_ThrowsExceptionOnTemplateEngineError() throws Exception {
-    Optional<List<String>> emptyList = Optional.empty();
-
     FreeMarkerTemplateEngine mockEngine = Mockito.mock(FreeMarkerTemplateEngine.class);
     GitIgnoreFileGenerator gitIgnoreFileGeneratorLocal = new GitIgnoreFileGenerator(mockEngine);
 
@@ -87,6 +81,6 @@ class GitIgnoreFileGeneratorTest {
 
     assertThrows(
         IOException.class,
-        () -> gitIgnoreFileGeneratorLocal.generateGitIgnoreContent(tempFolder.toFile(), emptyList));
+        () -> gitIgnoreFileGeneratorLocal.generateGitIgnoreContent(tempFolder.toFile(), null));
   }
 }

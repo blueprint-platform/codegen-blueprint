@@ -1,15 +1,17 @@
 package com.c9.codegen.initializr.projectgeneration.model;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class ProjectMetadata {
 
-  private String name;
-  private String description;
-  private String groupId;
-  private String artifactId;
-  private String packageName;
-  private List<Dependency> dependencies;
+  private final String name;
+  private final String description;
+  private final String groupId;
+  private final String artifactId;
+  private final String packageName;
+  private final List<Dependency> dependencies;
+  private final Path projectLocation;
 
   protected ProjectMetadata(ProjectMetadataBuilder builder) {
     this.name = builder.name;
@@ -18,6 +20,7 @@ public class ProjectMetadata {
     this.artifactId = builder.artifactId;
     this.packageName = builder.packageName;
     this.dependencies = builder.dependencies;
+    this.projectLocation = builder.projectLocation;
   }
 
   public String getName() {
@@ -44,6 +47,10 @@ public class ProjectMetadata {
     return dependencies;
   }
 
+  public Path getProjectLocation() {
+    return projectLocation;
+  }
+
   public static class ProjectMetadataBuilder {
 
     private String name;
@@ -52,6 +59,7 @@ public class ProjectMetadata {
     private String artifactId;
     private String packageName;
     private List<Dependency> dependencies;
+    private Path projectLocation;
 
     public ProjectMetadataBuilder name(String name) {
       this.name = name;
@@ -80,6 +88,11 @@ public class ProjectMetadata {
 
     public ProjectMetadataBuilder dependencies(List<Dependency> dependencies) {
       this.dependencies = dependencies;
+      return this;
+    }
+
+    public ProjectMetadataBuilder projectLocation(Path projectLocation) {
+      this.projectLocation = projectLocation;
       return this;
     }
 

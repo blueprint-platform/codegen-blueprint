@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 @Component("mavenBuildWrapperGenerator")
 public class MavenBuildWrapperGenerator implements ProjectBuildWrapperGenerator {
 
-  private static final String MAVEN_VERSION = "3.9.6";
-  private static final String WRAPPER_VERSION = "3.1.1";
+  private static final String MAVEN_VERSION = "3.9.11";
+  private static final String WRAPPER_VERSION = "3.3.3";
   private static final String WRAPPER_FILE_DIR = ".mvn/wrapper";
 
   private final TemplateEngine freeMarkerTemplateEngine;

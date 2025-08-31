@@ -1,7 +1,7 @@
 package com.c9.codegen.initializr.projectgeneration.generator.springboot.maven;
 
 import com.c9.codegen.initializr.projectgeneration.generator.base.AbstractProjectGenerator;
-import com.c9.codegen.initializr.projectgeneration.ports.ApplicationPropertiesGenerator;
+import com.c9.codegen.initializr.projectgeneration.ports.ApplicationYamlGenerator;
 import com.c9.codegen.initializr.projectgeneration.ports.FrameworkProjectStarterClassGenerator;
 import com.c9.codegen.initializr.projectgeneration.ports.FrameworkSpecificTestUnitGenerator;
 import com.c9.codegen.initializr.projectgeneration.ports.GitIgnoreGenerator;
@@ -21,7 +21,7 @@ public class SpringBootMavenJavaProjectGenerator extends AbstractProjectGenerato
       ProjectArchiver projectZipArchiver,
       ProjectLayoutGenerator mavenJavaProjectLayoutGenerator,
       ProjectBuildGenerator springBootMavenJavaProjectBuildGenerator,
-      ApplicationPropertiesGenerator springBootApplicationPropertiesGenerator,
+      ApplicationYamlGenerator springBootApplicationYamlGenerator,
       FrameworkProjectStarterClassGenerator springBootJavaMainClassGenerator,
       FrameworkSpecificTestUnitGenerator springBootJavaTestClassGenerator,
       ProjectDocumentationGenerator springBootMavenJavaReadMeGenerator) {
@@ -31,7 +31,7 @@ public class SpringBootMavenJavaProjectGenerator extends AbstractProjectGenerato
         projectZipArchiver,
         mavenJavaProjectLayoutGenerator,
         springBootMavenJavaProjectBuildGenerator,
-        springBootApplicationPropertiesGenerator,
+        springBootApplicationYamlGenerator,
         springBootJavaMainClassGenerator,
         springBootJavaTestClassGenerator,
         springBootMavenJavaReadMeGenerator);

@@ -7,11 +7,11 @@ import java.util.List;
 
 public class MavenPom {
 
-  private String modelVersion;
-  private String version;
-  private ProjectMetadata projectMetadata;
-  private List<Dependency> dependencies = new ArrayList<>();
-  private List<MavenPlugin> plugins = new ArrayList<>();
+  private final String modelVersion;
+  private final String version;
+  private final ProjectMetadata projectMetadata;
+  private final List<Dependency> dependencies;
+  private final List<MavenPlugin> plugins;
 
   private MavenPom(MavenPomBuilder builder) {
     this.modelVersion = builder.modelVersion;

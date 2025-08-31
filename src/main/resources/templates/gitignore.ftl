@@ -34,29 +34,25 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-../.DS_Store
 
-
+# Eclipse / IntelliJ / VSCode IDE #
+##################################
 .classpath
 .project
 .settings/
-target/
-/build/
-/bin/
-
-
-# IDE specific files and folders
 .idea/
-.project
-.classpath
-.settings/
 *.iws
 *.iml
 *.ipr
 
+# Build directories #
+#####################
+target/
+build/
+bin/
 
-# Maven specific files and folders
-**/target/
+# Maven specific #
+##################
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -67,8 +63,8 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/
 
-# Generated source folders (common choices)
-target/
+# Generated source folders #
+############################
 generated-sources/
 generated-classes/
 
