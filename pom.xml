@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.c9.codegen.initializr</groupId>
     <artifactId>codegen-initializr-core</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
     <name>codegen-initializr-core</name>
     <description>Hexagonal (ports &amp; adapters) Spring Boot project initializer with CLI &amp; FreeMarker templates</description>
     <properties>
