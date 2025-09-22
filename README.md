@@ -93,9 +93,9 @@ import java.util.List;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.Dependency;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectType;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.spring.SpringBootJavaProjectMetadata.SpringBootJavaProjectMetadataBuilder;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.BuildTool;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Framework;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Language;
 import io.github.bsayli.codegen.initializr.projectgeneration.service.ProjectGenerationService;
 
 // Assume ProjectGenerationService is injected or obtained from Spring context

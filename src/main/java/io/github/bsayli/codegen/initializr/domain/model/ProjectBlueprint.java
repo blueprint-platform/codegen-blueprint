@@ -1,6 +1,9 @@
 package io.github.bsayli.codegen.initializr.domain.model;
 
-import io.github.bsayli.codegen.initializr.domain.model.value.*;
+import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
+import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDescription;
+import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
+import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 
 public class ProjectBlueprint {
 

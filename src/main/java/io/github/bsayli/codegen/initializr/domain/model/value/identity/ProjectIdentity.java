@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.domain.model.value;
+package io.github.bsayli.codegen.initializr.domain.model.value.identity;
 
 import io.github.bsayli.codegen.initializr.domain.error.code.ErrorCode;
 import io.github.bsayli.codegen.initializr.domain.error.exception.DomainViolationException;

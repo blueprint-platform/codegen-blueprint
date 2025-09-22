@@ -1,10 +1,10 @@
 package io.github.bsayli.codegen.initializr.projectgeneration.registry.configuration;
 
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Language;
 import io.github.bsayli.codegen.initializr.projectgeneration.generator.ProjectGenerator;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectType;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.BuildTool;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Framework;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Language;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;

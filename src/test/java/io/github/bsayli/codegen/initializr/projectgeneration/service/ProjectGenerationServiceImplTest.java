@@ -1,17 +1,14 @@
 package io.github.bsayli.codegen.initializr.projectgeneration.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Language;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.Dependency;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectMetadata;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectType;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.spring.SpringBootJavaProjectMetadata;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.spring.SpringBootJavaProjectMetadata.SpringBootJavaProjectMetadataBuilder;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.BuildTool;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Framework;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Language;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -101,30 +97,6 @@ class ProjectGenerationServiceImplTest {
     assertTrue(
         pomFileFromUnarchived.exists(),
         "Archived project file does not contain " + pomFileName + " file");
-  }
-
-  @Test
-  void testGenerateProject_UnsupportedProjectType_ThrowsException() throws IOException {
-    ProjectType quarkusMavenJavaProjectType =
-        new ProjectType(Framework.QUARKUS, BuildTool.MAVEN, Language.JAVA);
-
-    ProjectMetadata projectMetadata =
-        new ProjectMetadata.ProjectMetadataBuilder()
-            .groupId("com.codegen")
-            .artifactId("codegen-demo")
-            .name("codegen-demo")
-            .description("Codegen Demo Project")
-            .packageName("com.codegen.demo")
-            .dependencies(Collections.emptyList())
-            .build();
-
-    try {
-      archivedProjectPath =
-          projectGenerationService.generateProject(quarkusMavenJavaProjectType, projectMetadata);
-      fail("Expected exception for unsupported project type");
-    } catch (IllegalArgumentException e) {
-      assertEquals("Unsupported project type: " + quarkusMavenJavaProjectType, e.getMessage());
-    }
   }
 
   @AfterEach

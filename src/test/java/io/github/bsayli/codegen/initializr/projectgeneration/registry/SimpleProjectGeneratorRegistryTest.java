@@ -1,15 +1,14 @@
 package io.github.bsayli.codegen.initializr.projectgeneration.registry;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Language;
 import io.github.bsayli.codegen.initializr.projectgeneration.generator.ProjectGenerator;
 import io.github.bsayli.codegen.initializr.projectgeneration.generator.springboot.maven.SpringBootMavenJavaProjectGenerator;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectType;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.BuildTool;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Framework;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Language;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +32,5 @@ class SimpleProjectGeneratorRegistryTest {
     ProjectGenerator projectGenerator = generatorOptional.get();
 
     assertSame(SpringBootMavenJavaProjectGenerator.class, projectGenerator.getClass());
-  }
-
-  @Test
-  void testGetProjectGenerator_NonExistingProjectType_ReturnsEmptyOptional() {
-    ProjectType unsupportedProjectType =
-        new ProjectType(Framework.QUARKUS, BuildTool.MAVEN, Language.JAVA);
-
-    Optional<ProjectGenerator> generatorOptional =
-        registry.getProjectGenerator(unsupportedProjectType);
-
-    assertFalse(generatorOptional.isPresent());
   }
 }

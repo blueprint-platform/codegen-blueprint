@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.domain.policy;
+package io.github.bsayli.codegen.initializr.domain.policy.naming;
 
 import static io.github.bsayli.codegen.initializr.domain.error.code.ErrorKeys.compose;
 import static io.github.bsayli.codegen.initializr.domain.error.code.Field.PROJECT_NAME;
@@ -21,13 +21,13 @@ public final class ProjectNamePolicy {
 
   private static final Set<String> RESERVED_BASE = Set.of("con", "prn", "aux", "nul");
   private static final Set<String> RESERVED_NAMES =
-          Stream.concat(
-                          RESERVED_BASE.stream(),
-                          Stream.concat(
-                                  IntStream.rangeClosed(1, 9).mapToObj(i -> "com" + i),
-                                  IntStream.rangeClosed(1, 9).mapToObj(i -> "lpt" + i)))
-                  .map(s -> s.toLowerCase(Locale.ROOT))
-                  .collect(Collectors.toUnmodifiableSet());
+      Stream.concat(
+              RESERVED_BASE.stream(),
+              Stream.concat(
+                  IntStream.rangeClosed(1, 9).mapToObj(i -> "com" + i),
+                  IntStream.rangeClosed(1, 9).mapToObj(i -> "lpt" + i)))
+          .map(s -> s.toLowerCase(Locale.ROOT))
+          .collect(Collectors.toUnmodifiableSet());
 
   private ProjectNamePolicy() {}
 
@@ -40,22 +40,22 @@ public final class ProjectNamePolicy {
   private static String normalize(String raw) {
     if (raw == null) throw new DomainViolationException(compose(PROJECT_NAME, NOT_BLANK));
     return raw.trim()
-            .replaceAll("\\s+", "-")
-            .replace('_', '-')
-            .toLowerCase(Locale.ROOT)
-            .replaceAll("-{2,}", "-");
+        .replaceAll("\\s+", "-")
+        .replace('_', '-')
+        .toLowerCase(Locale.ROOT)
+        .replaceAll("-{2,}", "-");
   }
 
   private static void validate(String value) {
-    Rule<String> rule = CompositeRule.of(
+    Rule<String> rule =
+        CompositeRule.of(
             new NotBlankRule(PROJECT_NAME),
             new LengthBetweenRule(MIN, MAX, PROJECT_NAME),
             new AllowedCharsRule("[a-z0-9-]", PROJECT_NAME, INVALID_CHARS),
             new StartsWithLetterRule(PROJECT_NAME, STARTS_WITH_LETTER),
             new NoEdgeCharRule('-', PROJECT_NAME, EDGE_CHAR),
             new NoConsecutiveCharRule('-', PROJECT_NAME, CONSECUTIVE_CHAR),
-            new ReservedNamesRule(RESERVED_NAMES, PROJECT_NAME)
-    );
+            new ReservedNamesRule(RESERVED_NAMES, PROJECT_NAME));
     rule.check(value);
   }
 }

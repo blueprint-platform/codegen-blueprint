@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.domain.policy;
+package io.github.bsayli.codegen.initializr.domain.policy.naming;
 
 import static io.github.bsayli.codegen.initializr.domain.error.code.Field.PROJECT_DESCRIPTION;
 import static io.github.bsayli.codegen.initializr.domain.error.code.Violation.INVALID_CHARS;

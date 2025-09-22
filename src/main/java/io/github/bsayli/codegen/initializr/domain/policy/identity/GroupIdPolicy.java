@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.domain.policy;
+package io.github.bsayli.codegen.initializr.domain.policy.identity;
 
 import static io.github.bsayli.codegen.initializr.domain.error.code.ErrorKeys.compose;
 import static io.github.bsayli.codegen.initializr.domain.error.code.Field.GROUP_ID;
