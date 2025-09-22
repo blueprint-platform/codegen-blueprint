@@ -3,7 +3,7 @@ package io.github.bsayli.codegen.initializr.domain.error.exception;
 import io.github.bsayli.codegen.initializr.domain.error.code.ErrorCode;
 
 public abstract class DomainException extends RuntimeException {
-  private final ErrorCode code;
+  private final transient ErrorCode code;
   private final transient Object[] args;
 
   protected DomainException(ErrorCode code, Object... args) {

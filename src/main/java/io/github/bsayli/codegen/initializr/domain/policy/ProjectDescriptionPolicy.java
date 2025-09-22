@@ -12,31 +12,29 @@ import java.util.regex.Pattern;
 
 public final class ProjectDescriptionPolicy {
 
-    private static final int MIN = 0;
-    private static final int MAX = 280;
+  private static final int MIN = 0;
+  private static final int MAX = 280;
 
-    private static final Pattern NO_CONTROL_CHARS = Pattern.compile("^[\\P{Cntrl}]*$");
+  private static final Pattern NO_CONTROL_CHARS = Pattern.compile("^\\P{Cntrl}*$");
 
-    private ProjectDescriptionPolicy() {}
+  private ProjectDescriptionPolicy() {}
 
-    public static String enforce(String raw) {
-        String n = normalize(raw);
-        validate(n);
-        return n;
-    }
+  public static String enforce(String raw) {
+    String n = normalize(raw);
+    validate(n);
+    return n;
+  }
 
-    private static String normalize(String raw) {
-        if (raw == null) return "";
-        return raw.trim()
-                .replaceAll("\\s+", " ")
-                .toLowerCase(Locale.ROOT);
-    }
+  private static String normalize(String raw) {
+    if (raw == null) return "";
+    return raw.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+  }
 
-    private static void validate(String value) {
-        Rule<String> rule = CompositeRule.of(
-                new LengthBetweenRule(MIN, MAX, PROJECT_DESCRIPTION),
-                new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, INVALID_CHARS)
-        );
-        rule.check(value);
-    }
+  private static void validate(String value) {
+    Rule<String> rule =
+        CompositeRule.of(
+            new LengthBetweenRule(MIN, MAX, PROJECT_DESCRIPTION),
+            new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, INVALID_CHARS));
+    rule.check(value);
+  }
 }
