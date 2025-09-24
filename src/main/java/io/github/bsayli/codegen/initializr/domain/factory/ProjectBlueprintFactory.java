@@ -42,6 +42,7 @@ public final class ProjectBlueprintFactory {
       BuildOptions buildOptions,
       PlatformTarget platformTarget,
       Dependencies dependencies) {
+
     ensureNotNull(identity, IDENTITY_REQUIRED);
     ensureNotNull(name, compose(PROJECT_NAME, NOT_BLANK));
     ensureNotNull(packageName, compose(PACKAGE_NAME, NOT_BLANK));
@@ -91,18 +92,6 @@ public final class ProjectBlueprintFactory {
         Dependencies.of(Arrays.asList(deps)));
   }
 
-  public static ProjectBlueprint ofWithAutoTarget(
-      ProjectIdentity identity,
-      ProjectName name,
-      ProjectDescription description,
-      PackageName packageName,
-      BuildOptions buildOptions,
-      Dependencies dependencies) {
-    ensureNotNull(buildOptions, BUILD_OPTIONS_REQUIRED);
-    PlatformTarget target = PlatformTargetSelector.selectDefaultFor(buildOptions);
-    return of(identity, name, description, packageName, buildOptions, target, dependencies);
-  }
-
   public static ProjectBlueprint fromPrimitives(
       String groupId,
       String artifactId,
@@ -113,29 +102,15 @@ public final class ProjectBlueprintFactory {
       JavaVersion preferredJava,
       SpringBootVersion preferredBoot,
       Dependencies dependencies) {
+
     var identity = new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
     var name = new ProjectName(projectName);
     var description = new ProjectDescription(projectDescription);
     var pkg = new PackageName(packageName);
 
-    var target = PlatformTargetSelector.selectOrDefault(buildOptions, preferredJava, preferredBoot);
+    var target = PlatformTargetSelector.select(buildOptions, preferredJava, preferredBoot);
+
     return of(identity, name, description, pkg, buildOptions, target, dependencies);
-  }
-
-  public static ProjectBlueprint fromPrimitivesWithAutoTarget(
-      String groupId,
-      String artifactId,
-      String projectName,
-      String projectDescription,
-      String packageName,
-      BuildOptions buildOptions,
-      Dependencies dependencies) {
-    var identity = new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
-    var name = new ProjectName(projectName);
-    var description = new ProjectDescription(projectDescription);
-    var pkg = new PackageName(packageName);
-
-    return ofWithAutoTarget(identity, name, description, pkg, buildOptions, dependencies);
   }
 
   private static void ensureNotNull(Object value, ErrorCode code) {

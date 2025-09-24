@@ -24,75 +24,60 @@ import org.junit.jupiter.api.Test;
 @DisplayName("ProjectBlueprintMapper")
 class ProjectBlueprintMapperTest {
 
-    private static ProjectBlueprint getProjectBlueprint() {
-        var mapper = new ProjectBlueprintMapper();
+  private static ProjectBlueprint getProjectBlueprint() {
+    var mapper = new ProjectBlueprintMapper();
 
-        var inputs = List.of(
-                new DependencyInput("org.acme", "alpha", "", ""),
-                new DependencyInput("org.acme", "beta", "1.2.3", "runtime"),
-                new DependencyInput("org.acme", "gamma", "  ", "  "),
-                new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt")
-        );
+    var inputs =
+        List.of(
+            new DependencyInput("org.acme", "alpha", "", ""),
+            new DependencyInput("org.acme", "beta", "1.2.3", "runtime"),
+            new DependencyInput("org.acme", "gamma", "  ", "  "),
+            new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt"));
 
-        var cmd = new CreateProjectCommand(
-                "com.acme", "demo-app",
-                "Demo App", "desc",
-                "com.acme.demo",
-                new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-                JavaVersion.JAVA_21, SpringBootVersion.V3_5_6,
-                inputs, Path.of(".")
-        );
+    var cmd =
+        new CreateProjectCommand(
+            "com.acme",
+            "demo-app",
+            "Demo App",
+            "desc",
+            "com.acme.demo",
+            new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+            JavaVersion.JAVA_21,
+            SpringBootVersion.V3_5_6,
+            inputs,
+            Path.of("."));
 
-        return mapper.toDomain(cmd);
-    }
+    return mapper.toDomain(cmd);
+  }
 
-    @Test
-    @DisplayName("maps dependencies; handles blank version/scope and case-insensitive scope")
-    void maps_dependencies_and_handles_blank_version_and_scope() {
-        ProjectBlueprint bp = getProjectBlueprint();
+  @Test
+  @DisplayName("maps dependencies; handles blank version/scope and case-insensitive scope")
+  void maps_dependencies_and_handles_blank_version_and_scope() {
+    ProjectBlueprint bp = getProjectBlueprint();
 
-        assertThat(bp.getDependencies().asList()).hasSize(4);
+    assertThat(bp.getDependencies().asList()).hasSize(4);
 
-        Map<String, Dependency> byArtifact = bp.getDependencies().asList().stream()
-                .collect(Collectors.toMap(d -> d.coordinates().artifactId().value(), d -> d));
+    Map<String, Dependency> byArtifact =
+        bp.getDependencies().asList().stream()
+            .collect(Collectors.toMap(d -> d.coordinates().artifactId().value(), d -> d));
 
-        var alpha = byArtifact.get("alpha");
-        assertThat(alpha.coordinates().groupId().value()).isEqualTo("org.acme");
-        assertThat(alpha.version()).isNull();
-        assertThat(alpha.scope()).isNull();
-        assertThat(alpha.isDefaultScope()).isTrue();
+    var alpha = byArtifact.get("alpha");
+    assertThat(alpha.coordinates().groupId().value()).isEqualTo("org.acme");
+    assertThat(alpha.version()).isNull();
+    assertThat(alpha.scope()).isNull();
+    assertThat(alpha.isDefaultScope()).isTrue();
 
-        var beta = byArtifact.get("beta");
-        assertThat(beta.version().value()).isEqualTo("1.2.3");
-        assertThat(beta.scope()).isEqualTo(DependencyScope.RUNTIME);
+    var beta = byArtifact.get("beta");
+    assertThat(beta.version().value()).isEqualTo("1.2.3");
+    assertThat(beta.scope()).isEqualTo(DependencyScope.RUNTIME);
 
-        var gamma = byArtifact.get("gamma");
-        assertThat(gamma.version()).isNull();
-        assertThat(gamma.scope()).isNull();
-        assertThat(gamma.isDefaultScope()).isTrue();
+    var gamma = byArtifact.get("gamma");
+    assertThat(gamma.version()).isNull();
+    assertThat(gamma.scope()).isNull();
+    assertThat(gamma.isDefaultScope()).isTrue();
 
-        var delta = byArtifact.get("delta");
-        assertThat(delta.version().value()).isEqualTo("2.0.0-RC1");
-        assertThat(delta.scope()).isEqualTo(DependencyScope.TEST);
-    }
-
-    @Test
-    @DisplayName("selects default platform target when preferences are null")
-    void selects_default_platform_target_when_preferences_are_null() {
-        var mapper = new ProjectBlueprintMapper();
-
-        var cmd = new CreateProjectCommand(
-                "com.acme", "demo-app",
-                "Demo App", "desc",
-                "com.acme.demo",
-                new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-                null, null,
-                List.of(), Path.of(".")
-        );
-
-        ProjectBlueprint bp = mapper.toDomain(cmd);
-
-        assertThat(bp.getPlatformTarget().springBoot()).isEqualTo(SpringBootVersion.V3_5_6);
-        assertThat(bp.getPlatformTarget().java()).isEqualTo(JavaVersion.JAVA_21);
-    }
+    var delta = byArtifact.get("delta");
+    assertThat(delta.version().value()).isEqualTo("2.0.0-RC1");
+    assertThat(delta.scope()).isEqualTo(DependencyScope.TEST);
+  }
 }

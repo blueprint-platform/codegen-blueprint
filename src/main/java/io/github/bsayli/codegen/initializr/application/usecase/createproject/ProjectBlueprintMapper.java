@@ -31,25 +31,15 @@ public class ProjectBlueprintMapper {
 
     var depsWrapper = Dependencies.of(deps);
 
-    if (c.preferredJava() != null && c.preferredBoot() != null) {
-      return ProjectBlueprintFactory.fromPrimitives(
-          c.groupId(),
-          c.artifactId(),
-          c.projectName(),
-          c.projectDescription(),
-          c.packageName(),
-          c.buildOptions(),
-          c.preferredJava(),
-          c.preferredBoot(),
-          depsWrapper);
-    }
-    return ProjectBlueprintFactory.fromPrimitivesWithAutoTarget(
+    return ProjectBlueprintFactory.fromPrimitives(
         c.groupId(),
         c.artifactId(),
         c.projectName(),
         c.projectDescription(),
         c.packageName(),
         c.buildOptions(),
+        c.preferredJava(),
+        c.preferredBoot(),
         depsWrapper);
   }
 }
