@@ -3,9 +3,9 @@ package io.github.bsayli.codegen.initializr.projectgeneration.registry;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildTool;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Framework;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
 import io.github.bsayli.codegen.initializr.projectgeneration.generator.ProjectGenerator;
 import io.github.bsayli.codegen.initializr.projectgeneration.generator.springboot.maven.SpringBootMavenJavaProjectGenerator;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectType;

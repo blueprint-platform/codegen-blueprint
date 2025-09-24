@@ -8,13 +8,13 @@ import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.domain.error.code.ErrorCode;
 import io.github.bsayli.codegen.initializr.domain.error.exception.DomainViolationException;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildOptions;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildTool;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Framework;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.Language;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;

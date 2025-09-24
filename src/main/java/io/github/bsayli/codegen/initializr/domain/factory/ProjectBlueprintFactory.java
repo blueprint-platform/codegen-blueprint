@@ -1,56 +1,109 @@
 package io.github.bsayli.codegen.initializr.domain.factory;
 
+import static io.github.bsayli.codegen.initializr.domain.error.code.ErrorKeys.compose;
+import static io.github.bsayli.codegen.initializr.domain.error.code.Field.PACKAGE_NAME;
+import static io.github.bsayli.codegen.initializr.domain.error.code.Field.PROJECT_NAME;
+import static io.github.bsayli.codegen.initializr.domain.error.code.Violation.NOT_BLANK;
+
+import io.github.bsayli.codegen.initializr.domain.error.code.ErrorCode;
+import io.github.bsayli.codegen.initializr.domain.error.exception.DomainViolationException;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
+import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
+import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependency;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ArtifactId;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.GroupId;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDescription;
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.policy.tech.CompatibilityPolicy;
 import io.github.bsayli.codegen.initializr.domain.policy.tech.PlatformTargetSelector;
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.List;
 
 public final class ProjectBlueprintFactory {
 
+  private static final ErrorCode IDENTITY_REQUIRED = () -> "project.identity.not.blank";
+  private static final ErrorCode BUILD_OPTIONS_REQUIRED = () -> "project.build-options.not.blank";
+  private static final ErrorCode TARGET_REQUIRED = () -> "platform.target.not.blank";
+  private static final ErrorCode DEPENDENCIES_REQUIRED = () -> "dependency.list.not.blank";
+
   private ProjectBlueprintFactory() {}
 
-  public static ProjectBlueprint create(
+  public static ProjectBlueprint of(
       ProjectIdentity identity,
       ProjectName name,
       ProjectDescription description,
       PackageName packageName,
       BuildOptions buildOptions,
-      PlatformTarget platformTarget) {
-    Objects.requireNonNull(identity);
-    Objects.requireNonNull(name);
-    Objects.requireNonNull(description);
-    Objects.requireNonNull(packageName);
-    Objects.requireNonNull(buildOptions);
-    Objects.requireNonNull(platformTarget);
+      PlatformTarget platformTarget,
+      Dependencies dependencies) {
+    ensureNotNull(identity, IDENTITY_REQUIRED);
+    ensureNotNull(name, compose(PROJECT_NAME, NOT_BLANK));
+    ensureNotNull(packageName, compose(PACKAGE_NAME, NOT_BLANK));
+    ensureNotNull(buildOptions, BUILD_OPTIONS_REQUIRED);
+    ensureNotNull(platformTarget, TARGET_REQUIRED);
+    ensureNotNull(dependencies, DEPENDENCIES_REQUIRED);
 
     CompatibilityPolicy.ensureCompatible(buildOptions, platformTarget);
 
     return new ProjectBlueprint(
-        identity, name, description, packageName, buildOptions, platformTarget);
+        identity, name, description, packageName, buildOptions, platformTarget, dependencies);
   }
 
-  public static ProjectBlueprint createWithAutoTarget(
+  public static ProjectBlueprint of(
       ProjectIdentity identity,
       ProjectName name,
       ProjectDescription description,
       PackageName packageName,
-      BuildOptions buildOptions) {
-    Objects.requireNonNull(buildOptions);
-    PlatformTarget target = PlatformTargetSelector.selectDefaultFor(buildOptions);
-    return create(identity, name, description, packageName, buildOptions, target);
+      BuildOptions buildOptions,
+      PlatformTarget platformTarget,
+      List<Dependency> dependencies) {
+    return of(
+        identity,
+        name,
+        description,
+        packageName,
+        buildOptions,
+        platformTarget,
+        Dependencies.of(dependencies));
   }
 
-  public static ProjectBlueprint createFromRaw(
+  public static ProjectBlueprint of(
+      ProjectIdentity identity,
+      ProjectName name,
+      ProjectDescription description,
+      PackageName packageName,
+      BuildOptions buildOptions,
+      PlatformTarget platformTarget,
+      Dependency... deps) {
+    return of(
+        identity,
+        name,
+        description,
+        packageName,
+        buildOptions,
+        platformTarget,
+        Dependencies.of(Arrays.asList(deps)));
+  }
+
+  public static ProjectBlueprint ofWithAutoTarget(
+      ProjectIdentity identity,
+      ProjectName name,
+      ProjectDescription description,
+      PackageName packageName,
+      BuildOptions buildOptions,
+      Dependencies dependencies) {
+    ensureNotNull(buildOptions, BUILD_OPTIONS_REQUIRED);
+    PlatformTarget target = PlatformTargetSelector.selectDefaultFor(buildOptions);
+    return of(identity, name, description, packageName, buildOptions, target, dependencies);
+  }
+
+  public static ProjectBlueprint fromPrimitives(
       String groupId,
       String artifactId,
       String projectName,
@@ -58,32 +111,34 @@ public final class ProjectBlueprintFactory {
       String packageName,
       BuildOptions buildOptions,
       JavaVersion preferredJava,
-      SpringBootVersion preferredBoot) {
-    ProjectIdentity identity =
-        new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
-    ProjectName name = new ProjectName(projectName);
-    ProjectDescription description = new ProjectDescription(projectDescription);
-    PackageName pkg = new PackageName(packageName);
+      SpringBootVersion preferredBoot,
+      Dependencies dependencies) {
+    var identity = new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
+    var name = new ProjectName(projectName);
+    var description = new ProjectDescription(projectDescription);
+    var pkg = new PackageName(packageName);
 
-    PlatformTarget target =
-        PlatformTargetSelector.selectOrDefault(buildOptions, preferredJava, preferredBoot);
-
-    return create(identity, name, description, pkg, buildOptions, target);
+    var target = PlatformTargetSelector.selectOrDefault(buildOptions, preferredJava, preferredBoot);
+    return of(identity, name, description, pkg, buildOptions, target, dependencies);
   }
 
-  public static ProjectBlueprint createFromRawWithAutoTarget(
+  public static ProjectBlueprint fromPrimitivesWithAutoTarget(
       String groupId,
       String artifactId,
       String projectName,
       String projectDescription,
       String packageName,
-      BuildOptions buildOptions) {
-    ProjectIdentity identity =
-        new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
-    ProjectName name = new ProjectName(projectName);
-    ProjectDescription description = new ProjectDescription(projectDescription);
-    PackageName pkg = new PackageName(packageName);
+      BuildOptions buildOptions,
+      Dependencies dependencies) {
+    var identity = new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
+    var name = new ProjectName(projectName);
+    var description = new ProjectDescription(projectDescription);
+    var pkg = new PackageName(packageName);
 
-    return createWithAutoTarget(identity, name, description, pkg, buildOptions);
+    return ofWithAutoTarget(identity, name, description, pkg, buildOptions, dependencies);
+  }
+
+  private static void ensureNotNull(Object value, ErrorCode code) {
+    if (value == null) throw new DomainViolationException(code);
   }
 }

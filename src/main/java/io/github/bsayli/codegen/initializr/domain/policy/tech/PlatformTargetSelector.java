@@ -6,10 +6,10 @@ import static io.github.bsayli.codegen.initializr.domain.model.value.tech.platfo
 import static io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion.V3_4_10;
 import static io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion.V3_5_6;
 
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import java.util.Comparator;
 import java.util.List;
 

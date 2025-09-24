@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.domain.model.value.tech.platform;
 
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.policy.tech.CompatibilityPolicy;
 import io.github.bsayli.codegen.initializr.domain.policy.tech.PlatformTargetSelector;
 

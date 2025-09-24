@@ -1,11 +1,12 @@
 package io.github.bsayli.codegen.initializr.domain.model;
 
+import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDescription;
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.options.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 
 public class ProjectBlueprint {
 
@@ -15,6 +16,7 @@ public class ProjectBlueprint {
   private final PackageName packageName;
   private final BuildOptions buildOptions;
   private final PlatformTarget platformTarget;
+  private final Dependencies dependencies;
 
   public ProjectBlueprint(
       ProjectIdentity identity,
@@ -22,13 +24,15 @@ public class ProjectBlueprint {
       ProjectDescription description,
       PackageName packageName,
       BuildOptions buildOptions,
-      PlatformTarget platformTarget) {
+      PlatformTarget platformTarget,
+      Dependencies dependencies) {
     this.identity = identity;
     this.name = name;
     this.description = description;
     this.packageName = packageName;
     this.buildOptions = buildOptions;
     this.platformTarget = platformTarget;
+    this.dependencies = dependencies;
   }
 
   public ProjectIdentity getIdentity() {
@@ -53,5 +57,9 @@ public class ProjectBlueprint {
 
   public PlatformTarget getPlatformTarget() {
     return platformTarget;
+  }
+
+  public Dependencies getDependencies() {
+    return dependencies;
   }
 }
