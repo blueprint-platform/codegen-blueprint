@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.domain.port.out;
+package io.github.bsayli.codegen.initializr.domain.port.out.filesystem;
 
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import java.nio.charset.Charset;
@@ -23,4 +23,13 @@ public interface ProjectWriterPort {
   default void write(Path projectRoot, Iterable<? extends GeneratedFile> files) {
     for (GeneratedFile f : files) write(projectRoot, f);
   }
+
+  default void write(Path projectRoot, GeneratedFile... files) {
+    for (GeneratedFile f : files) write(projectRoot, f);
+  }
+
+  default void write(Path projectRoot, java.util.stream.Stream<? extends GeneratedFile> files) {
+    files.forEach(f -> write(projectRoot, f));
+  }
+
 }

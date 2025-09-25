@@ -1,11 +1,11 @@
 package io.github.bsayli.codegen.initializr.application.usecase.createproject;
 
-import static io.github.bsayli.codegen.initializr.domain.port.out.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
+import static io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectArtifactsPort;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectRootPort;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectWriterPort;
+import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootPort;
+import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectWriterPort;
 import java.nio.file.Path;
 
 public class CreateProjectService implements CreateProjectUseCase {

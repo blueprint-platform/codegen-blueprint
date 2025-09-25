@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.application.usecase.createproject;
 
-import static io.github.bsayli.codegen.initializr.domain.port.out.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
+import static io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
@@ -10,13 +10,15 @@ import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOp
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectArtifactsPort;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectRootExistencePolicy;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectRootPort;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectWriterPort;
+import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootExistencePolicy;
+import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootPort;
+import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectWriterPort;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -31,7 +33,7 @@ class CreateProjectServiceTest {
   @TempDir Path tempDir;
 
   @Test
-  @DisplayName("execute() prepares project root and writes pom.xml and .gitignore")
+  @DisplayName("execute() prepares project root and writes pom.xml, .gitignore and source skeleton")
   void creates_project_root_and_writes_artifacts() {
     var mapper = new ProjectBlueprintMapper();
     var fakeRootPort = new FakeRootPort();
@@ -63,7 +65,14 @@ class CreateProjectServiceTest {
     assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(result.projectRoot());
     assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
 
-    assertThat(fakeWriter.writtenFiles).containsExactlyInAnyOrder("pom.xml", ".gitignore");
+    assertThat(fakeWriter.writtenFiles)
+            .containsExactlyInAnyOrder(
+                    "pom.xml",
+                    ".gitignore",
+                    "src/main/java/com/acme/demo/DemoApplication.java",
+                    "src/test/java/com/acme/demo/DemoApplicationTests.java",
+                    "src/main/resources/application.yml"
+            );
   }
 
   static class FakeRootPort implements ProjectRootPort {
@@ -81,14 +90,24 @@ class CreateProjectServiceTest {
   static class FakeArtifactsPort implements ProjectArtifactsPort {
     @Override
     public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
+      String pkgPath = blueprint.getPackageName().value().replace('.', '/');
+
       return List.of(
               new GeneratedFile.Text(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8),
-              new GeneratedFile.Text(Path.of(".gitignore"), "*.class", StandardCharsets.UTF_8));
+              new GeneratedFile.Text(Path.of(".gitignore"), "*.class", StandardCharsets.UTF_8),
+              new GeneratedFile.Text(
+                      Path.of("src/main/java", pkgPath, "DemoApplication.java"),
+                      "class DemoApplication {}", StandardCharsets.UTF_8),
+              new GeneratedFile.Text(
+                      Path.of("src/test/java", pkgPath, "DemoApplicationTests.java"),
+                      "class DemoApplicationTests {}", StandardCharsets.UTF_8),
+              new GeneratedFile.Text(Path.of("src/main/resources/application.yml"),
+                      "spring:\n  application:\n    name: demo-app", StandardCharsets.UTF_8));
     }
   }
 
   static class FakeWriterPort implements ProjectWriterPort {
-    final List<String> writtenFiles = new java.util.ArrayList<>();
+    final List<String> writtenFiles = new ArrayList<>();
 
     @Override
     public void writeBytes(Path projectRoot, Path relativePath, byte[] content) {
@@ -97,7 +116,7 @@ class CreateProjectServiceTest {
 
     @Override
     public void writeText(
-            Path projectRoot, Path relativePath, String content, java.nio.charset.Charset charset) {
+            Path projectRoot, Path relativePath, String content, Charset charset) {
       writtenFiles.add(relativePath.toString());
     }
   }

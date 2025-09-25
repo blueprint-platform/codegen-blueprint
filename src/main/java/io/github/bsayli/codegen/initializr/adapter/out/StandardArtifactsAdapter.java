@@ -1,30 +1,29 @@
 package io.github.bsayli.codegen.initializr.adapter.out;
 
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
-import io.github.bsayli.codegen.initializr.domain.port.out.GitIgnorePort;
-import io.github.bsayli.codegen.initializr.domain.port.out.MavenPomPort;
-import io.github.bsayli.codegen.initializr.domain.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.adapter.out.generator.ArtifactGenerator;
+import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class StandardArtifactsAdapter implements ProjectArtifactsPort {
 
-  private final MavenPomPort mavenPomPort;
-  private final GitIgnorePort gitIgnorePort;
+  private final List<ArtifactGenerator> artifactGenerators;
 
-  public StandardArtifactsAdapter(MavenPomPort mavenPomPort, GitIgnorePort gitIgnorePort) {
-    this.mavenPomPort = mavenPomPort;
-    this.gitIgnorePort = gitIgnorePort;
+  public StandardArtifactsAdapter(List<ArtifactGenerator> artifactGenerators) {
+    this.artifactGenerators = artifactGenerators;
   }
 
   @Override
   public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
-    BuildOptions options = blueprint.getBuildOptions();
-
-    return List.of(
-            mavenPomPort.generate(blueprint),
-            gitIgnorePort.generate(options)
-    );
+    List<GeneratedFile> generatedFiles = new ArrayList<>();
+    artifactGenerators.stream()
+            .filter(g -> g.supports(blueprint))
+            .sorted(Comparator.comparingInt(ArtifactGenerator::order))
+            .forEach(g -> g.generateFiles(blueprint).forEach(generatedFiles::add));
+    return generatedFiles;
   }
 }

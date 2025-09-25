@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.domain.port.out;
+package io.github.bsayli.codegen.initializr.domain.port.out.filesystem;
 
 import java.nio.file.Path;
 
