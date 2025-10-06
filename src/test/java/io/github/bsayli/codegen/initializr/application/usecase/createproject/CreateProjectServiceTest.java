@@ -4,6 +4,7 @@ import static io.github.bsayli.codegen.initializr.domain.port.out.filesystem.Pro
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsSelector;
 import io.github.bsayli.codegen.initializr.application.port.out.archive.ProjectArchiverPort;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
@@ -55,11 +56,12 @@ class CreateProjectServiceTest {
     var mapper = new ProjectBlueprintMapper();
     var fakeRootPort = new FakeRootPort();
     var fakeArtifacts = new FakeArtifactsPort();
+    var fakeSelector = new FakeSelector(fakeArtifacts);
     var fakeWriter = new FakeWriterPort();
     var fakeArchiver = new FakeArchiverPort();
 
     var service =
-        new CreateProjectService(mapper, fakeRootPort, fakeArtifacts, fakeWriter, fakeArchiver);
+        new CreateProjectService(mapper, fakeRootPort, fakeSelector, fakeWriter, fakeArchiver);
 
     var cmd =
         new CreateProjectCommand(
@@ -99,6 +101,8 @@ class CreateProjectServiceTest {
         .hasSize(expected.size());
   }
 
+  // ---- fakes ----
+
   static class FakeRootPort implements ProjectRootPort {
     Path lastPreparedRoot;
     ProjectRootExistencePolicy lastPolicy;
@@ -108,6 +112,19 @@ class CreateProjectServiceTest {
       this.lastPolicy = policy;
       this.lastPreparedRoot = targetDir.resolve(artifactId);
       return lastPreparedRoot;
+    }
+  }
+
+  static class FakeSelector implements ProjectArtifactsSelector {
+    private final ProjectArtifactsPort delegate;
+
+    FakeSelector(ProjectArtifactsPort delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public ProjectArtifactsPort select(BuildOptions options) {
+      return delegate;
     }
   }
 

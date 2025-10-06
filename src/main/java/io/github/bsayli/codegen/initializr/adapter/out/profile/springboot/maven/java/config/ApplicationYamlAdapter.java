@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
+import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ConfigFilesPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public final class ApplicationYamlAdapter implements ConfigFilesPort, ArtifactGenerator {
 
-  public static final String PROFILE_KEY = "springboot-maven-java";
+  private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
   private static final int ORDER = 50;
   private static final String NAME = "application-yaml";
   private static final String KEY_FRAMEWORK = "framework";
@@ -25,17 +26,10 @@ public final class ApplicationYamlAdapter implements ConfigFilesPort, ArtifactGe
 
   private final TemplateRenderer renderer;
   private final CodegenProfilesProperties profiles;
-  private final String profileKey;
 
   public ApplicationYamlAdapter(TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    this(renderer, profiles, PROFILE_KEY);
-  }
-
-  public ApplicationYamlAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles, String profileKey) {
     this.renderer = renderer;
     this.profiles = profiles;
-    this.profileKey = profileKey;
   }
 
   @Override
@@ -68,7 +62,7 @@ public final class ApplicationYamlAdapter implements ConfigFilesPort, ArtifactGe
   }
 
   private ArtifactProperties cfg() {
-    return profiles.artifact(profileKey, NAME);
+    return profiles.artifact(PROFILE, NAME);
   }
 
   private Map<String, Object> buildModel(BuildOptions options) {

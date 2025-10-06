@@ -2,6 +2,7 @@ package io.github.bsayli.codegen.initializr.adapter.out.templating;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import io.github.bsayli.codegen.initializr.adapter.error.exception.TemplateRenderingException;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;

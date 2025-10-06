@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
+import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.MavenPomPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
@@ -21,9 +22,10 @@ import java.util.Map;
 
 public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
 
-  public static final String PROFILE_KEY = "springboot-maven-java";
+  private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
   private static final int ORDER = 10;
   private static final String NAME = "maven-pom";
+
   private static final String KEY_GROUP_ID = "groupId";
   private static final String KEY_ARTIFACT_ID = "artifactId";
   private static final String KEY_JAVA_VERSION = "javaVersion";
@@ -46,17 +48,10 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
 
   private final TemplateRenderer renderer;
   private final CodegenProfilesProperties profiles;
-  private final String profileKey;
 
   public MavenPomAdapter(TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    this(renderer, profiles, PROFILE_KEY);
-  }
-
-  public MavenPomAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles, String profileKey) {
     this.renderer = renderer;
     this.profiles = profiles;
-    this.profileKey = profileKey;
   }
 
   @Override
@@ -70,8 +65,7 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
 
   @Override
   public boolean supports(ProjectBlueprint bp) {
-    ArtifactProperties cfg = cfg();
-    return cfg.enabled();
+    return cfg().enabled();
   }
 
   @Override
@@ -90,7 +84,7 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
   }
 
   private ArtifactProperties cfg() {
-    return profiles.artifact(profileKey, NAME);
+    return profiles.artifact(PROFILE, NAME);
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp) {
@@ -115,9 +109,7 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
   private List<Map<String, String>> mapUserDependencies(Dependencies userDependencies) {
     if (userDependencies == null || userDependencies.isEmpty()) return List.of();
     List<Map<String, String>> list = new ArrayList<>(userDependencies.asList().size());
-    for (Dependency d : userDependencies.asList()) {
-      list.add(toMap(d));
-    }
+    for (Dependency d : userDependencies.asList()) list.add(toMap(d));
     return list;
   }
 
@@ -125,12 +117,9 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
     Map<String, String> m = new LinkedHashMap<>();
     m.put(KEY_GROUP_ID, d.coordinates().groupId().value());
     m.put(KEY_ARTIFACT_ID, d.coordinates().artifactId().value());
-    if (d.version() != null && !d.version().value().isBlank()) {
+    if (d.version() != null && !d.version().value().isBlank())
       m.put("version", d.version().value());
-    }
-    if (d.scope() != null && !d.scope().value().isBlank()) {
-      m.put("scope", d.scope().value());
-    }
+    if (d.scope() != null && !d.scope().value().isBlank()) m.put("scope", d.scope().value());
     return m;
   }
 }

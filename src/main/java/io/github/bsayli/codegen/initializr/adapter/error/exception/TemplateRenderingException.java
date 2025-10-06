@@ -1,9 +1,8 @@
-package io.github.bsayli.codegen.initializr.adapter.out.templating;
+package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
-import io.github.bsayli.codegen.initializr.adapter.error.AdapterException;
-
+@SuppressWarnings("java:S110")
 public final class TemplateRenderingException extends AdapterException {
-  public static final String KEY = "adapter.template.render.failed";
+  private static final String KEY = "adapter.template.render.failed";
   private final String templateName;
 
   public TemplateRenderingException(String templateName, Object... args) {

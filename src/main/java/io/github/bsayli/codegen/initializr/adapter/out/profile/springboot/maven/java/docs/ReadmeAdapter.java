@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
+import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ReadmePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
@@ -20,10 +21,9 @@ import java.util.Map;
 
 public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
 
-  public static final String PROFILE_KEY = "springboot-maven-java";
+  private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
   private static final int ORDER = 90;
   private static final String NAME = "readme";
-  // Model keys
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
   private static final String KEY_GROUP_ID = "groupId";
@@ -38,17 +38,10 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
 
   private final TemplateRenderer renderer;
   private final CodegenProfilesProperties profiles;
-  private final String profileKey;
 
   public ReadmeAdapter(TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    this(renderer, profiles, PROFILE_KEY);
-  }
-
-  public ReadmeAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles, String profileKey) {
     this.renderer = renderer;
     this.profiles = profiles;
-    this.profileKey = profileKey;
   }
 
   @Override
@@ -82,7 +75,7 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
   }
 
   private ArtifactProperties cfg() {
-    return profiles.artifact(profileKey, NAME);
+    return profiles.artifact(PROFILE, NAME);
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp) {

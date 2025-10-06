@@ -1,5 +1,6 @@
 package io.github.bsayli.codegen.initializr.bootstrap.config;
 
+import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.bootstrap.error.ProfileConfigurationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -12,30 +13,30 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "codegen")
 public record CodegenProfilesProperties(@Valid @NotNull Map<String, ProfileProperties> profiles) {
 
-  public ArtifactProperties artifact(String profileKey, String artifactKey) {
-    var profile = requireProfile(profileKey);
-    var raw = requireArtifact(profileKey, profile, artifactKey);
-    String fullTemplate = profile.templateBasePath() + "/" + raw.template();
+  public ArtifactProperties artifact(ProfileType profile, String artifactKey) {
+    var p = requireProfile(profile);
+    var raw = requireArtifact(profile, p, artifactKey);
+    String fullTemplate = p.templateBasePath() + "/" + raw.template();
     return new ArtifactProperties(raw.enabled(), fullTemplate, raw.outputPath());
   }
 
-  private ArtifactProperties requireArtifact(
-      String profileKey, ProfileProperties profile, String artifactKey) {
-    var artifact = profile.artifacts().get(artifactKey);
-    if (artifact == null) {
+  ProfileProperties requireProfile(ProfileType profile) {
+    var key = profile.key();
+    var p = profiles.get(key);
+    if (p == null) {
       throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey, profileKey);
+          ProfileConfigurationException.KEY_PROFILE_NOT_FOUND, key);
     }
-    return artifact;
+    return p;
   }
 
-  private ProfileProperties requireProfile(String profileKey) {
-    var profile = profiles.get(profileKey);
-    if (profile == null) {
+  ArtifactProperties requireArtifact(ProfileType profile, ProfileProperties p, String artifactKey) {
+    var a = p.artifacts().get(artifactKey);
+    if (a == null) {
       throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_PROFILE_NOT_FOUND, profileKey);
+          ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey, profile.key());
     }
-    return profile;
+    return a;
   }
 
   public record ProfileProperties(

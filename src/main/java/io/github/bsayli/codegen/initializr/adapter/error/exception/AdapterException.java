@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.adapter.error;
+package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
 import io.github.bsayli.codegen.initializr.bootstrap.error.InfrastructureException;
 
