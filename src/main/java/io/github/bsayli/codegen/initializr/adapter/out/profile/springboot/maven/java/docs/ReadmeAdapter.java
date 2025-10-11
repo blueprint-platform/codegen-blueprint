@@ -2,12 +2,11 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 
 import static java.util.Map.entry;
 
+import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
 import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
-import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ReadmePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
-import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
@@ -21,9 +20,6 @@ import java.util.Map;
 
 public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
 
-  private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
-  private static final int ORDER = 90;
-  private static final String NAME = "readme";
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
   private static final String KEY_GROUP_ID = "groupId";
@@ -37,45 +33,29 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
   private static final String KEY_DEPENDENCIES = "dependencies";
 
   private final TemplateRenderer renderer;
-  private final CodegenProfilesProperties profiles;
+  private final ArtifactProperties artifactProperties;
 
-  public ReadmeAdapter(TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+  public ReadmeAdapter(TemplateRenderer renderer, ArtifactProperties artifactProperties) {
     this.renderer = renderer;
-    this.profiles = profiles;
+    this.artifactProperties = artifactProperties;
   }
 
   @Override
   public GeneratedFile generate(ProjectBlueprint blueprint) {
-    ArtifactProperties cfg = cfg();
-    Path outPath = Path.of(cfg.outputPath());
-    String template = cfg.template();
+    Path outPath = Path.of(artifactProperties.outputPath());
+    String template = artifactProperties.template();
     Map<String, Object> model = buildModel(blueprint);
     return renderer.renderUtf8(outPath, template, model);
   }
 
   @Override
+  public ArtifactKey artifactKey() {
+    return ArtifactKey.README;
+  }
+
+  @Override
   public Iterable<? extends GeneratedFile> generateFiles(ProjectBlueprint blueprint) {
     return List.of(generate(blueprint));
-  }
-
-  @Override
-  public boolean supports(ProjectBlueprint bp) {
-    ArtifactProperties cfg = cfg();
-    return cfg.enabled();
-  }
-
-  @Override
-  public int order() {
-    return ORDER;
-  }
-
-  @Override
-  public String name() {
-    return NAME;
-  }
-
-  private ArtifactProperties cfg() {
-    return profiles.artifact(PROFILE, NAME);
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp) {

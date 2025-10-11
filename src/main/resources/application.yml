@@ -7,27 +7,20 @@ codegen:
   profiles:
     springboot-maven-java:
       template-base-path: springboot/maven/java
+      run: [ pom, gitignore, application-yaml, readme ]  # execution order
       artifacts:
-        gitignore:
-          enabled: true
-          template: .gitignore.ftl
-          output-path: .gitignore
-
         pom:
-          enabled: true
           template: pom.xml.ftl
           output-path: pom.xml
-
+        gitignore:
+          template: .gitignore.ftl
+          output-path: .gitignore
         application-yaml:
-          enabled: true
           template: application.yml.ftl
           output-path: src/main/resources/application.yml
-
         readme:
-          enabled: true
           template: README.md.ftl
           output-path: README.md
-
 
 templating:
   encoding: UTF-8

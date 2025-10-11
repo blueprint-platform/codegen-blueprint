@@ -1,0 +1,13 @@
+package io.github.bsayli.codegen.initializr.bootstrap.config;
+
+import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
+
+public record ProfileProperties(
+    @NotBlank String templateBasePath,
+    @Valid @NotNull List<ArtifactKey> run,
+    @Valid @NotNull Map<String, ArtifactProperties> artifacts) {}
