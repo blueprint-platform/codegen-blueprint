@@ -1,7 +1,6 @@
 package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.vcs;
 
 import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.GitIgnorePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
@@ -12,7 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public final class GitIgnoreAdapter implements GitIgnorePort, ArtifactGenerator {
+public final class GitIgnoreAdapter implements GitIgnorePort {
 
   private static final String KEY_IGNORE_LIST = "ignoreList";
   private final TemplateRenderer renderer;
@@ -24,21 +23,17 @@ public final class GitIgnoreAdapter implements GitIgnorePort, ArtifactGenerator 
   }
 
   @Override
-  public GeneratedFile generate(BuildOptions buildOptions) {
+  public Iterable<? extends GeneratedFile> generate(ProjectBlueprint projectBlueprint) {
     Path outPath = Path.of(artifactProperties.outputPath());
     String template = artifactProperties.template();
-    Map<String, Object> model = buildModel(buildOptions);
-    return renderer.renderUtf8(outPath, template, model);
+    Map<String, Object> model = buildModel(projectBlueprint.getBuildOptions());
+    GeneratedFile generatedFile = renderer.renderUtf8(outPath, template, model);
+    return List.of(generatedFile);
   }
 
   @Override
   public ArtifactKey artifactKey() {
     return ArtifactKey.GITIGNORE;
-  }
-
-  @Override
-  public Iterable<? extends GeneratedFile> generateFiles(ProjectBlueprint bp) {
-    return List.of(generate(bp.getBuildOptions()));
   }
 
   @SuppressWarnings("unused")

@@ -7,7 +7,7 @@ public final class Dependencies {
   private final List<Dependency> items;
 
   private Dependencies(List<Dependency> items) {
-    this.items = items;
+    this.items = List.copyOf(items);
   }
 
   public static Dependencies of(List<Dependency> raw) {

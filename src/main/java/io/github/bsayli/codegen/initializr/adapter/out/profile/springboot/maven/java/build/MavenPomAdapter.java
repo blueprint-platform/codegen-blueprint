@@ -3,7 +3,6 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.MavenPomPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
@@ -19,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
+public final class MavenPomAdapter implements MavenPomPort {
 
   private static final String KEY_GROUP_ID = "groupId";
   private static final String KEY_ARTIFACT_ID = "artifactId";
@@ -30,16 +29,12 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
 
   private static final Map<String, String> CORE_STARTER =
-      Map.of(KEY_GROUP_ID, "org.springframework.boot", KEY_ARTIFACT_ID, "spring-boot-starter");
+          Map.of(KEY_GROUP_ID, "org.springframework.boot", KEY_ARTIFACT_ID, "spring-boot-starter");
 
   private static final Map<String, String> TEST_STARTER =
-      Map.of(
-          KEY_GROUP_ID,
-          "org.springframework.boot",
-          KEY_ARTIFACT_ID,
-          "spring-boot-starter-test",
-          "scope",
-          "test");
+          Map.of(KEY_GROUP_ID, "org.springframework.boot",
+                  KEY_ARTIFACT_ID, "spring-boot-starter-test",
+                  "scope", "test");
 
   private final TemplateRenderer renderer;
   private final ArtifactProperties artifactProperties;
@@ -50,21 +45,17 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
   }
 
   @Override
-  public GeneratedFile generate(ProjectBlueprint blueprint) {
-    Path outPath = Path.of(artifactProperties.outputPath());
-    String template = artifactProperties.template();
-    Map<String, Object> model = buildModel(blueprint);
-    return renderer.renderUtf8(outPath, template, model);
-  }
-
-  @Override
   public ArtifactKey artifactKey() {
     return ArtifactKey.POM;
   }
 
   @Override
-  public Iterable<? extends GeneratedFile> generateFiles(ProjectBlueprint blueprint) {
-    return List.of(generate(blueprint));
+  public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
+    Path outPath = Path.of(artifactProperties.outputPath());
+    String template = artifactProperties.template();
+    Map<String, Object> model = buildModel(blueprint);
+    GeneratedFile file = renderer.renderUtf8(outPath, template, model);
+    return List.of(file);
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp) {
@@ -77,13 +68,13 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
     dependencies.add(TEST_STARTER);
 
     return Map.ofEntries(
-        entry(KEY_GROUP_ID, id.groupId().value()),
-        entry(KEY_ARTIFACT_ID, id.artifactId().value()),
-        entry(KEY_JAVA_VERSION, pt.java().asString()),
-        entry(KEY_SPRING_BOOT_VER, pt.springBoot().value()),
-        entry(KEY_PROJECT_NAME, bp.getName().value()),
-        entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
-        entry(KEY_DEPENDENCIES, dependencies));
+            entry(KEY_GROUP_ID, id.groupId().value()),
+            entry(KEY_ARTIFACT_ID, id.artifactId().value()),
+            entry(KEY_JAVA_VERSION, pt.java().asString()),
+            entry(KEY_SPRING_BOOT_VER, pt.springBoot().value()),
+            entry(KEY_PROJECT_NAME, bp.getName().value()),
+            entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
+            entry(KEY_DEPENDENCIES, dependencies));
   }
 
   private List<Map<String, String>> mapUserDependencies(Dependencies userDependencies) {
@@ -97,8 +88,7 @@ public final class MavenPomAdapter implements MavenPomPort, ArtifactGenerator {
     Map<String, String> m = new LinkedHashMap<>();
     m.put(KEY_GROUP_ID, d.coordinates().groupId().value());
     m.put(KEY_ARTIFACT_ID, d.coordinates().artifactId().value());
-    if (d.version() != null && !d.version().value().isBlank())
-      m.put("version", d.version().value());
+    if (d.version() != null && !d.version().value().isBlank()) m.put("version", d.version().value());
     if (d.scope() != null && !d.scope().value().isBlank()) m.put("scope", d.scope().value());
     return m;
   }

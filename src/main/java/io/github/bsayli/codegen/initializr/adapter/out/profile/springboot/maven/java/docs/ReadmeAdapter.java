@@ -3,7 +3,6 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ReadmePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
@@ -18,7 +17,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
+public final class ReadmeAdapter implements ReadmePort {
 
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
@@ -41,21 +40,17 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
   }
 
   @Override
-  public GeneratedFile generate(ProjectBlueprint blueprint) {
+  public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
     Path outPath = Path.of(artifactProperties.outputPath());
     String template = artifactProperties.template();
     Map<String, Object> model = buildModel(blueprint);
-    return renderer.renderUtf8(outPath, template, model);
+    GeneratedFile generatedFile = renderer.renderUtf8(outPath, template, model);
+    return List.of(generatedFile);
   }
 
   @Override
   public ArtifactKey artifactKey() {
     return ArtifactKey.README;
-  }
-
-  @Override
-  public Iterable<? extends GeneratedFile> generateFiles(ProjectBlueprint blueprint) {
-    return List.of(generate(blueprint));
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp) {

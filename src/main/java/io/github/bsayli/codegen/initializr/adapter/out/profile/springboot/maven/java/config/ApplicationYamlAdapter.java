@@ -3,22 +3,18 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ConfigFilesPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public final class ApplicationYamlAdapter implements ConfigFilesPort, ArtifactGenerator {
+public final class ApplicationYamlAdapter implements ConfigFilesPort {
 
-  private static final String KEY_FRAMEWORK = "framework";
-  private static final String KEY_BUILD_TOOL = "buildTool";
-  private static final String KEY_LANGUAGE = "language";
+  private static final String KEY_PROJECT_NAME = "projectName";
 
   private final TemplateRenderer renderer;
   private final ArtifactProperties artifactProperties;
@@ -29,10 +25,10 @@ public final class ApplicationYamlAdapter implements ConfigFilesPort, ArtifactGe
   }
 
   @Override
-  public Iterable<? extends GeneratedFile> generate(BuildOptions options) {
+  public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
     Path outPath = Path.of(artifactProperties.outputPath());
     String template = artifactProperties.template();
-    Map<String, Object> model = buildModel(options);
+    Map<String, Object> model = buildModel(blueprint);
     return List.of(renderer.renderUtf8(outPath, template, model));
   }
 
@@ -41,15 +37,7 @@ public final class ApplicationYamlAdapter implements ConfigFilesPort, ArtifactGe
     return ArtifactKey.APPLICATION_YAML;
   }
 
-  @Override
-  public Iterable<? extends GeneratedFile> generateFiles(ProjectBlueprint blueprint) {
-    return generate(blueprint.getBuildOptions());
-  }
-
-  private Map<String, Object> buildModel(BuildOptions options) {
-    return Map.ofEntries(
-        entry(KEY_FRAMEWORK, options.framework().name()),
-        entry(KEY_BUILD_TOOL, options.buildTool().name()),
-        entry(KEY_LANGUAGE, options.language().name()));
+  private Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+    return Map.ofEntries(entry(KEY_PROJECT_NAME, blueprint.getName().value()));
   }
 }

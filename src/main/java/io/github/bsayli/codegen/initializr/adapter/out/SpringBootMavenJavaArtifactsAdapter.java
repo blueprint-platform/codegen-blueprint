@@ -1,24 +1,24 @@
 package io.github.bsayli.codegen.initializr.adapter.out;
 
-import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactPort;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
-public class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifactsPort {
+public final class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifactsPort {
 
-  private final List<ArtifactGenerator> artifactGenerators;
+  private final List<ArtifactPort> artifacts;
 
-  public SpringBootMavenJavaArtifactsAdapter(List<ArtifactGenerator> artifactGenerators) {
-    this.artifactGenerators = artifactGenerators;
+  public SpringBootMavenJavaArtifactsAdapter(List<ArtifactPort> artifacts) {
+    this.artifacts = artifacts;
   }
 
   @Override
   public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
-    List<GeneratedFile> generatedFiles = new ArrayList<>();
-    artifactGenerators.forEach(g -> g.generateFiles(blueprint).forEach(generatedFiles::add));
-    return generatedFiles;
+    return artifacts.stream()
+        .flatMap(p -> StreamSupport.stream(p.generate(blueprint).spliterator(), false))
+        .toList();
   }
 }
