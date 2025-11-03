@@ -29,7 +29,11 @@ public enum ProfileType {
     return null;
   }
 
+  private static String slug(Enum<?> e) {
+    return e.name().toLowerCase().replace("_", "");
+  }
+
   public String key() {
-    return (framework.name() + "-" + buildTool.name() + "-" + language.name()).toLowerCase();
+    return slug(framework) + "-" + slug(buildTool) + "-" + slug(language);
   }
 }

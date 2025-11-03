@@ -33,7 +33,7 @@ public class CreateProjectService implements CreateProjectUseCase {
 
   @Override
   public CreateProjectResult execute(CreateProjectCommand command) {
-    ProjectBlueprint bp = mapper.toDomain(command);
+    ProjectBlueprint bp = mapper.from(command);
 
     Path projectRoot =
         rootPort.prepareRoot(

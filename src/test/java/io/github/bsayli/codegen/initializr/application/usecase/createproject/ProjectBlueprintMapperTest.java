@@ -47,7 +47,7 @@ class ProjectBlueprintMapperTest {
             inputs,
             Path.of("."));
 
-    return mapper.toDomain(cmd);
+    return mapper.from(cmd);
   }
 
   @Test

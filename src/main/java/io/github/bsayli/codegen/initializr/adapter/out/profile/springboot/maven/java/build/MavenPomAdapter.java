@@ -3,18 +3,17 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.PomDependency;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.PomDependencyMapper;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.MavenPomPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
-import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
-import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependency;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,20 +27,23 @@ public final class MavenPomAdapter implements MavenPomPort {
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
 
-  private static final Map<String, String> CORE_STARTER =
-          Map.of(KEY_GROUP_ID, "org.springframework.boot", KEY_ARTIFACT_ID, "spring-boot-starter");
+  private static final PomDependency CORE_STARTER =
+      PomDependency.of("org.springframework.boot", "spring-boot-starter");
 
-  private static final Map<String, String> TEST_STARTER =
-          Map.of(KEY_GROUP_ID, "org.springframework.boot",
-                  KEY_ARTIFACT_ID, "spring-boot-starter-test",
-                  "scope", "test");
+  private static final PomDependency TEST_STARTER =
+      PomDependency.of("org.springframework.boot", "spring-boot-starter-test", null, "test");
 
   private final TemplateRenderer renderer;
   private final ArtifactProperties artifactProperties;
+  private final PomDependencyMapper pomDependencyMapper;
 
-  public MavenPomAdapter(TemplateRenderer renderer, ArtifactProperties artifactProperties) {
+  public MavenPomAdapter(
+      TemplateRenderer renderer,
+      ArtifactProperties artifactProperties,
+      PomDependencyMapper pomDependencyMapper) {
     this.renderer = renderer;
     this.artifactProperties = artifactProperties;
+    this.pomDependencyMapper = pomDependencyMapper;
   }
 
   @Override
@@ -62,34 +64,18 @@ public final class MavenPomAdapter implements MavenPomPort {
     ProjectIdentity id = bp.getIdentity();
     PlatformTarget pt = bp.getPlatformTarget();
 
-    List<Map<String, String>> dependencies = new ArrayList<>();
+    List<PomDependency> dependencies = new ArrayList<>();
     dependencies.add(CORE_STARTER);
-    dependencies.addAll(mapUserDependencies(bp.getDependencies()));
+    dependencies.addAll(pomDependencyMapper.from(bp.getDependencies()));
     dependencies.add(TEST_STARTER);
 
     return Map.ofEntries(
-            entry(KEY_GROUP_ID, id.groupId().value()),
-            entry(KEY_ARTIFACT_ID, id.artifactId().value()),
-            entry(KEY_JAVA_VERSION, pt.java().asString()),
-            entry(KEY_SPRING_BOOT_VER, pt.springBoot().value()),
-            entry(KEY_PROJECT_NAME, bp.getName().value()),
-            entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
-            entry(KEY_DEPENDENCIES, dependencies));
-  }
-
-  private List<Map<String, String>> mapUserDependencies(Dependencies userDependencies) {
-    if (userDependencies == null || userDependencies.isEmpty()) return List.of();
-    List<Map<String, String>> list = new ArrayList<>(userDependencies.asList().size());
-    for (Dependency d : userDependencies.asList()) list.add(toMap(d));
-    return list;
-  }
-
-  private Map<String, String> toMap(Dependency d) {
-    Map<String, String> m = new LinkedHashMap<>();
-    m.put(KEY_GROUP_ID, d.coordinates().groupId().value());
-    m.put(KEY_ARTIFACT_ID, d.coordinates().artifactId().value());
-    if (d.version() != null && !d.version().value().isBlank()) m.put("version", d.version().value());
-    if (d.scope() != null && !d.scope().value().isBlank()) m.put("scope", d.scope().value());
-    return m;
+        entry(KEY_GROUP_ID, id.groupId().value()),
+        entry(KEY_ARTIFACT_ID, id.artifactId().value()),
+        entry(KEY_JAVA_VERSION, pt.java().asString()),
+        entry(KEY_SPRING_BOOT_VER, pt.springBoot().value()),
+        entry(KEY_PROJECT_NAME, bp.getName().value()),
+        entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
+        entry(KEY_DEPENDENCIES, dependencies));
   }
 }

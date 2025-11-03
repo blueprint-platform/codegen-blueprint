@@ -7,7 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "templating")
-public record FreeMarkerTemplateProperties(
+public record FreeMarkerTemplatingProperties(
     @NotBlank String encoding,
     @NotNull Handler handler,
     @NotBlank String templatePath,

@@ -85,7 +85,7 @@ class CreateProjectServiceTest {
     assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(tempDir.resolve("demo-app"));
     assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
 
-    var bpForPaths = mapper.toDomain(cmd);
+    var bpForPaths = mapper.from(cmd);
     var expected =
         List.of(
             POM,

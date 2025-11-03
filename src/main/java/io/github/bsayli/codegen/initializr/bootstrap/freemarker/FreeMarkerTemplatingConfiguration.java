@@ -5,19 +5,22 @@ import static freemarker.template.Configuration.VERSION_2_3_34;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.Version;
+import io.github.bsayli.codegen.initializr.adapter.out.templating.FreeMarkerTemplateRenderer;
+import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-// @org.springframework.context.annotation.Configuration
-// @EnableConfigurationProperties(FreeMarkerTemplateProperties.class)
-public class FreeMarkerTemplateConfiguration {
+@org.springframework.context.annotation.Configuration
+@EnableConfigurationProperties(FreeMarkerTemplatingProperties.class)
+public class FreeMarkerTemplatingConfiguration {
 
   public static final String NUMBER_FORMAT_COMPUTER = "computer";
 
   private static final Version FM_VER = VERSION_2_3_34;
 
-  private final FreeMarkerTemplateProperties props;
+  private final FreeMarkerTemplatingProperties props;
 
-  public FreeMarkerTemplateConfiguration(FreeMarkerTemplateProperties props) {
+  public FreeMarkerTemplatingConfiguration(FreeMarkerTemplatingProperties props) {
     this.props = props;
   }
 
@@ -39,7 +42,12 @@ public class FreeMarkerTemplateConfiguration {
     return cfg;
   }
 
-  private TemplateExceptionHandler toHandler(FreeMarkerTemplateProperties.Handler h) {
+  @Bean
+  TemplateRenderer templateRenderer(Configuration freemarkerConfiguration) {
+    return new FreeMarkerTemplateRenderer(freemarkerConfiguration);
+  }
+
+  private TemplateExceptionHandler toHandler(FreeMarkerTemplatingProperties.Handler h) {
     return switch (h) {
       case RETHROW -> TemplateExceptionHandler.RETHROW_HANDLER;
       case DEBUG -> TemplateExceptionHandler.DEBUG_HANDLER;

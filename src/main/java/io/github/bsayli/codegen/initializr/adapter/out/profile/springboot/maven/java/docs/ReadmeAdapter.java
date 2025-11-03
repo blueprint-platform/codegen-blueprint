@@ -3,6 +3,8 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.PomDependency;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.PomDependencyMapper;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ReadmePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
@@ -33,10 +35,15 @@ public final class ReadmeAdapter implements ReadmePort {
 
   private final TemplateRenderer renderer;
   private final ArtifactProperties artifactProperties;
+  private final PomDependencyMapper pomDependencyMapper;
 
-  public ReadmeAdapter(TemplateRenderer renderer, ArtifactProperties artifactProperties) {
+  public ReadmeAdapter(
+      TemplateRenderer renderer,
+      ArtifactProperties artifactProperties,
+      PomDependencyMapper pomDependencyMapper) {
     this.renderer = renderer;
     this.artifactProperties = artifactProperties;
+    this.pomDependencyMapper = pomDependencyMapper;
   }
 
   @Override
@@ -58,7 +65,9 @@ public final class ReadmeAdapter implements ReadmePort {
     BuildOptions bo = bp.getBuildOptions();
     PlatformTarget pt = bp.getPlatformTarget();
     PackageName pn = bp.getPackageName();
-    Dependencies deps = bp.getDependencies();
+    Dependencies selectedDependencies = bp.getDependencies();
+
+    List<PomDependency> dependencies = pomDependencyMapper.from(selectedDependencies);
 
     return Map.ofEntries(
         entry(KEY_PROJECT_NAME, bp.getName().value()),
@@ -71,6 +80,6 @@ public final class ReadmeAdapter implements ReadmePort {
         entry(KEY_FRAMEWORK, bo.framework().name()),
         entry(KEY_JAVA_VERSION, pt.java().asString()),
         entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().value()),
-        entry(KEY_DEPENDENCIES, deps.asList()));
+        entry(KEY_DEPENDENCIES, dependencies));
   }
 }

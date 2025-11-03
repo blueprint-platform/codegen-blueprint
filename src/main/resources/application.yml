@@ -7,7 +7,7 @@ codegen:
   profiles:
     springboot-maven-java:
       template-base-path: springboot/maven/java
-      run: [ pom, gitignore, application-yaml, readme ]  # execution order
+      ordered-artifact-keys: [ pom, gitignore, application-yaml, readme ]  # execution order
       artifacts:
         pom:
           template: pom.xml.ftl

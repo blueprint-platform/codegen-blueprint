@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ProjectBlueprintMapper {
 
-  public ProjectBlueprint toDomain(CreateProjectCommand c) {
+  public ProjectBlueprint from(CreateProjectCommand c) {
     ProjectIdentity identity =
         new ProjectIdentity(new GroupId(c.groupId()), new ArtifactId(c.artifactId()));
 
