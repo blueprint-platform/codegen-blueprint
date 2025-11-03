@@ -15,10 +15,11 @@ import io.github.bsayli.codegen.initializr.application.port.out.artifacts.Artifa
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.error.ProfileConfigurationException;
+
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,10 +35,10 @@ public class SpringBootMavenJavaConfig {
   MavenPomAdapter springBootMavenJavaPomAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
-      PomDependencyMapper pomMapper) {
+      PomDependencyMapper pomDependencyMapper) {
     ArtifactProperties props =
         profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.POM);
-    return new MavenPomAdapter(renderer, props, pomMapper);
+    return new MavenPomAdapter(renderer, props, pomDependencyMapper);
   }
 
   @Bean
@@ -66,34 +67,34 @@ public class SpringBootMavenJavaConfig {
     return new ReadmeAdapter(renderer, props, pomDependencyMapper);
   }
 
-  @Bean(name = "springBootMavenJavaArtifactRegistry")
+  @Bean
   Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry(
-      MavenPomAdapter mavenPomAdapter,
-      GitIgnoreAdapter gitIgnoreAdapter,
-      ApplicationYamlAdapter applicationYamlAdapter,
-      ReadmeAdapter readmeAdapter) {
+      MavenPomAdapter springBootMavenJavaPomAdapter,
+      GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
+      ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
+      ReadmeAdapter springBootMavenJavaReadmeAdapter) {
 
     Map<ArtifactKey, ArtifactPort> registry = new EnumMap<>(ArtifactKey.class);
-    registry.put(ArtifactKey.POM, mavenPomAdapter);
-    registry.put(ArtifactKey.GITIGNORE, gitIgnoreAdapter);
-    registry.put(ArtifactKey.APPLICATION_YAML, applicationYamlAdapter);
-    registry.put(ArtifactKey.README, readmeAdapter);
-    return registry;
+    registry.put(ArtifactKey.POM, springBootMavenJavaPomAdapter);
+    registry.put(ArtifactKey.GITIGNORE, springBootMavenJavaGitIgnoreAdapter);
+    registry.put(ArtifactKey.APPLICATION_YAML, springBootMavenJavaApplicationYamlAdapter);
+    registry.put(ArtifactKey.README, springBootMavenJavaReadmeAdapter);
+    return Collections.unmodifiableMap(registry);
   }
 
   @Bean
   ProjectArtifactsPort springBootMavenJavaArtifactsAdapter(
-      CodegenProfilesProperties profiles,
-      @Qualifier("springBootMavenJavaArtifactRegistry") Map<ArtifactKey, ArtifactPort> registry) {
+      CodegenProfilesProperties codegenProfilesProperties,
+      Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry) {
 
-    var profile = profiles.requireProfile(ProfileType.SPRINGBOOT_MAVEN_JAVA);
+    var profile = codegenProfilesProperties.requireProfile(ProfileType.SPRINGBOOT_MAVEN_JAVA);
     var orderedArtifactKeys = profile.orderedArtifactKeys();
 
     List<ArtifactPort> ordered =
         orderedArtifactKeys.stream()
             .map(
                 key -> {
-                  ArtifactPort port = registry.get(key);
+                  ArtifactPort port = springBootMavenJavaArtifactRegistry.get(key);
                   if (port == null) {
                     throw new ProfileConfigurationException(
                         "bootstrap.artifact.not.found",
