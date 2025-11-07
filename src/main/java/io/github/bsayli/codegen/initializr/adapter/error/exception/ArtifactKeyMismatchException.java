@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
-import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
 
 @SuppressWarnings("java:S110")
 public final class ArtifactKeyMismatchException extends AdapterException {

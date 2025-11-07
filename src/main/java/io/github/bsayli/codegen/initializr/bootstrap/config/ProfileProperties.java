@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.bootstrap.config;
 
-import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -10,7 +10,7 @@ import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRoo
 import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectWriterPort;
 import java.nio.file.Path;
 
-public class CreateProjectService implements CreateProjectUseCase {
+public class CreateProjectHandler implements CreateProjectUseCase {
 
   private final ProjectBlueprintMapper mapper;
   private final ProjectRootPort rootPort;
@@ -18,7 +18,7 @@ public class CreateProjectService implements CreateProjectUseCase {
   private final ProjectWriterPort writerPort;
   private final ProjectArchiverPort archiverPort;
 
-  public CreateProjectService(
+  public CreateProjectHandler(
       ProjectBlueprintMapper mapper,
       ProjectRootPort rootPort,
       ProjectArtifactsSelector artifactsSelector,
@@ -32,7 +32,7 @@ public class CreateProjectService implements CreateProjectUseCase {
   }
 
   @Override
-  public CreateProjectResult execute(CreateProjectCommand command) {
+  public CreateProjectResult handle(CreateProjectCommand command) {
     ProjectBlueprint bp = mapper.from(command);
 
     Path projectRoot =

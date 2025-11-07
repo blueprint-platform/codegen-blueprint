@@ -1,21 +1,22 @@
 package io.github.bsayli.codegen.initializr.bootstrap.wiring;
 
-import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
 import io.github.bsayli.codegen.initializr.adapter.error.exception.ArtifactKeyMismatchException;
 import io.github.bsayli.codegen.initializr.adapter.out.SpringBootMavenJavaArtifactsAdapter;
+import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.build.MavenPomAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.config.ApplicationYamlAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.docs.ReadmeAdapter;
-import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.PomDependencyMapper;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.source.SourceScaffolderAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.vcs.GitIgnoreAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
 import io.github.bsayli.codegen.initializr.bootstrap.error.ProfileConfigurationException;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -27,8 +28,13 @@ import org.springframework.context.annotation.Configuration;
 public class SpringBootMavenJavaConfig {
 
   @Bean
-  PomDependencyMapper pomDependencyMapper() {
-    return new PomDependencyMapper();
+  SourceScaffolderAdapter springBootMavenJavaSourceScaffolderAdapter(
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      StringCaseFormatter stringCaseFormatter) {
+    ArtifactProperties props =
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.SOURCE_SCAFFOLDER);
+    return new SourceScaffolderAdapter(renderer, props, stringCaseFormatter);
   }
 
   @Bean
@@ -72,12 +78,14 @@ public class SpringBootMavenJavaConfig {
       MavenPomAdapter springBootMavenJavaPomAdapter,
       GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
       ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
+      SourceScaffolderAdapter springBootMavenJavaSourceScaffolderAdapter,
       ReadmeAdapter springBootMavenJavaReadmeAdapter) {
 
     Map<ArtifactKey, ArtifactPort> registry = new EnumMap<>(ArtifactKey.class);
     registry.put(ArtifactKey.POM, springBootMavenJavaPomAdapter);
     registry.put(ArtifactKey.GITIGNORE, springBootMavenJavaGitIgnoreAdapter);
     registry.put(ArtifactKey.APPLICATION_YAML, springBootMavenJavaApplicationYamlAdapter);
+    registry.put(ArtifactKey.SOURCE_SCAFFOLDER, springBootMavenJavaSourceScaffolderAdapter);
     registry.put(ArtifactKey.README, springBootMavenJavaReadmeAdapter);
     return Collections.unmodifiableMap(registry);
   }

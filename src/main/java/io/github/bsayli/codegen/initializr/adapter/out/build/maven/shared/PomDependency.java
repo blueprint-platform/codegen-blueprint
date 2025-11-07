@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared;
+package io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared;
 
 public final class PomDependency {
   private final String groupId;

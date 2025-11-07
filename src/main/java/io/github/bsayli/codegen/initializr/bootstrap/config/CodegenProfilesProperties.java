@@ -1,7 +1,7 @@
 package io.github.bsayli.codegen.initializr.bootstrap.config;
 
-import io.github.bsayli.codegen.initializr.adapter.artifact.ArtifactKey;
 import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
 import io.github.bsayli.codegen.initializr.bootstrap.error.ProfileConfigurationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

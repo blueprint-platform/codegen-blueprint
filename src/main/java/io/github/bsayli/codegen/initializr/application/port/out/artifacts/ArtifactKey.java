@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.adapter.artifact;
+package io.github.bsayli.codegen.initializr.application.port.out.artifacts;
 
 import io.github.bsayli.codegen.initializr.adapter.error.exception.UnknownArtifactKeyException;
 import java.util.Arrays;
@@ -7,7 +7,8 @@ public enum ArtifactKey {
   POM("pom"),
   GITIGNORE("gitignore"),
   APPLICATION_YAML("application-yaml"),
-  README("readme");
+  README("readme"),
+  SOURCE_SCAFFOLDER("source-scaffolder");
 
   private final String key;
 
