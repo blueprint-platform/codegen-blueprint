@@ -7,23 +7,47 @@ codegen:
   profiles:
     springboot-maven-java:
       template-base-path: springboot/maven/java
-      ordered-artifact-keys: [ pom, gitignore, application-yaml, source-scaffolder, readme ]  # execution order
+
+      ordered-artifact-keys:
+        - pom
+        - gitignore
+        - application-yaml
+        - source-scaffolder
+        - test-scaffolder
+        - readme
+
       artifacts:
+
         pom:
-          template: pom.xml.ftl
-          output-path: pom.xml
+          templates:
+            - template: pom.xml.ftl
+              output-path: pom.xml
+
         gitignore:
-          template: .gitignore.ftl
-          output-path: .gitignore
+          templates:
+            - template: .gitignore.ftl
+              output-path: .gitignore
+
         application-yaml:
-          template: application.yml.ftl
-          output-path: src/main/resources/application.yml
+          templates:
+            - template: application.yml.ftl
+              output-path: src/main/resources/application.yml
+
         source-scaffolder:
-          template: MainClass.java.ftl
-          output-path: src/main/java
+          templates:
+            - template: MainClass.java.ftl
+              output-path: src/main/java
+
+        test-scaffolder:
+          templates:
+            - template: MainClassTests.java.ftl
+              output-path: src/test/java
+
         readme:
-          template: README.md.ftl
-          output-path: README.md
+          templates:
+            - template: README.md.ftl
+              output-path: README.md
+
 
 templating:
   encoding: UTF-8

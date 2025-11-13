@@ -13,30 +13,28 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "codegen")
 public record CodegenProfilesProperties(@Valid @NotNull Map<String, ProfileProperties> profiles) {
 
-  public ArtifactProperties artifact(ProfileType profile, ArtifactKey artifactKey) {
-    var p = requireProfile(profile);
-    var raw = requireArtifact(profile, p, artifactKey);
-    String fullTemplate = p.templateBasePath() + "/" + raw.template();
-    return new ArtifactProperties(fullTemplate, raw.outputPath());
+  public ArtifactDefinition artifact(ProfileType profile, ArtifactKey artifactKey) {
+    var profileProps = requireProfile(profile);
+    return requireArtifact(profile, profileProps, artifactKey);
   }
 
   public ProfileProperties requireProfile(ProfileType profile) {
     var key = profile.key();
-    var p = profiles.get(key);
-    if (p == null) {
+    var profileProps = profiles.get(key);
+    if (profileProps == null) {
       throw new ProfileConfigurationException(
           ProfileConfigurationException.KEY_PROFILE_NOT_FOUND, key);
     }
-    return p;
+    return profileProps;
   }
 
-  ArtifactProperties requireArtifact(
-      ProfileType profile, ProfileProperties p, ArtifactKey artifactKey) {
-    var a = p.artifacts().get(artifactKey.key());
-    if (a == null) {
+  ArtifactDefinition requireArtifact(
+      ProfileType profile, ProfileProperties profileProps, ArtifactKey artifactKey) {
+    var artifact = profileProps.artifacts().get(artifactKey.key());
+    if (artifact == null) {
       throw new ProfileConfigurationException(
           ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey.key(), profile.key());
     }
-    return a;
+    return artifact;
   }
 }

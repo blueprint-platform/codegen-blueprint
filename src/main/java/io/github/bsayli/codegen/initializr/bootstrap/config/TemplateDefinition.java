@@ -2,4 +2,4 @@ package io.github.bsayli.codegen.initializr.bootstrap.config;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record ArtifactProperties(@NotBlank String template, @NotBlank String outputPath) {}
+public record TemplateDefinition(@NotBlank String template, @NotBlank String outputPath) {}

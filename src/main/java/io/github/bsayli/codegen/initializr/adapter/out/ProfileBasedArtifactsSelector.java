@@ -8,7 +8,7 @@ import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifacts
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import java.util.Map;
 
-public final class ProfileBasedArtifactsSelector implements ProjectArtifactsSelector {
+public class ProfileBasedArtifactsSelector implements ProjectArtifactsSelector {
 
   private final Map<ProfileType, ProjectArtifactsPort> registry;
 

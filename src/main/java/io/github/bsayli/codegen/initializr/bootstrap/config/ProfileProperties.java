@@ -10,4 +10,4 @@ import java.util.Map;
 public record ProfileProperties(
     @NotBlank String templateBasePath,
     @Valid @NotNull List<ArtifactKey> orderedArtifactKeys,
-    @Valid @NotNull Map<String, ArtifactProperties> artifacts) {}
+    @Valid @NotNull Map<String, ArtifactDefinition> artifacts) {}

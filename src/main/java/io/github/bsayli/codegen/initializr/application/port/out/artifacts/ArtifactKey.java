@@ -7,8 +7,9 @@ public enum ArtifactKey {
   POM("pom"),
   GITIGNORE("gitignore"),
   APPLICATION_YAML("application-yaml"),
-  README("readme"),
-  SOURCE_SCAFFOLDER("source-scaffolder");
+  SOURCE_SCAFFOLDER("source-scaffolder"),
+  TEST_SCAFFOLDER("test-scaffolder"),
+  README("readme");
 
   private final String key;
 

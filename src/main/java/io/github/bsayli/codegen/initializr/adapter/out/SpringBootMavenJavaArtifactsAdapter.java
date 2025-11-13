@@ -7,7 +7,7 @@ import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFil
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-public final class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifactsPort {
+public class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifactsPort {
 
   private final List<ArtifactPort> artifacts;
 

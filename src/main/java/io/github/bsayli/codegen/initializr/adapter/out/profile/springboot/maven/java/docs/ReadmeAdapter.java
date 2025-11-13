@@ -2,24 +2,24 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 
 import static java.util.Map.entry;
 
+import io.github.bsayli.codegen.initializr.adapter.out.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependency;
 import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ReadmePort;
-import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
+import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
-import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public final class ReadmeAdapter implements ReadmePort {
+public final class ReadmeAdapter extends AbstractSingleTemplateArtifactAdapter
+    implements ReadmePort {
 
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
@@ -33,26 +33,14 @@ public final class ReadmeAdapter implements ReadmePort {
   private static final String KEY_SPRING_BOOT_VERSION = "springBootVersion";
   private static final String KEY_DEPENDENCIES = "dependencies";
 
-  private final TemplateRenderer renderer;
-  private final ArtifactProperties artifactProperties;
   private final PomDependencyMapper pomDependencyMapper;
 
   public ReadmeAdapter(
       TemplateRenderer renderer,
-      ArtifactProperties artifactProperties,
+      ArtifactDefinition artifactDefinition,
       PomDependencyMapper pomDependencyMapper) {
-    this.renderer = renderer;
-    this.artifactProperties = artifactProperties;
+    super(renderer, artifactDefinition);
     this.pomDependencyMapper = pomDependencyMapper;
-  }
-
-  @Override
-  public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
-    Path outPath = Path.of(artifactProperties.outputPath());
-    String template = artifactProperties.template();
-    Map<String, Object> model = buildModel(blueprint);
-    GeneratedFile generatedFile = renderer.renderUtf8(outPath, template, model);
-    return List.of(generatedFile);
   }
 
   @Override
@@ -60,7 +48,8 @@ public final class ReadmeAdapter implements ReadmePort {
     return ArtifactKey.README;
   }
 
-  private Map<String, Object> buildModel(ProjectBlueprint bp) {
+  @Override
+  protected Map<String, Object> buildModel(ProjectBlueprint bp) {
     ProjectIdentity id = bp.getIdentity();
     BuildOptions bo = bp.getBuildOptions();
     PlatformTarget pt = bp.getPlatformTarget();
