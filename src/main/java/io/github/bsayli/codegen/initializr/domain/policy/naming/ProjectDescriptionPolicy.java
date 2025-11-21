@@ -26,8 +26,10 @@ public final class ProjectDescriptionPolicy {
   }
 
   private static String normalize(String raw) {
-    if (raw == null) return "";
-    return raw.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+    if (raw == null) {
+      return "";
+    }
+    return raw.trim().replaceAll("\\s+", " ");
   }
 
   private static void validate(String value) {

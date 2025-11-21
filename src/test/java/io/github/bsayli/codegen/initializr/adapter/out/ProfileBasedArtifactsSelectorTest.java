@@ -1,0 +1,63 @@
+package io.github.bsayli.codegen.initializr.adapter.out;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
+import io.github.bsayli.codegen.initializr.adapter.error.exception.ArtifactsPortNotFoundException;
+import io.github.bsayli.codegen.initializr.adapter.error.exception.UnsupportedProfileTypeException;
+import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+@Tag("unit")
+@DisplayName("Unit Test: ProfileBasedArtifactsSelector")
+class ProfileBasedArtifactsSelectorTest {
+
+  @Test
+  @DisplayName("Should throw UnsupportedProfileTypeException when ProfileType.from() returns null")
+  void shouldThrowWhenProfileUnsupported() {
+    BuildOptions options = mock(BuildOptions.class);
+
+    assertThatThrownBy(() -> new ProfileBasedArtifactsSelector(Map.of()).select(options))
+        .isInstanceOf(UnsupportedProfileTypeException.class);
+  }
+
+  @Test
+  @DisplayName("Should throw ArtifactsPortNotFoundException when no port registered for type")
+  void shouldThrowWhenPortMissing() {
+    BuildOptions opts = new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+
+    ProfileType type = ProfileType.from(opts);
+    assertThat(type).isNotNull();
+
+    ProfileBasedArtifactsSelector selector =
+        new ProfileBasedArtifactsSelector(Map.of()); // empty registry
+
+    assertThatThrownBy(() -> selector.select(opts))
+        .isInstanceOf(ArtifactsPortNotFoundException.class);
+  }
+
+  @Test
+  @DisplayName("Should return registered ProjectArtifactsPort for matching profile")
+  void shouldReturnMatchingPort() {
+    BuildOptions opts = new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+
+    ProfileType type = ProfileType.from(opts);
+
+    ProjectArtifactsPort port = mock(ProjectArtifactsPort.class);
+
+    ProfileBasedArtifactsSelector selector = new ProfileBasedArtifactsSelector(Map.of(type, port));
+
+    ProjectArtifactsPort result = selector.select(opts);
+
+    assertThat(result).isSameAs(port);
+  }
+}

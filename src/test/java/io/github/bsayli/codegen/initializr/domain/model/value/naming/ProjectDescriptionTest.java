@@ -16,9 +16,9 @@ class ProjectDescriptionTest {
   @Test
   @DisplayName("valid description should be normalized and accepted")
   void validDescription_shouldNormalizeAndAccept() {
-    ProjectDescription desc = new ProjectDescription("  This  is   A  Test  ");
+    ProjectDescription desc = new ProjectDescription("  This  is  a  test  ");
 
-    assertThat(desc.value()).isEqualTo("this is a test");
+    assertThat(desc.value()).isEqualTo("This is a test");
     assertThat(desc.isEmpty()).isFalse();
   }
 
