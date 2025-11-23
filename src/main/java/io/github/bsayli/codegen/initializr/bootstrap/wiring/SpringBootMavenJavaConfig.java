@@ -1,8 +1,9 @@
 package io.github.bsayli.codegen.initializr.bootstrap.wiring;
 
 import io.github.bsayli.codegen.initializr.adapter.error.exception.ArtifactKeyMismatchException;
-import io.github.bsayli.codegen.initializr.adapter.out.SpringBootMavenJavaArtifactsAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.SpringBootMavenJavaArtifactsAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.build.MavenPomAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.config.ApplicationYamlAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.docs.ReadmeAdapter;
@@ -11,14 +12,13 @@ import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.vcs.GitIgnoreAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
-import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
-import io.github.bsayli.codegen.initializr.bootstrap.error.ProfileConfigurationException;
+import io.github.bsayli.codegen.initializr.bootstrap.error.exception.ProfileConfigurationException;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;

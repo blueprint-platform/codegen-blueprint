@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
-import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.ProfileType;
 
 @SuppressWarnings("java:S110")
 public final class ArtifactsPortNotFoundException extends AdapterException {

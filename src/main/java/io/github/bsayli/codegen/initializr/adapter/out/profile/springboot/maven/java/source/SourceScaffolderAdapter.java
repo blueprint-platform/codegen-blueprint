@@ -3,8 +3,8 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.AbstractJavaClassScaffolderAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.SourceScaffolderPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.SourceScaffolderPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;

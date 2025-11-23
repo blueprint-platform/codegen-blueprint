@@ -1,7 +1,7 @@
 package io.github.bsayli.codegen.initializr.bootstrap.wiring;
 
-import io.github.bsayli.codegen.initializr.adapter.out.ProfileBasedArtifactsSelector;
-import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.ProfileBasedArtifactsSelector;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsSelector;
 import java.util.Collections;

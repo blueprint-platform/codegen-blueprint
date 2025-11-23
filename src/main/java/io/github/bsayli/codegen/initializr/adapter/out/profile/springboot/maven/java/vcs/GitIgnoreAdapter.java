@@ -1,9 +1,9 @@
 package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.vcs;
 
-import io.github.bsayli.codegen.initializr.adapter.out.artifact.AbstractSingleTemplateArtifactAdapter;
+import io.github.bsayli.codegen.initializr.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.GitIgnorePort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.GitIgnorePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import java.util.List;

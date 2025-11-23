@@ -2,7 +2,7 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.bootstrap.config.TemplateDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;

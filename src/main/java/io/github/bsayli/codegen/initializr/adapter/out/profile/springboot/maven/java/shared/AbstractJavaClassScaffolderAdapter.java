@@ -4,7 +4,7 @@ import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.bootstrap.config.TemplateDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;

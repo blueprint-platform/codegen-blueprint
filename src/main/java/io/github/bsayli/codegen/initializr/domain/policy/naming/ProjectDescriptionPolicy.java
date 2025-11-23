@@ -7,7 +7,6 @@ import io.github.bsayli.codegen.initializr.domain.policy.rule.LengthBetweenRule;
 import io.github.bsayli.codegen.initializr.domain.policy.rule.RegexMatchRule;
 import io.github.bsayli.codegen.initializr.domain.policy.rule.base.CompositeRule;
 import io.github.bsayli.codegen.initializr.domain.policy.rule.base.Rule;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 public final class ProjectDescriptionPolicy {

@@ -2,10 +2,10 @@ package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven
 
 import static java.util.Map.entry;
 
-import io.github.bsayli.codegen.initializr.adapter.out.artifact.AbstractSingleTemplateArtifactAdapter;
+import io.github.bsayli.codegen.initializr.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ConfigFilesPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ConfigFilesPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import java.util.Map;

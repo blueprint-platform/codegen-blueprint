@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
 
 @SuppressWarnings("java:S110")
 public final class GeneratorFactoryNotFoundException extends AdapterException {

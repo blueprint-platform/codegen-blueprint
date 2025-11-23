@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
-import io.github.bsayli.codegen.initializr.bootstrap.error.InfrastructureException;
+import io.github.bsayli.codegen.initializr.bootstrap.error.exception.InfrastructureException;
 
 public abstract class AdapterException extends InfrastructureException {
   protected AdapterException(String messageKey, Object... args) {

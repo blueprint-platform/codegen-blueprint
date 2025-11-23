@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.adapter.error.exception;
 
-import io.github.bsayli.codegen.initializr.bootstrap.error.InfrastructureException;
+import io.github.bsayli.codegen.initializr.bootstrap.error.exception.InfrastructureException;
 
 @SuppressWarnings("java:S110")
 public final class UnknownArtifactKeyException extends InfrastructureException {

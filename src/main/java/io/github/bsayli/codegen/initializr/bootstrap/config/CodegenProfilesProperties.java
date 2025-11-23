@@ -1,8 +1,8 @@
 package io.github.bsayli.codegen.initializr.bootstrap.config;
 
-import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
-import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
-import io.github.bsayli.codegen.initializr.bootstrap.error.ProfileConfigurationException;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.ProfileType;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
+import io.github.bsayli.codegen.initializr.bootstrap.error.exception.ProfileConfigurationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.Map;
