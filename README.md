@@ -105,6 +105,10 @@ By separating *domain*, *application*, *ports*, and *adapters*, the engine can e
 
 …with no changes to core logic.
 
+Each generation profile ships with its own outbound adapters and its own template set  
+(e.g. `adapter.out.profile.springboot.maven.java` + `templates/springboot/maven/java/**`).  
+The core engine never depends on any specific framework, build tool, or language.
+
 ---
 
 ## 🧩 Current Architecture (Hexagonal)
