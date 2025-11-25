@@ -18,6 +18,18 @@ required.
 
 ---
 
+## 🔄 Active Development Notice
+
+This repository is currently undergoing a full **hexagonal architecture refactor**.
+
+For the most up-to-date implementation, tests, templates, and documentation, please follow the active development branch:
+
+👉 **https://github.com/bsayli/codegen-blueprint/tree/refactor/hexagonal-architecture**
+
+The `main` branch reflects the previous stable version and will be updated once the refactor reaches **1.0.0-RC**.
+
+---
+
 ## 🚀 Problem Statement
 
 Bootstrapping a new Spring Boot project often involves:
