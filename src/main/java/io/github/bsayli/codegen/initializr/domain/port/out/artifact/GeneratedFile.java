@@ -17,6 +17,7 @@ public sealed interface GeneratedFile permits GeneratedFile.Text, GeneratedFile.
     }
   }
 
+  @SuppressWarnings("java:S2384") // Representation exposure false-positive; defensive copy applied
   record Binary(Path relativePath, byte[] bytes) implements GeneratedFile {
 
     public Binary(Path relativePath, byte[] bytes) {
