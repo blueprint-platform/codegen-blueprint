@@ -1,6 +1,6 @@
 package io.github.bsayli.codegen.initializr.application.port.out.artifact;
 
-import io.github.bsayli.codegen.initializr.adapter.error.exception.UnknownArtifactKeyException;
+import io.github.bsayli.codegen.initializr.application.error.exception.UnknownArtifactKeyException;
 import java.util.Arrays;
 
 public enum ArtifactKey {
