@@ -29,7 +29,7 @@ codegen:
 
         gitignore:
           templates:
-            - template: .gitignore.ftl
+            - template: gitignore.ftl
               output-path: .gitignore
 
         application-yaml:

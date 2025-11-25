@@ -65,9 +65,8 @@ src
 
 ## Dependencies (selected)
 
-<#if dependencies?? && dependencies?size > 0>
+<#if dependencies?has_content>
     <#list dependencies as d>
-
         * ${d.groupId}:${d.artifactId}<#if d.version?? && d.version?has_content>:${d.version}</#if><#if d.scope?? && d.scope?has_content> (${d.scope})</#if>
     </#list>
 <#else>
