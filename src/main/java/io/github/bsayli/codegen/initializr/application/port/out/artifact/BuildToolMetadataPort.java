@@ -1,3 +1,3 @@
 package io.github.bsayli.codegen.initializr.application.port.out.artifact;
 
-public interface MavenPomPort extends ArtifactPort {}
+public interface BuildToolMetadataPort extends ArtifactPort {}

@@ -7,7 +7,7 @@ import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDep
 import io.github.bsayli.codegen.initializr.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifact.MavenPomPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.BuildConfigPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MavenPomAdapter extends AbstractSingleTemplateArtifactAdapter implements MavenPomPort {
+public class MavenPomAdapter extends AbstractSingleTemplateArtifactAdapter implements BuildConfigPort {
 
   private static final String KEY_GROUP_ID = "groupId";
   private static final String KEY_ARTIFACT_ID = "artifactId";

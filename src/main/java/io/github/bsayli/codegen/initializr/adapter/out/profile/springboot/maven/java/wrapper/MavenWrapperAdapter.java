@@ -5,13 +5,13 @@ import static java.util.Map.entry;
 import io.github.bsayli.codegen.initializr.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifact.MavenWrapperPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.BuildToolMetadataPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import java.util.Map;
 
 public class MavenWrapperAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements MavenWrapperPort {
+    implements BuildToolMetadataPort {
 
   private static final String KEY_WRAPPER_VERSION = "wrapperVersion";
   private static final String KEY_MAVEN_VERSION = "mavenVersion";
