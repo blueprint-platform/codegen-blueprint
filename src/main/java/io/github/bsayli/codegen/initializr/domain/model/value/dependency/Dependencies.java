@@ -15,7 +15,7 @@ public final class Dependencies {
   }
 
   public List<Dependency> asList() {
-    return items;
+    return List.copyOf(items);
   }
 
   public boolean isEmpty() {

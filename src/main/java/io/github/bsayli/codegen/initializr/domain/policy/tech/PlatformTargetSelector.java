@@ -17,8 +17,7 @@ public final class PlatformTargetSelector {
     return requested;
   }
 
-  @SuppressWarnings("unused")
-  public static List<PlatformTarget> supportedTargetsFor(BuildOptions options) {
+  public static List<PlatformTarget> supportedTargetsFor() {
     return CompatibilityPolicy.allSupportedTargets();
   }
 }

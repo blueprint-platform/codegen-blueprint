@@ -31,8 +31,12 @@ public sealed interface GeneratedFile permits GeneratedFile.Text, GeneratedFile.
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Binary(Path path, byte[] bytes1))) return false;
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Binary(Path path, byte[] bytes1))) {
+        return false;
+      }
       return relativePath.equals(path) && Arrays.equals(bytes, bytes1);
     }
 

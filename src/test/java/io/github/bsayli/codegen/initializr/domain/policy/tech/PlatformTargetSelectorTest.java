@@ -54,9 +54,8 @@ class PlatformTargetSelectorTest {
   @Test
   @DisplayName("supportedTargetsFor should return all supported targets from CompatibilityPolicy")
   void supportedTargetsFor_shouldReturnAllSupportedTargets() {
-    BuildOptions options = buildOptions();
 
-    List<PlatformTarget> targets = PlatformTargetSelector.supportedTargetsFor(options);
+    List<PlatformTarget> targets = PlatformTargetSelector.supportedTargetsFor();
 
     assertThat(targets)
         .isNotEmpty()
