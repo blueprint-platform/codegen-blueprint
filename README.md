@@ -1,10 +1,13 @@
-# Codegen Spring Boot Initializr
+# Codegen Spring Boot Initializr — Hexagonal, Templated, Zero-Boilerplate Project Generator
 
-![Build](https://github.com/bsayli/spring-boot-openapi-generics-clients/actions/workflows/build.yml/badge.svg)
-![Java](https://img.shields.io/badge/Java-21-red)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-green)
-![Maven](https://img.shields.io/badge/Maven-3.9-blue)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Build](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/build.yml/badge.svg)](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/bsayli/codegen-springboot-initializr?logo=github&label=release)](https://github.com/bsayli/codegen-springboot-initializr/releases/latest)
+[![CodeQL](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/codeql.yml/badge.svg)](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/bsayli/codegen-springboot-initializr/branch/main/graph/badge.svg)](https://codecov.io/gh/bsayli/codegen-springboot-initializr)
+[![Java](https://img.shields.io/badge/Java-21-red?logo=openjdk)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <p align="center">
   <img src="docs/images/social-preview.png" alt="Social preview" width="720"/>
