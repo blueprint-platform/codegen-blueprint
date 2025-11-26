@@ -107,6 +107,10 @@ The core never needs to change — profiles live entirely in adapters + template
 
 ## 🧩 Current Architecture (Hexagonal)
 
+📘 Want to explore how Hexagonal Architecture is implemented here?
+
+See: [How to Explore This Project (Hexagonal Guide)](docs/how-to-explore-hexagonal-architecture.md)
+
 The system follows pure **ports & adapters** design.
 
 ### Domain
