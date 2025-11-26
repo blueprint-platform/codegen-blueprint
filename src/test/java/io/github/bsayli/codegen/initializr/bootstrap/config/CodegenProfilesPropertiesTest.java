@@ -14,11 +14,10 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("bootstrap")
-@DisplayName("Unit Test: CodegenProfilesProperties")
 class CodegenProfilesPropertiesTest {
 
   private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
-  private static final ArtifactKey ARTIFACT_KEY = ArtifactKey.POM;
+  private static final ArtifactKey ARTIFACT_KEY = ArtifactKey.BUILD_CONFIG;
   private static final String PROFILE_KEY = PROFILE.key();
   private static final String ARTIFACT_MAP_KEY = ARTIFACT_KEY.key();
   private static final String TEMPLATE_BASE_PATH = "springboot/maven/java/";

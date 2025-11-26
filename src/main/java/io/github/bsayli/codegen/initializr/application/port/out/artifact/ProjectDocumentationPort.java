@@ -1,3 +1,3 @@
 package io.github.bsayli.codegen.initializr.application.port.out.artifact;
 
-public interface GitIgnorePort extends ArtifactPort {}
+public interface ProjectDocumentationPort extends ArtifactPort {}

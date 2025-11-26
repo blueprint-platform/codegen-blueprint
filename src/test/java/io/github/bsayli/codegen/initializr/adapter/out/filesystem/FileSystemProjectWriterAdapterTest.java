@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: FileSystemProjectWriterAdapter")
 class FileSystemProjectWriterAdapterTest {
 
   private final ProjectWriterPort writer = new FileSystemProjectWriterAdapter();

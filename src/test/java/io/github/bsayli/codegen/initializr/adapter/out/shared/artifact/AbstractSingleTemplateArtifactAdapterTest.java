@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: AbstractSingleTemplateArtifactAdapter")
 class AbstractSingleTemplateArtifactAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";

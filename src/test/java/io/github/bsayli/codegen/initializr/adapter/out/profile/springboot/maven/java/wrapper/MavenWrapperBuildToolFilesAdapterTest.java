@@ -19,16 +19,15 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: MavenWrapperAdapter")
-class MavenWrapperAdapterTest {
+class MavenWrapperBuildToolFilesAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
 
   @Test
-  @DisplayName("artifactKey() should return MAVEN_WRAPPER")
-  void artifactKey_shouldReturnMavenWrapper() {
-    MavenWrapperAdapter adapter =
-        new MavenWrapperAdapter(
+  @DisplayName("artifactKey() should return BUILD_TOOL_METADATA")
+  void artifactKey_shouldReturnBuildToolMetadata() {
+    MavenWrapperBuildToolFilesAdapter adapter =
+        new MavenWrapperBuildToolFilesAdapter(
             new NoopTemplateRenderer(),
             new ArtifactDefinition(
                 BASE_PATH,
@@ -36,7 +35,7 @@ class MavenWrapperAdapterTest {
                     new TemplateDefinition(
                         "maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties"))));
 
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.MAVEN_WRAPPER);
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_TOOL_METADATA);
   }
 
   @Test
@@ -49,7 +48,8 @@ class MavenWrapperAdapterTest {
     ArtifactDefinition artifactDefinition =
         new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
-    MavenWrapperAdapter adapter = new MavenWrapperAdapter(renderer, artifactDefinition);
+    MavenWrapperBuildToolFilesAdapter adapter =
+        new MavenWrapperBuildToolFilesAdapter(renderer, artifactDefinition);
 
     ProjectBlueprint blueprint = new ProjectBlueprint(null, null, null, null, null, null, null);
 

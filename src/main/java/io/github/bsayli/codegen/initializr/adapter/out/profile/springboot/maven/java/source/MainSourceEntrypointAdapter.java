@@ -1,20 +1,20 @@
 package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.source;
 
-import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.AbstractJavaClassScaffolderAdapter;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.shared.AbstractJavaSourceFileAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
 import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifact.SourceScaffolderPort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.MainSourceEntrypointPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 
-public class SourceScaffolderAdapter extends AbstractJavaClassScaffolderAdapter
-    implements SourceScaffolderPort {
+public class MainSourceEntrypointAdapter extends AbstractJavaSourceFileAdapter
+    implements MainSourceEntrypointPort {
 
   public static final String POSTFIX_APPLICATION = "Application";
 
-  public SourceScaffolderAdapter(
+  public MainSourceEntrypointAdapter(
       TemplateRenderer renderer,
       ArtifactDefinition artifactDefinition,
       StringCaseFormatter stringCaseFormatter) {
@@ -23,7 +23,7 @@ public class SourceScaffolderAdapter extends AbstractJavaClassScaffolderAdapter
 
   @Override
   public ArtifactKey artifactKey() {
-    return ArtifactKey.SOURCE_SCAFFOLDER;
+    return ArtifactKey.MAIN_SOURCE_ENTRY_POINT;
   }
 
   @Override

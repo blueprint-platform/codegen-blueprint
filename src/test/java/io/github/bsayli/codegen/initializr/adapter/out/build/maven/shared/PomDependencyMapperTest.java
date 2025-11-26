@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: PomDependencyMapper")
 class PomDependencyMapperTest {
 
   private final PomDependencyMapper mapper = new PomDependencyMapper();

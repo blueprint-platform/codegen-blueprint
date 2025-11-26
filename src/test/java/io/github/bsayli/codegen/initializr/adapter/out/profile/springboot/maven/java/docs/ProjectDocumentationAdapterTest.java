@@ -1,8 +1,9 @@
-package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.build;
+package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.docs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependency;
+import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.bootstrap.config.TemplateDefinition;
@@ -39,8 +40,7 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: MavenPomAdapter")
-class MavenPomAdapterTest {
+class ProjectDocumentationAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
 
@@ -70,37 +70,40 @@ class MavenPomAdapterTest {
   }
 
   @Test
-  @DisplayName("artifactKey() should return POM")
-  void artifactKey_shouldReturnPom() {
-    MavenPomAdapter adapter =
-        new MavenPomAdapter(
+  @DisplayName("artifactKey() should return PROJECT_DOCUMENTATION")
+  void artifactKey_shouldReturnProjectDocumentation() {
+    ProjectDocumentationAdapter adapter =
+        new ProjectDocumentationAdapter(
             new NoopTemplateRenderer(),
             new ArtifactDefinition(
-                BASE_PATH, List.of(new TemplateDefinition("pom.ftl", "pom.xml"))),
-            new RecordingPomDependencyMapper(List.of()));
+                BASE_PATH, List.of(new TemplateDefinition("README.ftl", "README.md"))),
+            new PomDependencyMapper());
 
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.POM);
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.PROJECT_DOCUMENTATION);
   }
 
   @Test
-  @DisplayName("buildModel via generate() should populate all POM fields and dependencies")
-  void generate_shouldBuildCorrectModelForPom() {
+  @DisplayName(
+      "generate() should build correct project documentation model and delegate dependencies mapping")
+  void generate_shouldBuildCorrectModelForProjectDocumentation() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
-    RecordingPomDependencyMapper mapper =
-        new RecordingPomDependencyMapper(
-            List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime")));
 
-    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
+    List<PomDependency> mappedDeps =
+        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+    RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mappedDeps);
+
+    TemplateDefinition templateDefinition = new TemplateDefinition("README.ftl", "README.md");
     ArtifactDefinition artifactDefinition =
         new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
-    MavenPomAdapter adapter = new MavenPomAdapter(renderer, artifactDefinition, mapper);
+    ProjectDocumentationAdapter adapter =
+        new ProjectDocumentationAdapter(renderer, artifactDefinition, mapper);
 
     ProjectBlueprint blueprint = blueprintWithDependencies();
 
-    Path relativePath = Path.of("pom.xml");
+    Path relativePath = Path.of("README.md");
     GeneratedFile.Text dummyFile =
-        new GeneratedFile.Text(relativePath, "<project/>", StandardCharsets.UTF_8);
+        new GeneratedFile.Text(relativePath, "# Readme", StandardCharsets.UTF_8);
     renderer.nextFile = dummyFile;
 
     Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
@@ -108,40 +111,33 @@ class MavenPomAdapterTest {
     assertThat(result).singleElement().isSameAs(dummyFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "pom.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "README.ftl");
     assertThat(renderer.capturedModel).isNotNull();
 
     Map<String, Object> model = renderer.capturedModel;
 
     assertThat(model)
+        .containsEntry("projectName", "demo-app")
+        .containsEntry("projectDescription", "Sample Project")
         .containsEntry("groupId", "com.acme")
         .containsEntry("artifactId", "demo-app")
+        .containsEntry("packageName", "com.acme.demo")
+        .containsEntry("buildTool", "MAVEN")
+        .containsEntry("language", "JAVA")
+        .containsEntry("framework", "SPRING_BOOT")
         .containsEntry("javaVersion", "21")
-        .containsEntry("springBootVersion", "3.5.6")
-        .containsEntry("projectName", "demo-app")
-        .containsEntry("projectDescription", "Sample Project");
+        .containsEntry("springBootVersion", "3.5.6");
 
     assertThat(mapper.capturedDependencies).isSameAs(blueprint.getDependencies());
 
     @SuppressWarnings("unchecked")
     List<PomDependency> deps = (List<PomDependency>) model.get("dependencies");
-    assertThat(deps).hasSize(3);
+    assertThat(deps).isSameAs(mappedDeps).hasSize(1);
 
-    PomDependency core = deps.getFirst();
-    assertThat(core.groupId()).isEqualTo("org.springframework.boot");
-    assertThat(core.artifactId()).isEqualTo("spring-boot-starter");
-    assertThat(core.version()).isNull();
-    assertThat(core.scope()).isNull();
-
-    PomDependency mapped = deps.get(1);
-    assertThat(mapped.groupId()).isEqualTo("org.acme");
-    assertThat(mapped.artifactId()).isEqualTo("custom-dep");
-    assertThat(mapped.version()).isEqualTo("1.0.0");
-    assertThat(mapped.scope()).isEqualTo("runtime");
-
-    PomDependency testStarter = deps.get(2);
-    assertThat(testStarter.groupId()).isEqualTo("org.springframework.boot");
-    assertThat(testStarter.artifactId()).isEqualTo("spring-boot-starter-test");
-    assertThat(testStarter.scope()).isEqualTo("test");
+    PomDependency d = deps.getFirst();
+    assertThat(d.groupId()).isEqualTo("org.acme");
+    assertThat(d.artifactId()).isEqualTo("custom-dep");
+    assertThat(d.version()).isEqualTo("1.0.0");
+    assertThat(d.scope()).isEqualTo("runtime");
   }
 }

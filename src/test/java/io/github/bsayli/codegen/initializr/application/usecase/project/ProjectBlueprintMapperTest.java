@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("application")
-@DisplayName("Unit Test: ProjectBlueprintMapper")
 class ProjectBlueprintMapperTest {
 
   private static ProjectBlueprint getProjectBlueprint() {

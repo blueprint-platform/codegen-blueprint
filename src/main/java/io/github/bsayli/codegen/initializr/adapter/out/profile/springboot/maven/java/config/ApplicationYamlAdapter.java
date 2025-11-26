@@ -4,14 +4,14 @@ import static java.util.Map.entry;
 
 import io.github.bsayli.codegen.initializr.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.ApplicationConfigurationPort;
 import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifact.ConfigFilesPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import java.util.Map;
 
 public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements ConfigFilesPort {
+    implements ApplicationConfigurationPort {
 
   private static final String KEY_PROJECT_NAME = "projectName";
 
@@ -21,7 +21,7 @@ public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapte
 
   @Override
   public ArtifactKey artifactKey() {
-    return ArtifactKey.APPLICATION_YAML;
+    return ArtifactKey.APP_CONFIG;
   }
 
   @Override

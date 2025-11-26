@@ -1,3 +1,3 @@
 package io.github.bsayli.codegen.initializr.application.port.out.artifact;
 
-public interface ConfigFilesPort extends ArtifactPort {}
+public interface IgnoreRulesPort extends ArtifactPort {}

@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.vcs;
+package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.ignore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,25 +19,24 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: GitIgnoreAdapter")
 class GitIgnoreAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
 
   @Test
-  @DisplayName("artifactKey() should return GITIGNORE")
-  void artifactKey_shouldReturnGitignore() {
+  @DisplayName("artifactKey() should return IGNORE_RULES")
+  void artifactKey_shouldReturnIgnoreRules() {
     GitIgnoreAdapter adapter =
         new GitIgnoreAdapter(
             new NoopTemplateRenderer(),
             new ArtifactDefinition(
                 BASE_PATH, List.of(new TemplateDefinition("gitignore.ftl", ".gitignore"))));
 
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.GITIGNORE);
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.IGNORE_RULES);
   }
 
   @Test
-  @DisplayName("generate() should render .gitignore with an empty ignoreList model")
+  @DisplayName("generate() should render ignore rules with an empty ignoreList model")
   void generate_shouldRenderGitignoreWithEmptyIgnoreList() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 

@@ -29,7 +29,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 @Tag("unit")
 @Tag("application")
-@DisplayName("Unit Test: CreateProjectHandler")
 class CreateProjectHandlerTest {
 
   @TempDir Path tempDir;

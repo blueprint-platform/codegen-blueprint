@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Unit Test: GroupId")
 class GroupIdTest {
 
   @Test

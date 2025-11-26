@@ -18,7 +18,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: FileSystemProjectRootAdapter")
 class FileSystemProjectRootAdapterTest {
 
   private final FileSystemProjectRootAdapter adapter = new FileSystemProjectRootAdapter();
@@ -31,7 +30,7 @@ class FileSystemProjectRootAdapterTest {
         adapter.prepareRoot(tempDir, "demo-app", ProjectRootExistencePolicy.FAIL_IF_EXISTS);
 
     assertThat(result).exists().isDirectory();
-    assertThat(result.getFileName().toString()).isEqualTo("demo-app");
+    assertThat(result.getFileName().toString()).hasToString("demo-app");
   }
 
   @Test

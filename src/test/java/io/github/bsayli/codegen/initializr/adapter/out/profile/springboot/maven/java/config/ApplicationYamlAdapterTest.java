@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: ApplicationYamlAdapter")
 class ApplicationYamlAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
@@ -35,7 +34,7 @@ class ApplicationYamlAdapterTest {
                 BASE_PATH,
                 List.of(new TemplateDefinition("application-yaml.ftl", "application.yml"))));
 
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.APPLICATION_YAML);
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.APP_CONFIG);
   }
 
   @Test

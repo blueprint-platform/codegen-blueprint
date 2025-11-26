@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Unit Test: Dependency")
 class DependencyTest {
 
   private static DependencyCoordinates coords(String groupId, String artifactId) {

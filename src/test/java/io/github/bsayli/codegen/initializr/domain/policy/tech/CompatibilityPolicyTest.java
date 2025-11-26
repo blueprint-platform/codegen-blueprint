@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Unit Test: CompatibilityPolicy")
 class CompatibilityPolicyTest {
 
   private static BuildOptions buildOptions() {

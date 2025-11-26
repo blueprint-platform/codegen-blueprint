@@ -20,7 +20,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: FileSystemProjectArchiverAdapter")
 class FileSystemProjectArchiverAdapterTest {
 
   private final ProjectArchiverPort archiver = new FileSystemProjectArchiverAdapter();

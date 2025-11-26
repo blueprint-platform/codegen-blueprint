@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Unit Test: PlatformTargetSelector")
 class PlatformTargetSelectorTest {
 
   private static BuildOptions buildOptions() {

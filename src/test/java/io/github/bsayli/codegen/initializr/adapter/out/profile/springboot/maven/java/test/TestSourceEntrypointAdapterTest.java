@@ -26,8 +26,7 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: TestScaffolderAdapter")
-class TestScaffolderAdapterTest {
+class TestSourceEntrypointAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
 
@@ -43,16 +42,16 @@ class TestScaffolderAdapterTest {
   }
 
   @Test
-  @DisplayName("artifactKey() should return TEST_SCAFFOLDER")
-  void artifactKey_shouldReturnTestScaffolder() {
-    TestScaffolderAdapter adapter =
-        new TestScaffolderAdapter(
+  @DisplayName("artifactKey() should return TEST_SOURCE_ENTRY_POINT")
+  void artifactKey_shouldReturnTestSourceEntrypoint() {
+    TestSourceEntrypointAdapter adapter =
+        new TestSourceEntrypointAdapter(
             new NoopTemplateRenderer(),
             new ArtifactDefinition(
                 BASE_PATH, List.of(new TemplateDefinition("test.ftl", "src/test/java"))),
             new StringCaseFormatter());
 
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.TEST_SCAFFOLDER);
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.TEST_SOURCE_ENTRY_POINT);
   }
 
   @Test
@@ -65,8 +64,8 @@ class TestScaffolderAdapterTest {
     ArtifactDefinition artifactDefinition =
         new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
-    TestScaffolderAdapter adapter =
-        new TestScaffolderAdapter(renderer, artifactDefinition, new StringCaseFormatter());
+    TestSourceEntrypointAdapter adapter =
+        new TestSourceEntrypointAdapter(renderer, artifactDefinition, new StringCaseFormatter());
 
     ProjectBlueprint blueprint = blueprint();
 

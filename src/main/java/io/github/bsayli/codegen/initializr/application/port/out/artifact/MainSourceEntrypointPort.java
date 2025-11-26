@@ -1,3 +1,3 @@
 package io.github.bsayli.codegen.initializr.application.port.out.artifact;
 
-public interface BuildConfigPort extends ArtifactPort {}
+public interface MainSourceEntrypointPort extends ArtifactPort {}

@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.docs;
+package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.build;
 
 import static java.util.Map.entry;
 
@@ -7,34 +7,35 @@ import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDep
 import io.github.bsayli.codegen.initializr.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifact.ArtifactKey;
-import io.github.bsayli.codegen.initializr.application.port.out.artifact.ReadmePort;
+import io.github.bsayli.codegen.initializr.application.port.out.artifact.BuildConfigurationPort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
-import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
-import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ReadmeAdapter extends AbstractSingleTemplateArtifactAdapter implements ReadmePort {
+public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArtifactAdapter
+    implements BuildConfigurationPort {
 
-  private static final String KEY_PROJECT_NAME = "projectName";
-  private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
   private static final String KEY_GROUP_ID = "groupId";
   private static final String KEY_ARTIFACT_ID = "artifactId";
-  private static final String KEY_PACKAGE_NAME = "packageName";
-  private static final String KEY_BUILD_TOOL = "buildTool";
-  private static final String KEY_LANGUAGE = "language";
-  private static final String KEY_FRAMEWORK = "framework";
   private static final String KEY_JAVA_VERSION = "javaVersion";
-  private static final String KEY_SPRING_BOOT_VERSION = "springBootVersion";
+  private static final String KEY_SPRING_BOOT_VER = "springBootVersion";
   private static final String KEY_DEPENDENCIES = "dependencies";
+  private static final String KEY_PROJECT_NAME = "projectName";
+  private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
+
+  private static final PomDependency CORE_STARTER =
+      PomDependency.of("org.springframework.boot", "spring-boot-starter");
+
+  private static final PomDependency TEST_STARTER =
+      PomDependency.of("org.springframework.boot", "spring-boot-starter-test", null, "test");
 
   private final PomDependencyMapper pomDependencyMapper;
 
-  public ReadmeAdapter(
+  public MavenPomBuildConfigurationAdapter(
       TemplateRenderer renderer,
       ArtifactDefinition artifactDefinition,
       PomDependencyMapper pomDependencyMapper) {
@@ -44,30 +45,26 @@ public class ReadmeAdapter extends AbstractSingleTemplateArtifactAdapter impleme
 
   @Override
   public ArtifactKey artifactKey() {
-    return ArtifactKey.README;
+    return ArtifactKey.BUILD_CONFIG;
   }
 
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
     ProjectIdentity id = bp.getIdentity();
-    BuildOptions bo = bp.getBuildOptions();
     PlatformTarget pt = bp.getPlatformTarget();
-    PackageName pn = bp.getPackageName();
-    Dependencies selectedDependencies = bp.getDependencies();
 
-    List<PomDependency> dependencies = pomDependencyMapper.from(selectedDependencies);
+    List<PomDependency> dependencies = new ArrayList<>();
+    dependencies.add(CORE_STARTER);
+    dependencies.addAll(pomDependencyMapper.from(bp.getDependencies()));
+    dependencies.add(TEST_STARTER);
 
     return Map.ofEntries(
-        entry(KEY_PROJECT_NAME, bp.getName().value()),
-        entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
         entry(KEY_GROUP_ID, id.groupId().value()),
         entry(KEY_ARTIFACT_ID, id.artifactId().value()),
-        entry(KEY_PACKAGE_NAME, pn.value()),
-        entry(KEY_BUILD_TOOL, bo.buildTool().name()),
-        entry(KEY_LANGUAGE, bo.language().name()),
-        entry(KEY_FRAMEWORK, bo.framework().name()),
         entry(KEY_JAVA_VERSION, pt.java().asString()),
-        entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().value()),
+        entry(KEY_SPRING_BOOT_VER, pt.springBoot().value()),
+        entry(KEY_PROJECT_NAME, bp.getName().value()),
+        entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
         entry(KEY_DEPENDENCIES, dependencies));
   }
 }

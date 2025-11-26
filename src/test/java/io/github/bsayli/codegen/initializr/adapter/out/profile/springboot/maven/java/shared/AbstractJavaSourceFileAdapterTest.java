@@ -20,8 +20,7 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: AbstractJavaClassScaffolderAdapter")
-class AbstractJavaClassScaffolderAdapterTest {
+class AbstractJavaSourceFileAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
 
@@ -38,8 +37,8 @@ class AbstractJavaClassScaffolderAdapterTest {
 
     StringCaseFormatter formatter = new StringCaseFormatter();
 
-    TestJavaClassScaffolderAdapter adapter =
-        new TestJavaClassScaffolderAdapter(renderer, artifactDefinition, formatter);
+    TestJavaSourceFileAdapter adapter =
+        new TestJavaSourceFileAdapter(renderer, artifactDefinition, formatter);
 
     ProjectBlueprint blueprint =
         new ProjectBlueprint(null, null, null, new PackageName("com.acme.demo"), null, null, null);
@@ -63,10 +62,9 @@ class AbstractJavaClassScaffolderAdapterTest {
         .containsEntry("className", "DemoApplication");
   }
 
-  private static final class TestJavaClassScaffolderAdapter
-      extends AbstractJavaClassScaffolderAdapter {
+  private static final class TestJavaSourceFileAdapter extends AbstractJavaSourceFileAdapter {
 
-    TestJavaClassScaffolderAdapter(
+    TestJavaSourceFileAdapter(
         TemplateRenderer renderer,
         ArtifactDefinition artifactDefinition,
         StringCaseFormatter stringCaseFormatter) {
@@ -80,7 +78,7 @@ class AbstractJavaClassScaffolderAdapterTest {
 
     @Override
     public ArtifactKey artifactKey() {
-      return ArtifactKey.SOURCE_SCAFFOLDER;
+      return ArtifactKey.MAIN_SOURCE_ENTRY_POINT;
     }
   }
 }

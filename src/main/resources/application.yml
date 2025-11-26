@@ -8,46 +8,46 @@ codegen:
       template-base-path: springboot/maven/java/
 
       ordered-artifact-keys:
-        - pom
-        - maven-wrapper
-        - gitignore
-        - application-yaml
-        - source-scaffolder
-        - test-scaffolder
-        - readme
+        - build-config
+        - build-tool-metadata
+        - ignore-rules
+        - app-config
+        - main-source-entrypoint
+        - test-source-entrypoint
+        - project-documentation
 
       artifacts:
-        pom:
+        build-config:
           templates:
             - template: pom.xml.ftl
               output-path: pom.xml
 
-        maven-wrapper:
+        build-tool-metadata:
           templates:
             - template: maven-wrapper.properties.ftl
               output-path: .mvn/wrapper/maven-wrapper.properties
 
-        gitignore:
+        ignore-rules:
           templates:
             - template: gitignore.ftl
               output-path: .gitignore
 
-        application-yaml:
+        app-config:
           templates:
             - template: application.yml.ftl
               output-path: src/main/resources/application.yml
 
-        source-scaffolder:
+        main-source-entrypoint:
           templates:
             - template: MainClass.java.ftl
               output-path: src/main/java
 
-        test-scaffolder:
+        test-source-entrypoint:
           templates:
             - template: MainClassTests.java.ftl
               output-path: src/test/java
 
-        readme:
+        project-documentation:
           templates:
             - template: README.md.ftl
               output-path: README.md

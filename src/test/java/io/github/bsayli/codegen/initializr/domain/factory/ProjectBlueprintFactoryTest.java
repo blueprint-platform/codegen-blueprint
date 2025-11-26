@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Unit Test: ProjectBlueprintFactory")
 class ProjectBlueprintFactoryTest {
 
   private static ProjectIdentity identity() {

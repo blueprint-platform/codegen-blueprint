@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractJavaClassScaffolderAdapter implements ArtifactPort {
+public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
 
   private static final String KEY_PROJECT_PACKAGE = "projectPackageName";
   private static final String KEY_CLASS_NAME = "className";
@@ -27,7 +27,7 @@ public abstract class AbstractJavaClassScaffolderAdapter implements ArtifactPort
   private final ArtifactDefinition artifactDefinition;
   private final StringCaseFormatter stringCaseFormatter;
 
-  protected AbstractJavaClassScaffolderAdapter(
+  protected AbstractJavaSourceFileAdapter(
       TemplateRenderer renderer,
       ArtifactDefinition artifactDefinition,
       StringCaseFormatter stringCaseFormatter) {

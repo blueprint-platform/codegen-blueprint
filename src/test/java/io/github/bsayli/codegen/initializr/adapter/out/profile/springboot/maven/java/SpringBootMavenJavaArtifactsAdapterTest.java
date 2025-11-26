@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("unit")
-@DisplayName("Unit Test: SpringBootMavenJavaArtifactsAdapter")
 class SpringBootMavenJavaArtifactsAdapterTest {
 
   @Test

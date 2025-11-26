@@ -31,7 +31,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Tag("integration")
-@DisplayName("Integration Test: SpringBootMavenJavaArtifactsAdapter")
 class SpringBootMavenJavaArtifactsAdapterIT {
 
   @Autowired private SpringBootMavenJavaArtifactsAdapter adapter;

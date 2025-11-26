@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-@DisplayName("Unit Test: Dependencies")
 class DependenciesTest {
 
   private static Dependency dep(String groupId, String artifactId) {

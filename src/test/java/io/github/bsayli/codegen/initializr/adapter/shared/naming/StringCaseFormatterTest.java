@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @Tag("unit")
 @Tag("adapter")
-@DisplayName("Unit Test: StringCaseFormatter")
 class StringCaseFormatterTest {
 
   private final StringCaseFormatter formatter = new StringCaseFormatter();

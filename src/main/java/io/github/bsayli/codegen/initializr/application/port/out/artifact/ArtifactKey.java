@@ -4,13 +4,13 @@ import io.github.bsayli.codegen.initializr.application.error.exception.UnknownAr
 import java.util.Arrays;
 
 public enum ArtifactKey {
-  POM("pom"),
-  MAVEN_WRAPPER("maven-wrapper"),
-  GITIGNORE("gitignore"),
-  APPLICATION_YAML("application-yaml"),
-  SOURCE_SCAFFOLDER("source-scaffolder"),
-  TEST_SCAFFOLDER("test-scaffolder"),
-  README("readme");
+  BUILD_CONFIG("build-config"),
+  BUILD_TOOL_METADATA("build-tool-metadata"),
+  IGNORE_RULES("ignore-rules"),
+  APP_CONFIG("app-config"),
+  MAIN_SOURCE_ENTRY_POINT("main-source-entrypoint"),
+  TEST_SOURCE_ENTRY_POINT("test-source-entrypoint"),
+  PROJECT_DOCUMENTATION("project-documentation");
 
   private final String key;
 
