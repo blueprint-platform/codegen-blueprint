@@ -1,4 +1,4 @@
-# Codegen Blueprint — Hexagonal, Template‑Driven, Zero‑Boilerplate Project Generator
+# Codegen Blueprint — Enterprise‑Grade, Hexagonal, Architecture‑First Project Generator
 
 [![Build](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/bsayli/codegen-blueprint?logo=github\&label=release)](https://github.com/bsayli/codegen-blueprint/releases/latest)
@@ -11,224 +11,203 @@
 
 ---
 
-## ⚠ Project Status (1.0.0 Refactor Branch)
+## 📑 Table of Contents
 
-This README reflects the ongoing **hexagonal architecture rewrite** for version **1.0.0**.
-
-The core **domain**, **application layer**, **artifact pipeline**, **FreeMarker templating**, **CI/CD**, and **test suite** are complete.
-
-🚀 **CLI inbound adapter is now implemented** — first-class support for command‑line project generation is available.
-
-🔄 **REST inbound adapter** is under development and will land before the **1.0.0 GA release**.
+* 🧭 [Project Status & Release Plan](#-project-status--release-plan)
+* 💡 [Why This Project Matters](#-why-this-project-matters)
+* 🚀 [Vision — Architecture as a Product](#-vision--architecture-as-a-product)
+* 🧱 [Architectural Model](#-architectural-model-pure-hexagonal)
+* 🔌 [Inbound Adapters](#-inbound-adapters-delivery-channels)
+* ⚙️ [Outbound Adapters & Artifact Rendering](#-outbound-adapters--artifact-rendering)
+* 🧪 [Testing & CI](#-testing--ci)
+* 🔄 [Example CLI Usage](#-example-cli-usage)
+* 🛣 [Roadmap](#-roadmap)
+* 🤝 [Contributing](#-contributing)
+* 🛡 [License](#-license)
 
 ---
 
-## 🚀 Overview
+## 🧭 Project Status & Release Plan
 
-**Codegen Blueprint** is a **hexagonal, template‑driven generator** designed as a flexible **blueprint engine**.
+This repository is in **active development** toward **1.0.0 GA**.
 
-Instead of supporting only one stack, it enables generating project structures for different combinations of:
+✔ Hexagonal domain, pipeline engine, templating system, CI/CD, and test suite are complete.
+✔ **CLI inbound adapter** is implemented — production‑ready project generation via terminal.
+🔄 **REST inbound adapter** will follow shortly.
 
-* Frameworks (Spring Boot first, others later)
-* Build tools (Maven now, Gradle later)
-* Languages (Java now, Kotlin later)
-* Profiles (fully configurable)
+This is not a typical "initializr clone" — this is a **blueprint engine** with real architectural guarantees.
 
-The first supported profile is:
+---
+
+## 💡 Why This Project Matters
+
+Modern microservices demand **more than folder scaffolding**.
+
+Teams need new services to start **production‑ready**:
+
+✓ Clean architecture enforced from day 0
+✓ Resilience, security, observability baked‑in
+✓ Unified engineering standards across the organization
+✓ Zero dependency on who is starting the service
+
+But today — everywhere:
+
+❌ Copy/paste project templates
+❌ Inconsistent configurations
+❌ Best practices as optional “docs nobody reads”
+❌ Every squad reinvents the wheel
+
+> **This project eliminates variability at Day 0** — the platform becomes the standard.
+
+---
+
+## 🚀 Vision — Architecture as a Product
+
+Codegen Blueprint enables:
+
+| Capability                           | Value Delivered                                         |
+| ------------------------------------ | ------------------------------------------------------- |
+| **Architecture Profiles**            | Choose hexagonal, layered, CQRS etc. at generation time |
+| **Tech Stack Variation**             | Spring → then Quarkus, Micronaut, Vert.x                |
+| **Production Essentials by Default** | CB/Retry, tracing, metrics, versioning                  |
+| **Security First**                   | OAuth2 / Keycloak integration ready to toggle           |
+| **Consistent DevEx**                 | Unified structure across all teams                      |
+
+Your internal engineering rules become:
+
+→ **Automated** ❌ no docs needed
+→ **Repeatable** ❌ no tribal knowledge
+→ **Enforced** ✔ from the first commit
+
+---
+
+## 🧱 Architectural Model (Pure Hexagonal)
+
+*Domain is king — NO Spring dependencies inside.*
+
+Layers:
+
+```
+domain
+└─ model (aggregate, VOs, policies)
+application
+└─ use cases orchestrating ports
+adapter
+├─ outbound (renderers, build files, deps)
+└─ inbound (CLI, REST)
+bootstrap
+└─ wiring (profiles → adapters → engine)
+```
+
+Ports define intent — adapters define technology.
+
+Switching Spring Boot → Quarkus?
+
+➡ Add adapter package + new templates
+➡ Core engine **does not change**
+
+---
+
+## 🔌 Inbound Adapters (Delivery Channels)
+
+| Adapter      | Status                                     |
+| ------------ | ------------------------------------------ |
+| **CLI**      | ✔ Complete (primary driver)                |
+| **REST API** | 🔄 In progress (service‑driven automation) |
+
+---
+
+## ⚙ Outbound Adapters & Artifact Rendering
+
+Current Profile:
 
 ```
 springboot-maven-java
 ```
 
-It produces production‑ready Spring Boot project skeletons featuring:
-
-* Strictly validated domain blueprint
-* **Profile‑defined artifact pipelines** (see ArtifactKeys)
-* Fully isolated and tested **ports/adapters**
-* Zero‑boilerplate, consistent project structures
-
-Hexagonal architecture ensures new tech stacks can be added **without core changes**, only by supplying new
-**templates + profile configuration + adapters**.
-
----
-
-## 💡 Problem Statement
-
-Engineering teams repeatedly perform the same manual setup when starting a new project:
-
-* Create base structure
-* Write/copy build files (`pom.xml`, `build.gradle`, ...)
-* Configure `.gitignore`, `application.yml`, starter classes, test bootstrapping
-* Ensure consistency across multiple services and teams
-
-Most internal tools are limited to a **specific stack**, such as:
-
-* Spring Boot + Maven + Java
-* Kotlin + Gradle
-
-But the real problem is universal:
-
-> Given a **blueprint** (name, identity, tech stack, dependencies) —
-> how do we generate a high‑quality, consistent skeleton **without coupling** to technology choices?
-
-**Codegen Blueprint** solves this by acting as a **hexagonal, profile‑driven engine**.
-
----
-
-## 💡 Solution
-
-**Key architectural guarantees:**
-
-* **Hexagonal core** — no framework/build‑tool dependencies
-* **ArtifactPorts** defining generation behavior
-* **Outbound adapters** per profile
-* FreeMarker‑powered template rendering
-* Profile‑based configuration determining:
-
-  * Template base paths
-  * Ordered **ArtifactKeys**
-  * Template → generated file mapping
-* Full coverage — unit + integration
-* CI/CD automation — CodeQL, JaCoCo, Codecov, GitHub Actions
-
-Current inbound adapters:
-
-* **CLI** (fully functional) 🎯
-
-Planned inbound adapters:
-
-* **REST API** (service‑driven generation)
-
-The engine is ready for future profiles:
-
-* Kotlin, Gradle
-* Multi‑module
-* Other frameworks
-* Organization‑specific stacks
-
-The core never needs to change — profiles live entirely in adapters + template sets.
-
----
-
-## 🧩 Current Architecture (Hexagonal)
-
-📘 Want to explore how Hexagonal Architecture is implemented here?
-
-See: `docs/how-to-explore-hexagonal-architecture.md`
-
-The system follows pure **ports & adapters** design.
-
-### Domain
-
-* `ProjectBlueprint` (aggregate root)
-* Value Objects (name, identity, package, dependencies)
-* Policies & validation rules
-* i18n domain errors
-
-### Application
-
-* `ProjectArtifactsPort` — executes ordered artifact pipeline
-* `ArtifactPort` — one adapter per artifact type
-* Artifact orchestration logic
-
-### Outbound Adapters
-
-Profile: `springboot-maven-java`
-
 Implements ArtifactKeys:
 
-* `BUILD_CONFIG` → MavenPomBuildConfigurationAdapter
-* `BUILD_TOOL_METADATA` → MavenWrapperBuildToolFilesAdapter
-* `IGNORE_RULES` → GitIgnoreAdapter
-* `APP_CONFIG` → ApplicationYamlAdapter
-* `MAIN_SOURCE_ENTRY_POINT` → MainSourceEntrypointAdapter
-* `TEST_SOURCE_ENTRY_POINT` → TestSourceEntrypointAdapter
-* `PROJECT_DOCUMENTATION` → ProjectDocumentationAdapter
+* Maven POM
+* Maven Wrapper
+* `.gitignore`
+* Application YAML
+* Main Source Entrypoint
+* Test Entrypoint
+* Documentation
 
-### Inbound Adapters
+Upcoming adapters:
 
-* CLI (implemented) 🎉
-* REST (in progress)
-
-### Bootstrap
-
-* Spring configuration for wiring profile → adapters → renderer
-
----
-
-## 📦 Features (1.0.0 Core)
-
-### ✅ Done
-
-* Full hexagonal refactor
-* FreeMarker templating support
-* Strict domain validation
-* Profile‑based artifact pipeline
-* Integration test suite
-* Codecov + CodeQL
-* GitHub Actions pipeline
-* CLI inbound adapter
-
-### 🔄 In Progress
-
-* REST inbound adapter
-* Additional profiles
+* Gradle
+* Kotlin
+* Multi‑module
+* CI/CD
+* Dockerfile
 
 ---
 
-## 🧪 Testing
-
-Run full test suite:
+## 🧪 Testing & CI
 
 ```bash
 mvn verify
 ```
 
-Covers:
-
-* Domain policies & selectors
-* Outbound artifact adapters
-* End‑to‑end pipeline verification (Failsafe)
-* JaCoCo + Codecov
+✔ Full integration tests
+✔ JaCoCo coverage
+✔ CodeQL security scanning
+✔ Codecov reporting
 
 ---
 
-## 📂 Sample Output (Generated)
+## 🔄 Example CLI Usage
+
+```bash
+java -jar codegen-blueprint.jar \
+  springboot \
+  --group-id com.example \
+  --artifact-id demo \
+  --name "Demo Service" \
+  --package-name com.example.demo \
+  --dependency WEB
+```
+
+Output:
 
 ```text
-my-app/
+demo/
  ├── pom.xml
- ├── .gitignore
- ├── src/
- │   ├── main/java/.../MyAppApplication.java
- │   ├── main/resources/application.yml
- │   ├── test/java/.../MyAppApplicationTests.java
- │   └── gen/java/... (reserved for future generators)
+ ├── src/main/java/.../DemoApplication.java
+ ├── src/main/resources/application.yml
+ ├── src/test/java/.../DemoApplicationTests.java
+ └── .gitignore
 ```
 
 ---
 
-## 🛣 Roadmap (Post‑1.0.0)
+## 🛣 Roadmap
 
-* Additional profiles (Kotlin, Gradle, multi‑module)
-* Dockerfile + CI/CD artifact adapters
-* Extensible dependency catalogs
+* **Architecture style selection (hexagonal, layered, CQRS, etc.)**
+* Spring Security & Keycloak integration option
+* Circuit breaker + retry + tracing + metrics options
+* Multi‑module enterprise layouts
+* Developer portal integration (Backstage etc.)
+
+This is how platform engineering becomes **automated**.
 
 ---
 
-## 📘 Contributing
+## 🤝 Contributing
 
-PRs and ideas welcome 🎯
-[https://github.com/bsayli/codegen-blueprint](https://github.com/bsayli/codegen-blueprint)
+Ideas & PRs welcome! 🙌
+
+🔗 [https://github.com/bsayli/codegen-blueprint](https://github.com/bsayli/codegen-blueprint)
 
 ---
 
 ## 🛡 License
 
-MIT — see [LICENSE](LICENSE)
+MIT — Free for all.
 
 ---
 
 **Author:** Barış Saylı
 GitHub: [https://github.com/bsayli](https://github.com/bsayli)
-
