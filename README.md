@@ -82,8 +82,7 @@ The long-term mission:
 
 ### Profiles + Foundation Libraries
 
-In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Gradle, etc.) but also a curated set of *
-*foundation libraries**:
+In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Gradle, etc.) but also a curated set of **foundation libraries**:
 
 - API contracts (envelopes, RFC 9457 / error handling)
 - Logging, tracing, and request context propagation
