@@ -1,9 +1,9 @@
 # Codegen Blueprint — Enterprise‑Grade, Hexagonal, Architecture‑First Project Generator
 
-[![Build](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml)
-[![Release](https://img.shields.io/github/v/release/bsayli/codegen-blueprint?logo=github\&label=release)](https://github.com/bsayli/codegen-blueprint/releases/latest)
-[![CodeQL](https://github.com/bsayli/codegen-blueprint/actions/workflows/codeql.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/codeql.yml)
-[![codecov](https://codecov.io/gh/bsayli/codegen-blueprint/branch/refactor/hexagonal-architecture/graph/badge.svg)](https://codecov.io/gh/bsayli/codegen-blueprint/tree/refactor/hexagonal-architecture)
+[![Build](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/blueprint-platform/codegen-blueprint?logo=github\&label=release)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
+[![CodeQL](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/codeql.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/refactor/hexagonal-architecture/graph/badge.svg)](https://codecov.io/gh/blueprint-platform/codegen-blueprint/tree/refactor/hexagonal-architecture)
 [![Java](https://img.shields.io/badge/Java-21-red?logo=openjdk)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
@@ -67,13 +67,13 @@ It reduces setup time while ensuring every new service is built on **solid, mode
 
 Codegen Blueprint is evolving into a platform where:
 
-| Need | How this project helps |
-|------|-----------------------|
-| Standardization | Architecture becomes reusable — and enforceable |
-| Flexibility | Choose stack, architecture style, and defaults at generation time |
-| Future scaling | Support for multi-module and additional frameworks |
-| Developer Experience | Faster onboarding and consistent tooling |
-| Enterprise features | Security, resilience, and observability options (roadmap) |
+| Need                 | How this project helps                                            |
+|----------------------|-------------------------------------------------------------------|
+| Standardization      | Architecture becomes reusable — and enforceable                   |
+| Flexibility          | Choose stack, architecture style, and defaults at generation time |
+| Future scaling       | Support for multi-module and additional frameworks                |
+| Developer Experience | Faster onboarding and consistent tooling                          |
+| Enterprise features  | Security, resilience, and observability options (roadmap)         |
 
 The long-term mission:
 
@@ -81,7 +81,8 @@ The long-term mission:
 
 ### Profiles + Foundation Libraries
 
-In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Gradle, etc.) but also a curated set of **foundation libraries**:
+In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Gradle, etc.) but also a curated set of *
+*foundation libraries**:
 
 - API contracts (envelopes, RFC 9457 / error handling)
 - Logging, tracing, and request context propagation
@@ -91,7 +92,8 @@ In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Grad
 Codegen Blueprint’s job is to:
 
 1. Generate a clean, hexagonal project structure, and
-2. Wire in the relevant **“blueprint-\*” libraries** so that teams start with **ready-made, opinionated defaults** instead of reinventing the same patterns in every repo.
+2. Wire in the relevant **“blueprint-\*” libraries** so that teams start with **ready-made, opinionated defaults**
+   instead of reinventing the same patterns in every repo.
 
 As the project grows, profiles will define not only **technology choices**, but **engineering quality** itself:
 
@@ -107,9 +109,11 @@ As the project grows, profiles will define not only **technology choices**, but 
 
 📌 **Generated Architecture + Shared Libraries = Sustainable Standards**
 
-Codegen Blueprint is not only generating structure — it is **distributing architectural behavior** through shared foundation libraries (`blueprint-*`).
+Codegen Blueprint is not only generating structure — it is **distributing architectural behavior** through shared
+foundation libraries (`blueprint-*`).
 
-Logging, security, observability, API conventions, and client patterns stay consistent across all services because they evolve **in one place** and flow to every project through **version upgrades — not copy-paste**.
+Logging, security, observability, API conventions, and client patterns stay consistent across all services because they
+evolve **in one place** and flow to every project through **version upgrades — not copy-paste**.
 
 > Best practices are not documentation — **they are libraries**.
 
@@ -143,7 +147,7 @@ Switching Spring Boot → Quarkus?
 ## 🔌 Inbound Adapters (Delivery Channels)
 
 | Adapter      | Status                                     |
-| ------------ | ------------------------------------------ |
+|--------------|--------------------------------------------|
 | **CLI**      | ✔ Complete (primary driver)                |
 | **REST API** | 🔄 In progress (service‑driven automation) |
 
@@ -230,13 +234,14 @@ into a **platform engineering accelerator**.
 
 ## 🤝 Contributing
 
-Contributions of all kinds are welcome — new ideas, bug reports, feature requests, and adapters for different stacks (Gradle, Kotlin, Keycloak, etc.)
+Contributions of all kinds are welcome — new ideas, bug reports, feature requests, and adapters for different stacks (
+Gradle, Kotlin, Keycloak, etc.)
 
 💬 Start a conversation or ask a question:  
-👉 Discussions: https://github.com/bsayli/codegen-blueprint/discussions
+👉 Discussions: https://github.com/blueprint-platform/codegen-blueprint/discussions
 
 🐛 Found an issue or missing capability?  
-👉 Issues: https://github.com/bsayli/codegen-blueprint/issues
+👉 Issues: https://github.com/blueprint-platform/codegen-blueprint/issues
 
 ---
 

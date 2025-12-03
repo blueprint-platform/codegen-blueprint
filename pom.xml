@@ -11,12 +11,12 @@
         <relativePath/>
     </parent>
 
-    <groupId>io.github.bsayli</groupId>
+    <groupId>io.github.blueprint-platform</groupId>
     <artifactId>codegen-blueprint</artifactId>
     <version>1.0.0</version>
     <name>codegen-blueprint</name>
     <description>Hexagonal, template-driven Spring Boot project blueprint engine</description>
-    <url>codegen-blueprint</url>
+    <url>https://github.com/blueprint-platform/codegen-blueprint</url>
 
     <licenses>
         <license>
@@ -26,9 +26,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/bsayli/codegen-blueprint</url>
-        <connection>scm:git:https://github.com/bsayli/codegen-blueprint.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/bsayli/codegen-blueprint.git</developerConnection>
+        <url>https://github.com/blueprint-platform/codegen-blueprint</url>
+        <connection>scm:git:https://github.com/blueprint-platform/codegen-blueprint.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/blueprint-platform/codegen-blueprint.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <developers>
@@ -113,7 +113,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>io.github.bsayli.codegen.initializr</Automatic-Module-Name>
+                            <Automatic-Module-Name>io.github.blueprintplatform.codegen</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
