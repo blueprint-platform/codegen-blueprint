@@ -103,6 +103,16 @@ As the project grows, profiles will define not only **technology choices**, but 
 📌 *Status:* Today a strong architectural generator.  
 🌱 *Vision:* A platform engineering accelerator backed by reusable, shared libraries.
 
+---
+
+📌 **Generated Architecture + Shared Libraries = Sustainable Standards**
+
+Codegen Blueprint is not only generating structure — it is **distributing architectural behavior** through shared foundation libraries (`blueprint-*`).
+
+Logging, security, observability, API conventions, and client patterns stay consistent across all services because they evolve **in one place** and flow to every project through **version upgrades — not copy-paste**.
+
+> Best practices are not documentation — **they are libraries**.
+
 ## 🧱 Architectural Model (Pure Hexagonal)
 
 *Domain is king — NO Spring dependencies inside.*
