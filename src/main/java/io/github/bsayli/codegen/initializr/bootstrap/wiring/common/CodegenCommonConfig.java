@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.common;
 
 import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
