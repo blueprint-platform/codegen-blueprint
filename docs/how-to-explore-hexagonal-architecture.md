@@ -12,7 +12,7 @@ The repository demonstrates how to build a **framework‑agnostic, testable, cle
 
 * **`domain`** → Pure business rules: aggregate, value objects, naming policies, dependency rules
 * **`application`** → Executes generation pipelines using defined ports
-* **`adapter`** → Technology-specific implementations (FreeMarker, filesystem, Maven, docs)
+* **`adapter`** → Technology-specific implementations (CLI, REST, FreeMarker, filesystem, Maven, docs)
 * **`bootstrap`** → Spring wiring: profile → adapters → renderer binding
 
 Each package enforces **one direction** of dependency: toward the domain.
@@ -26,7 +26,7 @@ Generation behavior is defined by **ports**:
 * `ArtifactPort` → Generates a single artifact
 * `ProjectArtifactsPort` → Orchestrates ordered artifact pipeline
 
-Concrete behavior is in **adapters**, mapped via keys:
+Concrete behavior is in **outbound adapters**, mapped via keys:
 
 * `BUILD_CONFIG` → Maven POM generator
 * `IGNORE_RULES` → .gitignore generator
@@ -48,6 +48,36 @@ Profiles define the generation rules:
 * The exact processing order
 
 These stay externalized in configuration (`application.yml`), keeping the engine **evolution‑friendly**.
+
+---
+
+### 🧲 Inbound Adapters (CLI currently implemented)
+
+Inbound adapters trigger **use cases** from external channels.
+
+Currently implemented:
+
+* **CLI Adapter (active)** → Powered by Picocli + Spring Context
+
+📌 Usage example:
+
+```bash
+java -jar codegen-blueprint.jar \
+  --spring.profiles.active=cli \
+  springboot \
+  --group-id com.example \
+  --artifact-id demo-app \
+  --name "Demo App" \
+  --package-name com.example.demo \
+  --dependency WEB \
+  --dependency DATA_JPA
+```
+
+The CLI maps arguments → domain commands → artifact pipeline → project zip output.
+
+Planned inbound adapter:
+
+* REST API (HTTP-driven generation service)
 
 ---
 

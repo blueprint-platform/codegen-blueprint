@@ -17,7 +17,9 @@ This README reflects the ongoing **hexagonal architecture rewrite** for version 
 
 The core **domain**, **application layer**, **artifact pipeline**, **FreeMarker templating**, **CI/CD**, and **test suite** are complete.
 
-🔄 **Inbound adapters (CLI & REST)** are under active development and will land before the **1.0.0 GA release**.
+🚀 **CLI inbound adapter is now implemented** — first-class support for command‑line project generation is available.
+
+🔄 **REST inbound adapter** is under development and will land before the **1.0.0 GA release**.
 
 ---
 
@@ -89,9 +91,12 @@ But the real problem is universal:
 * Full coverage — unit + integration
 * CI/CD automation — CodeQL, JaCoCo, Codecov, GitHub Actions
 
-Planned inbound adapters for **1.0.0 GA**:
+Current inbound adapters:
 
-* **CLI** (command‑line invocation)
+* **CLI** (fully functional) 🎯
+
+Planned inbound adapters:
+
 * **REST API** (service‑driven generation)
 
 The engine is ready for future profiles:
@@ -109,7 +114,7 @@ The core never needs to change — profiles live entirely in adapters + template
 
 📘 Want to explore how Hexagonal Architecture is implemented here?
 
-See: [How to Explore This Project (Hexagonal Guide)](docs/how-to-explore-hexagonal-architecture.md)
+See: `docs/how-to-explore-hexagonal-architecture.md`
 
 The system follows pure **ports & adapters** design.
 
@@ -142,8 +147,8 @@ Implements ArtifactKeys:
 
 ### Inbound Adapters
 
-* CLI (coming soon)
-* REST (coming soon)
+* CLI (implemented) 🎉
+* REST (in progress)
 
 ### Bootstrap
 
@@ -162,10 +167,11 @@ Implements ArtifactKeys:
 * Integration test suite
 * Codecov + CodeQL
 * GitHub Actions pipeline
+* CLI inbound adapter
 
 ### 🔄 In Progress
 
-* CLI + REST inbound adapters
+* REST inbound adapter
 * Additional profiles
 
 ---
