@@ -1,4 +1,4 @@
-# Codegen Blueprint — Profile-Driven Project Generator with Architecture Options
+# Codegen Blueprint — Profile‑Driven Project Generator with Architecture Options
 
 [![Build](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/blueprint-platform/codegen-blueprint?logo=github\&label=release)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
@@ -8,6 +8,69 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+
+<p align="center">
+  <span style="font-size: 13px; font-weight: 500; color: #555;">
+    Executable Architecture for Every New Service
+  </span>
+  <br/><br/>
+  <img src="docs/images/cover/cover.png" alt="Codegen Blueprint Cover" width="700"/>
+</p>
+
+---
+
+## 🧠 Why Codegen Blueprint Exists
+
+Modern engineering teams don’t struggle to **start** new services —  
+they struggle to keep them **architecturally consistent** as they scale.
+
+Most generators create a folder layout and walk away.  
+Codegen Blueprint enforces **architectural integrity**:
+
+* Starts clean — no framework leaks into the domain
+* Stays clean — structure guides every evolution
+* Prevents silent architecture drift over time
+
+Not just scaffolding.  
+Not just templates.
+
+> **Architecture embedded into the software delivery pipeline.**
+
+<br/>
+
+<p align="center">
+  <img src="docs/images/architecture/value-proposition.png"
+       alt="Value Proposition: Why Codegen Blueprint Exists"
+       width="760"/>
+  <br/>
+  <em>Who benefits ➜ What the engine delivers ➜ Generated services</em>
+</p>
+
+---
+
+### 🎯 Who is this for?
+
+| Role                 | What you gain                     |
+| -------------------- | --------------------------------- |
+| Platform Engineering | Organization‑wide standardization |
+| Lead Architect       | Governance as Code                |
+| Developers           | Clean architecture from day zero  |
+| New Team Members     | Instant productivity              |
+
+---
+
+### 🥇 What makes it different?
+
+| Feature                           | Initilizr / JHipster | Codegen Blueprint |
+| --------------------------------- | -------------------- | ----------------- |
+| Generates folder layout           | ✔                    | ✔                 |
+| Enforces architecture correctness | ❌                    | **✔**             |
+| Domain remains framework‑free     | ❌                    | **✔**             |
+| Profile‑driven evolution          | ⚠️                   | **✔**             |
+| Reduces long‑term drift           | ❌                    | **✔**             |
+
+> 🚀 Scaffolding is step 1 — governance is the mission.
 
 ---
 
@@ -29,39 +92,43 @@
 
 ## ⚡ What is Codegen Blueprint (Today)?
 
-A **CLI-driven**, **architecture-aware** project generator.
+A **CLI‑driven**, **architecture‑aware** project generator.
 
 📌 Current primary profile:
-**springboot-maven-java**
+**springboot‑maven‑java**
 (Spring Boot 3 + Maven + Java 21)
 
-By default, it generates a **clean**, **ready-to-extend** Spring Boot project structure — similar to Spring Initializr, but with:
+Generates a **clean**, **ready‑to‑extend** Spring Boot project structure — similar to Spring Initializr, but with:
 
-- Clear and predictable layout
-- Standardized project metadata (name, groupId, package structure)
-- Built-in test entry points from day zero
-- Consistent defaults that avoid “starter chaos”
+* Clear and predictable layout
+* Standardized project metadata (groupId, name, package)
+* Built‑in test entry points from day zero
+* Consistency without dependency overload
 
-### Optional Architecture Layouts
+### Optional Architecture Layout
 
 📌 Hexagonal is an evolution path — not a barrier.
 
-> Architecture should enable teams — not block them.
-> You can start simple and progressively introduce ports/adapters later.
-
-For teams embracing Clean/Hexagonal architecture,  
-Codegen Blueprint provides an **optional** layout:
+For teams embracing Clean/Hexagonal architecture:
 
 ```
 domain       // business rules (no Spring dependencies)
-application  // use cases orchestrating ports
-adapters      // inbound & outbound adapters
-bootstrap    //  wiring and configuration
+application  // orchestrates ports
+adapters     // inbound & outbound adapters
+bootstrap    // Spring wiring & configuration
 ```
 
-Short summary:
+> "Spring Initializr — but **with architecture options built‑in**, not bolted on later."
 
-> “Spring Initializr — but **with best-practice architecture options built-in**, not bolted on later.”
+<br/>
+
+<p align="center">
+  <img src="docs/images/architecture/architecture-overview.png"
+       alt="Codegen Blueprint — Hexagonal Architecture Overview"
+       width="840"/>
+  <br/>
+  <em>Inbound adapters ➜ Application layer ➜ Domain ➜ Outbound adapters ➜ Generated project</em>
+</p>
 
 ---
 
@@ -69,69 +136,65 @@ Short summary:
 
 ### What is included (1.0.0)
 
-| Capability                                      | Status                    |
-| ----------------------------------------------- | ------------------------- |
-| CLI-based generation                            | ✔ Production-ready        |
-| Standard Spring Boot service skeleton           | ✔ Stable                  |
-| Optional architecture layout (hexagonal-basic)  | ✔ Available (opt-in)      |
-| Spring Boot 3 / Java 21 / Maven support         | ✔                         |
-| Build artifacts (pom, wrapper, .gitignore…)     | ✔                         |
-| Main + test source entrypoints                  | ✔                         |
-| Open-source licensing                           | ✔ MIT License             |
+| Capability                                     | Status             |
+| ---------------------------------------------- | ------------------ |
+| CLI‑based generation                           | ✔ Production‑ready |
+| Standard Spring Boot skeleton                  | ✔ Stable           |
+| Optional architecture layout (hexagonal‑basic) | ✔ Opt‑in           |
+| Spring Boot 3 / Java 21 / Maven support        | ✔                  |
+| Generated build + runtime artifacts            | ✔                  |
+| Built‑in main + test entrypoints               | ✔                  |
+| Open‑source licensing                          | ✔ MIT License      |
 
 ### What is planned next
 
-| Feature                                       | Status           |
-| --------------------------------------------- | ---------------- |
-| REST inbound adapter generation               | Planned          |
-| Advanced hexagonal variations (ports, CQRS)   | Planned          |
-| Additional profiles (Gradle, Kotlin, Quarkus) | Planned          |
-| Multi-module architecture generation          | Planned          |
-| Foundation libraries (`blueprint-*`)          | Planned          |
-| Developer UI / web console                    | Under evaluation |
+| Feature                                       | Status     |
+| --------------------------------------------- | ---------- |
+| REST inbound adapter                          | Planned    |
+| Advanced hexagonal variations (ports, CQRS)   | Planned    |
+| Additional profiles (Gradle, Kotlin, Quarkus) | Planned    |
+| Multi‑module generation                       | Planned    |
+| Foundation libraries (`blueprint‑*`)          | Planned    |
+| Developer UI / web console                    | Evaluating |
 
-> Strategy: **Deep quality for one profile first** → Expand profiles afterward.
+> Strategy: **Deep quality for one profile** → expand ecosystem after.
 
 ---
 
 ## 💡 Why This Project Matters
 
-Modern services deserve more than a bare `/src/main/java`:
+Modern services deserve more than a bare `/src/main/java`.
 
-**What you get:**
-- ✔ Predictable, recognizable structure
-- ✔ Testability from day zero
-- ✔ Architectural integrity as a **standard**, not an afterthought
-- ✔ Faster onboarding and reduced cognitive load
+You get:
 
-**What you avoid:**
-- ❌ Copy-paste architecture
-- ❌ Every repo looks different
-- ❌ Best practices get lost over time
-- ❌ Architecture silently degrades as systems evolve
+* ✔ Predictable structure
+* ✔ Testability from day zero
+* ✔ Architecture as a **standard**, not an afterthought
+* ✔ Faster onboarding
 
-> Codegen Blueprint = **consistency + correctness delivered automatically**
+You avoid:
 
-📘 Want to explore the Hexagonal Architecture?
+* ❌ Copy‑paste architecture
+* ❌ Every repo looks different
+* ❌ Best practices lost over time
+* ❌ Silent architecture drift
 
-Check out our guide:
-👉 [How to Explore This Project (Hexagonal Architecture Guide)](./docs/how-to-explore-hexagonal-architecture.md)
+📘 Explore the architecture:
+👉 `docs/how-to-explore-hexagonal-architecture.md`
 
-### 🧩 Strategic Impact (Why it matters at scale)
+### 🧩 Strategic Impact
 
-> 🔒 **Best practices become the default. Architecture stays intentional — not accidental.**
-
-Codegen Blueprint gives teams a strong starting point that aligns with modern architectural
-expectations — and reduces the risk of chaotic divergence as projects evolve.
+Architecture stays **intentional — not accidental**.
 
 Teams benefit from:
-- Standardized setup across all services
-- A clean structure where responsibilities are explicit
-- Faster onboarding, even for junior developers
-- A foundation that supports future enforcement if needed (e.g., ArchUnit, module boundaries)
+
+* Standardized setup across services
+* Clear responsibility boundaries
+* Faster developer onboarding
+* Future enforcement ready (ArchUnit, boundaries)
 
 Result:
-**Every new service starts aligned — and can scale without losing its architectural intent.**
+**Every new service starts aligned — and scales without losing its architecture.**
 
 ---
 
@@ -161,7 +224,7 @@ Generated artifacts:
 | `.gitignore`           | ✔      |
 | Application YAML       | ✔      |
 | Main source entrypoint | ✔      |
-| Test source entrypoint | ✔      |
+| Test entrypoint        | ✔      |
 | Project documentation  | ✔      |
 
 ---
@@ -174,10 +237,10 @@ mvn verify
 
 Includes:
 
-- ✔ Unit + integration tests
-- ✔ JaCoCo coverage reporting
-- ✔ CodeQL security analysis
-- ✔ Codecov metrics
+* ✔ Unit + integration tests
+* ✔ JaCoCo coverage
+* ✔ CodeQL security scan
+* ✔ Codecov reporting
 
 ---
 
@@ -193,7 +256,7 @@ java -jar codegen-blueprint.jar \
   --dependency WEB
 ```
 
-📁 Output (simplified)
+**Output (simplified)**
 
 ```
 demo/
@@ -212,48 +275,40 @@ demo/
 
 Roadmap themes:
 
-* Architecture variations (hexagonal / layered / CQRS)
-* Observability defaults (logging, metrics, tracing)
-* Security integrations (OAuth2 / Keycloak)
-* Multi‑module architecture support
-* Richer profile ecosystem:
+* Architecture variations (Hexagonal / Layered / CQRS)
+* Observability (metrics, tracing)
+* Security (OAuth2 / Keycloak)
+* Multi‑module support
+* Richer profile ecosystem (Gradle / Kotlin / Quarkus)
+* Developer UI → configuration → generation → download
 
-    * Gradle
-    * Kotlin
-    * Quarkus
-* Developer UI to configure + generate + download
-
-Long‑term goal:
-
-> **Executable architectural standards** for modern service development.
+> **Executable Architecture** for modern service development.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome!
+Discussions:
+[https://github.com/blueprint-platform/codegen-blueprint/discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
 
-💬 Discussions:  
-https://github.com/blueprint-platform/codegen-blueprint/discussions
-
-🐛 Issues:  
-https://github.com/blueprint-platform/codegen-blueprint/issues
+Issues:
+[https://github.com/blueprint-platform/codegen-blueprint/issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
 
 ---
 
 ## ⭐ Support & Community
 
-If Codegen Blueprint helps you:  
+If Codegen Blueprint helps you:
 👉 Please star the repo — it really matters.
 
-**Barış Saylı**  
-GitHub — https://github.com/bsayli  
-LinkedIn — https://www.linkedin.com/in/bsayli  
-Medium — https://medium.com/@baris.sayli
+**Barış Saylı**
+GitHub — [https://github.com/bsayli](https://github.com/bsayli)
+LinkedIn — [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
+Medium — [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
 
 ---
 
 ## 🛡 License
 
-Licensed under MIT — free for personal and commercial use.  
+Licensed under MIT — free for personal and commercial use.
 See: [LICENSE](LICENSE)
