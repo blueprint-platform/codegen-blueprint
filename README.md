@@ -174,13 +174,13 @@ You get:
 
 You avoid:
 
-* ❌ Copy‑paste architecture
+* ❌ Copy-paste architecture
 * ❌ Every repo looks different
 * ❌ Best practices lost over time
 * ❌ Silent architecture drift
 
-📘 Explore the architecture:
-👉 `docs/how-to-explore-hexagonal-architecture.md`
+📘 Explore the architecture:  
+👉 [How to Explore This Project (Hexagonal Architecture Guide)](./docs/guides/how-to-explore-hexagonal-architecture.md)
 
 ### 🧩 Strategic Impact
 
@@ -298,13 +298,14 @@ Issues:
 
 ## ⭐ Support & Community
 
-If Codegen Blueprint helps you:
+If Codegen Blueprint helps you:  
 👉 Please star the repo — it really matters.
 
 **Barış Saylı**
-GitHub — [https://github.com/bsayli](https://github.com/bsayli)
-LinkedIn — [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
-Medium — [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
+
+GitHub — [bsayli](https://github.com/bsayli)  
+LinkedIn — [linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)  
+Medium — [@baris.sayli](https://medium.com/@baris.sayli)
 
 ---
 
