@@ -39,6 +39,6 @@ public enum SpringBootVersion implements KeyedEnum {
 
   @Override
   public String toString() {
-    return defaultPatch;
+    return key;
   }
 }

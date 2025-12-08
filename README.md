@@ -9,13 +9,10 @@
 [![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-
 <p align="center">
-  <span style="font-size: 13px; font-weight: 500; color: #555;">
-    Executable Architecture for Every New Service
-  </span>
-  <br/><br/>
-  <img src="docs/images/cover/cover.png" alt="Codegen Blueprint Cover" width="700"/>
+  <img src="docs/images/cover/cover.png"
+       alt="Executable Architecture — From Day Zero"
+       width="700"/>
 </p>
 
 ---

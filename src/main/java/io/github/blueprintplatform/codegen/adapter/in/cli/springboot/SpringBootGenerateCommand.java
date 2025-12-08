@@ -18,9 +18,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Command(
-    name = "springboot",
-    mixinStandardHelpOptions = true,
-    description = "Generate a Spring Boot project scaffold")
+        name = "springboot",
+        mixinStandardHelpOptions = true,
+        description = "Generate a Spring Boot project scaffold (standard or hexagonal layout)")
 public class SpringBootGenerateCommand implements Callable<Integer> {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootGenerateCommand.class);

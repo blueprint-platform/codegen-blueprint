@@ -55,7 +55,7 @@ public class CodegenCliRunner implements ApplicationRunner {
             .registerConverter(JavaVersion.class, new KeyedEnumConverter<>(JavaVersion::fromKey))
             .registerConverter(
                 SpringBootVersion.class, new KeyedEnumConverter<>(SpringBootVersion::fromKey))
-                .registerConverter(SpringBootDependencyAlias.class, SpringBootDependencyAlias::fromKey);
+            .registerConverter(SpringBootDependencyAlias.class, SpringBootDependencyAlias::fromKey);
 
     cmd.setExecutionExceptionHandler(exceptionHandler);
 
