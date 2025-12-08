@@ -27,7 +27,7 @@ Codegen Blueprint enforces **architectural integrity**:
 
 * Starts clean — no framework leaks into the domain
 * Stays clean — structure guides every evolution
-* Prevents silent architecture drift over time
+* Prevents silent architecture drifts over time
 
 Not just scaffolding.  
 Not just templates.
@@ -59,15 +59,20 @@ Not just templates.
 
 ### 🥇 What makes it different?
 
-| Feature                           | Initilizr / JHipster | Codegen Blueprint |
-| --------------------------------- | -------------------- | ----------------- |
-| Generates folder layout           | ✔                    | ✔                 |
-| Enforces architecture correctness | ❌                    | **✔**             |
-| Domain remains framework‑free     | ❌                    | **✔**             |
-| Profile‑driven evolution          | ⚠️                   | **✔**             |
-| Reduces long‑term drift           | ❌                    | **✔**             |
+> **This is not a competitor comparison.**  
+> Spring Initializr and JHipster are fantastic and widely used tools with different missions.  
+> Codegen Blueprint focuses specifically on keeping architecture **intentional** from day zero.
 
-> 🚀 Scaffolding is step 1 — governance is the mission.
+| Capability Focus                   | Spring Initializr & JHipster | Codegen Blueprint |
+| ---------------------------------- | ---------------------------- | ----------------- |
+| Generates folder layout            | ✔                            | ✔                 |
+| Opinionated architecture defaults  | ⚠️                           | **✔**             |
+| Domain isolation by design         | ❌                           | **✔**             |
+| Profile-driven evolution paths     | ⚠️                           | **✔**             |
+| Anti-drift architecture support    | ❌                           | **✔**             |
+
+> 🚀 Same starting point → different long-term destination  
+> 🧭 Codegen Blueprint helps teams **preserve architectural integrity** as services evolve
 
 ---
 

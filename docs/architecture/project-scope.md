@@ -73,12 +73,12 @@ Requirements:
 
 ## 📦 Application Metadata Generation
 
-| Artifact     | Status                         |
-| ------------ | ------------------------------ |
-| groupId      | ✔ mandatory param              |
-| artifactId   | ✔ mandatory param              |
-| package name | ✔ enforced format              |
-| project name | ✔ optional, defaults correctly |
+| Artifact     | Status            |
+| ------------ | ----------------- |
+| groupId      | ✔ mandatory param |
+| artifactId   | ✔ mandatory param |
+| package name | ✔ enforced format |
+| project name | ✔ mandatory param |
 
 Rules:
 
@@ -134,14 +134,15 @@ Optional architecture-aware generation must be documented:
 
 ## ❌ Explicitly Out of Scope (1.0.0 GA)
 
-| Not Included            | Reason                             |
-| ----------------------- | ---------------------------------- |
-| REST inbound adapter    | Planned for post-1.0.0             |
-| Security defaults       | Avoid opinionated coupling (later) |
-| Observability setup     | Future profile variation           |
-| Multi-module generation | Larger iteration required          |
+| Not Included            | Reason                                             |
+| ----------------------- | -------------------------------------------------- |
+| REST inbound adapter    | Not part of 1.0.0 GA; planned follow-up after CLI  |
+| Security defaults       | Avoid opinionated coupling (later)                 |
+| Observability setup     | Future profile variation                           |
+| Multi-module generation | Larger iteration required                          |
 
-These remain out of GA scope **to keep the release focused**.
+These remain out of GA scope **to keep the release focused**.  
+If REST lands earlier than planned, this document will be updated accordingly.
 
 ---
 
