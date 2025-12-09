@@ -6,6 +6,7 @@ import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyScope;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
@@ -28,19 +29,19 @@ class ProjectBlueprintMapperTest {
   private static ProjectBlueprint getProjectBlueprint() {
     var mapper = new ProjectBlueprintMapper();
 
-    var inputs =
+    var dependencies =
         List.of(
             new DependencyInput("org.acme", "alpha", "", ""),
             new DependencyInput("org.acme", "beta", "1.2.3", "runtime"),
             new DependencyInput("org.acme", "gamma", "  ", "  "),
             new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt"));
 
-    var cmd = getCreateProjectCommand(inputs);
+    var cmd = getCreateProjectCommand(dependencies);
 
     return mapper.from(cmd);
   }
 
-  private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> inputs) {
+  private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> dependencies) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
@@ -53,7 +54,8 @@ class ProjectBlueprintMapperTest {
         techStack,
         ProjectLayout.STANDARD,
         platformTarget,
-        inputs,
+        dependencies,
+        SampleCodeOptions.none(),
         Path.of("."));
   }
 

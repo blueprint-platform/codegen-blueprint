@@ -9,7 +9,8 @@ import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -42,15 +43,15 @@ class AbstractJavaSourceFileAdapterTest {
 
     ProjectBlueprint blueprint =
         new ProjectBlueprint(
-            null, null, null, new PackageName("com.acme.demo"), null, null, null, null);
+            null, null, null, new PackageName("com.acme.demo"), null, null, null, null, null);
 
     Path expectedPath = Path.of("src/main/java/com/acme/demo/DemoApplication.java");
 
-    GeneratedFile.Text expectedFile =
-        new GeneratedFile.Text(expectedPath, "class DemoApplication {}", StandardCharsets.UTF_8);
+    GeneratedTextResource expectedFile =
+        new GeneratedTextResource(expectedPath, "class DemoApplication {}", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
-    Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
     assertThat(result).singleElement().isSameAs(expectedFile);
 

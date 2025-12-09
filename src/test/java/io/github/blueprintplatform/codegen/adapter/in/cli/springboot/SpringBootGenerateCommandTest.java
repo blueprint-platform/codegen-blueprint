@@ -8,6 +8,7 @@ import io.github.blueprintplatform.codegen.application.usecase.project.CreatePro
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
@@ -41,6 +42,7 @@ class SpringBootGenerateCommandTest {
     cmd.bootVersion = SpringBootVersion.V3_5;
 
     cmd.layout = ProjectLayout.STANDARD;
+    cmd.samples = SampleCodeLevel.NONE;
     cmd.dependencies = List.of(SpringBootDependencyAlias.WEB);
     Path expected = Path.of(".");
     cmd.targetDirectory = expected;
@@ -65,6 +67,7 @@ class SpringBootGenerateCommandTest {
     assertThat(mapper.lastRequest.profile()).isEqualTo("springboot-maven-java");
 
     assertThat(mapper.lastRequest.layoutKey()).isEqualTo(ProjectLayout.STANDARD.key());
+    assertThat(mapper.lastRequest.sampleCodeLevelKey()).isEqualTo(SampleCodeLevel.NONE.key());
 
     assertThat(mapper.lastRequest.dependencies())
         .containsExactly(SpringBootDependencyAlias.WEB.name());

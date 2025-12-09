@@ -14,6 +14,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +31,12 @@ public class ProjectBlueprintMapper {
 
     PlatformTarget target = c.platformTarget();
     ProjectLayout layout = c.layout();
+    SampleCodeOptions sampleCodeOptions = c.sampleCodeOptions();
 
     Dependencies deps = mapDependencies(c.dependencies());
 
     return ProjectBlueprintFactory.of(
-        identity, name, description, pkg, c.techStack(), layout, target, deps);
+        identity, name, description, pkg, c.techStack(), layout, target, deps, sampleCodeOptions);
   }
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {

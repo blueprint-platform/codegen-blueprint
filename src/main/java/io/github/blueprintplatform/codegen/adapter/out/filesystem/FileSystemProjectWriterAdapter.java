@@ -34,4 +34,14 @@ public class FileSystemProjectWriterAdapter implements ProjectWriterPort {
     byte[] bytes = content.getBytes(charset);
     writeBytes(projectRoot, relativePath, bytes);
   }
+
+  @Override
+  public void createDirectories(Path projectRoot, Path relativeDir) {
+    Path target = projectRoot.resolve(relativeDir);
+    try {
+      Files.createDirectories(target);
+    } catch (IOException e) {
+      throw new ProjectWriteException(target, e);
+    }
+  }
 }

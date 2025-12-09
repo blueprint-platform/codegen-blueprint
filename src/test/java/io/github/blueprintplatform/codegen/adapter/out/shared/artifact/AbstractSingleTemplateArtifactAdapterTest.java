@@ -7,7 +7,8 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.Artifac
 import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -37,14 +38,14 @@ class AbstractSingleTemplateArtifactAdapterTest {
     TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactDefinition);
 
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(null, null, null, null, null, null, null, null);
+        new ProjectBlueprint(null, null, null, null, null, null, null, null, null);
 
     Path relativePath = Path.of("output/test.txt");
-    GeneratedFile.Text expectedFile =
-        new GeneratedFile.Text(relativePath, "rendered-content", StandardCharsets.UTF_8);
+    GeneratedTextResource expectedFile =
+        new GeneratedTextResource(relativePath, "rendered-content", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
-    Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
     assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "test-template.ftl");

@@ -5,6 +5,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
@@ -18,9 +19,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Command(
-        name = "springboot",
-        mixinStandardHelpOptions = true,
-        description = "Generate a Spring Boot project scaffold (standard or hexagonal layout)")
+    name = "springboot",
+    mixinStandardHelpOptions = true,
+    description = "Generate a Spring Boot project scaffold (standard or hexagonal layout)")
 public class SpringBootGenerateCommand implements Callable<Integer> {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootGenerateCommand.class);
@@ -100,6 +101,13 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   List<SpringBootDependencyAlias> dependencies;
 
   @Option(
+      names = {"--samples"},
+      required = false,
+      description = "Sample code level. Valid values: ${COMPLETION-CANDIDATES}",
+      defaultValue = "none")
+  SampleCodeLevel samples;
+
+  @Option(
       names = {"--target-dir"},
       required = false,
       description = "Target directory for the generated project",
@@ -129,6 +137,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
             profile,
             layout.key(),
             dependencyAliases,
+            samples.key(),
             targetDirectory);
 
     var command = mapper.from(request, buildTool, language, javaVersion, bootVersion);

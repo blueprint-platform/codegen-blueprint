@@ -33,18 +33,20 @@ public class CreateProjectHandler implements CreateProjectUseCase {
 
   @Override
   public CreateProjectResult handle(CreateProjectCommand command) {
-    ProjectBlueprint bp = mapper.from(command);
+    ProjectBlueprint projectBlueprint = mapper.from(command);
 
     Path projectRoot =
         rootPort.prepareRoot(
-            command.targetDirectory(), bp.getIdentity().artifactId().value(), FAIL_IF_EXISTS);
+            command.targetDirectory(),
+            projectBlueprint.getIdentity().artifactId().value(),
+            FAIL_IF_EXISTS);
 
-    ProjectArtifactsPort port = artifactsSelector.select(bp.getTechStack());
-    var files = port.generate(bp);
+    ProjectArtifactsPort port = artifactsSelector.select(projectBlueprint.getTechStack());
+    var files = port.generate(projectBlueprint);
 
     writerPort.write(projectRoot, files);
 
-    String baseName = bp.getIdentity().artifactId().value();
+    String baseName = projectBlueprint.getIdentity().artifactId().value();
     Path archive = archiverPort.archive(projectRoot, baseName);
 
     return new CreateProjectResult(archive);

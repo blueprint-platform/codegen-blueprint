@@ -5,7 +5,7 @@ import static org.mockito.Mockito.*;
 
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -23,9 +23,9 @@ class SpringBootMavenJavaArtifactsAdapterTest {
         new SpringBootMavenJavaArtifactsAdapter(List.of());
 
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(null, null, null, null, null, null, null, null);
+        new ProjectBlueprint(null, null, null, null, null, null, null, null, null);
 
-    List<? extends GeneratedFile> result =
+    List<? extends GeneratedResource> result =
         StreamSupport.stream(adapter.generate(blueprint).spliterator(), false).toList();
 
     assertThat(result).isEmpty();
@@ -35,7 +35,7 @@ class SpringBootMavenJavaArtifactsAdapterTest {
   @DisplayName("Should delegate generate() exactly once to each ArtifactPort")
   void shouldDelegateToEachArtifactPort() {
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(null, null, null, null, null, null, null, null);
+        new ProjectBlueprint(null, null, null, null, null, null, null, null, null);
 
     ArtifactPort p1 = mock(ArtifactPort.class);
     ArtifactPort p2 = mock(ArtifactPort.class);

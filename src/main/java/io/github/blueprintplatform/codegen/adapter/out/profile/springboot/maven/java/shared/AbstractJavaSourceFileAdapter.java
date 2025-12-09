@@ -9,7 +9,7 @@ import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
   }
 
   @Override
-  public final Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
+  public final Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
     String className = buildClassName(blueprint);
     PackageName packageName = blueprint.getPackageName();
 
@@ -52,7 +52,7 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
     String packagePath = packageName.value().replace(PACKAGE_PATH_DELIMITER, FILE_PATH_DELIMITER);
     Path outPath = baseDir.resolve(packagePath).resolve(className + JAVA_FILE_EXTENSION);
 
-    GeneratedFile file = renderer.renderUtf8(outPath, templateName, model);
+    GeneratedResource file = renderer.renderUtf8(outPath, templateName, model);
     return List.of(file);
   }
 

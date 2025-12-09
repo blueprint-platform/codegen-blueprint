@@ -14,6 +14,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -22,7 +23,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.util.List;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +44,7 @@ class SpringBootMavenJavaArtifactsAdapterIT {
   void generate_shouldProduceArtifactsForValidBlueprint() {
     ProjectBlueprint blueprint = blueprint();
 
-    Iterable<? extends GeneratedFile> files = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> files = adapter.generate(blueprint);
 
     var list = StreamSupport.stream(files.spliterator(), false).toList();
 
@@ -73,8 +74,17 @@ class SpringBootMavenJavaArtifactsAdapterIT {
     Dependencies dependencies = Dependencies.of(List.of(webStarter));
 
     ProjectLayout layout = ProjectLayout.STANDARD;
+    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
 
     return ProjectBlueprintFactory.of(
-        identity, name, description, packageName, techStack, layout, platformTarget, dependencies);
+        identity,
+        name,
+        description,
+        packageName,
+        techStack,
+        layout,
+        platformTarget,
+        dependencies,
+        sampleCodeOptions);
   }
 }

@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.test;
+package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,6 +15,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -23,7 +24,8 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
 import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
@@ -55,8 +57,18 @@ class TestSourceEntrypointAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of());
 
+    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
+
     return new ProjectBlueprint(
-        identity, name, description, pkg, techStack, layout, platformTarget, dependencies);
+        identity,
+        name,
+        description,
+        pkg,
+        techStack,
+        layout,
+        platformTarget,
+        dependencies,
+        sampleCodeOptions);
   }
 
   @Test
@@ -89,12 +101,12 @@ class TestSourceEntrypointAdapterTest {
 
     Path expectedPath = Path.of("src/test/java/com/acme/demo/DemoAppApplicationTests.java");
 
-    GeneratedFile.Text expectedFile =
-        new GeneratedFile.Text(
+    GeneratedTextResource expectedFile =
+        new GeneratedTextResource(
             expectedPath, "class DemoAppApplicationTests {}", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
-    Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
     assertThat(result).singleElement().isSameAs(expectedFile);
 

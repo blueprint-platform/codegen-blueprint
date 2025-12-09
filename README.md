@@ -261,7 +261,7 @@ java -jar codegen-blueprint-1.0.0.jar \
   --name "Demo App" \
   --description "Demo application for Acme" \
   --package-name com.acme.demo \
-  --layout hexagonal \   # optional architecture flag
+  --layout hexagonal \
   --dependency web \
   --dependency data_jpa \
   --dependency validation

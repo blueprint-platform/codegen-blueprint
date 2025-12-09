@@ -12,4 +12,5 @@ public record CliProjectRequest(
     String profile,
     String layoutKey,
     List<String> dependencies,
+    String sampleCodeLevelKey,
     Path targetDirectory) {}

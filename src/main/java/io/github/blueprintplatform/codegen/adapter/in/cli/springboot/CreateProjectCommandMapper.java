@@ -5,6 +5,8 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.usecase.project.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -28,7 +30,9 @@ public class CreateProjectCommandMapper {
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, buildTool, language);
     PlatformTarget platformTarget = new SpringBootJvmTarget(javaVersion, bootVersion);
     ProjectLayout layout = ProjectLayout.fromKey(request.layoutKey());
-    List<DependencyInput> inputs = toDependencyInputs(request.dependencies());
+    SampleCodeLevel sampleCodeLevel = SampleCodeLevel.fromKey(request.sampleCodeLevelKey());
+    List<DependencyInput> dependencies = toDependencyInputs(request.dependencies());
+    SampleCodeOptions sampleCodeOptions = new SampleCodeOptions(sampleCodeLevel);
 
     return new CreateProjectCommand(
         request.groupId(),
@@ -39,7 +43,8 @@ public class CreateProjectCommandMapper {
         techStack,
         layout,
         platformTarget,
-        inputs,
+        dependencies,
+        sampleCodeOptions,
         request.targetDirectory());
   }
 

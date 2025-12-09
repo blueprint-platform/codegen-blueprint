@@ -9,7 +9,8 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.docs.ProjectDocumentationAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.ignore.GitIgnoreAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.MainSourceEntrypointAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.test.TestSourceEntrypointAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.SourceLayoutAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.TestSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
@@ -56,6 +57,11 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
+  SourceLayoutAdapter springBootMavenJavaSourceLayoutAdapter() {
+    return new SourceLayoutAdapter();
+  }
+
+  @Bean
   ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter(
       TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
@@ -98,6 +104,7 @@ public class SpringBootMavenJavaConfig {
       MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter,
       MavenWrapperBuildToolFilesAdapter springBootMavenJavaMavenWrapperBuildToolFilesAdapter,
       GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
+      SourceLayoutAdapter springBootMavenJavaSourceLayoutAdapter,
       ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
       MainSourceEntrypointAdapter springBootMavenJavaMainSourceEntrypointAdapter,
       TestSourceEntrypointAdapter springBootMavenJavaTestSourceEntrypointAdapter,
@@ -108,6 +115,7 @@ public class SpringBootMavenJavaConfig {
     registry.put(
         ArtifactKey.BUILD_TOOL_METADATA, springBootMavenJavaMavenWrapperBuildToolFilesAdapter);
     registry.put(ArtifactKey.IGNORE_RULES, springBootMavenJavaGitIgnoreAdapter);
+    registry.put(ArtifactKey.SOURCE_LAYOUT, springBootMavenJavaSourceLayoutAdapter);
     registry.put(ArtifactKey.APP_CONFIG, springBootMavenJavaApplicationYamlAdapter);
     registry.put(
         ArtifactKey.MAIN_SOURCE_ENTRY_POINT, springBootMavenJavaMainSourceEntrypointAdapter);

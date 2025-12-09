@@ -6,6 +6,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 
@@ -19,6 +20,7 @@ public class ProjectBlueprint {
   private final ProjectLayout layout;
   private final PlatformTarget platformTarget;
   private final Dependencies dependencies;
+  private final SampleCodeOptions sampleCodeOptions;
 
   public ProjectBlueprint(
       ProjectIdentity identity,
@@ -28,7 +30,8 @@ public class ProjectBlueprint {
       TechStack techStack,
       ProjectLayout layout,
       PlatformTarget platformTarget,
-      Dependencies dependencies) {
+      Dependencies dependencies,
+      SampleCodeOptions sampleCodeOptions) {
     this.identity = identity;
     this.name = name;
     this.description = description;
@@ -37,6 +40,7 @@ public class ProjectBlueprint {
     this.layout = layout;
     this.platformTarget = platformTarget;
     this.dependencies = dependencies;
+    this.sampleCodeOptions = sampleCodeOptions;
   }
 
   public ProjectIdentity getIdentity() {
@@ -69,5 +73,9 @@ public class ProjectBlueprint {
 
   public Dependencies getDependencies() {
     return dependencies;
+  }
+
+  public SampleCodeOptions getSampleCodeOptions() {
+    return sampleCodeOptions;
   }
 }

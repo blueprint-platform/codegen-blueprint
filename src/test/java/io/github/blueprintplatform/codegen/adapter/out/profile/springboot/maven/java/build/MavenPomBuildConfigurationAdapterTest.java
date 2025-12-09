@@ -19,6 +19,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -27,7 +28,8 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.build.RecordingPomDependencyMapper;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
 import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
@@ -65,8 +67,18 @@ class MavenPomBuildConfigurationAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
+    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
+
     return new ProjectBlueprint(
-        identity, name, description, pkg, techStack, layout, target, dependencies);
+        identity,
+        name,
+        description,
+        pkg,
+        techStack,
+        layout,
+        target,
+        dependencies,
+        sampleCodeOptions);
   }
 
   @Test
@@ -100,11 +112,11 @@ class MavenPomBuildConfigurationAdapterTest {
     ProjectBlueprint blueprint = blueprintWithDependencies();
 
     Path relativePath = Path.of("pom.xml");
-    GeneratedFile.Text dummyFile =
-        new GeneratedFile.Text(relativePath, "<project/>", StandardCharsets.UTF_8);
+    GeneratedTextResource dummyFile =
+        new GeneratedTextResource(relativePath, "<project/>", StandardCharsets.UTF_8);
     renderer.nextFile = dummyFile;
 
-    Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
     assertThat(result).singleElement().isSameAs(dummyFile);
 

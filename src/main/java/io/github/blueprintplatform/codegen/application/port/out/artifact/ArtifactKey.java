@@ -7,6 +7,7 @@ public enum ArtifactKey {
   BUILD_CONFIG("build-config"),
   BUILD_TOOL_METADATA("build-tool-metadata"),
   IGNORE_RULES("ignore-rules"),
+  SOURCE_LAYOUT("source-layout"),
   APP_CONFIG("app-config"),
   MAIN_SOURCE_ENTRY_POINT("main-source-entrypoint"),
   TEST_SOURCE_ENTRY_POINT("test-source-entrypoint"),

@@ -1,6 +1,7 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import java.nio.file.Path;
@@ -16,4 +17,5 @@ public record CreateProjectCommand(
     ProjectLayout layout,
     PlatformTarget platformTarget,
     List<DependencyInput> dependencies,
+    SampleCodeOptions sampleCodeOptions,
     Path targetDirectory) {}

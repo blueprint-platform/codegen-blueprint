@@ -6,7 +6,8 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.Artifac
 import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedFile;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
 import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
@@ -52,14 +53,14 @@ class MavenWrapperBuildToolFilesAdapterTest {
         new MavenWrapperBuildToolFilesAdapter(renderer, artifactDefinition);
 
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(null, null, null, null, null, null, null, null);
+        new ProjectBlueprint(null, null, null, null, null, null, null, null, null);
 
     Path relativePath = Path.of(".mvn/wrapper/maven-wrapper.properties");
-    GeneratedFile.Text expectedFile =
-        new GeneratedFile.Text(relativePath, "distributionUrl=...", StandardCharsets.UTF_8);
+    GeneratedTextResource expectedFile =
+        new GeneratedTextResource(relativePath, "distributionUrl=...", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
-    Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
     assertThat(result).singleElement().isSameAs(expectedFile);
 

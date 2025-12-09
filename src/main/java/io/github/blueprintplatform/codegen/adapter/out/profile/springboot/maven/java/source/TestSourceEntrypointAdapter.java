@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.test;
+package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source;
 
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.shared.AbstractJavaSourceFileAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;

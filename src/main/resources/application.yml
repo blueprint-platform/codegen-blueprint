@@ -11,6 +11,7 @@ codegen:
         - build-config
         - build-tool-metadata
         - ignore-rules
+        - source-layout
         - app-config
         - main-source-entrypoint
         - test-source-entrypoint
@@ -31,6 +32,9 @@ codegen:
           templates:
             - template: gitignore.ftl
               output-path: .gitignore
+
+        source-layout:
+          templates: []
 
         app-config:
           templates:

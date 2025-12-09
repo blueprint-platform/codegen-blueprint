@@ -8,6 +8,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.policy.tech.CompatibilityPolicy;
@@ -26,12 +27,21 @@ public final class ProjectBlueprintFactory {
       TechStack techStack,
       ProjectLayout layout,
       PlatformTarget platformTarget,
-      Dependencies dependencies) {
+      Dependencies dependencies,
+      SampleCodeOptions sampleCodeOptions) {
 
     CompatibilityPolicy.ensureCompatible(techStack, platformTarget);
 
     return new ProjectBlueprint(
-        identity, name, description, packageName, techStack, layout, platformTarget, dependencies);
+        identity,
+        name,
+        description,
+        packageName,
+        techStack,
+        layout,
+        platformTarget,
+        dependencies,
+        sampleCodeOptions);
   }
 
   public static ProjectBlueprint of(
@@ -52,7 +62,8 @@ public final class ProjectBlueprintFactory {
         techStack,
         layout,
         platformTarget,
-        Dependencies.of(dependencies));
+        Dependencies.of(dependencies),
+        SampleCodeOptions.none());
   }
 
   public static ProjectBlueprint of(
@@ -73,6 +84,7 @@ public final class ProjectBlueprintFactory {
         techStack,
         layout,
         platformTarget,
-        Dependencies.of(Arrays.asList(deps)));
+        Dependencies.of(Arrays.asList(deps)),
+        SampleCodeOptions.none());
   }
 }

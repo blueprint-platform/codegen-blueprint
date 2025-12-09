@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ${projectName}
+    name: ${applicationName}
   # server:
   #   port: 8080
   # logging:

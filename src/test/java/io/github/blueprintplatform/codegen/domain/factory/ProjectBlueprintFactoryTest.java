@@ -15,6 +15,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayo
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -60,6 +61,10 @@ class ProjectBlueprintFactoryTest {
     return ProjectLayout.STANDARD;
   }
 
+  private static SampleCodeOptions sampleCodeOptions() {
+    return SampleCodeOptions.none();
+  }
+
   private static Dependencies dependencies() {
     Dependency d = dep("org.acme", "alpha");
     return Dependencies.of(List.of(d));
@@ -82,10 +87,18 @@ class ProjectBlueprintFactoryTest {
     PlatformTarget target = target();
     ProjectLayout layout = layout();
     Dependencies dependencies = dependencies();
-
+    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity, name, description, packageName, stack, layout, target, dependencies);
+            identity,
+            name,
+            description,
+            packageName,
+            stack,
+            layout,
+            target,
+            dependencies,
+            sampleCodeOptions);
 
     assertThat(bp.getIdentity()).isSameAs(identity);
     assertThat(bp.getName()).isSameAs(name);
@@ -145,7 +158,8 @@ class ProjectBlueprintFactoryTest {
                     null, // techStack
                     layout(),
                     target(),
-                    dependencies()))
+                    dependencies(),
+                    sampleCodeOptions()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -164,8 +178,9 @@ class ProjectBlueprintFactoryTest {
                     pkg(),
                     techStack(),
                     layout(),
-                    null, // platformTarget
-                    dependencies()))
+                    null,
+                    dependencies(),
+                    sampleCodeOptions()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -188,7 +203,8 @@ class ProjectBlueprintFactoryTest {
                     stack,
                     layout(),
                     incompatible,
-                    dependencies()))
+                    dependencies(),
+                    sampleCodeOptions()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));
