@@ -47,9 +47,9 @@ domain (business rules only)
 
 Runtime wiring is delivered via `bootstrap` (Spring only at the edges).
 
-📌 No Spring inside `domain`
-📌 No FreeMarker inside `domain` or `application`
-📌 No file system assumptions inside business logic
+* 📌 No Spring inside `domain`
+* 📌 No FreeMarker inside `domain` or `application`
+* 📌 No file system assumptions inside business logic
 
 <p align="center"><em>See also: Architecture Overview diagram</em></p>
 
@@ -115,9 +115,9 @@ build-config → build-tool-files → ignore-rules
 
 Profiles are:
 
-✔ Organizational **architecture standards**
-✔ Reusable across **many products**
-✔ Extensible with **zero core refactor**
+* ✔ Organizational **architecture standards**
+* ✔ Reusable across **many products**
+* ✔ Extensible with **zero core refactor**
 
 > Architecture governance, expressed as configuration.
 
@@ -208,12 +208,12 @@ java -jar codegen-blueprint-1.0.0.jar \
   --group-id io.github.blueprintplatform.samples \
   --artifact-id greeting-service \
   --name "Greeting Service" \
-  --description "Hexagonal greeting sample powered by Blueprint" \
   --package-name io.github.blueprintplatform.samples.greeting \
   --layout hexagonal \
   --sample-code basic \
   --dependency web \
-  --dependency data_jpa
+  --dependency data_jpa \
+  --target-dir /path/to/output
 ```
 
 ```bash

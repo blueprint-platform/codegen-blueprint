@@ -9,6 +9,9 @@
 [![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+> 🚀 Executable Architecture Generator — Enforced by Design. Scalable by Default.  
+🔗 Part of the **Blueprint Platform** → https://github.com/blueprint-platform
+
 <p align="center">
   <img src="docs/images/cover/cover.png" alt="Executable Architecture — From Day Zero" width="700" />
 </p>
@@ -116,7 +119,26 @@ Architecture isn’t only drawn — it executes here ⬇
   Understand ports/adapters, profiles, boundaries  
   → [docs/guides/how-to-explore-hexagonal-architecture.md](docs/guides/how-to-explore-hexagonal-architecture.md)
 
-<br/>
+### 🧩 Part of the Blueprint Platform
+
+`codegen-blueprint` is the first foundational module of the **Blueprint Platform** — an architecture‑first project generation ecosystem designed to enable consistent, enforceable, and scalable enterprise development.
+
+Unlike traditional generators that simply scaffold code, Blueprint Platform aims to:
+
+* **Standardize enterprise best practices** through opinionated architecture and code structure
+* **Integrate reusable common libraries** that encapsulate cross‑cutting concerns (security, logging, error handling, tracing, OpenAPI clients, etc.)
+* **Enforce architectural integrity** using built‑in validation and guardrails (e.g., hexagonal boundaries, naming rules, testable layout)
+
+As the platform evolves, more modules will be introduced to complement `codegen-blueprint` with:
+
+* Ready‑to‑use behavior‑driven libraries
+* Consistent and generics‑aware OpenAPI client generation
+* Support for multiple frameworks and technology stacks
+
+🔗 Learn more at the [Blueprint Platform GitHub Organization](https://github.com/blueprint-platform)
+
+> This aligns with the upcoming **Vision & Roadmap** section below.
+
 
 > **Domain stays clean — Ports and adapters connect everything else.**
 
@@ -161,23 +183,28 @@ bootstrap    // Spring wiring + config
 
 ## 🔌 Inbound & Outbound Adapters
 
-### Inbound (Delivery)
+Adapters drive interactions **in** and **out** of the core domain — keeping domain logic isolated and testable.
 
-| Adapter | Status           |
-| ------- | ---------------- |
-| CLI     | ✔ Primary driver |
-| REST    | 🚧 Planned       |
+### Inbound (Delivery) — How requests enter
 
-### Outbound (Artifacts)
+| Adapter | Status     | Description                                             |
+| ------- | ---------- | ------------------------------------------------------- |
+| CLI     | ✔ GA Ready | Primary driver to generate services via command-line    |
+| REST    | 🚧 Planned | Future interactive generation + developer onboarding UX |
+
+### Outbound (Artifacts) — What the engine produces
+
+Everything required to **build → run → extend** a real service:
 
 * Maven POM + Wrapper
-* Application YAML
-* Main + Test sources
-* Optional greeting sample
-* Project documentation
-* Filesystem writer
+* Main & Test source structure
+* Domain + Application + Adapter layout
+* Application configuration (YAML)
+* Optional Hexagonal sample slice
+* README + project docs
+* Filesystem writer for artifact creation
 
-> Everything required to **build → run → extend**
+> The domain depends on nothing — adapters depend on the domain.
 
 ---
 
@@ -194,7 +221,8 @@ java -jar codegen-blueprint-1.0.0.jar \
   --layout hexagonal \
   --sample-code basic \
   --dependency web \
-  --dependency data_jpa
+  --dependency data_jpa \
+  --target-dir /path/to/output
 ```
 
 **Output (simplified)**
@@ -229,25 +257,70 @@ Includes:
 
 ## 🚀 Vision & Roadmap
 
-> Architecture should **execute**, not merely be drawn.
+> Architecture should **execute**, not merely be drawn.  
+> And it should stay enforced — even 6, 12, 24 months later.
 
-### Near‑term
+### 🌟 The Vision
 
-* 🧱 Hexagonal evolution kits (ports / adapters / CQRS)
-* 🔐 Secure defaults — OAuth2 / Keycloak
-* 📈 Observability wiring — tracing + metrics
-* 🧩 Multi‑module service generation
+**Blueprint Platform** =  
+🔹 Architecture-as-a-Product  
+🔹 Reusable Behavior Libraries  
+🔹 Enforced Consistency Across Teams
 
-### Ecosystem Expansion
-
-* Gradle profile
-* Kotlin + Quarkus
-* Developer UI — configure → generate → download
-
-📌 Community votes influence priorities:
-[https://github.com/blueprint-platform/codegen-blueprint/discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
+From Day Zero to Production — architecture remains **intentional**, **testable**, and **aligned**.
 
 ---
+
+### 🎯 Roadmap
+
+#### 🔹 Phase 1 — Architecture-First Generation (Today)
+* Hexagonal / Layered architecture enforcement
+* Profile-driven CLI generation (Spring Boot · Maven · Java 21)
+* Domain purity: **no Spring inside the core**
+* End-to-end testable scaffolding
+
+📌 **1.0.0 GA Objective** → Zero-drift architectural foundations
+
+---
+
+#### 🔹 Phase 2 — Reusable Enterprise Behavior (In Progress)
+* 🔐 Security defaults (OAuth2 / Keycloak)
+* 📡 Resilience / Retries / Standardized error handling
+* 🔍 Observability: tracing + logs + metrics — auto-wired
+* 🧩 Multi-module enterprise service kits (API + Domain + Infra)
+* Generics-aware OpenAPI client generation
+
+📌 Libraries become **switch-on features**, not generated boilerplate
+
+---
+
+#### 🔹 Phase 3 — Ecosystem Expansion (Roadmap)
+* Gradle & Kotlin support
+* Quarkus + future stack profiles
+* Visual UI — configure → generate → download
+* Drift detection & auto-remediation (governance at scale)
+* Platform telemetry for architecture health
+
+📌 Community-driven priorities →  
+🔗 Participate: https://github.com/blueprint-platform/codegen-blueprint/discussions
+
+---
+
+### 🧩 Why this matters
+
+| Without Blueprint | With Blueprint |
+|------------------|----------------|
+| Architecture drifts silently | Guardrails keep intent executable |
+| Boilerplate everywhere | Cross-cutting concerns via libraries |
+| Onboarding takes weeks | Day-zero productivity |
+| Standards depend on discipline | Standards enforced by construction |
+
+> 📌 The platform grows → Projects stay clean → Enterprise stays consistent
+
+---
+
+**Blueprint Platform isn’t just code generation —  
+it is strategic architectural continuity.**
 
 ## 🤝 Contributing
 
