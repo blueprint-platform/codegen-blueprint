@@ -124,7 +124,7 @@ bootstrap    // configuration & wiring
        alt="Hexagonal Architecture Overview"
        width="840"/>
   <br/>
-  <em>Flow: Inputs ➜ Use Cases ➜ Domain Rules ➜ Artifacts ➜ Executable Service</em>
+  <em>CLI input → Use case orchestration → Domain constraints → Artifact generation → Spring Boot project output</em>
 </p>
 
 ---
