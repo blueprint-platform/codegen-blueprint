@@ -101,10 +101,10 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   List<SpringBootDependencyAlias> dependencies;
 
   @Option(
-          names = {"--sample-code"},
-          required = false,
-          description = "Sample code level. Valid values: ${COMPLETION-CANDIDATES}",
-          defaultValue = "none")
+      names = {"--sample-code"},
+      required = false,
+      description = "Sample code level. Valid values: ${COMPLETION-CANDIDATES}",
+      defaultValue = "none")
   SampleCodeLevel sampleCode;
 
   @Option(
