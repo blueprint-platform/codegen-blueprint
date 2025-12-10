@@ -1,0 +1,176 @@
+package io.github.blueprintplatform.codegen.application.usecase.project;
+
+import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
+import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
+import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
+import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy;
+import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
+import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+@Tag("unit")
+@Tag("application")
+class CreateProjectHandlerTest {
+
+  @TempDir Path tempDir;
+
+  @Test
+  @DisplayName("handle() prepares project root, writes artifacts, and returns archive path")
+  void handle_prepares_root_writes_artifacts_and_archives() {
+    var mapper = new ProjectBlueprintMapper();
+    var fakeRootPort = new FakeRootPort();
+    var fakeArtifacts = new FakeArtifactsPort();
+    var fakeSelector = new FakeSelector(fakeArtifacts);
+    var fakeWriter = new FakeWriterPort();
+    var fakeArchiver = new FakeArchiverPort();
+
+    var handler =
+        new CreateProjectHandler(mapper, fakeRootPort, fakeSelector, fakeWriter, fakeArchiver);
+
+    var cmd = getCreateProjectCommand();
+
+    var result = handler.handle(cmd);
+
+    assertThat(result.archivePath()).hasFileName("demo-app.zip");
+    assertThat(fakeArchiver.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
+    assertThat(fakeArchiver.lastArtifactId).isEqualTo("demo-app");
+
+    assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(tempDir.resolve("demo-app"));
+    assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
+
+    assertThat(fakeWriter.writtenFiles)
+        .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths)
+        .hasSize(fakeArtifacts.lastEmittedRelativePaths.size());
+  }
+
+  private CreateProjectCommand getCreateProjectCommand() {
+    var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+
+    return new CreateProjectCommand(
+        "com.acme",
+        "demo-app",
+        "Demo App",
+        "Demo project",
+        "com.acme.demo",
+        techStack,
+        ProjectLayout.STANDARD,
+        platformTarget,
+        List.of(),
+        SampleCodeOptions.none(),
+        tempDir);
+  }
+
+  static class FakeRootPort implements ProjectRootPort {
+    Path lastPreparedRoot;
+    ProjectRootExistencePolicy lastPolicy;
+
+    @Override
+    public Path prepareRoot(Path targetDir, String artifactId, ProjectRootExistencePolicy policy) {
+      this.lastPolicy = policy;
+      this.lastPreparedRoot = targetDir.resolve(artifactId);
+      return lastPreparedRoot;
+    }
+  }
+
+  static class FakeSelector implements ProjectArtifactsSelector {
+    private final ProjectArtifactsPort delegate;
+
+    FakeSelector(ProjectArtifactsPort delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public ProjectArtifactsPort select(TechStack options) {
+      return delegate;
+    }
+  }
+
+  static class FakeArtifactsPort implements ProjectArtifactsPort {
+    final List<Path> lastEmittedRelativePaths = new ArrayList<>();
+
+    @Override
+    public Iterable<? extends GeneratedResource> generate(ProjectBlueprint bp) {
+      var files =
+          List.of(
+              new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8),
+              new GeneratedTextResource(Path.of(".gitignore"), "*.class", StandardCharsets.UTF_8),
+              new GeneratedTextResource(
+                  Path.of("src/main/java/com/acme/demo/DemoApplication.java"),
+                  "class DemoApplication {}",
+                  StandardCharsets.UTF_8),
+              new GeneratedTextResource(
+                  Path.of("src/test/java/com/acme/demo/DemoApplicationTests.java"),
+                  "class DemoApplicationTests {}",
+                  StandardCharsets.UTF_8),
+              new GeneratedTextResource(
+                  Path.of("src/main/resources/application.yml"),
+                  "spring:\n  application:\n    name: demo-app",
+                  StandardCharsets.UTF_8),
+              new GeneratedTextResource(
+                  Path.of("README.md"),
+                  "# Demo App\n\nThis project was generated by Codegen Initializr.",
+                  StandardCharsets.UTF_8));
+
+      lastEmittedRelativePaths.clear();
+      for (var gf : files) {
+        lastEmittedRelativePaths.add(gf.relativePath());
+      }
+      return files;
+    }
+  }
+
+  static class FakeWriterPort implements ProjectWriterPort {
+    final List<Path> writtenFiles = new ArrayList<>();
+
+    @Override
+    public void writeBytes(Path projectRoot, Path relativePath, byte[] content) {
+      writtenFiles.add(relativePath);
+    }
+
+    @Override
+    public void writeText(Path projectRoot, Path relativePath, String content, Charset charset) {
+      writtenFiles.add(relativePath);
+    }
+
+    @Override
+    public void createDirectories(Path projectRoot, Path relativeDir) {
+      // no directory creation
+    }
+  }
+
+  static class FakeArchiverPort implements ProjectArchiverPort {
+    Path lastProjectRoot;
+    String lastArtifactId;
+
+    @Override
+    public Path archive(Path projectRoot, String artifactId) {
+      this.lastProjectRoot = projectRoot;
+      this.lastArtifactId = artifactId;
+      return projectRoot.getParent().resolve(artifactId + ".zip");
+    }
+  }
+}
