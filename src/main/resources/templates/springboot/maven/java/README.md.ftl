@@ -12,7 +12,7 @@ ${projectDescription}
 |---------|------|
 | **Framework** | ${framework} |
 | **Language** | ${language} |
-| **Build Tool** | ${buildTool?upper_case} |
+| **Build Tool** | ${buildTool} |
 | **Java** | ${javaVersion} |
 | **Spring Boot** | ${springBootVersion} |
 
@@ -52,17 +52,48 @@ src
 
 <#-- Optional hexagonal showcase -->
 <#if hasHexSample?? && hasHexSample>
-
 ---
 
 ## 🧱 Hexagonal Architecture Example
 
-This project includes an example **domain → application → adapter** structure:
-* Domain models and rules
-* Application use cases
-* CLI / Web / Persistence adapters
+This project was generated with the optional **hexagonal layout**:
 
-Modular & clean expansion ready! ✨
+```bash
+--layout hexagonal
+```
+
+With this flag, your `src/main/java/${packageName?replace('.', '/')}` tree is structured for:
+
+* `domain` – core business rules (no Spring dependencies)
+* `application` – use cases orchestrating ports
+* `adapter` – inbound & outbound adapters
+* `bootstrap` – configuration and wiring
+
+If you also enabled **sample code**:
+
+```bash
+--sample-code basic
+```
+
+then the project includes a minimal but complete **greeting flow** wired end-to-end:
+
+* **Domain & ports** – greeting model and port contracts
+* **Application** – greeting use case orchestration
+* **REST adapter** – sample controller exposing:
+
+```bash
+GET /api/v1/sample/greetings/default
+→ 200 OK
+{
+"text": "Hello from hexagonal sample!"
+}
+```
+
+You can use this sample in two ways:
+
+* As a **teaching reference** for hexagonal structure in this codebase
+* As a **starting slice** to evolve into your real business modules
+
 </#if>
 
 ---
@@ -70,23 +101,23 @@ Modular & clean expansion ready! ✨
 ## 📚 Selected Dependencies
 
 <#if dependencies?has_content>
-    | Dependency | Scope |
-    |-----------|-------|
-    <#list dependencies as d>
-        | `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
-    </#list>
+| Dependency | Scope |
+|-----------|-------|
+<#list dependencies as d>
+| `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
+</#list>
 <#else>
-    > No additional dependencies were selected.
+> No additional dependencies were selected.
 </#if>
 
 ---
 
 ## 🧩 Next Steps
 
-✔ Structure your domain and use case logic
-✔ Add CI/CD pipelines or Docker support
-✔ Configure profiles in `application.yml`
-✔ Add more Spring Boot starters if needed
+* ✔ Structure your domain and use case logic
+* ✔ Add CI/CD pipelines or Docker support
+* ✔ Configure profiles in `application.yml`
+* ✔ Add more Spring Boot starters if needed
 
 ---
 

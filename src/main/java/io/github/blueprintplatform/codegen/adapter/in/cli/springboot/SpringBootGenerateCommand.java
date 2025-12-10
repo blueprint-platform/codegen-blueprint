@@ -101,11 +101,11 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   List<SpringBootDependencyAlias> dependencies;
 
   @Option(
-      names = {"--samples"},
-      required = false,
-      description = "Sample code level. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "none")
-  SampleCodeLevel samples;
+          names = {"--sample-code"},
+          required = false,
+          description = "Sample code level. Valid values: ${COMPLETION-CANDIDATES}",
+          defaultValue = "none")
+  SampleCodeLevel sampleCode;
 
   @Option(
       names = {"--target-dir"},
@@ -137,7 +137,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
             profile,
             layout.key(),
             dependencyAliases,
-            samples.key(),
+            sampleCode.key(),
             targetDirectory);
 
     var command = mapper.from(request, buildTool, language, javaVersion, bootVersion);

@@ -19,20 +19,20 @@
 
 ## 🧠 Why Codegen Blueprint Exists
 
-Modern engineering teams don’t struggle to **start** new services —  
+Modern engineering teams don’t struggle to **start** new services —
 they struggle to keep them **architecturally consistent** as they scale.
 
-Most generators create a folder layout and walk away.  
-Codegen Blueprint enforces **architectural integrity**:
+Most generators produce a folder structure and walk away.
+Codegen Blueprint safeguards **architectural integrity**:
 
-* Starts clean — no framework leaks into the domain
+* Starts clean — no framework dependencies in the domain
 * Stays clean — structure guides every evolution
-* Prevents silent architecture drifts over time
+* Prevents silent architecture drift
 
-Not just scaffolding.  
+Not just scaffolding.
 Not just templates.
 
-> **Architecture embedded into the software delivery pipeline.**
+> **Executable Architecture — baked into the delivery pipeline.**
 
 <br/>
 
@@ -48,31 +48,28 @@ Not just templates.
 
 ### 🎯 Who is this for?
 
-| Role                 | What you gain                     |
-| -------------------- | --------------------------------- |
-| Platform Engineering | Organization‑wide standardization |
-| Lead Architect       | Governance as Code                |
-| Developers           | Clean architecture from day zero  |
-| New Team Members     | Instant productivity              |
+| Role                 | Benefit                          |
+| -------------------- | -------------------------------- |
+| Platform Engineering | Org‑wide standardization         |
+| Lead Architect       | Governance as Code               |
+| Developers           | Clean architecture from day zero |
+| New Team Members     | Instant productivity             |
 
 ---
 
 ### 🥇 What makes it different?
 
-> **This is not a competitor comparison.**  
-> Spring Initializr and JHipster are fantastic and widely used tools with different missions.  
-> Codegen Blueprint focuses specifically on keeping architecture **intentional** from day zero.
+> **Initializr‑like simplicity** ➜ **Architecture‑first consistency**
 
-| Capability Focus                   | Spring Initializr & JHipster | Codegen Blueprint |
-| ---------------------------------- | ---------------------------- | ----------------- |
-| Generates folder layout            | ✔                            | ✔                 |
-| Opinionated architecture defaults  | ⚠️                           | **✔**             |
-| Domain isolation by design         | ❌                           | **✔**             |
-| Profile-driven evolution paths     | ⚠️                           | **✔**             |
-| Anti-drift architecture support    | ❌                           | **✔**             |
+| Capability Focus                  | Spring Initializr & JHipster | Codegen Blueprint |
+| --------------------------------- | ---------------------------- | ----------------- |
+| Generates folder layout           | ✔                            | ✔                 |
+| Opinionated architecture defaults | ⚠️                           | **✔**             |
+| Domain isolation by design        | ❌                            | **✔**             |
+| Profile‑driven evolution paths    | ⚠️                           | **✔**             |
+| Anti‑drift support (future‑ready) | ❌                            | **✔**             |
 
-> 🚀 Same starting point → different long-term destination  
-> 🧭 Codegen Blueprint helps teams **preserve architectural integrity** as services evolve
+> 🧭 Same starting point — **better long‑term alignment**
 
 ---
 
@@ -81,6 +78,7 @@ Not just templates.
 * ⚡ [What is Codegen Blueprint (Today)?](#-what-is-codegen-blueprint-today)
 * 🧭 [1.0.0 Scope & Status](#-100-scope--status)
 * 💡 [Why This Project Matters](#-why-this-project-matters)
+* 🔔 [Sample Code & Greeting Example](#-sample-code--greeting-example)
 * 🔌 [Inbound Adapter](#-inbound-adapter-delivery)
 * ⚙️ [Outbound Adapters & Artifacts](#-outbound-adapters--artifacts)
 * 🧪 [Testing & CI](#-testing--ci)
@@ -96,111 +94,117 @@ Not just templates.
 
 A **CLI‑driven**, **architecture‑aware** project generator.
 
-📌 Current primary profile:
-**springboot‑maven‑java**
-(Spring Boot 3 + Maven + Java 21)
+📌 Current primary profile: **springboot‑maven‑java**
+(✔ Spring Boot 3.5.x · ✔ Java 21 · ✔ Maven)
 
-Generates a **clean**, **ready‑to‑extend** Spring Boot project structure — similar to Spring Initializr, but with:
+Produces a clean and predictable structure with:
 
-* Clear and predictable layout
-* Standardized project metadata (groupId, name, package)
-* Built‑in test entry points from day zero
-* Consistency without dependency overload
+* Standardized identifiers (groupId, artifactId, package)
+* Clear boundaries for maintainability
+* Tests ready from day zero
+* No dependency overload
 
 ### Optional Architecture Layout
 
-📌 Hexagonal is an evolution path — not a barrier.
-
-For teams embracing Clean/Hexagonal architecture:
+📌 Hexagonal is an **opt‑in structured evolution path**.
 
 ```
-domain       // business rules (no Spring dependencies)
+domain       // business logic only (no Spring)
 application  // orchestrates ports
-adapters     // inbound & outbound adapters
-bootstrap    // Spring wiring & configuration
+adapters     // inbound & outbound
+bootstrap    // configuration & wiring
 ```
 
-> "Spring Initializr — but **with architecture options built‑in**, not bolted on later."
+> “Framework‑free domain — intentional architecture from day zero.”
 
 <br/>
 
 <p align="center">
   <img src="docs/images/architecture/architecture-overview.png"
-       alt="Codegen Blueprint — Hexagonal Architecture Overview"
+       alt="Hexagonal Architecture Overview"
        width="840"/>
   <br/>
-  <em>
-  Engine flow: CLI input ➜ Use case orchestration ➜ Domain constraints ➜ Artifact generation ➜ Spring Boot project output
-  </em>
+  <em>Flow: Inputs ➜ Use Cases ➜ Domain Rules ➜ Artifacts ➜ Executable Service</em>
 </p>
 
 ---
 
 ## 🧭 1.0.0 Scope & Status
 
-### What is included (1.0.0)
+### Included in 1.0.0
 
-| Capability                                      | Status             |
-|-------------------------------------------------|-------------------|
-| CLI-based generation                            | ✔ Production-ready |
-| Standard Spring Boot skeleton                   | ✔ Stable           |
-| Hexagonal layout option (opt-in)                | ✔ Available        |
-| Spring Boot 3 / Java 21 / Maven support         | ✔                  |
-| Main + test entrypoints generated               | ✔                  |
-| Required artifacts generated (pom, YAML, etc.)  | ✔                  |
-| Open-source licensing                           | ✔ MIT License      |
+| Feature                                | Status             |
+| -------------------------------------- | ------------------ |
+| CLI‑based generation                   | ✔ Production‑ready |
+| Hexagonal architecture layout (opt‑in) | ✔ Available        |
+| Spring Boot 3 / Java 21 / Maven        | ✔ Supported        |
+| Main + test entrypoints                | ✔ Provided         |
+| Required build + config artifacts      | ✔ Generated        |
+| Greeting sample (optional sample‑code) | ✔ Included         |
+| MIT License                            | ✔ Open‑source      |
 
-### What is planned next
+### Up Next
 
-| Feature                                       | Status     |
-|----------------------------------------------|------------|
-| REST inbound adapter                         | Planned    |
-| Advanced hexagonal variations (ports, CQRS)  | Planned    |
-| Additional profiles (Gradle, Kotlin, Quarkus)| Planned    |
-| Multi-module generation                      | Planned    |
-| Foundation libraries (`blueprint-*`)         | Planned    |
-| Developer UI / web console                   | Evaluating |
+| Feature                                        | Status     |
+|------------------------------------------------| ---------- |
+| REST inbound adapter                           | Planned    |
+| Hexagonal evolution kit (ports + CQRS)         | Planned    |
+| Additional profiles (Gradle, Kotlin, Quarkus)  | Planned    |
+| Foundation libraries (`blueprint-*`)           | Planned    |
+| Multi‑module services                          | Planned    |
+| Developer UI                                   | Evaluating |
 
-> Strategy: **Deep quality in one profile** → then expand ecosystem.
+> ✔ Deep quality first → expand ecosystem next
 
 📌 For more details:
-- [Engine Enforcement Scope (1.0.0)](docs/architecture/engine-scope.md)
-- [Generated Project Scope (1.0.0)](docs/architecture/project-scope.md)
+- [Executable Architecture Scope (1.0.0)](docs/architecture/executable-architecture-scope.md)
+
+---
 
 ## 💡 Why This Project Matters
 
-Modern services deserve more than a bare `/src/main/java`.
+Clean architecture shouldn’t be optional.
 
-You get:
+You gain:
 
-* ✔ Predictable structure
+* ✔ Predictable structure & boundaries
 * ✔ Testability from day zero
-* ✔ Architecture as a **standard**, not an afterthought
-* ✔ Faster onboarding
+* ✔ Faster onboarding & team scaling
+* ✔ Architectural governance without friction
 
 You avoid:
 
-* ❌ Copy-paste architecture
-* ❌ Every repo looks different
-* ❌ Best practices lost over time
-* ❌ Silent architecture drift
+* ❌ Copy‑paste architecture
+* ❌ Each repo reinventing patterns
+* ❌ Best‑practice rot over time
+* ❌ Architecture drift
 
-📘 Explore the architecture:  
+📘 Explore design:
 👉 [How to Explore This Project (Hexagonal Architecture Guide)](./docs/guides/how-to-explore-hexagonal-architecture.md)
 
-### 🧩 Strategic Impact
+### Strategic Impact
 
-Architecture stays **intentional — not accidental**.
+Architecture becomes **intentional — enforceable — repeatable**.
 
-Teams benefit from:
+---
 
-* Standardized setup across services
-* Clear responsibility boundaries
-* Faster developer onboarding
-* Future enforcement ready (ArchUnit, boundaries)
+## 🔔 Sample Code & Greeting Example
 
-Result:
-**Every new service starts aligned — and scales without losing its architecture.**
+📌 Minimal but meaningful reference sample:
+
+* Domain model: **Greeting**
+* Use case: generate greeting text
+* Inbound REST adapter: `/api/v1/sample/greetings/default`
+* Hexagonal structure illustrates **port‑driven design**
+
+Enabled when flags include:
+
+```
+--layout hexagonal \
+--sample-code basic
+```
+
+> Designed as a **teaching reference** and a **quick productivity boost**
 
 ---
 
@@ -221,17 +225,18 @@ Active profile:
 springboot‑maven‑java
 ```
 
-Generated artifacts (1.0.0):
+Generated artifacts:
 
-| Category          | Includes                                                               |
-|------------------|-------------------------------------------------------------------------|
-| Build files       | `pom.xml`, Maven Wrapper (`mvnw`, `.mvn/`)                              |
-| Runtime config    | `src/main/resources/application.yml`                                   |
-| Source entrypoints | Main application & test bootstrap classes                              |
-| Git hygiene       | Standard `.gitignore`                                                   |
-| Documentation     | Minimal `README.md` inside the generated project                        |
+| Category        | Includes                                                 |
+| --------------- | -------------------------------------------------------- |
+| Build system    | `pom.xml`, Maven Wrapper                                 |
+| Runtime config  | `src/main/resources/application.yml`                     |
+| Source skeleton | Main application & test bootstraps                       |
+| Sample code     | Optional greeting sample (domain + ports + REST adapter) |
+| Git hygiene     | `.gitignore`                                             |
+| Docs (minimal)  | `README.md` inside generated project                     |
 
-> Everything required to **build, run, test and evolve** a clean Spring Boot service from day zero.
+> Everything required to **build ▸ run ▸ extend** a clean service
 
 ---
 
@@ -241,12 +246,10 @@ Generated artifacts (1.0.0):
 mvn verify
 ```
 
-Includes:
-
-* ✔ Unit + integration tests
-* ✔ JaCoCo coverage
-* ✔ CodeQL security scan
-* ✔ Codecov reporting
+* Unit + integration tests ✔
+* JaCoCo coverage ✔
+* CodeQL security ✔
+* Codecov reporting ✔
 
 ---
 
@@ -256,44 +259,44 @@ Includes:
 java -jar codegen-blueprint-1.0.0.jar \
   --cli \
   springboot \
-  --group-id com.acme \
-  --artifact-id demo \
-  --name "Demo App" \
-  --description "Demo application for Acme" \
-  --package-name com.acme.demo \
+  --group-id io.github.blueprintplatform.samples \
+  --artifact-id greeting-service \
+  --name "Greeting Service" \
+  --description "Hexagonal greeting sample powered by Blueprint" \
+  --package-name io.github.blueprintplatform.samples.greeting \
   --layout hexagonal \
+  --sample-code basic \
   --dependency web \
-  --dependency data_jpa \
-  --dependency validation
+  --dependency data_jpa
 ```
 
 **Output (simplified)**
 
 ```
-demo/
+greeting-service/
  ├── pom.xml
- ├── src/main/java/com/example/demo/DemoApplication.java
- ├── src/test/java/com/example/demo/DemoApplicationTests.java
+ ├── src/main/java/io/github/blueprintplatform/samples/greeting/GreetingServiceApplication.java
+ ├── src/test/java/io/github/blueprintplatform/samples/greeting/GreetingServiceApplicationTests.java
  ├── src/main/resources/application.yml
  └── .gitignore
 ```
+
+> Hexagonal + sample code = ready‑to‑run REST greeting service
 
 ---
 
 ## 🚀 Vision & Roadmap (Beyond 1.0.0)
 
-> Best practices should **execute**, not just be documented.
+> Best practices should **execute**, not merely be documented.
 
-Roadmap themes:
-
-* 🧱 Hexagonal evolution kit (ports + adapters + CQRS)
-* 📈 Observability acceleration (metrics + tracing defaults)
-* 🔐 Enterprise-grade security (OAuth2 / Keycloak)
-* 🧩 Multi-module service composition
-* 🎯 Broader profile ecosystem (Gradle / Kotlin / Quarkus)
+* 🧱 Hexagonal evolution kits (ports / adapters / CQRS)
+* 📈 Observability defaults (tracing / metrics)
+* 🔐 Security (OAuth2 / Keycloak patterns)
+* 🧩 Multi‑module service generation
+* 🎯 Broader ecosystem: Gradle / Kotlin / Quarkus
 * 💻 Developer UI → configure → generate → download
 
-> **Executable Architecture** for modern service development.
+> **Executable Architecture for modern delivery**
 
 ---
 

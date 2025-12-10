@@ -42,7 +42,7 @@ class SpringBootGenerateCommandTest {
     cmd.bootVersion = SpringBootVersion.V3_5;
 
     cmd.layout = ProjectLayout.STANDARD;
-    cmd.samples = SampleCodeLevel.NONE;
+    cmd.sampleCode = SampleCodeLevel.NONE;
     cmd.dependencies = List.of(SpringBootDependencyAlias.WEB);
     Path expected = Path.of(".");
     cmd.targetDirectory = expected;
