@@ -13,6 +13,24 @@ Architecture decisions are **compiled into the generator itself**:
 
 > **Architecture is not a guideline — it executes.**
 
+## 📑 Table of Contents
+
+- [Why Hexagonal Here?](#-why-hexagonal-here)
+- [Layered Execution Flow](#-layered-execution-flow)
+- [Ports & Adapters — Where the Power Lives](#-ports--adapters--where-the-power-lives)
+- [Domain → Outbound Ports](#-domain--outbound-ports-pure-infrastructure-abstractions)
+- [Application → Outbound Ports](#-application--outbound-ports-delivery--orchestration)
+- [Application → Artifact Generation Ports](#-application--artifact-generation-ports)
+- [Artifact Execution Engine](#-artifact-execution-engine)
+- [Profiles — The Architecture Contract](#-profiles--the-architecture-contract)
+- [Source Layout Enforcement](#-source-layout-enforcement)
+- [Resource Model](#-resource-model--better-than-just-files)
+- [Verified Architecture — Testing Strategy](#-verified-architecture--testing-strategy)
+- [What You Learn from This Repo](#-what-you-learn-from-this-repo)
+- [Try It — CLI Delivery Adapter](#-try-it--cli-delivery-adapter)
+- [Architecture Execution Path](#-architecture-execution-path-mental-model)
+- [Final Thoughts](#-final-thoughts)
+
 ---
 
 ## 🧭 Why Hexagonal Here?
