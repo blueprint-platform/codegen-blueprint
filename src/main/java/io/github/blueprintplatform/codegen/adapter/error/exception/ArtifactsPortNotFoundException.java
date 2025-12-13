@@ -1,19 +1,17 @@
 package io.github.blueprintplatform.codegen.adapter.error.exception;
 
-import io.github.blueprintplatform.codegen.adapter.out.profile.ProfileType;
-
 @SuppressWarnings("java:S110")
 public final class ArtifactsPortNotFoundException extends AdapterException {
 
   private static final String KEY = "adapter.artifacts.port.not.found";
-  private final ProfileType profileType;
+  private final String profileKey;
 
-  public ArtifactsPortNotFoundException(ProfileType profileType) {
-    super(KEY, profileType.name());
-    this.profileType = profileType;
+  public ArtifactsPortNotFoundException(String profileKey) {
+    super(KEY, profileKey);
+    this.profileKey = profileKey;
   }
 
-  public ProfileType getProfileType() {
-    return profileType;
+  public String getProfileKey() {
+    return profileKey;
   }
 }

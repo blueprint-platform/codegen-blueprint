@@ -3,7 +3,6 @@ package io.github.blueprintplatform.codegen.bootstrap.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.blueprintplatform.codegen.adapter.out.profile.ProfileType;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
 import java.util.List;
@@ -16,15 +15,13 @@ import org.junit.jupiter.api.Test;
 @Tag("bootstrap")
 class CodegenProfilesPropertiesTest {
 
-  private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
+  private static final String PROFILE_KEY = ProfileKeys.SPRING_BOOT_MAVEN_JAVA;
   private static final ArtifactKey ARTIFACT_KEY = ArtifactKey.BUILD_CONFIG;
-  private static final String PROFILE_KEY = PROFILE.key();
   private static final String ARTIFACT_MAP_KEY = ARTIFACT_KEY.key();
   private static final String TEMPLATE_BASE_PATH = "springboot/maven/java/";
 
-  private static CodegenProfilesProperties getCodegenProfilesProperties() {
+  private static CodegenProfilesProperties getCodegenProfilesPropertiesWithBlankBasePath() {
     TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
-
     ArtifactDefinition artifactDefinition =
         new ArtifactDefinition(null, List.of(templateDefinition));
 
@@ -45,7 +42,6 @@ class CodegenProfilesPropertiesTest {
       "artifact() should return ArtifactDefinition with profile basePath and artifact templates")
   void artifact_shouldReturnDefinitionWithProfileBasePathAndArtifactTemplates() {
     TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
-
     ArtifactDefinition artifactDefinition =
         new ArtifactDefinition("artifact-specific/", List.of(templateDefinition));
 
@@ -59,7 +55,7 @@ class CodegenProfilesPropertiesTest {
         new CodegenProfilesProperties(
             Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
 
-    ArtifactDefinition result = properties.artifact(PROFILE, ARTIFACT_KEY);
+    ArtifactDefinition result = properties.artifact(PROFILE_KEY, ARTIFACT_KEY);
 
     assertThat(result.basePath()).isEqualTo(TEMPLATE_BASE_PATH);
     assertThat(result.templates()).isSameAs(artifactDefinition.templates());
@@ -72,7 +68,7 @@ class CodegenProfilesPropertiesTest {
     CodegenProfilesProperties properties =
         new CodegenProfilesProperties(Map.of(), defaultSamplesProperties());
 
-    assertThatThrownBy(() -> properties.requireProfile(PROFILE))
+    assertThatThrownBy(() -> properties.requireProfile(PROFILE_KEY))
         .isInstanceOfSatisfying(
             ProfileConfigurationException.class,
             ex -> {
@@ -92,7 +88,7 @@ class CodegenProfilesPropertiesTest {
         new CodegenProfilesProperties(
             Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
 
-    assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
+    assertThatThrownBy(() -> properties.artifact(PROFILE_KEY, ARTIFACT_KEY))
         .isInstanceOfSatisfying(
             ProfileConfigurationException.class,
             ex -> {
@@ -106,9 +102,9 @@ class CodegenProfilesPropertiesTest {
   @DisplayName(
       "artifact() should throw ProfileConfigurationException when templateBasePath is blank")
   void artifact_shouldThrowWhenTemplateBasePathBlank() {
-    CodegenProfilesProperties properties = getCodegenProfilesProperties();
+    CodegenProfilesProperties properties = getCodegenProfilesPropertiesWithBlankBasePath();
 
-    assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
+    assertThatThrownBy(() -> properties.artifact(PROFILE_KEY, ARTIFACT_KEY))
         .isInstanceOfSatisfying(
             ProfileConfigurationException.class,
             ex -> {

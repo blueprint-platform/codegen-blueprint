@@ -9,7 +9,7 @@ codegen:
     basic-dir-name: basic
     rich-dir-name: rich
   profiles:
-    springboot-maven-java:
+    spring-boot-maven-java:
       template-base-path: springboot/maven/java/
 
       ordered-artifact-keys:

@@ -1,6 +1,5 @@
 package io.github.blueprintplatform.codegen.bootstrap.config;
 
-import io.github.blueprintplatform.codegen.adapter.out.profile.ProfileType;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
 import jakarta.validation.Valid;
@@ -15,35 +14,34 @@ public record CodegenProfilesProperties(
     @Valid @NotNull Map<String, ProfileProperties> profiles,
     @Valid @NotNull SamplesProperties samples) {
 
-  public ArtifactDefinition artifact(ProfileType profile, ArtifactKey artifactKey) {
-    var profileProps = requireProfile(profile);
-    return requireArtifact(profile, profileProps, artifactKey);
+  public ArtifactDefinition artifact(String profileKey, ArtifactKey artifactKey) {
+    var profileProps = requireProfile(profileKey);
+    return requireArtifact(profileKey, profileProps, artifactKey);
   }
 
-  public ProfileProperties requireProfile(ProfileType profile) {
-    var key = profile.key();
-    var profileProps = profiles.get(key);
+  public ProfileProperties requireProfile(String profileKey) {
+    var profileProps = profiles.get(profileKey);
     if (profileProps == null) {
       throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_PROFILE_NOT_FOUND, key);
+          ProfileConfigurationException.KEY_PROFILE_NOT_FOUND, profileKey);
     }
     return profileProps;
   }
 
   ArtifactDefinition requireArtifact(
-      ProfileType profile, ProfileProperties profileProps, ArtifactKey artifactKey) {
+      String profileKey, ProfileProperties profileProps, ArtifactKey artifactKey) {
 
     ArtifactDefinition artifact = profileProps.artifacts().get(artifactKey.key());
     if (artifact == null) {
       throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey.key(), profile.key());
+          ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey.key(), profileKey);
     }
 
     String basePath = profileProps.templateBasePath();
 
     if (basePath == null || basePath.isBlank()) {
       throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING, profile.key());
+          ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING, profileKey);
     }
 
     return new ArtifactDefinition(basePath, artifact.templates());
