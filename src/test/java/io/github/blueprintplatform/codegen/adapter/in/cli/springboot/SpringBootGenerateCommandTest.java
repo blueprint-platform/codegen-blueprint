@@ -4,15 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.ProjectGenerationSummary;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +114,21 @@ class SpringBootGenerateCommandTest {
     @Override
     public CreateProjectResult handle(CreateProjectCommand command) {
       this.lastCommand = command;
-      return new CreateProjectResult(Path.of("demo-app.zip"));
+
+      var project =
+          new ProjectGenerationSummary(
+              "com.acme",
+              "demo-app",
+              "Demo App",
+              "Demo application for Acme",
+              "com.acme.demo",
+              new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+              ProjectLayout.STANDARD,
+              new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5),
+              SampleCodeOptions.none(),
+              List.of());
+
+      return new CreateProjectResult(project, Path.of("."), Path.of("demo-app.zip"), List.of());
     }
   }
 }

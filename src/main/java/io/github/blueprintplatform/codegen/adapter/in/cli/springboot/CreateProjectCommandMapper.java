@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.adapter.in.cli.springboot;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.DependencyInput;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;

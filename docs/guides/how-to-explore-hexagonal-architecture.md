@@ -57,71 +57,154 @@ Runtime wiring is delivered via `bootstrap` (Spring only at the edges).
 
 ## 🔌 Ports & Adapters — Where the Power Lives
 
-Ports define all allowed interactions.
-Adapters implement them — nothing more.
+Ports define **what is allowed**.
+Adapters define **how it is done**.
 
-### Domain → Outbound Ports
-
-| Port                  | Purpose                                          |
-| --------------------- | ------------------------------------------------ |
-| `ProjectRootPort`     | Prepare target output structure                  |
-| `ProjectWriterPort`   | Persist generated resources                      |
-| `ProjectArchiverPort` | Package delivery output (ZIP, future OCI images) |
-
-➡ Domain never touches IO.
+No shortcuts. No hidden dependencies.
 
 ---
 
-### Application → Artifact Generation Ports
+## 🧠 Domain → Outbound Ports (Pure Infrastructure Abstractions)
 
-Each generated output has a **dedicated port**:
+These ports represent **fundamental IO capabilities** required by the domain.
+The domain **declares the need**, but never performs IO itself.
 
-| Port                           | Generated Output                         |
-| ------------------------------ | ---------------------------------------- |
-| `BuildConfigurationPort`       | `pom.xml`                                |
-| `BuildToolFilesPort`           | Maven wrapper + tooling                  |
-| `SourceLayoutPort`             | Package + directory conventions          |
-| `MainSourceEntrypointPort`     | Main application bootstrap               |
-| `TestSourceEntrypointPort`     | Test conventions                         |
-| `ApplicationConfigurationPort` | `application.yml`                        |
-| `IgnoreRulesPort`              | `.gitignore`                             |
-| `ProjectDocumentationPort`     | README inside generated project          |
-| `SampleCodePort`               | Optional greeting service + REST adapter |
+> Domain declares **infrastructure capabilities it depends on** —
+> not generation steps, not delivery strategy.
 
-Execution engine:
+| Port                     | Responsibility                              |
+| ------------------------ | ------------------------------------------- |
+| `ProjectRootPort`        | Prepare and validate project root directory |
+| `ProjectWriterPort`      | Persist generated files and directories     |
+| `ProjectFileListingPort` | List generated files after project creation |
 
-| Component                  | Responsibility                              |
-| -------------------------- | ------------------------------------------- |
-| `ProjectArtifactsSelector` | Selects stack profile                       |
-| `ProjectArtifactsPort`     | Executes ports in exact architectural order |
+### Key Characteristics
 
-> Nothing is generated accidentally — every artifact is **intentional**.
+* ✔ No ZIP / archive knowledge
+* ✔ No delivery concerns
+* ✔ No CLI / REST assumptions
+* ✔ File-system is an **implementation detail**
 
----
-
-## 🧩 Profiles — The Architecture Contract
-
-Profiles externalize **what** is generated and **in which order**.
-
-Example — `springboot‑maven‑java` profile pipeline:
-
+```text
+domain.port.out.filesystem
+├─ ProjectRootPort
+├─ ProjectWriterPort
+└─ ProjectFileListingPort
 ```
-build-config → build-tool-files → ignore-rules
-→ source-layout → app-config
-→ main-source-entrypoint → test-source-entrypoint
+
+➡ **Domain never touches IO implementations**
+➡ **Domain never packages output**
+
+---
+
+## 🎯 Application → Outbound Ports (Delivery & Orchestration)
+
+Application layer owns **use-case execution** and **delivery concerns**.
+
+These ports exist because:
+
+* The domain does not care *how* output is delivered
+* The application **does**
+
+### Delivery / Packaging
+
+| Port                  | Responsibility                                      |
+| --------------------- | --------------------------------------------------- |
+| `ProjectArchiverPort` | Package generated project (ZIP today, OCI tomorrow) |
+
+```text
+application.port.out.archive
+└─ ProjectArchiverPort
+```
+
+➡ ZIP creation is **not a domain concern**
+➡ It is a **delivery mechanism**, therefore application-level
+
+---
+
+## 🧩 Application → Artifact Generation Ports
+
+Each generated artifact is **explicit**, **intentional**, and **independently replaceable**.
+
+| Port                           | Generated Output                   |
+| ------------------------------ | ---------------------------------- |
+| `BuildConfigurationPort`       | `pom.xml`                          |
+| `BuildToolFilesPort`           | Maven wrapper + tooling            |
+| `SourceLayoutPort`             | Directory & package conventions    |
+| `MainSourceEntrypointPort`     | Application bootstrap class        |
+| `TestSourceEntrypointPort`     | Test bootstrap                     |
+| `ApplicationConfigurationPort` | `application.yml`                  |
+| `IgnoreRulesPort`              | `.gitignore`                       |
+| `ProjectDocumentationPort`     | `README.md`                        |
+| `SampleCodePort`               | Optional sample REST / domain code |
+
+All artifact ports implement:
+
+```text
+application.port.out.artifact.ArtifactPort
+```
+
+---
+
+## ⚙️ Artifact Execution Engine
+
+Artifact generation is **ordered**, **deterministic**, and **profile-driven**.
+
+| Component                  | Responsibility                             |
+| -------------------------- | ------------------------------------------ |
+| `ProjectArtifactsSelector` | Selects profile-specific artifact pipeline |
+| `ProjectArtifactsPort`     | Executes artifacts in defined order        |
+
+> ProjectArtifactsPort is a composite executor —
+it guarantees order, grouping, and profile isolation.
+
+> Nothing is generated accidentally — every file is **architecturally intentional**.
+> Execution order is defined by the selected profile;
+the application merely **orchestrates** it.
+
+---
+
+## 🧬 Profiles — The Architecture Contract
+
+Profiles externalize **what is generated** and **in which order**.
+
+Example — `springboot-maven-java` profile pipeline:
+
+```text
+build-config
+→ build-tool-files
+→ ignore-rules
+→ source-layout
+→ app-config
+→ main-source-entrypoint
+→ test-source-entrypoint
 → sample-code (optional)
 → project-documentation
 ```
 
+### Why Profiles Matter
+
 Profiles are:
 
-* ✔ Organizational **architecture standards**
-* ✔ Reusable across **many products**
+* ✔ Enforced **architecture standards**
+* ✔ Reusable across **many teams & products**
 * ✔ Extensible with **zero core refactor**
+* ✔ The single source of truth for generation order
 
-> Architecture governance, expressed as configuration.
+> Architecture governance, expressed as configuration — not tribal knowledge.
 
 ---
+
+## 🧠 Architectural Takeaway
+
+* **Domain** defines *capabilities*
+* **Application** defines *orchestration & delivery*
+* **Adapters** define *technology*
+* **Profiles** define *architecture policy*
+
+Nothing leaks.
+Nothing is implicit.
+Everything is intentional.
 
 ## 📐 Source Layout Enforcement
 

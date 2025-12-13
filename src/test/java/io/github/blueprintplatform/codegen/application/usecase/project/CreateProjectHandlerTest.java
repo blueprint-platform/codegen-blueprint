@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -18,6 +19,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
+import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectFileListingPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
@@ -38,32 +40,58 @@ class CreateProjectHandlerTest {
   @TempDir Path tempDir;
 
   @Test
-  @DisplayName("handle() prepares project root, writes artifacts, and returns archive path")
-  void handle_prepares_root_writes_artifacts_and_archives() {
-    var mapper = new ProjectBlueprintMapper();
+  @DisplayName(
+      "handle() prepares project root, writes artifacts, lists files, and returns archive + summary")
+  void handle_prepares_root_writes_artifacts_lists_files_and_archives() {
+    var blueprintMapper = new ProjectBlueprintMapper();
+    var resultMapper = new CreateProjectResultMapper();
+
     var fakeRootPort = new FakeRootPort();
     var fakeArtifacts = new FakeArtifactsPort();
     var fakeSelector = new FakeSelector(fakeArtifacts);
     var fakeWriter = new FakeWriterPort();
+    var fakeFileListing = new FakeFileListingPort(fakeArtifacts);
     var fakeArchiver = new FakeArchiverPort();
 
-    var handler =
-        new CreateProjectHandler(mapper, fakeRootPort, fakeSelector, fakeWriter, fakeArchiver);
+    var executionContext =
+        new CreateProjectExecutionContext(
+            fakeRootPort, fakeSelector, fakeWriter, fakeFileListing, fakeArchiver);
+
+    var handler = new CreateProjectHandler(blueprintMapper, resultMapper, executionContext);
 
     var cmd = getCreateProjectCommand();
 
     var result = handler.handle(cmd);
 
     assertThat(result.archivePath()).hasFileName("demo-app.zip");
+    assertThat(result.projectRoot()).isEqualTo(tempDir.resolve("demo-app"));
+
     assertThat(fakeArchiver.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
     assertThat(fakeArchiver.lastArtifactId).isEqualTo("demo-app");
 
     assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(tempDir.resolve("demo-app"));
     assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
 
+    assertThat(fakeFileListing.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
+
     assertThat(fakeWriter.writtenFiles)
         .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths)
         .hasSize(fakeArtifacts.lastEmittedRelativePaths.size());
+
+    assertThat(result.project().groupId()).isEqualTo("com.acme");
+    assertThat(result.project().artifactId()).isEqualTo("demo-app");
+    assertThat(result.project().projectName()).isEqualTo("Demo App");
+    assertThat(result.project().projectDescription()).isEqualTo("Demo project");
+    assertThat(result.project().packageName()).isEqualTo("com.acme.demo");
+    assertThat(result.project().layout()).isEqualTo(ProjectLayout.STANDARD);
+    assertThat(result.project().sampleCode()).isEqualTo(SampleCodeOptions.none());
+
+    assertThat(result.files())
+        .extracting(f -> f.relativePath())
+        .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths);
+
+    assertThat(result.files()).allSatisfy(f -> assertThat(f.executable()).isFalse());
+    assertThat(result.files()).allSatisfy(f -> assertThat(f.binary()).isFalse());
   }
 
   private CreateProjectCommand getCreateProjectCommand() {
@@ -158,7 +186,22 @@ class CreateProjectHandlerTest {
 
     @Override
     public void createDirectories(Path projectRoot, Path relativeDir) {
-      // no directory creation
+      // noop
+    }
+  }
+
+  static class FakeFileListingPort implements ProjectFileListingPort {
+    private final FakeArtifactsPort artifactsPort;
+    Path lastProjectRoot;
+
+    FakeFileListingPort(FakeArtifactsPort artifactsPort) {
+      this.artifactsPort = artifactsPort;
+    }
+
+    @Override
+    public List<Path> listFiles(Path projectRoot) {
+      this.lastProjectRoot = projectRoot;
+      return List.copyOf(artifactsPort.lastEmittedRelativePaths);
     }
   }
 

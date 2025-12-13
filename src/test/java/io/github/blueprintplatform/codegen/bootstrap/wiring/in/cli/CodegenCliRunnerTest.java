@@ -32,7 +32,7 @@ class CodegenCliRunnerTest {
     var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {
-            "--cli", "--spring.profiles.active=cli", "springboot", "--artifact-id", "demo-app"
+      "--cli", "--spring.profiles.active=cli", "springboot", "--artifact-id", "demo-app"
     };
 
     String[] result = invokeExtractCliArgs(runner, source);
@@ -46,12 +46,12 @@ class CodegenCliRunnerTest {
     var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {
-            "--cli",
-            "--spring.config.location",
-            "application-test.yml",
-            "springboot",
-            "--group-id",
-            "com.acme"
+      "--cli",
+      "--spring.config.location",
+      "application-test.yml",
+      "springboot",
+      "--group-id",
+      "com.acme"
     };
 
     String[] result = invokeExtractCliArgs(runner, source);
@@ -65,13 +65,13 @@ class CodegenCliRunnerTest {
     var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {
-            "--cli", "springboot", "--group-id", "com.acme", "--artifact-id", "demo-app"
+      "--cli", "springboot", "--group-id", "com.acme", "--artifact-id", "demo-app"
     };
 
     String[] result = invokeExtractCliArgs(runner, source);
 
     assertThat(result)
-            .containsExactly("springboot", "--group-id", "com.acme", "--artifact-id", "demo-app");
+        .containsExactly("springboot", "--group-id", "com.acme", "--artifact-id", "demo-app");
   }
 
   private String[] invokeExtractCliArgs(CodegenCliRunner runner, String[] source) throws Exception {

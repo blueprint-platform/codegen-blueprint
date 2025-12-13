@@ -6,10 +6,20 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCliExceptionHan
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.CreateProjectCommandMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.SpringBootGenerateCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.usecase.project.model.ProjectGenerationSummary;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -28,8 +38,30 @@ class CodegenCliExecutorTest {
   @Test
   @DisplayName("execute() should run springboot subcommand and invoke use case with mapped command")
   void execute_shouldRunSpringBootCommandAndInvokeUseCase() {
-    // Arrange: stub use case + real mapper + preconfigured SpringBootGenerateCommand
     RecordingCreateProjectUseCase useCase = new RecordingCreateProjectUseCase();
+    int exitCode = getExitCode(useCase);
+
+    assertThat(exitCode).isZero();
+    assertThat(useCase.lastCommand).isNotNull();
+
+    CreateProjectCommand cmd = useCase.lastCommand;
+
+    assertThat(cmd.groupId()).isEqualTo("com.acme");
+    assertThat(cmd.artifactId()).isEqualTo("demo-app");
+    assertThat(cmd.projectName()).isEqualTo("Demo App");
+    assertThat(cmd.projectDescription()).isEqualTo("Demo application for Acme");
+    assertThat(cmd.packageName()).isEqualTo("com.acme.demo");
+    assertThat(cmd.layout().key()).isEqualTo("hexagonal");
+    assertThat(cmd.sampleCodeOptions().level().key()).isEqualTo("basic");
+    assertThat(cmd.targetDirectory()).isEqualTo(tempDir);
+
+    assertThat(cmd.dependencies()).hasSize(1);
+    var dep = cmd.dependencies().getFirst();
+    assertThat(dep.groupId()).isEqualTo("org.springframework.boot");
+    assertThat(dep.artifactId()).isEqualTo("spring-boot-starter-web");
+  }
+
+  private int getExitCode(RecordingCreateProjectUseCase useCase) {
     CreateProjectCommandMapper mapper = new CreateProjectCommandMapper();
     SpringBootGenerateCommand springBootCmd = new SpringBootGenerateCommand(mapper, useCase);
 
@@ -62,26 +94,7 @@ class CodegenCliExecutorTest {
       tempDir.toString()
     };
 
-    int exitCode = executor.execute(args);
-
-    assertThat(exitCode).isZero();
-    assertThat(useCase.lastCommand).isNotNull();
-
-    CreateProjectCommand cmd = useCase.lastCommand;
-
-    assertThat(cmd.groupId()).isEqualTo("com.acme");
-    assertThat(cmd.artifactId()).isEqualTo("demo-app");
-    assertThat(cmd.projectName()).isEqualTo("Demo App");
-    assertThat(cmd.projectDescription()).isEqualTo("Demo application for Acme");
-    assertThat(cmd.packageName()).isEqualTo("com.acme.demo");
-    assertThat(cmd.layout().key()).isEqualTo("hexagonal");
-    assertThat(cmd.sampleCodeOptions().level().key()).isEqualTo("basic");
-    assertThat(cmd.targetDirectory()).isEqualTo(tempDir);
-
-    assertThat(cmd.dependencies()).hasSize(1);
-    var dep = cmd.dependencies().getFirst();
-    assertThat(dep.groupId()).isEqualTo("org.springframework.boot");
-    assertThat(dep.artifactId()).isEqualTo("spring-boot-starter-web");
+    return executor.execute(args);
   }
 
   static class RecordingCreateProjectUseCase implements CreateProjectUseCase {
@@ -90,7 +103,22 @@ class CodegenCliExecutorTest {
     @Override
     public CreateProjectResult handle(CreateProjectCommand command) {
       this.lastCommand = command;
-      return new CreateProjectResult(Path.of("demo-app.zip"));
+
+      var project =
+          new ProjectGenerationSummary(
+              command.groupId(),
+              command.artifactId(),
+              command.projectName(),
+              command.projectDescription(),
+              command.packageName(),
+              new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+              command.layout(),
+              new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5),
+              SampleCodeOptions.none(),
+              List.of());
+
+      return new CreateProjectResult(
+          project, command.targetDirectory(), Path.of("demo-app.zip"), List.of());
     }
   }
 
