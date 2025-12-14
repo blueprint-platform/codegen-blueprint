@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.application.error.exception;
+package io.github.blueprintplatform.codegen.application.exception;
 
 import java.io.Serial;
 

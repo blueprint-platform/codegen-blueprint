@@ -1,6 +1,4 @@
-package io.github.blueprintplatform.codegen.application.port.out.exception;
-
-import io.github.blueprintplatform.codegen.application.error.exception.ApplicationException;
+package io.github.blueprintplatform.codegen.application.exception;
 
 public final class InvalidArtifactKeyException extends ApplicationException {
 
