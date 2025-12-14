@@ -2,8 +2,6 @@ package io.github.blueprintplatform.codegen.adapter.out.shared.artifact;
 
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.nio.file.Path;
@@ -13,20 +11,20 @@ import java.util.Map;
 public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactPort {
 
   private final TemplateRenderer renderer;
-  private final ArtifactDefinition artifactDefinition;
+  private final ArtifactSpec artifactSpec;
 
   protected AbstractSingleTemplateArtifactAdapter(
-      TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
+      TemplateRenderer renderer, ArtifactSpec artifactSpec) {
     this.renderer = renderer;
-    this.artifactDefinition = artifactDefinition;
+    this.artifactSpec = artifactSpec;
   }
 
   @Override
   public final Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
-    TemplateDefinition templateDefinition = artifactDefinition.templates().getFirst();
+    TemplateSpec templateSpec = artifactSpec.templates().getFirst();
 
-    Path outPath = Path.of(templateDefinition.outputPath());
-    String templateName = artifactDefinition.basePath() + templateDefinition.template();
+    Path outPath = Path.of(templateSpec.outputPath());
+    String templateName = artifactSpec.basePath() + templateSpec.template();
 
     Map<String, Object> model = buildModel(blueprint);
     GeneratedResource file = renderer.renderUtf8(outPath, templateName, model);

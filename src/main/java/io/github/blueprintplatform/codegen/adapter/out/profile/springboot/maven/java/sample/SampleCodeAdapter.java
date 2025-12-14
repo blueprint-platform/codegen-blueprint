@@ -3,11 +3,11 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeLevelNotSupportedException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeTemplatesNotFoundException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeTemplatesScanException;
+import io.github.blueprintplatform.codegen.adapter.out.shared.SampleCodeLayoutSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.SampleCodePort;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.SamplesProperties;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -33,16 +33,16 @@ public class SampleCodeAdapter implements SampleCodePort {
   private static final String MODEL_KEY_PROJECT_PACKAGE_NAME = "projectPackageName";
 
   private final TemplateRenderer renderer;
-  private final ArtifactDefinition artifactDefinition;
-  private final SamplesProperties samplesProperties;
+  private final ArtifactSpec artifactSpec;
+  private final SampleCodeLayoutSpec sampleCodeLayoutSpec;
 
   public SampleCodeAdapter(
       TemplateRenderer renderer,
-      ArtifactDefinition artifactDefinition,
-      SamplesProperties samplesProperties) {
+      ArtifactSpec artifactSpec,
+      SampleCodeLayoutSpec sampleCodeLayoutSpec) {
     this.renderer = renderer;
-    this.artifactDefinition = artifactDefinition;
-    this.samplesProperties = samplesProperties;
+    this.artifactSpec = artifactSpec;
+    this.sampleCodeLayoutSpec = sampleCodeLayoutSpec;
   }
 
   @Override
@@ -61,7 +61,7 @@ public class SampleCodeAdapter implements SampleCodePort {
     }
 
     ProjectLayout layout = blueprint.getLayout();
-    String templateBasePath = artifactDefinition.basePath();
+    String templateBasePath = artifactSpec.basePath();
     String samplesRootRelative = resolveSamplesRoot(layout, level);
     String templateRoot = normalizeTemplateRoot(templateBasePath, samplesRootRelative);
 
@@ -97,13 +97,13 @@ public class SampleCodeAdapter implements SampleCodePort {
   private String resolveSamplesRoot(ProjectLayout layout, SampleCodeLevel level) {
     String layoutRoot =
         layout != null && layout.isHexagonal()
-            ? samplesProperties.hexagonal()
-            : samplesProperties.standard();
+            ? sampleCodeLayoutSpec.roots().hexagonal()
+            : sampleCodeLayoutSpec.roots().standard();
 
     String levelDir =
         switch (level) {
-          case BASIC -> samplesProperties.basicDirName();
-          case RICH -> samplesProperties.richDirName();
+          case BASIC -> sampleCodeLayoutSpec.levels().basicDirName();
+          case RICH -> sampleCodeLayoutSpec.levels().richDirName();
           case NONE -> throw new SampleCodeLevelNotSupportedException(level.key());
         };
 

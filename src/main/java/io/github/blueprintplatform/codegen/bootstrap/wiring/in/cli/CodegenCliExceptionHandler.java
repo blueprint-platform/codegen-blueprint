@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.adapter.in.cli;
+package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.AdapterException;
 import io.github.blueprintplatform.codegen.application.error.exception.ApplicationException;

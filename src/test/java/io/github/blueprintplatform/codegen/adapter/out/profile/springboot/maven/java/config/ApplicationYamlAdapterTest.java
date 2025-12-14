@@ -2,9 +2,9 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
@@ -75,9 +75,8 @@ class ApplicationYamlAdapterTest {
     ApplicationYamlAdapter adapter =
         new ApplicationYamlAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(
-                BASE_PATH,
-                List.of(new TemplateDefinition("application-yaml.ftl", "application.yml"))));
+            new ArtifactSpec(
+                BASE_PATH, List.of(new TemplateSpec("application-yaml.ftl", "application.yml"))));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.APP_CONFIG);
   }
@@ -88,12 +87,11 @@ class ApplicationYamlAdapterTest {
   void generate_shouldBuildModelAndRenderFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateDefinition templateDefinition =
-        new TemplateDefinition("application-yaml.ftl", "src/main/resources/application.yml");
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    TemplateSpec templateSpec =
+        new TemplateSpec("application-yaml.ftl", "src/main/resources/application.yml");
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
-    ApplicationYamlAdapter adapter = new ApplicationYamlAdapter(renderer, artifactDefinition);
+    ApplicationYamlAdapter adapter = new ApplicationYamlAdapter(renderer, artifactSpec);
 
     ProjectBlueprint blueprint = blueprint();
 

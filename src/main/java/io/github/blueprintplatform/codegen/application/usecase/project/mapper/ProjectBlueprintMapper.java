@@ -1,7 +1,7 @@
-package io.github.blueprintplatform.codegen.application.usecase.project;
+package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class ProjectBlueprintMapper {
 
-  public ProjectBlueprint from(CreateProjectCommand c) {
+  public ProjectBlueprint from(CreateProjectRequest c) {
     ProjectIdentity identity =
         new ProjectIdentity(new GroupId(c.groupId()), new ArtifactId(c.artifactId()));
 

@@ -2,8 +2,9 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyScope;
@@ -43,11 +44,11 @@ class ProjectBlueprintMapperTest {
     return mapper.from(cmd);
   }
 
-  private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> dependencies) {
+  private static CreateProjectRequest getCreateProjectCommand(List<DependencyInput> dependencies) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
-    return new CreateProjectCommand(
+    return new CreateProjectRequest(
         "com.acme",
         "demo-app",
         "Demo App",

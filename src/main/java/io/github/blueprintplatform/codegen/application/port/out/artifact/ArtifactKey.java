@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.application.port.out.artifact;
 
-import io.github.blueprintplatform.codegen.application.error.exception.UnknownArtifactKeyException;
+import io.github.blueprintplatform.codegen.application.port.out.exception.InvalidArtifactKeyException;
 import java.util.Arrays;
 
 public enum ArtifactKey {
@@ -24,7 +24,7 @@ public enum ArtifactKey {
     return Arrays.stream(values())
         .filter(a -> a.key.equals(key))
         .findFirst()
-        .orElseThrow(() -> new UnknownArtifactKeyException(key));
+        .orElseThrow(() -> new InvalidArtifactKeyException(key));
   }
 
   public String key() {

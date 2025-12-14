@@ -2,10 +2,10 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
@@ -76,8 +76,7 @@ class MainSourceEntrypointAdapterTest {
     MainSourceEntrypointAdapter adapter =
         new MainSourceEntrypointAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(
-                BASE_PATH, List.of(new TemplateDefinition("source.ftl", "src/main/java"))),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("source.ftl", "src/main/java"))),
             new StringCaseFormatter());
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.MAIN_SOURCE_ENTRY_POINT);
@@ -89,12 +88,11 @@ class MainSourceEntrypointAdapterTest {
   void generate_shouldBuildClassNameFromArtifactIdAndRenderFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateDefinition templateDefinition = new TemplateDefinition("source.ftl", "src/main/java");
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    TemplateSpec templateSpec = new TemplateSpec("source.ftl", "src/main/java");
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     MainSourceEntrypointAdapter adapter =
-        new MainSourceEntrypointAdapter(renderer, artifactDefinition, new StringCaseFormatter());
+        new MainSourceEntrypointAdapter(renderer, artifactSpec, new StringCaseFormatter());
 
     ProjectBlueprint blueprint = blueprint();
 

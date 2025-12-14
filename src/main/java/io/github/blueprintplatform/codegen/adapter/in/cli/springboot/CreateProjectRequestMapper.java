@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.adapter.in.cli.springboot;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -18,9 +18,9 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechSta
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateProjectCommandMapper {
+public class CreateProjectRequestMapper {
 
-  public CreateProjectCommand from(
+  public CreateProjectRequest from(
       CliProjectRequest request,
       BuildTool buildTool,
       Language language,
@@ -34,7 +34,7 @@ public class CreateProjectCommandMapper {
     List<DependencyInput> dependencies = toDependencyInputs(request.dependencies());
     SampleCodeOptions sampleCodeOptions = new SampleCodeOptions(sampleCodeLevel);
 
-    return new CreateProjectCommand(
+    return new CreateProjectRequest(
         request.groupId(),
         request.artifactId(),
         request.name(),

@@ -1,6 +1,5 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
-import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCliExceptionHandler;
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import io.github.blueprintplatform.codegen.adapter.in.cli.shared.KeyedEnumConverter;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;

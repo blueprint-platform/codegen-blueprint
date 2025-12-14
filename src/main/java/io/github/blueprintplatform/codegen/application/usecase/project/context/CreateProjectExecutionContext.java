@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.application.usecase.project;
+package io.github.blueprintplatform.codegen.application.usecase.project.context;
 
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;

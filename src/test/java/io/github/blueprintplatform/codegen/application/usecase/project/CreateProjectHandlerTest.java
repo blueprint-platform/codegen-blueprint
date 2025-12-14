@@ -3,10 +3,14 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.GeneratedFileSummary;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -44,7 +48,7 @@ class CreateProjectHandlerTest {
       "handle() prepares project root, writes artifacts, lists files, and returns archive + summary")
   void handle_prepares_root_writes_artifacts_lists_files_and_archives() {
     var blueprintMapper = new ProjectBlueprintMapper();
-    var resultMapper = new CreateProjectResultMapper();
+    var responseMapper = new CreateProjectResponseMapper();
 
     var fakeRootPort = new FakeRootPort();
     var fakeArtifacts = new FakeArtifactsPort();
@@ -57,7 +61,7 @@ class CreateProjectHandlerTest {
         new CreateProjectExecutionContext(
             fakeRootPort, fakeSelector, fakeWriter, fakeFileListing, fakeArchiver);
 
-    var handler = new CreateProjectHandler(blueprintMapper, resultMapper, executionContext);
+    var handler = new CreateProjectHandler(blueprintMapper, responseMapper, executionContext);
 
     var cmd = getCreateProjectCommand();
 
@@ -87,18 +91,18 @@ class CreateProjectHandlerTest {
     assertThat(result.project().sampleCode()).isEqualTo(SampleCodeOptions.none());
 
     assertThat(result.files())
-        .extracting(f -> f.relativePath())
+        .extracting(GeneratedFileSummary::relativePath)
         .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths);
 
     assertThat(result.files()).allSatisfy(f -> assertThat(f.executable()).isFalse());
     assertThat(result.files()).allSatisfy(f -> assertThat(f.binary()).isFalse());
   }
 
-  private CreateProjectCommand getCreateProjectCommand() {
+  private CreateProjectRequest getCreateProjectCommand() {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
-    return new CreateProjectCommand(
+    return new CreateProjectRequest(
         "com.acme",
         "demo-app",
         "Demo App",

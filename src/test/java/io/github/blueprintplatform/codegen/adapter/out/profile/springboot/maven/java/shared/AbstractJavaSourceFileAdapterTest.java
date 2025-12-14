@@ -2,11 +2,11 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
@@ -30,16 +30,14 @@ class AbstractJavaSourceFileAdapterTest {
   void generate_shouldBuildOutPathAndModelAndReturnFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateDefinition templateDefinition =
-        new TemplateDefinition("java-class.ftl", "src/main/java");
+    TemplateSpec templateSpec = new TemplateSpec("java-class.ftl", "src/main/java");
 
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     StringCaseFormatter formatter = new StringCaseFormatter();
 
     TestJavaSourceFileAdapter adapter =
-        new TestJavaSourceFileAdapter(renderer, artifactDefinition, formatter);
+        new TestJavaSourceFileAdapter(renderer, artifactSpec, formatter);
 
     ProjectBlueprint blueprint =
         new ProjectBlueprint(
@@ -68,9 +66,9 @@ class AbstractJavaSourceFileAdapterTest {
 
     TestJavaSourceFileAdapter(
         TemplateRenderer renderer,
-        ArtifactDefinition artifactDefinition,
+        ArtifactSpec artifactSpec,
         StringCaseFormatter stringCaseFormatter) {
-      super(renderer, artifactDefinition, stringCaseFormatter);
+      super(renderer, artifactSpec, stringCaseFormatter);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.application.usecase.project.model;
+package io.github.blueprintplatform.codegen.application.port.in.project.dto;
 
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -7,7 +7,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechSta
 import java.nio.file.Path;
 import java.util.List;
 
-public record CreateProjectCommand(
+public record CreateProjectRequest(
     String groupId,
     String artifactId,
     String projectName,

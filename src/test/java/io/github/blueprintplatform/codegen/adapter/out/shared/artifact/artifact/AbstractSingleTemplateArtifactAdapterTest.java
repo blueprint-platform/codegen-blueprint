@@ -1,11 +1,12 @@
-package io.github.blueprintplatform.codegen.adapter.out.shared.artifact;
+package io.github.blueprintplatform.codegen.adapter.out.shared.artifact.artifact;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
@@ -29,13 +30,11 @@ class AbstractSingleTemplateArtifactAdapterTest {
   void generate_shouldRenderSingleTemplateAndReturnFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateDefinition templateDefinition =
-        new TemplateDefinition("test-template.ftl", "output/test.txt");
+    TemplateSpec templateSpec = new TemplateSpec("test-template.ftl", "output/test.txt");
 
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
-    TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactDefinition);
+    TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactSpec);
 
     ProjectBlueprint blueprint =
         new ProjectBlueprint(null, null, null, null, null, null, null, null, null);
@@ -57,8 +56,8 @@ class AbstractSingleTemplateArtifactAdapterTest {
   private static final class TestSingleTemplateAdapter
       extends AbstractSingleTemplateArtifactAdapter {
 
-    TestSingleTemplateAdapter(TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
-      super(renderer, artifactDefinition);
+    TestSingleTemplateAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
+      super(renderer, artifactSpec);
     }
 
     @Override

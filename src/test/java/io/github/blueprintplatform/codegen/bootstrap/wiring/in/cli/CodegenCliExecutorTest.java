@@ -2,14 +2,13 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCliExceptionHandler;
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
-import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.CreateProjectCommandMapper;
+import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.CreateProjectRequestMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.SpringBootGenerateCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.ProjectGenerationSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -38,13 +37,13 @@ class CodegenCliExecutorTest {
   @Test
   @DisplayName("execute() should run springboot subcommand and invoke use case with mapped command")
   void execute_shouldRunSpringBootCommandAndInvokeUseCase() {
-    RecordingCreateProjectUseCase useCase = new RecordingCreateProjectUseCase();
+    RecordingCreateProjectPort useCase = new RecordingCreateProjectPort();
     int exitCode = getExitCode(useCase);
 
     assertThat(exitCode).isZero();
     assertThat(useCase.lastCommand).isNotNull();
 
-    CreateProjectCommand cmd = useCase.lastCommand;
+    CreateProjectRequest cmd = useCase.lastCommand;
 
     assertThat(cmd.groupId()).isEqualTo("com.acme");
     assertThat(cmd.artifactId()).isEqualTo("demo-app");
@@ -61,8 +60,8 @@ class CodegenCliExecutorTest {
     assertThat(dep.artifactId()).isEqualTo("spring-boot-starter-web");
   }
 
-  private int getExitCode(RecordingCreateProjectUseCase useCase) {
-    CreateProjectCommandMapper mapper = new CreateProjectCommandMapper();
+  private int getExitCode(RecordingCreateProjectPort useCase) {
+    CreateProjectRequestMapper mapper = new CreateProjectRequestMapper();
     SpringBootGenerateCommand springBootCmd = new SpringBootGenerateCommand(mapper, useCase);
 
     CodegenCommand rootCommand = new CodegenCommand();
@@ -97,11 +96,11 @@ class CodegenCliExecutorTest {
     return executor.execute(args);
   }
 
-  static class RecordingCreateProjectUseCase implements CreateProjectUseCase {
-    CreateProjectCommand lastCommand;
+  static class RecordingCreateProjectPort implements CreateProjectPort {
+    CreateProjectRequest lastCommand;
 
     @Override
-    public CreateProjectResult handle(CreateProjectCommand command) {
+    public CreateProjectResponse handle(CreateProjectRequest command) {
       this.lastCommand = command;
 
       var project =
@@ -117,7 +116,7 @@ class CodegenCliExecutorTest {
               SampleCodeOptions.none(),
               List.of());
 
-      return new CreateProjectResult(
+      return new CreateProjectResponse(
           project, command.targetDirectory(), Path.of("demo-app.zip"), List.of());
     }
   }

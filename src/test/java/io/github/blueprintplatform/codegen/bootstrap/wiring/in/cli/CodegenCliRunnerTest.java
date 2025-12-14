@@ -2,7 +2,6 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCliExceptionHandler;
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import java.lang.reflect.Method;
 import org.junit.jupiter.api.DisplayName;

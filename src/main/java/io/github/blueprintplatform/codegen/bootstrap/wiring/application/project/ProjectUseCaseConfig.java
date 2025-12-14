@@ -1,8 +1,12 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.application.project;
 
+import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
 import io.github.blueprintplatform.codegen.application.usecase.project.*;
+import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectFileListingPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
@@ -18,8 +22,8 @@ public class ProjectUseCaseConfig {
   }
 
   @Bean
-  public CreateProjectResultMapper createProjectResultMapper() {
-    return new CreateProjectResultMapper();
+  public CreateProjectResponseMapper createProjectResultMapper() {
+    return new CreateProjectResponseMapper();
   }
 
   @Bean
@@ -34,12 +38,12 @@ public class ProjectUseCaseConfig {
   }
 
   @Bean
-  public CreateProjectUseCase createProjectHandler(
+  public CreateProjectPort createProjectHandler(
       ProjectBlueprintMapper projectBlueprintMapper,
-      CreateProjectResultMapper createProjectResultMapper,
+      CreateProjectResponseMapper createProjectResponseMapper,
       CreateProjectExecutionContext createProjectExecutionContext) {
 
     return new CreateProjectHandler(
-        projectBlueprintMapper, createProjectResultMapper, createProjectExecutionContext);
+        projectBlueprintMapper, createProjectResponseMapper, createProjectExecutionContext);
   }
 }

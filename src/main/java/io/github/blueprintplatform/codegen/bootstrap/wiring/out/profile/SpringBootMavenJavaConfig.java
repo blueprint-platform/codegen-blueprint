@@ -12,11 +12,13 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.SourceLayoutAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.TestSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.shared.SampleCodeLayoutSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.*;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
+import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.bootstrap.config.CodegenProfilesProperties;
 import io.github.blueprintplatform.codegen.bootstrap.config.ProfileKeys;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
@@ -36,23 +38,31 @@ public class SpringBootMavenJavaConfig {
   BuildConfigurationPort springBootMavenJavaMavenPomBuildConfigurationAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
+      ArtifactSpecMapper artifactSpecMapper,
       PomDependencyMapper pomDependencyMapper) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_CONFIG);
-    return new MavenPomBuildConfigurationAdapter(renderer, props, pomDependencyMapper);
+
+    ArtifactSpec spec =
+        artifactSpecMapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_CONFIG));
+
+    return new MavenPomBuildConfigurationAdapter(renderer, spec, pomDependencyMapper);
   }
 
   @Bean
   BuildToolFilesPort springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_METADATA);
-    return new MavenWrapperBuildToolFilesAdapter(renderer, props);
+      TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
+
+    ArtifactSpec spec =
+        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_METADATA));
+
+    return new MavenWrapperBuildToolFilesAdapter(renderer, spec);
   }
 
   @Bean
   IgnoreRulesPort springBootMavenJavaGitIgnoreAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.IGNORE_RULES);
-    return new GitIgnoreAdapter(renderer, props);
+      TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
+
+    ArtifactSpec spec = mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.IGNORE_RULES));
+    return new GitIgnoreAdapter(renderer, spec);
   }
 
   @Bean
@@ -62,43 +72,64 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   ApplicationConfigurationPort springBootMavenJavaApplicationYamlAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.APP_CONFIG);
-    return new ApplicationYamlAdapter(renderer, props);
+      TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
+
+    ArtifactSpec spec = mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.APP_CONFIG));
+    return new ApplicationYamlAdapter(renderer, spec);
   }
 
   @Bean
   MainSourceEntrypointPort springBootMavenJavaMainSourceEntrypointAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
+      ArtifactSpecMapper mapper,
       StringCaseFormatter stringCaseFormatter) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.MAIN_SOURCE_ENTRY_POINT);
-    return new MainSourceEntrypointAdapter(renderer, props, stringCaseFormatter);
+
+    ArtifactSpec spec =
+        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.MAIN_SOURCE_ENTRY_POINT));
+
+    return new MainSourceEntrypointAdapter(renderer, spec, stringCaseFormatter);
   }
 
   @Bean
   TestSourceEntrypointPort springBootMavenJavaTestSourceEntrypointAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
+      ArtifactSpecMapper mapper,
       StringCaseFormatter stringCaseFormatter) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.TEST_SOURCE_ENTRY_POINT);
-    return new TestSourceEntrypointAdapter(renderer, props, stringCaseFormatter);
+
+    ArtifactSpec spec =
+        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.TEST_SOURCE_ENTRY_POINT));
+
+    return new TestSourceEntrypointAdapter(renderer, spec, stringCaseFormatter);
   }
 
   @Bean
   SampleCodePort springBootMavenJavaSampleCodeAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.SAMPLE_CODE);
-    return new SampleCodeAdapter(renderer, props, profiles.samples());
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      ArtifactSpecMapper artifactSpecMapper,
+      SampleCodeSpecMapper sampleCodeSpecMapper) {
+
+    ArtifactSpec artifactSpec =
+        artifactSpecMapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.SAMPLE_CODE));
+
+    SampleCodeLayoutSpec sampleSpec = sampleCodeSpecMapper.from(profiles.sampleCode());
+
+    return new SampleCodeAdapter(renderer, artifactSpec, sampleSpec);
   }
 
   @Bean
   ProjectDocumentationPort springBootMavenJavaProjectDocumentationAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
+      ArtifactSpecMapper mapper,
       PomDependencyMapper pomDependencyMapper) {
-    ArtifactDefinition props = profiles.artifact(PROFILE_KEY, ArtifactKey.PROJECT_DOCUMENTATION);
-    return new ProjectDocumentationAdapter(renderer, props, pomDependencyMapper);
+
+    ArtifactSpec spec =
+        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.PROJECT_DOCUMENTATION));
+
+    return new ProjectDocumentationAdapter(renderer, spec, pomDependencyMapper);
   }
 
   @Bean
@@ -147,7 +178,7 @@ public class SpringBootMavenJavaConfig {
                         "bootstrap.artifact.not.found", key.key(), PROFILE_KEY);
                   }
                   if (!port.artifactKey().equals(key)) {
-                    throw new ArtifactKeyMismatchException(key, port.artifactKey());
+                    throw new ArtifactKeyMismatchException(key, port.artifactKey().key());
                   }
                   return port;
                 })

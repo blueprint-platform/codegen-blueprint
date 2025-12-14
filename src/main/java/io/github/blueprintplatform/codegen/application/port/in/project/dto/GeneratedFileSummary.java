@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.application.usecase.project.model;
+package io.github.blueprintplatform.codegen.application.port.in.project.dto;
 
 import java.nio.file.Path;
 

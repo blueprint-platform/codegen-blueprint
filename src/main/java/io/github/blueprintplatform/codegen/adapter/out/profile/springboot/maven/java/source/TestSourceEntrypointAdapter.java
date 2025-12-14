@@ -1,11 +1,11 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source;
 
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.shared.AbstractJavaSourceFileAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.TestSourceEntrypointPort;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 
@@ -16,9 +16,9 @@ public class TestSourceEntrypointAdapter extends AbstractJavaSourceFileAdapter
 
   public TestSourceEntrypointAdapter(
       TemplateRenderer renderer,
-      ArtifactDefinition artifactDefinition,
+      ArtifactSpec artifactSpec,
       StringCaseFormatter stringCaseFormatter) {
-    super(renderer, artifactDefinition, stringCaseFormatter);
+    super(renderer, artifactSpec, stringCaseFormatter);
   }
 
   @Override

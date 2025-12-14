@@ -1,6 +1,5 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
-import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCliExceptionHandler;
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

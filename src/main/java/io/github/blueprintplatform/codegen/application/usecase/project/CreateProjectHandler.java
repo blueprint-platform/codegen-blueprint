@@ -2,30 +2,34 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 
+import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import java.nio.file.Path;
 import java.util.List;
 
-public class CreateProjectHandler implements CreateProjectUseCase {
+public class CreateProjectHandler implements CreateProjectPort {
 
   private final ProjectBlueprintMapper blueprintMapper;
-  private final CreateProjectResultMapper resultMapper;
+  private final CreateProjectResponseMapper responseMapper;
   private final CreateProjectExecutionContext executionContext;
 
   public CreateProjectHandler(
       ProjectBlueprintMapper blueprintMapper,
-      CreateProjectResultMapper resultMapper,
+      CreateProjectResponseMapper responseMapper,
       CreateProjectExecutionContext executionContext) {
     this.blueprintMapper = blueprintMapper;
-    this.resultMapper = resultMapper;
+    this.responseMapper = responseMapper;
     this.executionContext = executionContext;
   }
 
   @Override
-  public CreateProjectResult handle(CreateProjectCommand command) {
+  public CreateProjectResponse handle(CreateProjectRequest command) {
     ProjectBlueprint projectBlueprint = blueprintMapper.from(command);
 
     Path projectRoot =
@@ -47,6 +51,6 @@ public class CreateProjectHandler implements CreateProjectUseCase {
 
     List<Path> projectFiles = executionContext.fileListingPort().listFiles(projectRoot);
 
-    return resultMapper.from(projectBlueprint, projectRoot, projectFiles, archive);
+    return responseMapper.from(projectBlueprint, projectRoot, projectFiles, archive);
   }
 }

@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.ProjectGenerationSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -32,7 +32,7 @@ class SpringBootGenerateCommandTest {
   @DisplayName("call() should build profile, map layout & dependencies and invoke use case")
   void call_shouldBuildProfileAndInvokeUseCase() {
     var mapper = new RecordingMapper();
-    var useCase = new StubCreateProjectUseCase();
+    var useCase = new StubCreateProjectPort();
 
     var cmd = new SpringBootGenerateCommand(mapper, useCase);
 
@@ -80,9 +80,9 @@ class SpringBootGenerateCommandTest {
     assertThat(useCase.lastCommand).isSameAs(mapper.returnedCommand);
   }
 
-  static class RecordingMapper extends CreateProjectCommandMapper {
+  static class RecordingMapper extends CreateProjectRequestMapper {
 
-    final CreateProjectCommand returnedCommand = null;
+    final CreateProjectRequest returnedCommand = null;
     CliProjectRequest lastRequest;
     BuildTool lastBuildTool;
     Language lastLanguage;
@@ -90,7 +90,7 @@ class SpringBootGenerateCommandTest {
     SpringBootVersion lastBootVersion;
 
     @Override
-    public CreateProjectCommand from(
+    public CreateProjectRequest from(
         CliProjectRequest request,
         BuildTool buildTool,
         Language language,
@@ -107,12 +107,12 @@ class SpringBootGenerateCommandTest {
     }
   }
 
-  static class StubCreateProjectUseCase implements CreateProjectUseCase {
+  static class StubCreateProjectPort implements CreateProjectPort {
 
-    CreateProjectCommand lastCommand;
+    CreateProjectRequest lastCommand;
 
     @Override
-    public CreateProjectResult handle(CreateProjectCommand command) {
+    public CreateProjectResponse handle(CreateProjectRequest command) {
       this.lastCommand = command;
 
       var project =
@@ -128,7 +128,7 @@ class SpringBootGenerateCommandTest {
               SampleCodeOptions.none(),
               List.of());
 
-      return new CreateProjectResult(project, Path.of("."), Path.of("demo-app.zip"), List.of());
+      return new CreateProjectResponse(project, Path.of("."), Path.of("demo-app.zip"), List.of());
     }
   }
 }

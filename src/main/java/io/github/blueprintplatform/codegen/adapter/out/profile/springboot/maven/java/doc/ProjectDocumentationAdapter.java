@@ -5,10 +5,10 @@ import static java.util.Map.entry;
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependency;
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ProjectDocumentationPort;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
@@ -37,9 +37,9 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
 
   public ProjectDocumentationAdapter(
       TemplateRenderer renderer,
-      ArtifactDefinition artifactDefinition,
+      ArtifactSpec artifactSpec,
       PomDependencyMapper pomDependencyMapper) {
-    super(renderer, artifactDefinition);
+    super(renderer, artifactSpec);
     this.pomDependencyMapper = pomDependencyMapper;
   }
 

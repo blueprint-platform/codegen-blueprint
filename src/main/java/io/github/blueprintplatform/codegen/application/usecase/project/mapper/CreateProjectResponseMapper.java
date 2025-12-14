@@ -1,9 +1,9 @@
-package io.github.blueprintplatform.codegen.application.usecase.project;
+package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.GeneratedFileSummary;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.ProjectDependencySummary;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.ProjectGenerationSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.GeneratedFileSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectDependencySummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class CreateProjectResultMapper {
+public class CreateProjectResponseMapper {
 
   private static final Set<String> EXECUTABLE_FILE_NAMES = Set.of("mvnw", "gradlew");
 
@@ -33,7 +33,7 @@ public class CreateProjectResultMapper {
   private static final Set<String> BINARY_EXTENSIONS =
       Set.of(".jar", ".zip", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".ico");
 
-  public CreateProjectResult from(
+  public CreateProjectResponse from(
       ProjectBlueprint blueprint, Path projectRoot, List<Path> projectFiles, Path archivePath) {
 
     ProjectGenerationSummary projectSummary = toProjectGenerationSummary(blueprint);
@@ -43,7 +43,7 @@ public class CreateProjectResultMapper {
             ? List.of()
             : projectFiles.stream().map(path -> toGeneratedFileSummary(projectRoot, path)).toList();
 
-    return new CreateProjectResult(projectSummary, projectRoot, archivePath, files);
+    return new CreateProjectResponse(projectSummary, projectRoot, archivePath, files);
   }
 
   private GeneratedFileSummary toGeneratedFileSummary(Path projectRoot, Path relativePath) {

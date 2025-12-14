@@ -2,11 +2,11 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static java.util.Map.entry;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
@@ -24,15 +24,15 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
   private static final String FILE_PATH_DELIMITER = "/";
 
   private final TemplateRenderer renderer;
-  private final ArtifactDefinition artifactDefinition;
+  private final ArtifactSpec artifactSpec;
   private final StringCaseFormatter stringCaseFormatter;
 
   protected AbstractJavaSourceFileAdapter(
       TemplateRenderer renderer,
-      ArtifactDefinition artifactDefinition,
+      ArtifactSpec artifactSpec,
       StringCaseFormatter stringCaseFormatter) {
     this.renderer = renderer;
-    this.artifactDefinition = artifactDefinition;
+    this.artifactSpec = artifactSpec;
     this.stringCaseFormatter = stringCaseFormatter;
   }
 
@@ -45,9 +45,9 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
         Map.ofEntries(
             entry(KEY_PROJECT_PACKAGE, packageName.value()), entry(KEY_CLASS_NAME, className));
 
-    TemplateDefinition templateDefinition = artifactDefinition.templates().getFirst();
-    Path baseDir = Path.of(templateDefinition.outputPath());
-    String templateName = artifactDefinition.basePath() + templateDefinition.template();
+    TemplateSpec templateSpec = artifactSpec.templates().getFirst();
+    Path baseDir = Path.of(templateSpec.outputPath());
+    String templateName = artifactSpec.basePath() + templateSpec.template();
 
     String packagePath = packageName.value().replace(PACKAGE_PATH_DELIMITER, FILE_PATH_DELIMITER);
     Path outPath = baseDir.resolve(packagePath).resolve(className + JAVA_FILE_EXTENSION);

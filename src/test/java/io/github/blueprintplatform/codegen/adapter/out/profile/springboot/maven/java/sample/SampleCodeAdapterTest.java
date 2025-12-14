@@ -2,10 +2,10 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.SampleCodeLayoutSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.SamplesProperties;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
@@ -51,12 +51,12 @@ class SampleCodeAdapterTest {
   private static final String BASE_PACKAGE = "com.acme.demo";
   private static final String BASE_PACKAGE_PATH = "com/acme/demo";
 
-  private static final ArtifactDefinition DUMMY_ARTIFACT_DEFINITION =
-      new ArtifactDefinition(BASE_PATH, List.of());
+  private static final ArtifactSpec DUMMY_ARTIFACT_SPEC = new ArtifactSpec(BASE_PATH, List.of());
 
-  private static final SamplesProperties SAMPLES_PROPERTIES =
-      new SamplesProperties(
-          STANDARD_SAMPLES_ROOT, HEXAGONAL_SAMPLES_ROOT, BASIC_DIR_NAME, RICH_DIR_NAME);
+  private static final SampleCodeLayoutSpec SAMPLES_CODE_SPEC =
+      new SampleCodeLayoutSpec(
+          new SampleCodeLayoutSpec.Roots(STANDARD_SAMPLES_ROOT, HEXAGONAL_SAMPLES_ROOT),
+          new SampleCodeLayoutSpec.Levels(BASIC_DIR_NAME, RICH_DIR_NAME));
 
   private static ProjectBlueprint blueprint(ProjectLayout layout, SampleCodeLevel level) {
 
@@ -96,8 +96,7 @@ class SampleCodeAdapterTest {
   @DisplayName("artifactKey() should return SAMPLE_CODE")
   void artifactKey_shouldReturnSampleCode() {
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(
-            new NoopTemplateRenderer(), DUMMY_ARTIFACT_DEFINITION, SAMPLES_PROPERTIES);
+        new SampleCodeAdapter(new NoopTemplateRenderer(), DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.SAMPLE_CODE);
   }
@@ -106,8 +105,7 @@ class SampleCodeAdapterTest {
   @DisplayName("generate() should return empty when sample level is NONE")
   void generate_noneLevel_shouldReturnEmpty() {
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(
-            new NoopTemplateRenderer(), DUMMY_ARTIFACT_DEFINITION, SAMPLES_PROPERTIES);
+        new SampleCodeAdapter(new NoopTemplateRenderer(), DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
 
     ProjectBlueprint blueprint = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.NONE);
 
@@ -120,8 +118,7 @@ class SampleCodeAdapterTest {
   @DisplayName("generate() should return empty when layout is STANDARD even if level is BASIC")
   void generate_standardLayoutBasicLevel_shouldReturnEmpty() {
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(
-            new NoopTemplateRenderer(), DUMMY_ARTIFACT_DEFINITION, SAMPLES_PROPERTIES);
+        new SampleCodeAdapter(new NoopTemplateRenderer(), DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
 
     ProjectBlueprint blueprint = blueprint(ProjectLayout.STANDARD, SampleCodeLevel.BASIC);
 
@@ -136,7 +133,7 @@ class SampleCodeAdapterTest {
     RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
 
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(renderer, DUMMY_ARTIFACT_DEFINITION, SAMPLES_PROPERTIES);
+        new SampleCodeAdapter(renderer, DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
 
     ProjectBlueprint blueprint = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
 
@@ -169,10 +166,8 @@ class SampleCodeAdapterTest {
     @Override
     public GeneratedResource renderUtf8(
         Path outPath, String templateName, Map<String, Object> model) {
-
       capturedTemplateNames.add(templateName);
       capturedModels.add(model);
-
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
     }
   }

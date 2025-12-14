@@ -33,8 +33,10 @@ class CodegenProfilesPropertiesTest {
         Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
   }
 
-  private static SamplesProperties defaultSamplesProperties() {
-    return new SamplesProperties("standard/sample", "hexagonal/sample", "basic", "rich");
+  private static SampleCodeProperties defaultSamplesProperties() {
+    return new SampleCodeProperties(
+        new SampleCodeProperties.Roots("standard/sample", "hexagonal/sample"),
+        new SampleCodeProperties.Levels("basic", "rich"));
   }
 
   @Test

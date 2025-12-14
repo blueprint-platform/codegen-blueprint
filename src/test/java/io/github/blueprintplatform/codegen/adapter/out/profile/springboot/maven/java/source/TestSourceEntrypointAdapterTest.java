@@ -2,10 +2,10 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
@@ -77,8 +77,7 @@ class TestSourceEntrypointAdapterTest {
     TestSourceEntrypointAdapter adapter =
         new TestSourceEntrypointAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(
-                BASE_PATH, List.of(new TemplateDefinition("test.ftl", "src/test/java"))),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("test.ftl", "src/test/java"))),
             new StringCaseFormatter());
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.TEST_SOURCE_ENTRY_POINT);
@@ -90,12 +89,11 @@ class TestSourceEntrypointAdapterTest {
   void generate_shouldBuildClassNameAndRenderFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateDefinition templateDefinition = new TemplateDefinition("test.ftl", "src/test/java");
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    TemplateSpec templateSpec = new TemplateSpec("test.ftl", "src/test/java");
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     TestSourceEntrypointAdapter adapter =
-        new TestSourceEntrypointAdapter(renderer, artifactDefinition, new StringCaseFormatter());
+        new TestSourceEntrypointAdapter(renderer, artifactSpec, new StringCaseFormatter());
 
     ProjectBlueprint blueprint = blueprint();
 

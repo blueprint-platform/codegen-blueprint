@@ -1,6 +1,5 @@
 package io.github.blueprintplatform.codegen.adapter.error.exception;
 
-@SuppressWarnings("java:S110")
 public final class TemplateRenderingException extends AdapterException {
   private static final String KEY = "adapter.template.render.failed";
   private final String templateName;

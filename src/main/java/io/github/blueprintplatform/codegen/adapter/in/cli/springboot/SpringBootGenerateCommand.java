@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.adapter.in.cli.springboot;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
-import io.github.blueprintplatform.codegen.application.usecase.project.model.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
@@ -26,8 +26,8 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootGenerateCommand.class);
 
-  private final CreateProjectCommandMapper mapper;
-  private final CreateProjectUseCase createProjectUseCase;
+  private final CreateProjectRequestMapper mapper;
+  private final CreateProjectPort createProjectPort;
 
   @Option(
       names = {"--group-id"},
@@ -115,9 +115,9 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   Path targetDirectory;
 
   public SpringBootGenerateCommand(
-      CreateProjectCommandMapper mapper, CreateProjectUseCase createProjectUseCase) {
+      CreateProjectRequestMapper mapper, CreateProjectPort createProjectPort) {
     this.mapper = mapper;
-    this.createProjectUseCase = createProjectUseCase;
+    this.createProjectPort = createProjectPort;
   }
 
   @Override
@@ -142,7 +142,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
 
     var command = mapper.from(request, buildTool, language, javaVersion, bootVersion);
 
-    CreateProjectResult result = createProjectUseCase.handle(command);
+    CreateProjectResponse result = createProjectPort.handle(command);
 
     log.info("Spring Boot project generated successfully.");
     log.info("Archive path: {}", result.archivePath());

@@ -3,9 +3,9 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependency;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
@@ -87,8 +87,7 @@ class MavenPomBuildConfigurationAdapterTest {
     MavenPomBuildConfigurationAdapter adapter =
         new MavenPomBuildConfigurationAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(
-                BASE_PATH, List.of(new TemplateDefinition("pom.ftl", "pom.xml"))),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml"))),
             new RecordingPomDependencyMapper(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_CONFIG);
@@ -102,12 +101,11 @@ class MavenPomBuildConfigurationAdapterTest {
         new RecordingPomDependencyMapper(
             List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime")));
 
-    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    TemplateSpec templateSpec = new TemplateSpec("pom.ftl", "pom.xml");
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     MavenPomBuildConfigurationAdapter adapter =
-        new MavenPomBuildConfigurationAdapter(renderer, artifactDefinition, mapper);
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
 
     ProjectBlueprint blueprint = blueprintWithDependencies();
 

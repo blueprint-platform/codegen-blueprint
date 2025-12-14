@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependency;
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
-import io.github.blueprintplatform.codegen.bootstrap.config.TemplateDefinition;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
@@ -89,8 +89,7 @@ class ProjectDocumentationAdapterTest {
     ProjectDocumentationAdapter adapter =
         new ProjectDocumentationAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(
-                BASE_PATH, List.of(new TemplateDefinition("README.ftl", "README.md"))),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("README.ftl", "README.md"))),
             new PomDependencyMapper());
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.PROJECT_DOCUMENTATION);
@@ -106,12 +105,11 @@ class ProjectDocumentationAdapterTest {
         List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
     RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mappedDeps);
 
-    TemplateDefinition templateDefinition = new TemplateDefinition("README.ftl", "README.md");
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
+    TemplateSpec templateSpec = new TemplateSpec("README.ftl", "README.md");
+    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     ProjectDocumentationAdapter adapter =
-        new ProjectDocumentationAdapter(renderer, artifactDefinition, mapper);
+        new ProjectDocumentationAdapter(renderer, artifactSpec, mapper);
 
     ProjectBlueprint blueprint = blueprintWithDependencies();
 

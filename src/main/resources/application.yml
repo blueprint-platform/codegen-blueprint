@@ -3,11 +3,13 @@ spring:
     name: codegen-blueprint
 
 codegen:
-  samples:
-    standard: sample/standard
-    hexagonal: sample/hexagonal
-    basic-dir-name: basic
-    rich-dir-name: rich
+  sample-code:
+    roots:
+      standard: sample/standard
+      hexagonal: sample/hexagonal
+    levels:
+      basic-dir-name: basic
+      rich-dir-name: rich
   profiles:
     spring-boot-maven-java:
       template-base-path: springboot/maven/java/
