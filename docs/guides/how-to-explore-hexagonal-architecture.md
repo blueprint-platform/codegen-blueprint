@@ -309,6 +309,7 @@ java -jar codegen-blueprint-1.0.0.jar \
   --group-id io.github.blueprintplatform.samples \
   --artifact-id greeting-service \
   --name "Greeting Service" \
+  --description "Sample Greeting Service built with hexagonal architecture" \
   --package-name io.github.blueprintplatform.samples.greeting \
   --layout hexagonal \
   --sample-code basic \

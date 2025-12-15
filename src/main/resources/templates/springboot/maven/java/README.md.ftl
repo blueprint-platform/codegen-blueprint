@@ -37,6 +37,38 @@ ${projectDescription}
 
 > If Maven is installed globally, you may also use `mvn` instead of `./mvnw`.
 
+<#-- Auto-config hints based on selected dependencies -->
+<#if (hasH2!false) || (hasActuator!false) || (hasSecurity!false)>
+
+---
+
+## ⚙️ Auto Configuration Notes
+
+<#if hasH2!false>
+    ### H2 (for JPA)
+    This project includes an **in-memory H2 database** configuration because `spring-boot-starter-data-jpa` was selected.
+
+    - JDBC URL: `jdbc:h2:mem:${artifactId}`
+    - Console: `/h2-console` (if enabled)
+
+</#if>
+
+<#if hasActuator!false>
+    ### Actuator
+    Basic actuator exposure is enabled:
+
+    - `/actuator/health`
+    - `/actuator/info`
+
+</#if>
+
+<#if hasSecurity!false>
+    ### Security
+    `spring-boot-starter-security` is included. Endpoints may require authentication depending on defaults and your configuration.
+</#if>
+
+</#if>
+
 ---
 
 ## 📁 Project Layout

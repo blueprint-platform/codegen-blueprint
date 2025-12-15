@@ -43,22 +43,19 @@ class SourceLayoutAdapterTest {
 
   private static ProjectBlueprint blueprint(ProjectLayout layout) {
     ProjectMetadata metadata =
-            new ProjectMetadata(
-                    new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
-                    new ProjectName("Demo App"),
-                    new ProjectDescription("Sample Project"),
-                    new PackageName(BASE_PACKAGE));
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectName("Demo App"),
+            new ProjectDescription("Sample Project"),
+            new PackageName(BASE_PACKAGE));
 
     PlatformSpec platform =
-            new PlatformSpec(
-                    new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-                    new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+        new PlatformSpec(
+            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
 
     ArchitectureSpec architecture =
-            new ArchitectureSpec(
-                    layout,
-                    ArchitectureGovernance.none(),
-                    SampleCodeOptions.none());
+        new ArchitectureSpec(layout, ArchitectureGovernance.none(), SampleCodeOptions.none());
 
     Dependencies dependencies = Dependencies.of(List.of());
 

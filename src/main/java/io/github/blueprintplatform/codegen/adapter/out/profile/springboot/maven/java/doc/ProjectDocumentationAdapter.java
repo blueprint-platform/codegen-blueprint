@@ -11,6 +11,7 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.Artifac
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ProjectDocumentationPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
+import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -32,6 +33,16 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
   private static final String KEY_JAVA_VERSION = "javaVersion";
   private static final String KEY_SPRING_BOOT_VERSION = "springBootVersion";
   private static final String KEY_DEPENDENCIES = "dependencies";
+
+  private static final String KEY_HAS_HEX_SAMPLE = "hasHexSample";
+  private static final String KEY_HAS_H2 = "hasH2";
+  private static final String KEY_HAS_ACTUATOR = "hasActuator";
+  private static final String KEY_HAS_SECURITY = "hasSecurity";
+
+  private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
+  private static final String STARTER_DATA_JPA = "spring-boot-starter-data-jpa";
+  private static final String STARTER_ACTUATOR = "spring-boot-starter-actuator";
+  private static final String STARTER_SECURITY = "spring-boot-starter-security";
 
   private final PomDependencyMapper pomDependencyMapper;
 
@@ -61,6 +72,10 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
 
     boolean hex = bp.getArchitecture().layout().isHexagonal();
 
+    boolean hasH2 = hasSpringBootStarter(deps, STARTER_DATA_JPA);
+    boolean hasActuator = hasSpringBootStarter(deps, STARTER_ACTUATOR);
+    boolean hasSecurity = hasSpringBootStarter(deps, STARTER_SECURITY);
+
     return Map.ofEntries(
         entry(KEY_PROJECT_NAME, bp.getMetadata().name().value()),
         entry(KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
@@ -73,6 +88,22 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
         entry(KEY_JAVA_VERSION, pt.java().asString()),
         entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().defaultVersion()),
         entry(KEY_DEPENDENCIES, mappedDeps),
-        entry("hasHexSample", hex));
+        entry(KEY_HAS_HEX_SAMPLE, hex),
+        entry(KEY_HAS_H2, hasH2),
+        entry(KEY_HAS_ACTUATOR, hasActuator),
+        entry(KEY_HAS_SECURITY, hasSecurity));
+  }
+
+  private boolean hasSpringBootStarter(Dependencies deps, String starterArtifactId) {
+    return deps != null
+        && !deps.isEmpty()
+        && deps.asList().stream()
+            .map(d -> d.coordinates())
+            .anyMatch(c -> isSpringBootStarter(c, starterArtifactId));
+  }
+
+  private boolean isSpringBootStarter(DependencyCoordinates c, String starterArtifactId) {
+    return SPRING_BOOT_GROUP_ID.equalsIgnoreCase(c.groupId().value())
+        && starterArtifactId.equalsIgnoreCase(c.artifactId().value());
   }
 }

@@ -24,8 +24,8 @@ class SpringBootMavenJavaArtifactsAdapterTest {
 
   private static ProjectBlueprint blueprint() {
     return new ProjectBlueprint(
-            null,
-            null,
+        null,
+        null,
         new ArchitectureSpec(null, ArchitectureGovernance.none(), SampleCodeOptions.none()),
         Dependencies.of(List.of()));
   }

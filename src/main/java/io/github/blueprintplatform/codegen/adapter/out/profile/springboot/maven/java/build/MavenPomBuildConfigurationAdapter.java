@@ -10,6 +10,7 @@ import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRender
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.BuildConfigurationPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import java.util.ArrayList;
@@ -27,11 +28,17 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
 
+  private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
+  private static final String STARTER_DATA_JPA = "spring-boot-starter-data-jpa";
+
   private static final PomDependency CORE_STARTER =
-      PomDependency.of("org.springframework.boot", "spring-boot-starter");
+      PomDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter");
 
   private static final PomDependency TEST_STARTER =
-      PomDependency.of("org.springframework.boot", "spring-boot-starter-test", null, "test");
+      PomDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-test", null, "test");
+
+  private static final PomDependency H2_TEST =
+      PomDependency.of("com.h2database", "h2", "2.4.240", null);
 
   private final PomDependencyMapper pomDependencyMapper;
 
@@ -55,7 +62,13 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
 
     List<PomDependency> dependencies = new ArrayList<>();
     dependencies.add(CORE_STARTER);
+
     dependencies.addAll(pomDependencyMapper.from(bp.getDependencies()));
+
+    if (hasSpringBootStarter(bp, STARTER_DATA_JPA)) {
+      dependencies.add(H2_TEST);
+    }
+
     dependencies.add(TEST_STARTER);
 
     return Map.ofEntries(
@@ -66,5 +79,14 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
         entry(KEY_PROJECT_NAME, bp.getMetadata().name().value()),
         entry(KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
         entry(KEY_DEPENDENCIES, dependencies));
+  }
+
+  private boolean hasSpringBootStarter(ProjectBlueprint bp, String starterArtifactId) {
+    return bp.getDependencies().asList().stream()
+        .map(Dependency::coordinates)
+        .anyMatch(
+            c ->
+                SPRING_BOOT_GROUP_ID.equalsIgnoreCase(c.groupId().value())
+                    && starterArtifactId.equalsIgnoreCase(c.artifactId().value()));
   }
 }
