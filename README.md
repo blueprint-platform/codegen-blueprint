@@ -116,19 +116,27 @@ This is why Blueprint is not a template collection.
 
 ## ⚡ What is Codegen Blueprint (Today)?
 
-A **CLI-driven**, **profile‑based**, **architecture‑aware** project generator.
+A **CLI-driven**, **profile-based**, **architecture-aware** project generator
+that turns architectural decisions into **executable output**.
 
-📌 Current profile: **spring-boot‑maven‑java**
+📌 Current profile: **spring-boot-maven-java**
 
-> Spring Boot 3.5+ · Java 21 · Maven — production‑ready baseline
+> Spring Boot 3.5+ · Java 21 · Maven — production-ready baseline
 
-Outputs include:
+Codegen Blueprint today delivers:
 
-* Clean source layout (main + test)
-* Domain isolation & enforcement
-* Maven configuration & wrappers
-* Application configuration
-* Optional **sample Hexagonal service**
+* Deterministic, production-ready project scaffolding
+* Clean source layout (main + test) with verified bootstrapping
+* **Framework-free domain core by construction**
+* Profile-driven architecture selection (standard / hexagonal)
+* **Optional architecture enforcement via generated ArchUnit tests**
+  *(enabled with `--enforcement basic|strict`)*
+* Maven configuration, wrapper, and build baseline
+* Application configuration (`application.yml`)
+* Optional **Hexagonal teaching sample** (domain + ports + adapters)
+
+> Architecture is not only generated —  
+> it can be **verified and enforced as part of the project output**.
 
 ---
 
