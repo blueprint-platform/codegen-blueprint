@@ -1,8 +1,8 @@
-package io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency;
+package io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.InvalidDependencyAliasException;
 
-public enum SpringBootDependencyAlias {
+public enum SpringBootDependencyOption {
   WEB(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-web"),
   DATA_JPA(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-data-jpa"),
   VALIDATION(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-validation"),
@@ -13,19 +13,19 @@ public enum SpringBootDependencyAlias {
   private final String groupId;
   private final String artifactId;
 
-  SpringBootDependencyAlias(String groupId, String artifactId) {
+  SpringBootDependencyOption(String groupId, String artifactId) {
     this.groupId = groupId;
     this.artifactId = artifactId;
   }
 
-  public static SpringBootDependencyAlias fromKey(String raw) {
+  public static SpringBootDependencyOption fromKey(String raw) {
     if (raw == null || raw.isBlank()) {
       throw new InvalidDependencyAliasException(String.valueOf(raw));
     }
 
     String normalized = raw.trim();
 
-    for (SpringBootDependencyAlias alias : values()) {
+    for (SpringBootDependencyOption alias : values()) {
       if (alias.name().equalsIgnoreCase(normalized)) {
         return alias;
       }

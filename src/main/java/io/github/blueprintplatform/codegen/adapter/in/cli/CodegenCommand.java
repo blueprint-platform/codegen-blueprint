@@ -7,6 +7,6 @@ import picocli.CommandLine.Command;
     name = "codegen",
     mixinStandardHelpOptions = true,
     version = "1.0.0",
-    description = "Hexagonal project code generator CLI",
+    description = "Project scaffold generator based on explicit architectural blueprints",
     subcommands = {SpringBootGenerateCommand.class})
 public class CodegenCommand {}

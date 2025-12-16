@@ -3,8 +3,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
@@ -30,15 +30,15 @@ public class CreateProjectHandler implements CreateProjectPort {
   }
 
   @Override
-  public CreateProjectResponse handle(CreateProjectRequest createProjectRequest) {
-    ProjectBlueprint blueprint = blueprintMapper.from(createProjectRequest);
+  public CreateProjectResult handle(CreateProjectCommand createProjectCommand) {
+    ProjectBlueprint blueprint = blueprintMapper.from(createProjectCommand);
 
     String artifactId = blueprint.getMetadata().identity().artifactId().value();
 
     Path projectRoot =
         executionContext
             .rootPort()
-            .prepareRoot(createProjectRequest.targetDirectory(), artifactId, FAIL_IF_EXISTS);
+            .prepareRoot(createProjectCommand.targetDirectory(), artifactId, FAIL_IF_EXISTS);
 
     ProjectArtifactsPort artifactsPort =
         executionContext.artifactsSelector().select(blueprint.getPlatform().techStack());

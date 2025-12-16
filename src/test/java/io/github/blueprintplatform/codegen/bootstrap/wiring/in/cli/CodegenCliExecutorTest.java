@@ -3,24 +3,20 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
-import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.CreateProjectRequestMapper;
+import io.github.blueprintplatform.codegen.adapter.in.cli.mapper.CreateProjectCommandMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.SpringBootGenerateCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
-import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.ProjectSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ArchitectureSpecSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ProjectMetadataSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.RuntimeTargetSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.TechStackSummary;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,18 +35,20 @@ class CodegenCliExecutorTest {
   @DisplayName("execute() should run springboot subcommand and invoke use case with mapped command")
   void execute_shouldRunSpringBootCommandAndInvokeUseCase() {
     RecordingCreateProjectPort useCase = new RecordingCreateProjectPort();
+
     int exitCode = getExitCode(useCase);
 
     assertThat(exitCode).isZero();
-    assertThat(useCase.lastCreateProjectRequest).isNotNull();
+    assertThat(useCase.lastCreateProjectCommand).isNotNull();
 
-    CreateProjectRequest cmd = useCase.lastCreateProjectRequest;
+    CreateProjectCommand cmd = useCase.lastCreateProjectCommand;
 
     assertThat(cmd.groupId()).isEqualTo("com.acme");
     assertThat(cmd.artifactId()).isEqualTo("demo-app");
     assertThat(cmd.projectName()).isEqualTo("Demo App");
     assertThat(cmd.projectDescription()).isEqualTo("Demo application for Acme");
     assertThat(cmd.packageName()).isEqualTo("com.acme.demo");
+
     assertThat(cmd.layout().key()).isEqualTo("hexagonal");
     assertThat(cmd.sampleCodeOptions().level().key()).isEqualTo("basic");
     assertThat(cmd.targetDirectory()).isEqualTo(tempDir);
@@ -62,14 +60,13 @@ class CodegenCliExecutorTest {
   }
 
   private int getExitCode(RecordingCreateProjectPort useCase) {
-    CreateProjectRequestMapper mapper = new CreateProjectRequestMapper();
+    CreateProjectCommandMapper mapper = new CreateProjectCommandMapper();
     SpringBootGenerateCommand springBootCmd = new SpringBootGenerateCommand(mapper, useCase);
 
     CodegenCommand rootCommand = new CodegenCommand();
     CommandLine.IFactory factory = new TestPicocliFactory(springBootCmd);
 
     CodegenCliExceptionHandler handler = new CodegenCliExceptionHandler(new DummyMessageSource());
-
     CodegenCliExecutor executor = new CodegenCliExecutor(rootCommand, factory, handler);
 
     String[] args = {
@@ -98,28 +95,42 @@ class CodegenCliExecutorTest {
   }
 
   static class RecordingCreateProjectPort implements CreateProjectPort {
-    CreateProjectRequest lastCreateProjectRequest;
+
+    CreateProjectCommand lastCreateProjectCommand;
 
     @Override
-    public CreateProjectResponse handle(CreateProjectRequest createProjectRequest) {
-      this.lastCreateProjectRequest = createProjectRequest;
+    public CreateProjectResult handle(CreateProjectCommand createProjectCommand) {
+      this.lastCreateProjectCommand = createProjectCommand;
+
+      var metadata =
+          new ProjectMetadataSummary(
+              lastCreateProjectCommand.groupId(),
+              lastCreateProjectCommand.artifactId(),
+              lastCreateProjectCommand.projectName(),
+              lastCreateProjectCommand.projectDescription(),
+              lastCreateProjectCommand.packageName());
+
+      var techStack = new TechStackSummary("spring-boot", "3.5.8", "maven", null, "java", "21");
+
+      var runtimeTarget =
+          new RuntimeTargetSummary(
+              "spring-boot-jvm",
+              Map.of(
+                  "javaVersion", "21",
+                  "springBootVersion", "3.5.8"));
+
+      var architecture =
+          new ArchitectureSpecSummary(
+              lastCreateProjectCommand.layout().key(),
+              lastCreateProjectCommand.enforcementMode().key(),
+              lastCreateProjectCommand.sampleCodeOptions().level().key());
 
       var project =
-          new ProjectGenerationSummary(
-              lastCreateProjectRequest.groupId(),
-              lastCreateProjectRequest.artifactId(),
-              lastCreateProjectRequest.projectName(),
-              lastCreateProjectRequest.projectDescription(),
-              lastCreateProjectRequest.packageName(),
-              new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-              lastCreateProjectRequest.layout(),
-              EnforcementMode.NONE,
-              new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5),
-              SampleCodeOptions.none(),
-              List.of());
+          new ProjectSummary(
+              metadata, techStack, runtimeTarget, architecture, List.of(), List.of());
 
-      return new CreateProjectResponse(
-          project, lastCreateProjectRequest.targetDirectory(), Path.of("demo-app.zip"), List.of());
+      return new CreateProjectResult(
+          project, lastCreateProjectCommand.targetDirectory(), Path.of("demo-app.zip"));
     }
   }
 

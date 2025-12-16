@@ -4,14 +4,14 @@ import ${projectPackageName}.application.sample.port.in.dto.GetGreetingRequest;
 import ${projectPackageName}.application.sample.port.in.dto.GetGreetingResult;
 
 /**
-* Application-level use case for retrieving greetings.
-* Kept small and focused on intent:
-*  - default greeting
-*  - personalized greeting
-*/
+ * Application-level use case for retrieving greetings.
+ * Kept small and focused on intent:
+ *  - default greeting
+ *  - personalized greeting
+ */
 public interface GetGreetingPort {
 
-GetGreetingResult getDefault();
+    GetGreetingResult getDefault();
 
-GetGreetingResult getPersonal(GetGreetingRequest request);
+    GetGreetingResult getPersonal(GetGreetingRequest request);
 }

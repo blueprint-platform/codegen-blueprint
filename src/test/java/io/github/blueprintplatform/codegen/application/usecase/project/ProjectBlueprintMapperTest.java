@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.DependencyInput;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
@@ -40,16 +40,16 @@ class ProjectBlueprintMapperTest {
             new DependencyInput("org.acme", "gamma", "  ", "  "),
             new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt"));
 
-    var createProjectRequest = getCreateProjectRequest(dependencies);
+    var createProjectRequest = getCreateProjectCommand(dependencies);
 
     return mapper.from(createProjectRequest);
   }
 
-  private static CreateProjectRequest getCreateProjectRequest(List<DependencyInput> dependencies) {
+  private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> dependencies) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
-    return new CreateProjectRequest(
+    return new CreateProjectCommand(
         "com.acme",
         "demo-app",
         "Demo App",

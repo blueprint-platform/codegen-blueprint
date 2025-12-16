@@ -4,20 +4,20 @@ import ${projectPackageName}.adapter.sample.in.rest.dto.GreetingResponse;
 import ${projectPackageName}.application.sample.port.in.dto.GetGreetingResult;
 
 /**
-* Maps application-layer result to REST response DTO.
-* GetGreetingResult  →  GreetingResponse
-* Kept free of Spring annotations to stay framework-agnostic.
-* It will be wired via a bootstrap @Configuration class.
-*/
+ * Maps application-layer result to REST response DTO.
+ * GetGreetingResult  →  GreetingResponse
+ * Kept free of Spring annotations to stay framework-agnostic.
+ * It will be wired via a bootstrap @Configuration class.
+ */
 public class GreetingResponseMapper {
 
-public GreetingResponse from(GetGreetingResult result) {
-if (result == null) {
-return null;
-}
-return new GreetingResponse(
-result.id() != null ? result.id().toString() : null,
-result.text()
-);
-}
+    public GreetingResponse from(GetGreetingResult result) {
+        if (result == null) {
+            return null;
+        }
+        return new GreetingResponse(
+                result.id() != null ? result.id().toString() : null,
+                result.text()
+        );
+    }
 }

@@ -1,19 +1,15 @@
 package io.github.blueprintplatform.codegen.adapter.in.cli.springboot;
 
-import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
-import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
+import io.github.blueprintplatform.codegen.adapter.in.cli.mapper.CreateProjectCommandMapper;
+import io.github.blueprintplatform.codegen.adapter.in.cli.request.CliProjectRequest;
+import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.*;
+import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.*;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
-import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
-import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +24,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootGenerateCommand.class);
 
-  private final CreateProjectRequestMapper mapper;
+  private final CreateProjectCommandMapper mapper;
   private final CreateProjectPort createProjectPort;
 
   @Option(
@@ -66,28 +62,28 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       required = false,
       description = "Build tool. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "maven")
-  BuildTool buildTool;
+  SpringBootBuildToolOption buildTool;
 
   @Option(
       names = {"--language"},
       required = false,
       description = "Programming language. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "java")
-  Language language;
+  SpringBootLanguageOption language;
 
   @Option(
       names = {"--java"},
       required = false,
       description = "Java version. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "21")
-  JavaVersion javaVersion;
+  SpringBootJavaVersionOption javaVersion;
 
   @Option(
       names = {"--boot"},
       required = false,
       description = "Spring Boot version. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "3.5")
-  SpringBootVersion bootVersion;
+  SpringBootVersionOption bootVersion;
 
   @Option(
       names = {"--layout"},
@@ -97,27 +93,27 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
               + "standard = layered packages (controller/service/repository/domain/config), "
               + "hexagonal = ports & adapters structure.",
       defaultValue = "standard")
-  ProjectLayout layout;
+  SpringBootLayoutOption layout;
 
   @Option(
-      names = {"--architecture", "--enforcement"},
+      names = {"--enforcement"},
       required = false,
       description = "Architecture enforcement mode. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "none")
-  EnforcementMode enforcementMode;
+  SpringBootArchitectureEnforcementOption enforcementMode;
 
   @Option(
       names = {"--dependency"},
       required = false,
       description = "Dependency alias, can be repeated. Available: ${COMPLETION-CANDIDATES}")
-  List<SpringBootDependencyAlias> dependencies;
+  List<SpringBootDependencyOption> dependencies;
 
   @Option(
       names = {"--sample-code"},
       required = false,
       description = "Sample code level. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "none")
-  SampleCodeLevel sampleCode;
+  SpringBootSampleCodeOption sampleCode;
 
   @Option(
       names = {"--target-dir"},
@@ -127,43 +123,48 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   Path targetDirectory;
 
   public SpringBootGenerateCommand(
-      CreateProjectRequestMapper mapper, CreateProjectPort createProjectPort) {
+      CreateProjectCommandMapper mapper, CreateProjectPort createProjectPort) {
     this.mapper = mapper;
     this.createProjectPort = createProjectPort;
   }
 
   @Override
   public Integer call() {
-    String profile = buildProfileKey(buildTool, language);
 
-    List<String> dependencyAliases =
-        dependencies == null ? List.of() : dependencies.stream().map(Enum::name).toList();
+    var metadata = new CliProjectMetadata(groupId, artifactId, name, description, packageName);
 
-    CliProjectRequest request =
+    var techStack = new CliTechStack(Framework.SPRING_BOOT.key(), buildTool.key(), language.key());
+
+    var runtimeTargetParams =
+        Map.of(
+            CliRuntimeTargetKeys.PARAM_JAVA_VERSION, javaVersion.value(),
+            CliRuntimeTargetKeys.PARAM_SPRING_BOOT_VERSION, bootVersion.value());
+
+    var runtimeTarget =
+        new CliRuntimeTarget(CliRuntimeTargetKeys.TYPE_SPRING_BOOT_JVM, runtimeTargetParams);
+
+    var architecture =
+        new CliArchitectureSpec(layout.key(), enforcementMode.key(), sampleCode.key());
+
+    List<CliDependency> cliDependencies = List.of();
+    if (dependencies != null) {
+      cliDependencies =
+          dependencies.stream()
+              .map(d -> new CliDependency(d.groupId(), d.artifactId(), null, null))
+              .toList();
+    }
+
+    var request =
         new CliProjectRequest(
-            groupId,
-            artifactId,
-            name,
-            description,
-            packageName,
-            profile,
-            layout.key(),
-            enforcementMode.key(),
-            dependencyAliases,
-            sampleCode.key(),
-            targetDirectory);
+            metadata, techStack, runtimeTarget, architecture, cliDependencies, targetDirectory);
 
-    var command = mapper.from(request, buildTool, language, javaVersion, bootVersion);
+    var command = mapper.from(request);
 
-    CreateProjectResponse result = createProjectPort.handle(command);
+    CreateProjectResult result = createProjectPort.handle(command);
 
     log.info("Spring Boot project generated successfully.");
     log.info("Archive path: {}", result.archivePath());
 
     return 0;
-  }
-
-  private String buildProfileKey(BuildTool buildTool, Language language) {
-    return Framework.SPRING_BOOT.key() + "-" + buildTool.key() + "-" + language.key();
   }
 }

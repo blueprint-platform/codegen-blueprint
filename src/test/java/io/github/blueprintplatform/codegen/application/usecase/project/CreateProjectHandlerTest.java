@@ -3,8 +3,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.GeneratedFileSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ProjectFileSummary;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
@@ -66,9 +66,9 @@ class CreateProjectHandlerTest {
 
     var handler = new CreateProjectHandler(blueprintMapper, responseMapper, executionContext);
 
-    var createProjectRequest = getCreateProjectRequest();
+    var createProjectCommand = getCreateProjectCommand();
 
-    var result = handler.handle(createProjectRequest);
+    var result = handler.handle(createProjectCommand);
 
     assertThat(result.archivePath()).hasFileName("demo-app.zip");
     assertThat(result.projectRoot()).isEqualTo(tempDir.resolve("demo-app"));
@@ -85,28 +85,30 @@ class CreateProjectHandlerTest {
         .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths)
         .hasSize(fakeArtifacts.lastEmittedRelativePaths.size());
 
-    assertThat(result.project().groupId()).isEqualTo("com.acme");
-    assertThat(result.project().artifactId()).isEqualTo("demo-app");
-    assertThat(result.project().projectName()).isEqualTo("Demo App");
-    assertThat(result.project().projectDescription()).isEqualTo("Demo project");
-    assertThat(result.project().packageName()).isEqualTo("com.acme.demo");
-    assertThat(result.project().layout()).isEqualTo(ProjectLayout.STANDARD);
-    assertThat(result.project().enforcementMode()).isEqualTo(EnforcementMode.NONE);
-    assertThat(result.project().sampleCode()).isEqualTo(SampleCodeOptions.none());
+    assertThat(result.project().metadata().groupId()).isEqualTo("com.acme");
+    assertThat(result.project().metadata().artifactId()).isEqualTo("demo-app");
+    assertThat(result.project().metadata().projectName()).isEqualTo("Demo App");
+    assertThat(result.project().metadata().projectDescription()).isEqualTo("Demo project");
+    assertThat(result.project().metadata().packageName()).isEqualTo("com.acme.demo");
+    assertThat(result.project().architecture().layout()).isEqualTo(ProjectLayout.STANDARD.key());
+    assertThat(result.project().architecture().enforcementMode())
+        .isEqualTo(EnforcementMode.NONE.key());
+    assertThat(result.project().architecture().sampleCodeLevel())
+        .isEqualTo(SampleCodeOptions.none().level().key());
 
-    assertThat(result.files())
-        .extracting(GeneratedFileSummary::relativePath)
+    assertThat(result.project().files())
+        .extracting(ProjectFileSummary::relativePath)
         .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths);
 
-    assertThat(result.files()).allSatisfy(f -> assertThat(f.executable()).isFalse());
-    assertThat(result.files()).allSatisfy(f -> assertThat(f.binary()).isFalse());
+    assertThat(result.project().files()).allSatisfy(f -> assertThat(f.executable()).isFalse());
+    assertThat(result.project().files()).allSatisfy(f -> assertThat(f.binary()).isFalse());
   }
 
-  private CreateProjectRequest getCreateProjectRequest() {
+  private CreateProjectCommand getCreateProjectCommand() {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
-    return new CreateProjectRequest(
+    return new CreateProjectCommand(
         "com.acme",
         "demo-app",
         "Demo App",

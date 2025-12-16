@@ -1,15 +1,7 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
-import io.github.blueprintplatform.codegen.adapter.in.cli.shared.KeyedEnumConverter;
-import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
-import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
-import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.*;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
@@ -33,18 +25,19 @@ public class CodegenCliExecutor {
   public int execute(String[] args) {
     CommandLine cmd =
         new CommandLine(codegenCommand, factory)
-            .registerConverter(BuildTool.class, new KeyedEnumConverter<>(BuildTool::fromKey))
-            .registerConverter(Language.class, new KeyedEnumConverter<>(Language::fromKey))
+            .registerConverter(SpringBootBuildToolOption.class, SpringBootBuildToolOption::fromKey)
+            .registerConverter(SpringBootLanguageOption.class, SpringBootLanguageOption::fromKey)
             .registerConverter(
-                ProjectLayout.class, new KeyedEnumConverter<>(ProjectLayout::fromKey))
-            .registerConverter(JavaVersion.class, new KeyedEnumConverter<>(JavaVersion::fromKey))
+                SpringBootJavaVersionOption.class, SpringBootJavaVersionOption::fromKey)
+            .registerConverter(SpringBootVersionOption.class, SpringBootVersionOption::fromKey)
+            .registerConverter(SpringBootLayoutOption.class, SpringBootLayoutOption::fromKey)
             .registerConverter(
-                SpringBootVersion.class, new KeyedEnumConverter<>(SpringBootVersion::fromKey))
+                SpringBootArchitectureEnforcementOption.class,
+                SpringBootArchitectureEnforcementOption::fromKey)
             .registerConverter(
-                SampleCodeLevel.class, new KeyedEnumConverter<>(SampleCodeLevel::fromKey))
+                SpringBootSampleCodeOption.class, SpringBootSampleCodeOption::fromKey)
             .registerConverter(
-                EnforcementMode.class, new KeyedEnumConverter<>(EnforcementMode::fromKey))
-            .registerConverter(SpringBootDependencyAlias.class, SpringBootDependencyAlias::fromKey);
+                SpringBootDependencyOption.class, SpringBootDependencyOption::fromKey);
 
     cmd.setExecutionExceptionHandler(exceptionHandler);
 

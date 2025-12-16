@@ -1,8 +1,8 @@
 package io.github.blueprintplatform.codegen.application.port.in.project;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
 
 public interface CreateProjectPort {
-  CreateProjectResponse handle(CreateProjectRequest createProjectRequest);
+  CreateProjectResult handle(CreateProjectCommand createProjectCommand);
 }
