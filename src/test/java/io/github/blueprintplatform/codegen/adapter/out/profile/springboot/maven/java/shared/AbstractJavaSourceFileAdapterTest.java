@@ -7,7 +7,6 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateS
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -60,7 +59,7 @@ class AbstractJavaSourceFileAdapterTest {
         new TestJavaSourceFileAdapter(renderer, artifactSpec, formatter);
 
     ProjectBlueprint blueprint =
-        ProjectBlueprintFactory.of(
+        ProjectBlueprint.of(
             new ProjectMetadata(
                 new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
                 new ProjectName("Demo App"),

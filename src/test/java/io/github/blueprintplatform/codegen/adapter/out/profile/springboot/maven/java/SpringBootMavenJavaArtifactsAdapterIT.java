@@ -2,7 +2,6 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -84,6 +83,6 @@ class SpringBootMavenJavaArtifactsAdapterIT {
 
     Dependencies dependencies = Dependencies.of(List.of(webStarter));
 
-    return ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
+    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 }

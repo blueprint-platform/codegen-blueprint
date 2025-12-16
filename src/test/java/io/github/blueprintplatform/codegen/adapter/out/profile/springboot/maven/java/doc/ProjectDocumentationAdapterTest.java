@@ -7,7 +7,6 @@ import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDep
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -77,7 +76,7 @@ class ProjectDocumentationAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
-    return ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
+    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
   @Test

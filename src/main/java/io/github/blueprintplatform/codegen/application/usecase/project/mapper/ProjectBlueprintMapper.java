@@ -2,7 +2,6 @@ package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
-import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -40,7 +39,7 @@ public class ProjectBlueprintMapper {
 
     Dependencies dependencies = mapDependencies(c.dependencies());
 
-    return ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
+    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {

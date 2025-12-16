@@ -1,10 +1,9 @@
-package io.github.blueprintplatform.codegen.domain.factory;
+package io.github.blueprintplatform.codegen.domain.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
-import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
@@ -37,7 +36,7 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-class ProjectBlueprintFactoryTest {
+class ProjectBlueprintTest {
 
   private static ProjectMetadata metadata() {
     return new ProjectMetadata(
@@ -84,8 +83,7 @@ class ProjectBlueprintFactoryTest {
     ArchitectureSpec architecture = architecture();
     Dependencies dependencies = dependencies();
 
-    ProjectBlueprint bp =
-        ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
+    ProjectBlueprint bp = ProjectBlueprint.of(metadata, platform, architecture, dependencies);
 
     assertThat(bp.getMetadata()).isSameAs(metadata);
     assertThat(bp.getPlatform()).isSameAs(platform);
@@ -94,40 +92,39 @@ class ProjectBlueprintFactoryTest {
   }
 
   @Test
-  @DisplayName("null tech stack should fail via CompatibilityPolicy with platform.target.missing")
-  void nullTechStack_shouldFailPlatformTargetMissing() {
+  @DisplayName("null tech stack should fail with platform.target.missing")
+  void of_nullTechStack_shouldFailPlatformTargetMissing() {
     PlatformSpec platform = new PlatformSpec(null, target());
 
     assertThatThrownBy(
-            () -> ProjectBlueprintFactory.of(metadata(), platform, architecture(), dependencies()))
+            () -> ProjectBlueprint.of(metadata(), platform, architecture(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
   }
 
   @Test
-  @DisplayName(
-      "null platform target should fail via CompatibilityPolicy with platform.target.missing")
-  void nullPlatformTarget_shouldFailPlatformTargetMissing() {
+  @DisplayName("null platform target should fail with platform.target.missing")
+  void of_nullPlatformTarget_shouldFailPlatformTargetMissing() {
     PlatformSpec platform = new PlatformSpec(techStack(), null);
 
     assertThatThrownBy(
-            () -> ProjectBlueprintFactory.of(metadata(), platform, architecture(), dependencies()))
+            () -> ProjectBlueprint.of(metadata(), platform, architecture(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
   }
 
   @Test
-  @DisplayName("incompatible platform target should delegate to CompatibilityPolicy and fail")
-  void incompatiblePlatformTarget_shouldFailCompatibility() {
+  @DisplayName("incompatible platform target should fail with platform.target.incompatible")
+  void of_incompatiblePlatformTarget_shouldFailCompatibility() {
     PlatformTarget incompatible =
         new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4);
 
     PlatformSpec platform = new PlatformSpec(techStack(), incompatible);
 
     assertThatThrownBy(
-            () -> ProjectBlueprintFactory.of(metadata(), platform, architecture(), dependencies()))
+            () -> ProjectBlueprint.of(metadata(), platform, architecture(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -67,7 +66,7 @@ class GitIgnoreAdapterTest {
     GitIgnoreAdapter adapter = new GitIgnoreAdapter(renderer, artifactSpec);
 
     ProjectBlueprint blueprint =
-        ProjectBlueprintFactory.of(
+        ProjectBlueprint.of(
             new ProjectMetadata(
                 new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
                 new ProjectName("Demo App"),

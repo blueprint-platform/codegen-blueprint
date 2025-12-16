@@ -8,7 +8,23 @@ import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
+import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
+import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
+import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
+import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
+import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
+import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.util.Collections;
 import java.util.List;
@@ -21,10 +37,18 @@ import org.junit.jupiter.api.Test;
 class SpringBootMavenJavaArtifactsAdapterTest {
 
   private static ProjectBlueprint blueprint() {
-    return new ProjectBlueprint(
-        null,
-        null,
-        new ArchitectureSpec(null, ArchitectureGovernance.none(), SampleCodeOptions.none()),
+    return ProjectBlueprint.of(
+        new ProjectMetadata(
+            new ProjectIdentity(
+                new GroupId("io.github.blueprintplatform"), new ArtifactId("greeting")),
+            new ProjectName("Greeting"),
+            new ProjectDescription("Greeting sample built with hexagonal architecture"),
+            new PackageName("io.github.blueprintplatform.greeting")),
+        new PlatformSpec(
+            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5)),
+        new ArchitectureSpec(
+            ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none()),
         Dependencies.of(List.of()));
   }
 

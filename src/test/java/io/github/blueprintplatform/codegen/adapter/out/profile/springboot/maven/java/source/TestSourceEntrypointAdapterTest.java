@@ -64,7 +64,7 @@ class TestSourceEntrypointAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of());
 
-    return new ProjectBlueprint(metadata, platform, architecture, dependencies);
+    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
   @Test
