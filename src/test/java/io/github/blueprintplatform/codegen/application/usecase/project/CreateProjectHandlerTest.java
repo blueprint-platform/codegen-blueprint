@@ -8,6 +8,8 @@ import io.github.blueprintplatform.codegen.application.port.in.project.dto.Gener
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
+import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
+import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
@@ -24,7 +26,6 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectFileListingPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -55,12 +57,12 @@ class CreateProjectHandlerTest {
     var fakeArtifacts = new FakeArtifactsPort();
     var fakeSelector = new FakeSelector(fakeArtifacts);
     var fakeWriter = new FakeWriterPort();
-    var fakeFileListing = new FakeFileListingPort(fakeArtifacts);
+    var fakeOutput = new FakeProjectOutputPort(fakeArtifacts);
     var fakeArchiver = new FakeArchiverPort();
 
     var executionContext =
         new CreateProjectExecutionContext(
-            fakeRootPort, fakeSelector, fakeWriter, fakeFileListing, fakeArchiver);
+            fakeRootPort, fakeSelector, fakeWriter, fakeOutput, fakeArchiver);
 
     var handler = new CreateProjectHandler(blueprintMapper, responseMapper, executionContext);
 
@@ -77,7 +79,7 @@ class CreateProjectHandlerTest {
     assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(tempDir.resolve("demo-app"));
     assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
 
-    assertThat(fakeFileListing.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
+    assertThat(fakeOutput.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
 
     assertThat(fakeWriter.writtenFiles)
         .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths)
@@ -197,18 +199,20 @@ class CreateProjectHandlerTest {
     }
   }
 
-  static class FakeFileListingPort implements ProjectFileListingPort {
+  static class FakeProjectOutputPort implements ProjectOutputPort {
     private final FakeArtifactsPort artifactsPort;
     Path lastProjectRoot;
 
-    FakeFileListingPort(FakeArtifactsPort artifactsPort) {
+    FakeProjectOutputPort(FakeArtifactsPort artifactsPort) {
       this.artifactsPort = artifactsPort;
     }
 
     @Override
-    public List<Path> listFiles(Path projectRoot) {
+    public List<ProjectOutputItem> list(Path projectRoot) {
       this.lastProjectRoot = projectRoot;
-      return List.copyOf(artifactsPort.lastEmittedRelativePaths);
+      return List.copyOf(artifactsPort.lastEmittedRelativePaths).stream()
+          .map(p -> new ProjectOutputItem(p, false, false))
+          .collect(Collectors.toList());
     }
   }
 

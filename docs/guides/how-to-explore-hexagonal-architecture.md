@@ -91,7 +91,6 @@ The domain **declares the need**, but never performs IO itself.
 | ------------------------ | ------------------------------------------- |
 | `ProjectRootPort`        | Prepare and validate project root directory |
 | `ProjectWriterPort`      | Persist generated files and directories     |
-| `ProjectFileListingPort` | List generated files after project creation |
 
 **Key characteristics:**
 
@@ -114,19 +113,24 @@ domain.port.out.filesystem
 
 ## 🎯 Application → Outbound Ports (Delivery & Orchestration)
 
-The application layer owns **use‑case execution and delivery concerns**.
+The application layer owns **use-case execution and delivery concerns**.
 
-| Port                  | Responsibility                                      |
-| --------------------- | --------------------------------------------------- |
-| `ProjectArchiverPort` | Package generated project (ZIP today, OCI tomorrow) |
+| Port                  | Responsibility                                                  |
+| --------------------- | --------------------------------------------------------------- |
+| `ProjectArchiverPort` | Package generated project (ZIP today, OCI tomorrow)             |
+| `ProjectOutputPort`   | Discover generated project output for reporting & delivery UX   |
 
 ```
 application.port.out.archive
 └─ ProjectArchiverPort
+
+application.port.out.output
+└─ ProjectOutputPort
 ```
 
-➡ Packaging is **not a domain concern**
-➡ It is a **delivery mechanism**, therefore application‑level
+➡ Packaging and output discovery are **not domain concerns**  
+➡ They are **delivery / orchestration mechanisms**  
+➡ Therefore they belong to the **application layer**
 
 ---
 

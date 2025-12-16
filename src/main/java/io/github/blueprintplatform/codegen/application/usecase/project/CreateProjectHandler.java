@@ -6,6 +6,7 @@ import io.github.blueprintplatform.codegen.application.port.in.project.CreatePro
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
+import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
@@ -48,8 +49,9 @@ public class CreateProjectHandler implements CreateProjectPort {
 
     Path archive = executionContext.archiverPort().archive(projectRoot, artifactId);
 
-    List<Path> projectFiles = executionContext.fileListingPort().listFiles(projectRoot);
+    List<ProjectOutputItem> projectOutputItems =
+        executionContext.projectOutputPort().list(projectRoot);
 
-    return responseMapper.from(blueprint, projectRoot, projectFiles, archive);
+    return responseMapper.from(blueprint, projectRoot, projectOutputItems, archive);
   }
 }

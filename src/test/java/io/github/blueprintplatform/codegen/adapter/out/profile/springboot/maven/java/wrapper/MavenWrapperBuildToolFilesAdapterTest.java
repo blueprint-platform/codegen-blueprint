@@ -46,19 +46,21 @@ class MavenWrapperBuildToolFilesAdapterTest {
 
   private static ProjectBlueprint blueprint() {
     ProjectMetadata metadata =
-            new ProjectMetadata(
-                    new ProjectIdentity(new GroupId("io.github.blueprintplatform"), new ArtifactId("greeting")),
-                    new ProjectName("Greeting"),
-                    new ProjectDescription("Greeting sample service"),
-                    new PackageName("io.github.blueprintplatform.greeting"));
+        new ProjectMetadata(
+            new ProjectIdentity(
+                new GroupId("io.github.blueprintplatform"), new ArtifactId("greeting")),
+            new ProjectName("Greeting"),
+            new ProjectDescription("Greeting sample service"),
+            new PackageName("io.github.blueprintplatform.greeting"));
 
     PlatformSpec platform =
-            new PlatformSpec(
-                    new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-                    new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+        new PlatformSpec(
+            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
 
     ArchitectureSpec architecture =
-            new ArchitectureSpec(ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none());
+        new ArchitectureSpec(
+            ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none());
 
     return ProjectBlueprint.of(metadata, platform, architecture, Dependencies.of(List.of()));
   }
@@ -67,13 +69,13 @@ class MavenWrapperBuildToolFilesAdapterTest {
   @DisplayName("artifactKey() should return BUILD_TOOL_METADATA")
   void artifactKey_shouldReturnBuildToolMetadata() {
     MavenWrapperBuildToolFilesAdapter adapter =
-            new MavenWrapperBuildToolFilesAdapter(
-                    new NoopTemplateRenderer(),
-                    new ArtifactSpec(
-                            BASE_PATH,
-                            List.of(
-                                    new TemplateSpec(
-                                            "maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties"))));
+        new MavenWrapperBuildToolFilesAdapter(
+            new NoopTemplateRenderer(),
+            new ArtifactSpec(
+                BASE_PATH,
+                List.of(
+                    new TemplateSpec(
+                        "maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties"))));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_TOOL_METADATA);
   }
@@ -84,17 +86,17 @@ class MavenWrapperBuildToolFilesAdapterTest {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     TemplateSpec templateSpec =
-            new TemplateSpec("maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties");
+        new TemplateSpec("maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties");
     ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     MavenWrapperBuildToolFilesAdapter adapter =
-            new MavenWrapperBuildToolFilesAdapter(renderer, artifactSpec);
+        new MavenWrapperBuildToolFilesAdapter(renderer, artifactSpec);
 
     ProjectBlueprint blueprint = blueprint();
 
     Path relativePath = Path.of(".mvn/wrapper/maven-wrapper.properties");
     GeneratedTextResource expectedFile =
-            new GeneratedTextResource(relativePath, "distributionUrl=...", StandardCharsets.UTF_8);
+        new GeneratedTextResource(relativePath, "distributionUrl=...", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
     Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
@@ -106,8 +108,8 @@ class MavenWrapperBuildToolFilesAdapterTest {
 
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model)
-            .isNotNull()
-            .containsEntry("wrapperVersion", "3.3.4")
-            .containsEntry("mavenVersion", "3.9.11");
+        .isNotNull()
+        .containsEntry("wrapperVersion", "3.3.4")
+        .containsEntry("mavenVersion", "3.9.11");
   }
 }

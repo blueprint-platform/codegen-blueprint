@@ -54,10 +54,10 @@ class FileSystemProjectWriterAdapterTest {
     Path temp = Files.createTempDirectory("writer-test3");
     Path relative = Path.of("utf16.txt");
 
-    writer.writeText(temp, relative, "Merhaba Dünya", StandardCharsets.UTF_16);
+    writer.writeText(temp, relative, "Hello World", StandardCharsets.UTF_16);
 
     assertThat(Files.readString(temp.resolve(relative), StandardCharsets.UTF_16))
-        .isEqualTo("Merhaba Dünya");
+        .isEqualTo("Hello World");
   }
 
   @Test

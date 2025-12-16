@@ -3,11 +3,11 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.application.project
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
+import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
 import io.github.blueprintplatform.codegen.application.usecase.project.*;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectFileListingPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
 import org.springframework.context.annotation.Bean;
@@ -31,10 +31,10 @@ public class ProjectUseCaseConfig {
       ProjectRootPort rootPort,
       ProjectArtifactsSelector artifactsSelector,
       ProjectWriterPort writerPort,
-      ProjectFileListingPort fileListingPort,
+      ProjectOutputPort projectOutputPort,
       ProjectArchiverPort archiverPort) {
     return new CreateProjectExecutionContext(
-        rootPort, artifactsSelector, writerPort, fileListingPort, archiverPort);
+        rootPort, artifactsSelector, writerPort, projectOutputPort, archiverPort);
   }
 
   @Bean
