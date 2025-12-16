@@ -148,13 +148,13 @@ Architecture isn’t only drawn — it executes here ⬇
 
 - 🔒 **Executable Architecture Scope (1.0.0 GA)**  
   Defines what is *strictly enforced today* and output guarantees  
-  → [docs/architecture/executable-architecture-scope.md](docs/architecture/executable-architecture-scope.md)
+  → [Executable Architecture Scope (1.0.0 GA)](docs/architecture/executable-architecture-scope.md)
 
 ---
 
 - 🧭 **How to Explore This Codebase (Hexagonal Guide)**  
   Understand ports/adapters, profiles, boundaries  
-  → [docs/guides/how-to-explore-hexagonal-architecture.md](docs/guides/how-to-explore-hexagonal-architecture.md)
+  → [Hexagonal Architecture Guide](docs/guides/how-to-explore-hexagonal-architecture.md)
 
 ### 🧩 Part of the Blueprint Platform
 
