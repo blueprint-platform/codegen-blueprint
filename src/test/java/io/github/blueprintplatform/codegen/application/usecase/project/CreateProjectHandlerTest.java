@@ -3,8 +3,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ProjectFileSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;

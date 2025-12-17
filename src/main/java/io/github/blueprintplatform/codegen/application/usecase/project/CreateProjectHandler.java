@@ -3,8 +3,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;

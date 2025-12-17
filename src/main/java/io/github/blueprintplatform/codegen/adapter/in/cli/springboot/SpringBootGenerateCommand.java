@@ -5,7 +5,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.request.CliProjectRequ
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.*;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.*;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import java.nio.file.Path;
 import java.util.List;

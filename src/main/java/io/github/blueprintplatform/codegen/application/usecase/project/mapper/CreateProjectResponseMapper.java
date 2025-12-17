@@ -1,13 +1,13 @@
 package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.CreateProjectResult;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.ProjectSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ArchitectureSpecSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ProjectDependencySummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ProjectFileSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.ProjectMetadataSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.RuntimeTargetSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.response.summary.TechStackSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ArchitectureSpecSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectDependencySummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectMetadataSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.RuntimeTargetSummary;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.TechStackSummary;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;

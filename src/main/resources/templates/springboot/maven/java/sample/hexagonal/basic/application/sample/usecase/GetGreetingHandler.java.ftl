@@ -1,8 +1,8 @@
 package ${projectPackageName}.application.sample.usecase;
 
 import ${projectPackageName}.application.sample.port.in.GetGreetingPort;
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingRequest;
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingResult;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingQuery;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingResult;
 import ${projectPackageName}.domain.sample.model.Greeting;
 import ${projectPackageName}.domain.sample.port.out.GreetingAuditPort;
 import ${projectPackageName}.domain.sample.service.GreetingService;
@@ -11,7 +11,7 @@ import ${projectPackageName}.domain.sample.service.GreetingService;
  * Application-layer handler for the GetGreeting use case.
  * Responsibilities:
  *  - orchestrate domain services
- *  - call outbound ports (e.g. audit)
+ *  - call outbound ports (e.g., audit)
  *  - map domain objects to use case result DTOs
  */
 public class GetGreetingHandler implements GetGreetingPort {
@@ -34,12 +34,12 @@ public class GetGreetingHandler implements GetGreetingPort {
     }
 
     @Override
-    public GetGreetingResult getPersonal(GetGreetingRequest request) {
+    public GetGreetingResult getPersonal(GetGreetingQuery query) {
         Greeting greeting;
-        if (request == null || request.name() == null) {
+        if (query == null || query.name() == null) {
             greeting = greetingService.defaultGreeting();
         } else {
-            greeting = greetingService.createPersonalGreeting(request.name());
+            greeting = greetingService.createPersonalGreeting(query.name());
         }
         auditPort.auditCreated(greeting);
         return map(greeting);

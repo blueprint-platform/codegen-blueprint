@@ -6,8 +6,8 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliDepen
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliRuntimeTarget;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliRuntimeTargetKeys;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliTechStack;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;

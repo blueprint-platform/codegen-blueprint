@@ -6,50 +6,30 @@ import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDep
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ProjectDocumentationPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
-import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements ProjectDocumentationPort {
-
-  private static final String KEY_PROJECT_NAME = "projectName";
-  private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
-  private static final String KEY_GROUP_ID = "groupId";
-  private static final String KEY_ARTIFACT_ID = "artifactId";
-  private static final String KEY_PACKAGE_NAME = "packageName";
-  private static final String KEY_BUILD_TOOL = "buildTool";
-  private static final String KEY_LANGUAGE = "language";
-  private static final String KEY_FRAMEWORK = "framework";
-  private static final String KEY_JAVA_VERSION = "javaVersion";
-  private static final String KEY_SPRING_BOOT_VERSION = "springBootVersion";
-  private static final String KEY_DEPENDENCIES = "dependencies";
-
-  private static final String KEY_HAS_HEX_SAMPLE = "hasHexSample";
-  private static final String KEY_HAS_H2 = "hasH2";
-  private static final String KEY_HAS_ACTUATOR = "hasActuator";
-  private static final String KEY_HAS_SECURITY = "hasSecurity";
-
-  private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
-  private static final String STARTER_DATA_JPA = "spring-boot-starter-data-jpa";
-  private static final String STARTER_ACTUATOR = "spring-boot-starter-actuator";
-  private static final String STARTER_SECURITY = "spring-boot-starter-security";
+        implements ProjectDocumentationPort {
 
   private final PomDependencyMapper pomDependencyMapper;
 
   public ProjectDocumentationAdapter(
-      TemplateRenderer renderer,
-      ArtifactSpec artifactSpec,
-      PomDependencyMapper pomDependencyMapper) {
+          TemplateRenderer renderer,
+          ArtifactSpec artifactSpec,
+          PomDependencyMapper pomDependencyMapper) {
     super(renderer, artifactSpec);
     this.pomDependencyMapper = pomDependencyMapper;
   }
@@ -62,48 +42,40 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
     ProjectIdentity id = bp.getMetadata().identity();
-    TechStack stack = bp.getPlatform().techStack();
-    SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
-
     PackageName pkg = bp.getMetadata().packageName();
+    TechStack stack = bp.getPlatform().techStack();
+    SpringBootJvmTarget target = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
     Dependencies deps = bp.getDependencies();
 
-    List<PomDependency> mappedDeps = pomDependencyMapper.from(deps);
-
-    boolean hex = bp.getArchitecture().layout().isHexagonal();
-
-    boolean hasH2 = hasSpringBootStarter(deps, STARTER_DATA_JPA);
-    boolean hasActuator = hasSpringBootStarter(deps, STARTER_ACTUATOR);
-    boolean hasSecurity = hasSpringBootStarter(deps, STARTER_SECURITY);
+    Map<String, Boolean> features =
+            deps == null || deps.isEmpty()
+                    ? Map.of()
+                    : Arrays.stream(ProjectDocumentationModel.FEATURES_SET)
+                    .collect(Collectors.toMap(
+                            DependencyFeature::key,
+                            f -> deps.asList().stream().anyMatch(f.matches())
+                    ));
 
     return Map.ofEntries(
-        entry(KEY_PROJECT_NAME, bp.getMetadata().name().value()),
-        entry(KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
-        entry(KEY_GROUP_ID, id.groupId().value()),
-        entry(KEY_ARTIFACT_ID, id.artifactId().value()),
-        entry(KEY_PACKAGE_NAME, pkg.value()),
-        entry(KEY_BUILD_TOOL, stack.buildTool().key()),
-        entry(KEY_LANGUAGE, stack.language().key()),
-        entry(KEY_FRAMEWORK, stack.framework().key()),
-        entry(KEY_JAVA_VERSION, pt.java().asString()),
-        entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().defaultVersion()),
-        entry(KEY_DEPENDENCIES, mappedDeps),
-        entry(KEY_HAS_HEX_SAMPLE, hex),
-        entry(KEY_HAS_H2, hasH2),
-        entry(KEY_HAS_ACTUATOR, hasActuator),
-        entry(KEY_HAS_SECURITY, hasSecurity));
+            entry(ProjectDocumentationModel.PROJECT_NAME, bp.getMetadata().name().value()),
+            entry(ProjectDocumentationModel.PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
+            entry(ProjectDocumentationModel.GROUP_ID, id.groupId().value()),
+            entry(ProjectDocumentationModel.ARTIFACT_ID, id.artifactId().value()),
+            entry(ProjectDocumentationModel.PACKAGE_NAME, pkg.value()),
+            entry(ProjectDocumentationModel.BUILD_TOOL, stack.buildTool().key()),
+            entry(ProjectDocumentationModel.LANGUAGE, stack.language().key()),
+            entry(ProjectDocumentationModel.FRAMEWORK, stack.framework().key()),
+            entry(ProjectDocumentationModel.JAVA_VERSION, target.java().asString()),
+            entry(ProjectDocumentationModel.SPRING_BOOT_VERSION, target.springBoot().defaultVersion()),
+            entry(ProjectDocumentationModel.DEPENDENCIES, mapDependencies(deps)),
+            entry(ProjectDocumentationModel.LAYOUT, bp.getArchitecture().layout().key()),
+            entry(ProjectDocumentationModel.ENFORCEMENT, bp.getArchitecture().governance().mode().key()),
+            entry(ProjectDocumentationModel.SAMPLE_CODE, bp.getArchitecture().sampleCodeOptions().level().key()),
+            entry(ProjectDocumentationModel.FEATURES, features)
+    );
   }
 
-  private boolean hasSpringBootStarter(Dependencies deps, String starterArtifactId) {
-    return deps != null
-        && !deps.isEmpty()
-        && deps.asList().stream()
-            .map(d -> d.coordinates())
-            .anyMatch(c -> isSpringBootStarter(c, starterArtifactId));
-  }
-
-  private boolean isSpringBootStarter(DependencyCoordinates c, String starterArtifactId) {
-    return SPRING_BOOT_GROUP_ID.equalsIgnoreCase(c.groupId().value())
-        && starterArtifactId.equalsIgnoreCase(c.artifactId().value());
+  private List<PomDependency> mapDependencies(Dependencies deps) {
+    return pomDependencyMapper.from(deps);
   }
 }

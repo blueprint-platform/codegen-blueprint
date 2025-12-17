@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.CreateProjectCommand;
-import io.github.blueprintplatform.codegen.application.port.in.project.dto.request.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;

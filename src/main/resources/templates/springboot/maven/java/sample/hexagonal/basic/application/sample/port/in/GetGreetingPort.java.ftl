@@ -1,7 +1,7 @@
 package ${projectPackageName}.application.sample.port.in;
 
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingRequest;
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingResult;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingQuery;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingResult;
 
 /**
  * Application-level use case for retrieving greetings.
@@ -13,5 +13,5 @@ public interface GetGreetingPort {
 
     GetGreetingResult getDefault();
 
-    GetGreetingResult getPersonal(GetGreetingRequest request);
+    GetGreetingResult getPersonal(GetGreetingQuery query);
 }

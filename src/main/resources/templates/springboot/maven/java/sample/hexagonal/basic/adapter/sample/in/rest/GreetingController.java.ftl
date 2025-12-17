@@ -3,8 +3,8 @@ package ${projectPackageName}.adapter.sample.in.rest;
 import ${projectPackageName}.adapter.sample.in.rest.dto.GreetingResponse;
 import ${projectPackageName}.adapter.sample.in.rest.mapper.GreetingResponseMapper;
 import ${projectPackageName}.application.sample.port.in.GetGreetingPort;
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingRequest;
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingResult;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingQuery;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingResult;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +56,7 @@ public class GreetingController {
             @RequestParam(name = "name", required = false) String name) {
 
         GetGreetingResult result =
-                getGreetingPort.getPersonal(new GetGreetingRequest(name));
+                getGreetingPort.getPersonal(GetGreetingQuery.of(name));
 
         return ResponseEntity.ok(responseMapper.from(result));
     }

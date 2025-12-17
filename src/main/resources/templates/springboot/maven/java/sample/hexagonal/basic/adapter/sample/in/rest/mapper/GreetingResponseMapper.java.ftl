@@ -1,11 +1,11 @@
 package ${projectPackageName}.adapter.sample.in.rest.mapper;
 
 import ${projectPackageName}.adapter.sample.in.rest.dto.GreetingResponse;
-import ${projectPackageName}.application.sample.port.in.dto.GetGreetingResult;
+import ${projectPackageName}.application.sample.port.in.model.GetGreetingResult;
 
 /**
  * Maps application-layer result to REST response DTO.
- * GetGreetingResult  →  GreetingResponse
+ * GetGreetingResult → GreetingResponse
  * Kept free of Spring annotations to stay framework-agnostic.
  * It will be wired via a bootstrap @Configuration class.
  */

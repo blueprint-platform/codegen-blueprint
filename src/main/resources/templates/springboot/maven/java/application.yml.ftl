@@ -4,10 +4,18 @@ spring:
 
   # You can activate profiles per environment if needed
   # profiles:
-  #   active: dev
+  # active: dev
+
+  # Optional
+  # server:
+  #   port: 8080
+  #
+  # logging:
+  #   level:
+  #     root: INFO
 
 <#-- H2: only when spring-boot-starter-data-jpa is selected -->
-  <#if features?has_content && (features.h2)!false>
+<#if features?has_content && (features.h2)!false>
   datasource:
     url: jdbc:h2:mem:${applicationName}
     driver-class-name: org.h2.Driver
@@ -20,21 +28,13 @@ spring:
   h2:
     console:
       enabled: true
-    </#if>
+</#if>
 
-  <#-- Actuator: minimal defaults -->
-    <#if features?has_content && (features.actuator)!false>
+<#-- Actuator: minimal defaults -->
+<#if features?has_content && (features.actuator)!false>
 management:
   endpoints:
     web:
       exposure:
         include: health,info
-  </#if>
-
-# Optional
-# server:
-#   port: 8080
-#
-# logging:
-#   level:
-#     root: INFO
+</#if>

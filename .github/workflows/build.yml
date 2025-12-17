@@ -26,6 +26,11 @@ jobs:
       - name: Build with Maven (tests + coverage)
         run: mvn -B -q -ntp clean verify
 
+      - name: Verify generated project (enforcement basic)
+        run: | 
+          chmod +x ci/verify-generated-project.sh 
+          ./ci/verify-generated-project.sh
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:

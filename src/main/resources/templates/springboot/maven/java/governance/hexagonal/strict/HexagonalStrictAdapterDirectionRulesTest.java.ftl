@@ -1,0 +1,40 @@
+package ${projectPackageName}.architecture;
+
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchRule;
+
+/**
+ * Strict adapter direction rules.
+ * Guarantees:
+ * - Inbound adapters do not depend on outbound adapters
+ * - Outbound adapters do not depend on inbound adapters
+ */
+@AnalyzeClasses(
+        packages = "${projectPackageName}",
+        importOptions = ImportOption.DoNotIncludeTests.class
+)
+class HexagonalStrictAdapterDirectionRulesTest {
+
+    private static final String INBOUND_ADAPTERS = "..adapter..in..";
+    private static final String OUTBOUND_ADAPTERS = "..adapter..out..";
+
+    @ArchTest
+    static final ArchRule inbound_adapters_must_not_depend_on_outbound_adapters =
+            noClasses()
+                    .that().resideInAPackage(INBOUND_ADAPTERS)
+                    .should().dependOnClassesThat()
+                    .resideInAnyPackage(OUTBOUND_ADAPTERS)
+                    .allowEmptyShould(true);
+
+    @ArchTest
+    static final ArchRule outbound_adapters_must_not_depend_on_inbound_adapters =
+            noClasses()
+                    .that().resideInAPackage(OUTBOUND_ADAPTERS)
+                    .should().dependOnClassesThat()
+                    .resideInAnyPackage(INBOUND_ADAPTERS)
+                    .allowEmptyShould(true);
+}
