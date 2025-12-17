@@ -1,7 +1,11 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.sample;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeTemplatesNotFoundException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeTemplatesScanException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
@@ -35,7 +39,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -66,15 +69,15 @@ class SampleCodeAdapterTest {
     ArchitectureSpec architecture =
         new ArchitectureSpec(layout, ArchitectureGovernance.none(), new SampleCodeOptions(level));
 
-    Dependencies dependencies = Dependencies.of(List.of());
-
-    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
+    return ProjectBlueprint.of(metadata, platform, architecture, Dependencies.of(List.of()));
   }
 
-  private static List<Path> toRelativePaths(Iterable<? extends GeneratedResource> resources) {
-    List<Path> result = new ArrayList<>();
-    StreamSupport.stream(resources.spliterator(), false).forEach(r -> result.add(r.relativePath()));
-    return result;
+  private static List<Path> resourcesToPaths(Iterable<? extends GeneratedResource> resources) {
+    List<Path> out = new ArrayList<>();
+    for (var r : resources) {
+      out.add(r.relativePath());
+    }
+    return out;
   }
 
   @Test
@@ -90,14 +93,14 @@ class SampleCodeAdapterTest {
   }
 
   @Test
-  @DisplayName("generate() should return empty when sample level is NONE")
-  void generate_noneLevel_shouldReturnEmpty() {
+  @DisplayName("generate() should return empty when sample code level is not BASIC")
+  void generate_nonBasicLevel_shouldReturnEmpty() {
     SampleCodeAdapter adapter =
         new SampleCodeAdapter(
             new RecordingTemplateRenderer(),
             DUMMY_ARTIFACT_SPEC,
             new StubClasspathTemplateScanner(
-                List.of("springboot/maven/java/sample/hexagonal/basic/x.java.ftl")));
+                List.of("springboot/maven/java/sample/hexagonal/basic/main/x.java.ftl")));
 
     ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.NONE);
 
@@ -105,14 +108,14 @@ class SampleCodeAdapterTest {
   }
 
   @Test
-  @DisplayName("generate() should return empty when layout is STANDARD even if level is BASIC")
-  void generate_standardLayoutBasicLevel_shouldReturnEmpty() {
+  @DisplayName("generate() should return empty when layout is not hexagonal even if level is BASIC")
+  void generate_nonHexagonalLayoutBasicLevel_shouldReturnEmpty() {
     SampleCodeAdapter adapter =
         new SampleCodeAdapter(
             new RecordingTemplateRenderer(),
             DUMMY_ARTIFACT_SPEC,
             new StubClasspathTemplateScanner(
-                List.of("springboot/maven/java/sample/hexagonal/basic/x.java.ftl")));
+                List.of("springboot/maven/java/sample/hexagonal/basic/main/x.java.ftl")));
 
     ProjectBlueprint bp = blueprint(ProjectLayout.STANDARD, SampleCodeLevel.BASIC);
 
@@ -121,42 +124,84 @@ class SampleCodeAdapterTest {
 
   @Test
   @DisplayName(
-      "generate() should scan hexagonal BASIC templates and render them into src/main/java")
-  void generate_hexagonalBasic_shouldGenerateSampleSources() {
+      "generate() should throw SampleCodeTemplatesNotFoundException when scan returns empty")
+  void generate_hexagonalBasic_shouldThrowWhenNoTemplatesFound() {
     String templateRoot = "springboot/maven/java/sample/hexagonal/basic";
 
-    String controllerTemplate =
-        templateRoot + "/adapter/sample/greeting/in/rest/GreetingController.java.ftl";
+    StubClasspathTemplateScanner scanner = new StubClasspathTemplateScanner(List.of());
 
-    String nonJavaTemplate = templateRoot + "/adapter/sample/greeting/in/rest/ignored.txt.ftl";
-
-    RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
-    StubClasspathTemplateScanner scanner =
-        new StubClasspathTemplateScanner(List.of(controllerTemplate, nonJavaTemplate));
-
-    SampleCodeAdapter adapter = new SampleCodeAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
+    SampleCodeAdapter adapter =
+        new SampleCodeAdapter(new RecordingTemplateRenderer(), DUMMY_ARTIFACT_SPEC, scanner);
 
     ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
 
-    Iterable<? extends GeneratedResource> resources = adapter.generate(bp);
-    List<Path> paths = toRelativePaths(resources);
+    assertThatThrownBy(() -> adapter.generate(bp))
+        .isInstanceOf(SampleCodeTemplatesNotFoundException.class);
 
-    Path expectedOut =
+    assertThat(scanner.lastRoot).isEqualTo(templateRoot);
+  }
+
+  @Test
+  @DisplayName("generate() should wrap TemplateScanException as SampleCodeTemplatesScanException")
+  void generate_hexagonalBasic_shouldWrapTemplateScanException() {
+    SampleCodeAdapter adapter =
+        new SampleCodeAdapter(
+            new RecordingTemplateRenderer(),
+            DUMMY_ARTIFACT_SPEC,
+            new ThrowingClasspathTemplateScanner());
+
+    ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
+
+    assertThatThrownBy(() -> adapter.generate(bp))
+        .isInstanceOf(SampleCodeTemplatesScanException.class);
+  }
+
+  @Test
+  @DisplayName(
+      "generate() should render main/test java templates into src/main/java and src/test/java")
+  void generate_hexagonalBasic_shouldRenderMainAndTestSources() {
+    ArtifactSpec artifactSpec = new ArtifactSpec("springboot/maven/java/", List.of());
+    String templateRoot = "springboot/maven/java/sample/hexagonal/basic";
+
+    String mainTemplate = templateRoot + "/main/adapter/sample/in/rest/GreetingController.java.ftl";
+    String testTemplate =
+        templateRoot + "/test/adapter/sample/in/rest/GreetingControllerTest.java.ftl";
+    String ignoredTemplate = templateRoot + "/main/adapter/sample/in/rest/ignored.txt.ftl";
+
+    RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
+    StubClasspathTemplateScanner scanner =
+        new StubClasspathTemplateScanner(List.of(mainTemplate, testTemplate, ignoredTemplate));
+
+    SampleCodeAdapter adapter = new SampleCodeAdapter(renderer, artifactSpec, scanner);
+
+    ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
+
+    var resources = adapter.generate(bp);
+
+    Path expectedMain =
         Path.of("src/main/java")
             .resolve(BASE_PACKAGE_PATH)
-            .resolve("adapter/sample/greeting/in/rest/GreetingController.java");
+            .resolve("adapter/sample/in/rest/GreetingController.java");
 
-    assertThat(paths).containsExactlyInAnyOrder(expectedOut);
+    Path expectedTest =
+        Path.of("src/test/java")
+            .resolve(BASE_PACKAGE_PATH)
+            .resolve("adapter/sample/in/rest/GreetingControllerTest.java");
 
-    assertThat(renderer.capturedTemplateNames).containsExactly(controllerTemplate);
+    List<Path> outPaths = resourcesToPaths(resources);
 
-    assertThat(renderer.capturedModels).containsExactly(Map.of("projectPackageName", BASE_PACKAGE));
+    assertThat(outPaths).containsExactlyInAnyOrder(expectedMain, expectedTest);
+
+    assertThat(renderer.capturedTemplateNames)
+        .containsExactlyInAnyOrder(mainTemplate, testTemplate);
+    assertThat(renderer.capturedModels)
+        .containsExactlyInAnyOrder(
+            Map.of("projectPackageName", BASE_PACKAGE), Map.of("projectPackageName", BASE_PACKAGE));
 
     assertThat(scanner.lastRoot).isEqualTo(templateRoot);
   }
 
   private static final class StubClasspathTemplateScanner extends ClasspathTemplateScanner {
-
     private final List<String> templates;
     private String lastRoot;
 
@@ -171,15 +216,20 @@ class SampleCodeAdapterTest {
     }
   }
 
-  private static final class RecordingTemplateRenderer implements TemplateRenderer {
+  private static final class ThrowingClasspathTemplateScanner extends ClasspathTemplateScanner {
+    @Override
+    public List<String> scan(String templateRoot) {
+      throw new TemplateScanException(templateRoot, new IllegalStateException("boom"));
+    }
+  }
 
+  private static final class RecordingTemplateRenderer implements TemplateRenderer {
     private final List<String> capturedTemplateNames = new ArrayList<>();
     private final List<Map<String, Object>> capturedModels = new ArrayList<>();
 
     @Override
     public GeneratedResource renderUtf8(
         Path outPath, String templateName, Map<String, Object> model) {
-
       capturedTemplateNames.add(templateName);
       capturedModels.add(model);
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);

@@ -52,65 +52,64 @@ class MavenPomBuildConfigurationAdapterTest {
   private static final String BASE_PATH = "springboot/maven/java/";
 
   private static ProjectBlueprint blueprint(
-          ArchitectureGovernance governance,
-          Dependencies dependencies
-  ) {
+      ArchitectureGovernance governance, Dependencies dependencies) {
     ProjectMetadata metadata =
-            new ProjectMetadata(
-                    new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
-                    new ProjectName("Demo App"),
-                    new ProjectDescription("Sample Project"),
-                    new PackageName("com.acme.demo"));
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectName("Demo App"),
+            new ProjectDescription("Sample Project"),
+            new PackageName("com.acme.demo"));
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
     PlatformSpec platform = new PlatformSpec(techStack, target);
 
     ArchitectureSpec architecture =
-            new ArchitectureSpec(ProjectLayout.STANDARD, governance, SampleCodeOptions.none());
+        new ArchitectureSpec(ProjectLayout.STANDARD, governance, SampleCodeOptions.none());
 
     return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
   private static Dependency dep(String groupId, String artifactId) {
     return new Dependency(
-            new DependencyCoordinates(new GroupId(groupId), new ArtifactId(artifactId)),
-            new DependencyVersion("1.0.0"),
-            DependencyScope.RUNTIME
-    );
+        new DependencyCoordinates(new GroupId(groupId), new ArtifactId(artifactId)),
+        new DependencyVersion("1.0.0"),
+        DependencyScope.RUNTIME);
   }
 
   @Test
   @DisplayName("artifactKey() should return BUILD_CONFIG")
   void artifactKey_shouldReturnPom() {
     MavenPomBuildConfigurationAdapter adapter =
-            new MavenPomBuildConfigurationAdapter(
-                    new NoopTemplateRenderer(),
-                    new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml"))),
-                    new RecordingPomDependencyMapper(List.of()));
+        new MavenPomBuildConfigurationAdapter(
+            new NoopTemplateRenderer(),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml"))),
+            new RecordingPomDependencyMapper(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_CONFIG);
   }
 
   @Test
-  @DisplayName("generate() should build model with base deps only when JPA not selected and governance disabled")
+  @DisplayName(
+      "generate() should build model with base deps only when JPA not selected and governance disabled")
   void generate_shouldBuildModel_withoutJpa_withoutGovernance() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<PomDependency> mapped =
-            List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
     RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mapped);
 
-    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
-    MavenPomBuildConfigurationAdapter adapter = new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+    ArtifactSpec artifactSpec =
+        new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
+    MavenPomBuildConfigurationAdapter adapter =
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
 
     ProjectBlueprint bp =
-            blueprint(
-                    ArchitectureGovernance.none(),
-                    Dependencies.of(List.of(dep("org.acme", "custom-dep")))
-            );
+        blueprint(
+            ArchitectureGovernance.none(), Dependencies.of(List.of(dep("org.acme", "custom-dep"))));
 
-    renderer.nextFile = new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
+    renderer.nextFile =
+        new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
     Iterable<? extends GeneratedResource> result = adapter.generate(bp);
 
@@ -118,15 +117,16 @@ class MavenPomBuildConfigurationAdapterTest {
 
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model)
-            .containsEntry(MavenPomBuildModel.KEY_GROUP_ID, "com.acme")
-            .containsEntry(MavenPomBuildModel.KEY_ARTIFACT_ID, "demo-app")
-            .containsEntry(MavenPomBuildModel.KEY_JAVA_VERSION, "21")
-            .containsEntry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, "3.5.8")
-            .containsEntry(MavenPomBuildModel.KEY_PROJECT_NAME, "Demo App")
-            .containsEntry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, "Sample Project");
+        .containsEntry(MavenPomBuildModel.KEY_GROUP_ID, "com.acme")
+        .containsEntry(MavenPomBuildModel.KEY_ARTIFACT_ID, "demo-app")
+        .containsEntry(MavenPomBuildModel.KEY_JAVA_VERSION, "21")
+        .containsEntry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, "3.5.8")
+        .containsEntry(MavenPomBuildModel.KEY_PROJECT_NAME, "Demo App")
+        .containsEntry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, "Sample Project");
 
     @SuppressWarnings("unchecked")
-    Map<String, String> props = (Map<String, String>) model.get(MavenPomBuildModel.KEY_POM_PROPERTIES);
+    Map<String, String> props =
+        (Map<String, String>) model.get(MavenPomBuildModel.KEY_POM_PROPERTIES);
     assertThat(props).isNotNull().isEmpty();
 
     @SuppressWarnings("unchecked")
@@ -144,31 +144,35 @@ class MavenPomBuildConfigurationAdapterTest {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<PomDependency> mapped =
-            List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
     RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mapped);
 
-    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
-    MavenPomBuildConfigurationAdapter adapter = new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+    ArtifactSpec artifactSpec =
+        new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
+    MavenPomBuildConfigurationAdapter adapter =
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
 
     Dependency jpaStarter =
-            new Dependency(
-                    new DependencyCoordinates(new GroupId("org.springframework.boot"), new ArtifactId("spring-boot-starter-data-jpa")),
-                    null,
-                    DependencyScope.RUNTIME
-            );
+        new Dependency(
+            new DependencyCoordinates(
+                new GroupId("org.springframework.boot"),
+                new ArtifactId("spring-boot-starter-data-jpa")),
+            null,
+            DependencyScope.RUNTIME);
 
     ProjectBlueprint bp =
-            blueprint(
-                    ArchitectureGovernance.none(),
-                    Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter))
-            );
+        blueprint(
+            ArchitectureGovernance.none(),
+            Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter)));
 
-    renderer.nextFile = new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
+    renderer.nextFile =
+        new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
     adapter.generate(bp);
 
     @SuppressWarnings("unchecked")
-    List<PomDependency> deps = (List<PomDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
+    List<PomDependency> deps =
+        (List<PomDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
     assertThat(deps).hasSize(4);
     assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
@@ -177,47 +181,55 @@ class MavenPomBuildConfigurationAdapterTest {
     assertThat(deps.get(3)).isEqualTo(MavenPomBuildModel.TEST_STARTER);
 
     @SuppressWarnings("unchecked")
-    Map<String, String> props = (Map<String, String>) renderer.capturedModel.get(MavenPomBuildModel.KEY_POM_PROPERTIES);
+    Map<String, String> props =
+        (Map<String, String>) renderer.capturedModel.get(MavenPomBuildModel.KEY_POM_PROPERTIES);
     assertThat(props).isNotNull().isEmpty();
   }
 
   @Test
-  @DisplayName("generate() should add ArchUnit test dependency and pomProperties when governance is enabled")
+  @DisplayName(
+      "generate() should add ArchUnit test dependency and pomProperties when governance is enabled")
   void generate_shouldAddArchUnit_whenGovernanceEnabled() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<PomDependency> mapped =
-            List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
     RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mapped);
 
-    ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
-    MavenPomBuildConfigurationAdapter adapter = new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+    ArtifactSpec artifactSpec =
+        new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
+    MavenPomBuildConfigurationAdapter adapter =
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
 
     Dependency jpaStarter =
-            new Dependency(
-                    new DependencyCoordinates(new GroupId("org.springframework.boot"), new ArtifactId("spring-boot-starter-data-jpa")),
-                    null,
-                    DependencyScope.RUNTIME
-            );
+        new Dependency(
+            new DependencyCoordinates(
+                new GroupId("org.springframework.boot"),
+                new ArtifactId("spring-boot-starter-data-jpa")),
+            null,
+            DependencyScope.RUNTIME);
 
     ProjectBlueprint bp =
-            blueprint(
-                    ArchitectureGovernance.basic(),
-                    Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter))
-            );
+        blueprint(
+            ArchitectureGovernance.basic(),
+            Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter)));
 
-    renderer.nextFile = new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
+    renderer.nextFile =
+        new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
     adapter.generate(bp);
 
     @SuppressWarnings("unchecked")
-    Map<String, String> props = (Map<String, String>) renderer.capturedModel.get(MavenPomBuildModel.KEY_POM_PROPERTIES);
+    Map<String, String> props =
+        (Map<String, String>) renderer.capturedModel.get(MavenPomBuildModel.KEY_POM_PROPERTIES);
     assertThat(props)
-            .isNotNull()
-            .containsEntry(MavenPomBuildModel.ARCH_UNIT_VERSION_KEY, MavenPomBuildModel.ARCH_UNIT_VERSION);
+        .isNotNull()
+        .containsEntry(
+            MavenPomBuildModel.ARCH_UNIT_VERSION_KEY, MavenPomBuildModel.ARCH_UNIT_VERSION);
 
     @SuppressWarnings("unchecked")
-    List<PomDependency> deps = (List<PomDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
+    List<PomDependency> deps =
+        (List<PomDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
     assertThat(deps).hasSize(5);
     assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);

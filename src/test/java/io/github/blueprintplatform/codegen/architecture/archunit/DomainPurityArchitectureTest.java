@@ -10,8 +10,8 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 @AnalyzeClasses(
-        packages = DomainPurityArchitectureTest.BASE_PACKAGE,
-        importOptions = ImportOption.DoNotIncludeTests.class)
+    packages = DomainPurityArchitectureTest.BASE_PACKAGE,
+    importOptions = ImportOption.DoNotIncludeTests.class)
 class DomainPurityArchitectureTest {
 
   static final String BASE_PACKAGE = "io.github.blueprintplatform.codegen";
@@ -20,15 +20,15 @@ class DomainPurityArchitectureTest {
 
   @ArchTest
   static final ArchRule domain_must_depend_only_on_jdk_and_domain =
-          noClasses()
-                  .that()
-                  .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
-                  .should()
-                  .dependOnClassesThat(
-                          describe(
-                                  "reside outside domain and are not JDK types",
-                                  (JavaClass c) -> !isAllowedForDomain(c)))
-                  .allowEmptyShould(true);
+      noClasses()
+          .that()
+          .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
+          .should()
+          .dependOnClassesThat(
+              describe(
+                  "reside outside domain and are not JDK types",
+                  (JavaClass c) -> !isAllowedForDomain(c)))
+          .allowEmptyShould(true);
 
   private static boolean isAllowedForDomain(JavaClass c) {
     String pkg = c.getPackageName();

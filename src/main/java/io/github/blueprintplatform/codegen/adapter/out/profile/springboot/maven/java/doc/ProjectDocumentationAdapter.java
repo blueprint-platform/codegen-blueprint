@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactAdapter
-        implements ProjectDocumentationPort {
+    implements ProjectDocumentationPort {
 
   private final PomDependencyMapper pomDependencyMapper;
 
   public ProjectDocumentationAdapter(
-          TemplateRenderer renderer,
-          ArtifactSpec artifactSpec,
-          PomDependencyMapper pomDependencyMapper) {
+      TemplateRenderer renderer,
+      ArtifactSpec artifactSpec,
+      PomDependencyMapper pomDependencyMapper) {
     super(renderer, artifactSpec);
     this.pomDependencyMapper = pomDependencyMapper;
   }
@@ -48,31 +48,33 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
     Dependencies deps = bp.getDependencies();
 
     Map<String, Boolean> features =
-            deps == null || deps.isEmpty()
-                    ? Map.of()
-                    : Arrays.stream(ProjectDocumentationModel.FEATURES_SET)
-                    .collect(Collectors.toMap(
-                            DependencyFeature::key,
-                            f -> deps.asList().stream().anyMatch(f.matches())
-                    ));
+        deps == null || deps.isEmpty()
+            ? Map.of()
+            : Arrays.stream(ProjectDocumentationModel.FEATURES_SET)
+                .collect(
+                    Collectors.toMap(
+                        DependencyFeature::key, f -> deps.asList().stream().anyMatch(f.matches())));
 
     return Map.ofEntries(
-            entry(ProjectDocumentationModel.PROJECT_NAME, bp.getMetadata().name().value()),
-            entry(ProjectDocumentationModel.PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
-            entry(ProjectDocumentationModel.GROUP_ID, id.groupId().value()),
-            entry(ProjectDocumentationModel.ARTIFACT_ID, id.artifactId().value()),
-            entry(ProjectDocumentationModel.PACKAGE_NAME, pkg.value()),
-            entry(ProjectDocumentationModel.BUILD_TOOL, stack.buildTool().key()),
-            entry(ProjectDocumentationModel.LANGUAGE, stack.language().key()),
-            entry(ProjectDocumentationModel.FRAMEWORK, stack.framework().key()),
-            entry(ProjectDocumentationModel.JAVA_VERSION, target.java().asString()),
-            entry(ProjectDocumentationModel.SPRING_BOOT_VERSION, target.springBoot().defaultVersion()),
-            entry(ProjectDocumentationModel.DEPENDENCIES, mapDependencies(deps)),
-            entry(ProjectDocumentationModel.LAYOUT, bp.getArchitecture().layout().key()),
-            entry(ProjectDocumentationModel.ENFORCEMENT, bp.getArchitecture().governance().mode().key()),
-            entry(ProjectDocumentationModel.SAMPLE_CODE, bp.getArchitecture().sampleCodeOptions().level().key()),
-            entry(ProjectDocumentationModel.FEATURES, features)
-    );
+        entry(ProjectDocumentationModel.PROJECT_NAME, bp.getMetadata().name().value()),
+        entry(
+            ProjectDocumentationModel.PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
+        entry(ProjectDocumentationModel.GROUP_ID, id.groupId().value()),
+        entry(ProjectDocumentationModel.ARTIFACT_ID, id.artifactId().value()),
+        entry(ProjectDocumentationModel.PACKAGE_NAME, pkg.value()),
+        entry(ProjectDocumentationModel.BUILD_TOOL, stack.buildTool().key()),
+        entry(ProjectDocumentationModel.LANGUAGE, stack.language().key()),
+        entry(ProjectDocumentationModel.FRAMEWORK, stack.framework().key()),
+        entry(ProjectDocumentationModel.JAVA_VERSION, target.java().asString()),
+        entry(ProjectDocumentationModel.SPRING_BOOT_VERSION, target.springBoot().defaultVersion()),
+        entry(ProjectDocumentationModel.DEPENDENCIES, mapDependencies(deps)),
+        entry(ProjectDocumentationModel.LAYOUT, bp.getArchitecture().layout().key()),
+        entry(
+            ProjectDocumentationModel.ENFORCEMENT, bp.getArchitecture().governance().mode().key()),
+        entry(
+            ProjectDocumentationModel.SAMPLE_CODE,
+            bp.getArchitecture().sampleCodeOptions().level().key()),
+        entry(ProjectDocumentationModel.FEATURES, features));
   }
 
   private List<PomDependency> mapDependencies(Dependencies deps) {

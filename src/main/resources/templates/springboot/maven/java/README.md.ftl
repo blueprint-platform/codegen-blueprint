@@ -227,14 +227,13 @@ You can use this sample in two ways:
 ## 📚 Selected Dependencies
 
 <#if dependencies?has_content>
-
-| Dependency                                                                                    | Scope                                                                |
-| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| <#list dependencies as d>                                                                     |                                                                      |
-| `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
-| </#list>                                                                                      |                                                                      |
+| Dependency | Scope |
+|-----------|-------|
+<#list dependencies as d>
+    | `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
+</#list>
 <#else>
-> No additional dependencies were selected.>
+> No additional dependencies were selected.
 </#if>
 
 ---

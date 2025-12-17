@@ -17,8 +17,6 @@ class DependencyDirectionArchitectureTest {
   private static final String APPLICATION_ROOT = "..application..";
   private static final String APPLICATION_PORT = "..application.port..";
   private static final String ADAPTER_ROOT = "..adapter..";
-  private static final String BOOTSTRAP_ROOT = "..bootstrap..";
-
   @ArchTest
   static final ArchRule application_implementation_must_not_depend_on_adapters =
           noClasses()
@@ -29,7 +27,6 @@ class DependencyDirectionArchitectureTest {
                   .should()
                   .dependOnClassesThat()
                   .resideInAnyPackage(ADAPTER_ROOT);
-
   @ArchTest
   static final ArchRule adapters_must_not_depend_on_application_implementation =
           noClasses()
@@ -37,6 +34,15 @@ class DependencyDirectionArchitectureTest {
                   .resideInAnyPackage(ADAPTER_ROOT)
                   .should()
                   .dependOnClassesThat(applicationImplementation());
+  private static final String BOOTSTRAP_ROOT = "..bootstrap..";
+  @ArchTest
+  static final ArchRule bootstrap_must_not_be_depended_on =
+          noClasses()
+                  .that()
+                  .resideOutsideOfPackage(BOOTSTRAP_ROOT)
+                  .should()
+                  .dependOnClassesThat()
+                  .resideInAnyPackage(BOOTSTRAP_ROOT);
 
   private static com.tngtech.archunit.base.DescribedPredicate<JavaClass>
   applicationImplementation() {
@@ -46,13 +52,4 @@ class DependencyDirectionArchitectureTest {
                     && c.getPackageName().contains(".application.")
                     && !c.getPackageName().contains(".application.port."));
   }
-
-  @ArchTest
-  static final ArchRule bootstrap_must_not_be_depended_on =
-          noClasses()
-                  .that()
-                  .resideOutsideOfPackage(BOOTSTRAP_ROOT)
-                  .should()
-                  .dependOnClassesThat()
-                  .resideInAnyPackage(BOOTSTRAP_ROOT);
 }

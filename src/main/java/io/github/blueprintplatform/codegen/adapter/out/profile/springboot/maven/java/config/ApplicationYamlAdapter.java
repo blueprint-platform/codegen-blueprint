@@ -13,11 +13,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapter
-        implements ApplicationConfigurationPort {
+    implements ApplicationConfigurationPort {
 
-  public ApplicationYamlAdapter(
-          TemplateRenderer renderer,
-          ArtifactSpec artifactSpec) {
+  public ApplicationYamlAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
     super(renderer, artifactSpec);
   }
 
@@ -32,19 +30,17 @@ public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapte
     var deps = blueprint.getDependencies();
 
     Map<String, Boolean> features =
-            deps == null || deps.isEmpty()
-                    ? Map.of()
-                    : Arrays.stream(ApplicationYamlModel.FEATURES)
-                    .collect(
-                            Collectors.toMap(
-                                    DependencyFeature::key,
-                                    f -> deps.asList().stream().anyMatch(f.matches())
-                            )
-                    );
+        deps == null || deps.isEmpty()
+            ? Map.of()
+            : Arrays.stream(ApplicationYamlModel.FEATURES)
+                .collect(
+                    Collectors.toMap(
+                        DependencyFeature::key, f -> deps.asList().stream().anyMatch(f.matches())));
 
     return Map.of(
-            ApplicationYamlModel.KEY_APP_NAME, id.artifactId().value(),
-            ApplicationYamlModel.KEY_FEATURES, features
-    );
+        ApplicationYamlModel.KEY_APP_NAME,
+        id.artifactId().value(),
+        ApplicationYamlModel.KEY_FEATURES,
+        features);
   }
 }

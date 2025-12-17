@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArtifactAdapter
-        implements BuildConfigurationPort {
+    implements BuildConfigurationPort {
 
   private final PomDependencyMapper pomDependencyMapper;
 
   public MavenPomBuildConfigurationAdapter(
-          TemplateRenderer renderer,
-          ArtifactSpec artifactSpec,
-          PomDependencyMapper pomDependencyMapper) {
+      TemplateRenderer renderer,
+      ArtifactSpec artifactSpec,
+      PomDependencyMapper pomDependencyMapper) {
     super(renderer, artifactSpec);
     this.pomDependencyMapper = pomDependencyMapper;
   }
@@ -40,14 +40,14 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     SpringBootJvmTarget target = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
 
     return Map.ofEntries(
-            entry(MavenPomBuildModel.KEY_GROUP_ID, id.groupId().value()),
-            entry(MavenPomBuildModel.KEY_ARTIFACT_ID, id.artifactId().value()),
-            entry(MavenPomBuildModel.KEY_JAVA_VERSION, target.java().asString()),
-            entry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, target.springBoot().defaultVersion()),
-            entry(MavenPomBuildModel.KEY_PROJECT_NAME, bp.getMetadata().name().value()),
-            entry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
-            entry(MavenPomBuildModel.KEY_POM_PROPERTIES, governancePomProperties(bp)),
-            entry(MavenPomBuildModel.KEY_DEPENDENCIES, buildPomDependencies(bp)));
+        entry(MavenPomBuildModel.KEY_GROUP_ID, id.groupId().value()),
+        entry(MavenPomBuildModel.KEY_ARTIFACT_ID, id.artifactId().value()),
+        entry(MavenPomBuildModel.KEY_JAVA_VERSION, target.java().asString()),
+        entry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, target.springBoot().defaultVersion()),
+        entry(MavenPomBuildModel.KEY_PROJECT_NAME, bp.getMetadata().name().value()),
+        entry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
+        entry(MavenPomBuildModel.KEY_POM_PROPERTIES, governancePomProperties(bp)),
+        entry(MavenPomBuildModel.KEY_DEPENDENCIES, buildPomDependencies(bp)));
   }
 
   private Map<String, String> governancePomProperties(ProjectBlueprint bp) {
@@ -79,7 +79,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
   private boolean isJpaSelected(ProjectBlueprint bp) {
     var deps = bp.getDependencies();
     return deps != null
-            && !deps.isEmpty()
-            && deps.asList().stream().anyMatch(MavenPomBuildModel.JPA_STARTER.matches());
+        && !deps.isEmpty()
+        && deps.asList().stream().anyMatch(MavenPomBuildModel.JPA_STARTER.matches());
   }
 }

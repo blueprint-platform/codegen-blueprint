@@ -55,27 +55,27 @@ class ProjectDocumentationAdapterTest {
 
   private static ProjectBlueprint blueprintWithDependencies() {
     ProjectMetadata metadata =
-            new ProjectMetadata(
-                    new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
-                    new ProjectName("Demo App"),
-                    new ProjectDescription("Sample Project"),
-                    new PackageName("com.acme.demo"));
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectName("Demo App"),
+            new ProjectDescription("Sample Project"),
+            new PackageName("com.acme.demo"));
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
     PlatformSpec platform = new PlatformSpec(techStack, target);
 
     ArchitectureSpec architecture =
-            new ArchitectureSpec(
-                    ProjectLayout.STANDARD,
-                    new ArchitectureGovernance(EnforcementMode.NONE),
-                    new SampleCodeOptions(SampleCodeLevel.NONE));
+        new ArchitectureSpec(
+            ProjectLayout.STANDARD,
+            new ArchitectureGovernance(EnforcementMode.NONE),
+            new SampleCodeOptions(SampleCodeLevel.NONE));
 
     Dependency dep =
-            new Dependency(
-                    new DependencyCoordinates(new GroupId("org.acme"), new ArtifactId("custom-dep")),
-                    new DependencyVersion("1.0.0"),
-                    DependencyScope.RUNTIME);
+        new Dependency(
+            new DependencyCoordinates(new GroupId("org.acme"), new ArtifactId("custom-dep")),
+            new DependencyVersion("1.0.0"),
+            DependencyScope.RUNTIME);
 
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
@@ -86,35 +86,35 @@ class ProjectDocumentationAdapterTest {
   @DisplayName("artifactKey() should return PROJECT_DOCUMENTATION")
   void artifactKey_shouldReturnProjectDocumentation() {
     ProjectDocumentationAdapter adapter =
-            new ProjectDocumentationAdapter(
-                    new NoopTemplateRenderer(),
-                    new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("README.ftl", "README.md"))),
-                    new RecordingPomDependencyMapper(List.of()));
+        new ProjectDocumentationAdapter(
+            new NoopTemplateRenderer(),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("README.ftl", "README.md"))),
+            new RecordingPomDependencyMapper(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.PROJECT_DOCUMENTATION);
   }
 
   @Test
   @DisplayName(
-          "generate() should build correct project documentation model and delegate dependencies mapping")
+      "generate() should build correct project documentation model and delegate dependencies mapping")
   void generate_shouldBuildCorrectModelForProjectDocumentation() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<PomDependency> mappedDeps =
-            List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
     RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mappedDeps);
 
     TemplateSpec templateSpec = new TemplateSpec("README.ftl", "README.md");
     ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
     ProjectDocumentationAdapter adapter =
-            new ProjectDocumentationAdapter(renderer, artifactSpec, mapper);
+        new ProjectDocumentationAdapter(renderer, artifactSpec, mapper);
 
     ProjectBlueprint blueprint = blueprintWithDependencies();
 
     Path relativePath = Path.of("README.md");
     GeneratedTextResource dummyFile =
-            new GeneratedTextResource(relativePath, "# Readme", StandardCharsets.UTF_8);
+        new GeneratedTextResource(relativePath, "# Readme", StandardCharsets.UTF_8);
     renderer.nextFile = dummyFile;
 
     Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
@@ -128,33 +128,35 @@ class ProjectDocumentationAdapterTest {
     Map<String, Object> model = renderer.capturedModel;
 
     assertThat(model)
-            .containsEntry(ProjectDocumentationModel.PROJECT_NAME, "Demo App")
-            .containsEntry(ProjectDocumentationModel.PROJECT_DESCRIPTION, "Sample Project")
-            .containsEntry(ProjectDocumentationModel.GROUP_ID, "com.acme")
-            .containsEntry(ProjectDocumentationModel.ARTIFACT_ID, "demo-app")
-            .containsEntry(ProjectDocumentationModel.PACKAGE_NAME, "com.acme.demo")
-            .containsEntry(ProjectDocumentationModel.BUILD_TOOL, "maven")
-            .containsEntry(ProjectDocumentationModel.LANGUAGE, "java")
-            .containsEntry(ProjectDocumentationModel.FRAMEWORK, "spring-boot")
-            .containsEntry(ProjectDocumentationModel.JAVA_VERSION, "21")
-            .containsEntry(ProjectDocumentationModel.SPRING_BOOT_VERSION, "3.5.8")
-            .containsEntry(ProjectDocumentationModel.LAYOUT, "standard")
-            .containsEntry(ProjectDocumentationModel.ENFORCEMENT, "none")
-            .containsEntry(ProjectDocumentationModel.SAMPLE_CODE, "none");
+        .containsEntry(ProjectDocumentationModel.PROJECT_NAME, "Demo App")
+        .containsEntry(ProjectDocumentationModel.PROJECT_DESCRIPTION, "Sample Project")
+        .containsEntry(ProjectDocumentationModel.GROUP_ID, "com.acme")
+        .containsEntry(ProjectDocumentationModel.ARTIFACT_ID, "demo-app")
+        .containsEntry(ProjectDocumentationModel.PACKAGE_NAME, "com.acme.demo")
+        .containsEntry(ProjectDocumentationModel.BUILD_TOOL, "maven")
+        .containsEntry(ProjectDocumentationModel.LANGUAGE, "java")
+        .containsEntry(ProjectDocumentationModel.FRAMEWORK, "spring-boot")
+        .containsEntry(ProjectDocumentationModel.JAVA_VERSION, "21")
+        .containsEntry(ProjectDocumentationModel.SPRING_BOOT_VERSION, "3.5.8")
+        .containsEntry(ProjectDocumentationModel.LAYOUT, "standard")
+        .containsEntry(ProjectDocumentationModel.ENFORCEMENT, "none")
+        .containsEntry(ProjectDocumentationModel.SAMPLE_CODE, "none");
 
     assertThat(mapper.capturedDependencies).isSameAs(blueprint.getDependencies());
 
     @SuppressWarnings("unchecked")
-    List<PomDependency> deps = (List<PomDependency>) model.get(ProjectDocumentationModel.DEPENDENCIES);
+    List<PomDependency> deps =
+        (List<PomDependency>) model.get(ProjectDocumentationModel.DEPENDENCIES);
     assertThat(deps).isSameAs(mappedDeps).hasSize(1);
 
     @SuppressWarnings("unchecked")
-    Map<String, Boolean> features = (Map<String, Boolean>) model.get(ProjectDocumentationModel.FEATURES);
+    Map<String, Boolean> features =
+        (Map<String, Boolean>) model.get(ProjectDocumentationModel.FEATURES);
 
     assertThat(features)
-            .containsEntry("h2", false)
-            .containsEntry("actuator", false)
-            .containsEntry("security", false);
+        .containsEntry("h2", false)
+        .containsEntry("actuator", false)
+        .containsEntry("security", false);
 
     PomDependency d = deps.getFirst();
     assertThat(d.groupId()).isEqualTo("org.acme");

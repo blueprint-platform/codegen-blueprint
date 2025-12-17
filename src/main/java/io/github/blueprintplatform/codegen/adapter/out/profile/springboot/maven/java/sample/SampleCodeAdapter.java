@@ -23,7 +23,12 @@ public class SampleCodeAdapter implements SampleCodePort {
 
   private static final String PATH_SEPARATOR = "/";
   private static final String SAMPLE_ROOT_DIR = "sample";
+
+  private static final String MAIN_DIR = "main";
+  private static final String TEST_DIR = "test";
+
   private static final String SRC_MAIN_JAVA = "src/main/java";
+  private static final String SRC_TEST_JAVA = "src/test/java";
 
   private static final String JAVA_FTL_SUFFIX = ".java.ftl";
   private static final String FTL_SUFFIX = ".ftl";
@@ -76,13 +81,37 @@ public class SampleCodeAdapter implements SampleCodePort {
       }
 
       String relativeUnderRoot = fullTemplatePath.substring(templateRoot.length() + 1);
-      String javaRelative = stripSuffix(relativeUnderRoot);
 
-      Path outPath = Paths.get(SRC_MAIN_JAVA).resolve(packagePath).resolve(javaRelative);
+      String srcRoot = resolveSourceRoot(relativeUnderRoot);
+      String relativeForJava = stripChannelPrefix(relativeUnderRoot);
+
+      String javaRelative = stripSuffix(relativeForJava);
+
+      Path outPath = Paths.get(srcRoot).resolve(packagePath).resolve(javaRelative);
       generated.add(renderer.renderUtf8(outPath, fullTemplatePath, model));
     }
 
     return List.copyOf(generated);
+  }
+
+  private String resolveSourceRoot(String relativeUnderRoot) {
+    if (relativeUnderRoot.startsWith(TEST_DIR + PATH_SEPARATOR)) {
+      return SRC_TEST_JAVA;
+    }
+    if (relativeUnderRoot.startsWith(MAIN_DIR + PATH_SEPARATOR)) {
+      return SRC_MAIN_JAVA;
+    }
+    return SRC_MAIN_JAVA;
+  }
+
+  private String stripChannelPrefix(String relativeUnderRoot) {
+    if (relativeUnderRoot.startsWith(TEST_DIR + PATH_SEPARATOR)) {
+      return relativeUnderRoot.substring((TEST_DIR + PATH_SEPARATOR).length());
+    }
+    if (relativeUnderRoot.startsWith(MAIN_DIR + PATH_SEPARATOR)) {
+      return relativeUnderRoot.substring((MAIN_DIR + PATH_SEPARATOR).length());
+    }
+    return relativeUnderRoot;
   }
 
   private String resolveTemplateRoot(ProjectLayout layout, SampleCodeLevel level) {
