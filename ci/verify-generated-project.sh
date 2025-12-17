@@ -21,7 +21,7 @@ fi
 
 java -jar "$JAR_PATH" \
   --spring.main.web-application-type=none \
-  springboot \
+  --cli springboot \
   --group-id io.github.blueprintplatform \
   --artifact-id greeting \
   --name Greeting \
