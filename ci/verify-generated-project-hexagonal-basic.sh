@@ -60,9 +60,23 @@ fi
 
 cd "$GEN_DIR"
 
+find_mockito_agent() {
+  local repo="${HOME}/.m2/repository"
+  if [ -d "$repo/org/mockito/mockito-core" ]; then
+    ls -1 "$repo/org/mockito/mockito-core"/*/mockito-core-*.jar 2>/dev/null | sort -V | tail -n 1 || true
+  fi
+}
+MOCKITO_AGENT="$(find_mockito_agent)"
+
+MVN_ARGS=(-q -ntp verify)
+
+if [ -n "${MOCKITO_AGENT:-}" ] && [ -f "${MOCKITO_AGENT:-}" ]; then
+  MVN_ARGS=(-q -ntp -DargLine="-javaagent:${MOCKITO_AGENT}" verify)
+fi
+
 if [ -f "./mvnw" ]; then
   chmod +x ./mvnw
-  ./mvnw -q -ntp verify
+  ./mvnw "${MVN_ARGS[@]}"
 else
-  mvn -q -ntp verify
+  mvn "${MVN_ARGS[@]}"
 fi

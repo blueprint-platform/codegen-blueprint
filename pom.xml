@@ -45,13 +45,13 @@
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
         <maven-model.version>3.9.11</maven-model.version>
         <commons-io.version>2.20.0</commons-io.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <picocli.version>4.7.7</picocli.version>
         <archunit.version>1.4.1</archunit.version>
+        <argLine/>
     </properties>
 
     <dependencies>
@@ -141,6 +141,18 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>${java.version}</release>
@@ -152,6 +164,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -169,6 +182,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
                             <includes>
                                 <include>**/*IT.java</include>
                             </includes>
