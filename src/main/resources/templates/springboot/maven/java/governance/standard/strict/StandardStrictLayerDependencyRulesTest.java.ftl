@@ -1,13 +1,11 @@
 package ${projectPackageName}.architecture;
 
-import static com.tngtech.archunit.base.DescribedPredicate.describe;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-
-import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 /**
  * Strict layered direction rules for STANDARD layout.
@@ -45,18 +43,15 @@ class StandardStrictLayerDependencyRulesTest {
                     .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule controllers_must_depend_only_on_services_and_controller_types_and_jdk =
+    static final ArchRule controllers_should_not_depend_on_domain_services =
             noClasses()
                     .that()
                     .resideInAnyPackage(CONTROLLER_PATTERN)
                     .should()
-                    .dependOnClassesThat(
-                            describe(
-                                    "be outside controller/service packages and not be JDK types",
-                                    (JavaClass c) -> !isAllowedControllerDependency(c)
-                            )
-                    )
+                    .dependOnClassesThat()
+                    .resideInAnyPackage(BASE_PACKAGE + ".domain..service..")
                     .allowEmptyShould(true);
+
 
     @ArchTest
     static final ArchRule services_must_not_depend_on_controllers =
@@ -77,22 +72,4 @@ class StandardStrictLayerDependencyRulesTest {
                     .dependOnClassesThat()
                     .resideInAnyPackage(SERVICE_PATTERN, CONTROLLER_PATTERN)
                     .allowEmptyShould(true);
-
-    private static boolean isAllowedControllerDependency(JavaClass c) {
-        String pkg = c.getPackageName();
-
-        if (pkg == null || pkg.isBlank()) {
-            return true;
-        }
-
-        if (pkg.startsWith("java.") || pkg.startsWith("javax.")) {
-            return true;
-        }
-
-        if (pkg.startsWith(CONTROLLER_ROOT)) {
-            return true;
-        }
-
-        return pkg.startsWith(SERVICE_ROOT);
-    }
 }

@@ -47,12 +47,12 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
 
     TemplateSpec templateSpec = artifactSpec.templates().getFirst();
     Path baseDir = Path.of(templateSpec.outputPath());
-    String templateName = artifactSpec.basePath() + templateSpec.template();
+    String templateResourcePath = artifactSpec.basePath() + templateSpec.template();
 
     String packagePath = packageName.value().replace(PACKAGE_PATH_DELIMITER, FILE_PATH_DELIMITER);
     Path outPath = baseDir.resolve(packagePath).resolve(className + JAVA_FILE_EXTENSION);
 
-    GeneratedResource file = renderer.renderUtf8(outPath, templateName, model);
+    GeneratedResource file = renderer.renderUtf8(outPath, templateResourcePath, model);
     return List.of(file);
   }
 

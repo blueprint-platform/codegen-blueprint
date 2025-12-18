@@ -14,9 +14,9 @@ public final class CapturingTemplateRenderer implements TemplateRenderer {
 
   @Override
   public GeneratedResource renderUtf8(
-      Path outPath, String templateName, Map<String, Object> model) {
+      Path outPath, String templateResourcePath, Map<String, Object> model) {
     this.capturedOutPath = outPath;
-    this.capturedTemplateName = templateName;
+    this.capturedTemplateName = templateResourcePath;
     this.capturedModel = model;
     return nextFile;
   }

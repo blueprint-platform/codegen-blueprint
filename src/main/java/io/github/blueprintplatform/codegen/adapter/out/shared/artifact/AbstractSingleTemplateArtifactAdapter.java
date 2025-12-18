@@ -24,10 +24,10 @@ public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactP
     TemplateSpec templateSpec = artifactSpec.templates().getFirst();
 
     Path outPath = Path.of(templateSpec.outputPath());
-    String templateName = artifactSpec.basePath() + templateSpec.template();
+    String templateResourcePath = artifactSpec.basePath() + templateSpec.template();
 
     Map<String, Object> model = buildModel(blueprint);
-    GeneratedResource file = renderer.renderUtf8(outPath, templateName, model);
+    GeneratedResource file = renderer.renderUtf8(outPath, templateResourcePath, model);
 
     return List.of(file);
   }

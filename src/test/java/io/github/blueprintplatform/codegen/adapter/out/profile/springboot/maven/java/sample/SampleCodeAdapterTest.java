@@ -108,21 +108,6 @@ class SampleCodeAdapterTest {
   }
 
   @Test
-  @DisplayName("generate() should return empty when layout is not hexagonal even if level is BASIC")
-  void generate_nonHexagonalLayoutBasicLevel_shouldReturnEmpty() {
-    SampleCodeAdapter adapter =
-        new SampleCodeAdapter(
-            new RecordingTemplateRenderer(),
-            DUMMY_ARTIFACT_SPEC,
-            new StubClasspathTemplateScanner(
-                List.of("springboot/maven/java/sample/hexagonal/basic/main/x.java.ftl")));
-
-    ProjectBlueprint bp = blueprint(ProjectLayout.STANDARD, SampleCodeLevel.BASIC);
-
-    assertThat(adapter.generate(bp)).isEmpty();
-  }
-
-  @Test
   @DisplayName(
       "generate() should throw SampleCodeTemplatesNotFoundException when scan returns empty")
   void generate_hexagonalBasic_shouldThrowWhenNoTemplatesFound() {
@@ -229,8 +214,8 @@ class SampleCodeAdapterTest {
 
     @Override
     public GeneratedResource renderUtf8(
-        Path outPath, String templateName, Map<String, Object> model) {
-      capturedTemplateNames.add(templateName);
+        Path outPath, String templateResourcePath, Map<String, Object> model) {
+      capturedTemplateNames.add(templateResourcePath);
       capturedModels.add(model);
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
     }

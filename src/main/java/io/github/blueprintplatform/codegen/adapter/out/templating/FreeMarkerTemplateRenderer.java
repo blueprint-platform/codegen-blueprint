@@ -20,13 +20,13 @@ public class FreeMarkerTemplateRenderer implements TemplateRenderer {
 
   @Override
   public GeneratedResource renderUtf8(
-      Path outPath, String templateName, Map<String, Object> model) {
+      Path outPath, String templateResourcePath, Map<String, Object> model) {
     try (StringWriter sw = new StringWriter()) {
-      Template tpl = cfg.getTemplate(templateName);
+      Template tpl = cfg.getTemplate(templateResourcePath);
       tpl.process(model, sw);
       return new GeneratedTextResource(outPath, sw.toString(), StandardCharsets.UTF_8);
     } catch (Exception e) {
-      throw new TemplateRenderingException(templateName, e);
+      throw new TemplateRenderingException(templateResourcePath, e);
     }
   }
 }

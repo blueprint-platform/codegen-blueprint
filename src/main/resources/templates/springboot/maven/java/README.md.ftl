@@ -222,6 +222,96 @@ You can use this sample in two ways:
 
 </#if>
 
+<#if layout == "standard" && sampleCode == "basic">
+
+---
+
+## 🧪 Included Sample (Basic)
+
+Because `--sample-code basic` was selected, the project includes a minimal end-to-end **Greeting** slice that demonstrates a classic **standard (layered) architecture** in its simplest, most readable form.
+
+This sample is intentionally small. Its purpose is **not** to showcase advanced patterns, but to provide a clear baseline for how layers collaborate in a traditional Spring Boot application.
+
+### What this sample demonstrates
+
+* an inbound **REST controller**
+* an **application/service layer** orchestrating a use case
+* a **pure domain model** (no Spring, no IO)
+* a simple **audit side effect** triggered after the use case
+* mapping from domain objects to HTTP response DTOs
+
+The flow is deliberately straightforward:
+
+```text
+HTTP → Controller → Service → Domain → Service → Controller → DTO
+```
+
+This makes the sample easy to read, easy to debug, and easy to evolve.
+
+### Sample REST endpoints
+
+Base path:
+
+```text
+/api/v1/sample/greetings
+```
+
+Available endpoints:
+
+* `GET /api/v1/sample/greetings/default`
+
+* returns a default greeting
+
+* `GET /api/v1/sample/greetings?name=John`
+
+* returns a personalized greeting
+
+Example calls:
+
+```bash
+curl -s http://localhost:8080/api/v1/sample/greetings/default | jq
+curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
+```
+
+### Where to look in the code
+
+To understand the sample, start with these classes:
+
+* **REST controller**
+
+* `controller/sample/GreetingController`
+
+* **Application / use-case service**
+
+* `service/sample/GreetingService`
+
+* **Pure domain logic**
+
+* `domain/sample/service/GreetingDomainService`
+* `domain/sample/model/Greeting`
+
+* **Audit side effect**
+
+* `repository/sample/GreetingAuditRepository`
+
+Each layer has a single, focused responsibility and communicates only with the layer directly below it.
+
+### How to use this sample
+
+You can use this sample in two ways:
+
+* as a **baseline reference** for a standard layered Spring Boot project
+* as a **starting point** to gradually introduce more advanced concepts
+(transactions, persistence, messaging, or even a future migration to hexagonal architecture)
+
+This sample is intentionally conservative by design.
+It favors clarity over abstraction, and explicit flow over indirection.
+
+If you are comfortable with this structure, you are well-positioned to understand and adopt more advanced architectural styles later on.
+
+
+</#if>
+
 ---
 
 ## 📚 Selected Dependencies

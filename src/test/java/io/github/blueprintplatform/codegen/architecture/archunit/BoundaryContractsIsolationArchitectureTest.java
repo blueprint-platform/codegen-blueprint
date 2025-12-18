@@ -28,6 +28,7 @@ class BoundaryContractsIsolationArchitectureTest {
   static final String DOMAIN_PACKAGE_PATTERN = BASE_PACKAGE + ".domain..";
   static final String INBOUND_ADAPTER_PATTERN = BASE_PACKAGE + ".adapter.in..";
   static final String INBOUND_ADAPTER_DTO_PATTERN = BASE_PACKAGE + ".adapter.in.dto..";
+
   @ArchTest
   static final ArchRule inbound_adapter_dtos_must_not_depend_on_domain =
       noClasses()
@@ -37,8 +38,10 @@ class BoundaryContractsIsolationArchitectureTest {
           .dependOnClassesThat()
           .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
           .allowEmptyShould(true);
+
   // ✅ Prefix (string check)
   static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
+
   @ArchTest
   static final ArchRule inbound_rest_controllers_must_not_expose_domain_types_in_signatures =
       methods()

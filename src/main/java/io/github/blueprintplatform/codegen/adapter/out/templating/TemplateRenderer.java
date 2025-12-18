@@ -5,5 +5,6 @@ import java.nio.file.Path;
 import java.util.Map;
 
 public interface TemplateRenderer {
-  GeneratedResource renderUtf8(Path outPath, String templateName, Map<String, Object> model);
+  GeneratedResource renderUtf8(
+      Path outPath, String templateResourcePath, Map<String, Object> model);
 }

@@ -162,8 +162,8 @@ class ArchitectureGovernanceAdapterTest {
 
     @Override
     public GeneratedResource renderUtf8(
-        Path outPath, String templateName, Map<String, Object> model) {
-      capturedTemplateNames.add(templateName);
+        Path outPath, String templateResourcePath, Map<String, Object> model) {
+      capturedTemplateNames.add(templateResourcePath);
       capturedModels.add(model);
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
     }

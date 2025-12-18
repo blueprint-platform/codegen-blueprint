@@ -58,7 +58,7 @@ public class SampleCodeAdapter implements SampleCodePort {
     SampleCodeLevel level = blueprint.getArchitecture().sampleCodeOptions().level();
     ProjectLayout layout = blueprint.getArchitecture().layout();
 
-    if (SampleCodeLevel.BASIC != level || !layout.isHexagonal()) {
+    if (SampleCodeLevel.BASIC != level) {
       return List.of();
     }
 
