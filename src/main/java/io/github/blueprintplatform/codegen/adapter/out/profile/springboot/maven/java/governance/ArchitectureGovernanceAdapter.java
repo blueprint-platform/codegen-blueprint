@@ -3,6 +3,7 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import io.github.blueprintplatform.codegen.adapter.error.exception.ArchitectureGovernanceTemplatesScanException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArchitectureGovernancePort;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort {
 
@@ -29,6 +31,15 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
 
   private static final String MODEL_KEY_PROJECT_PACKAGE_NAME = "projectPackageName";
   private static final String OUT_SEGMENT_ARCHITECTURE = "architecture";
+
+  private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
+  private static final DependencyFeature WEB_STARTER =
+      new DependencyFeature("web", SPRING_BOOT_GROUP_ID, "spring-boot-starter-web");
+
+  private static final Set<String> WEB_REQUIRED_GOVERNANCE_TEMPLATES =
+      Set.of(
+          "HexagonalStrictRestBoundarySignatureIsolationTest.java.ftl",
+          "StandardStrictRestBoundarySignatureIsolationTest.java.ftl");
 
   private final TemplateRenderer renderer;
   private final ArtifactSpec artifactSpec;
@@ -63,19 +74,23 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
       return List.of();
     }
 
+    boolean webSelected = isWebSelected(blueprint);
+
     PackageName pkg = blueprint.getMetadata().packageName();
     String packagePath = pkg.value().replace('.', '/');
 
     Path outBase = Paths.get(SRC_TEST_JAVA).resolve(packagePath).resolve(OUT_SEGMENT_ARCHITECTURE);
-
     Map<String, Object> model = Map.of(MODEL_KEY_PROJECT_PACKAGE_NAME, pkg.value());
-    List<GeneratedResource> generated = new ArrayList<>();
 
-    for (String fullTemplatePath : templatePaths) {
-      if (!fullTemplatePath.endsWith(JAVA_FTL_SUFFIX)) {
-        continue;
-      }
+    List<String> renderableTemplates =
+        templatePaths.stream()
+            .filter(p -> p.endsWith(JAVA_FTL_SUFFIX))
+            .filter(p -> !shouldSkipTemplateBecauseWebNotSelected(p, webSelected))
+            .toList();
 
+    List<GeneratedResource> generated = new ArrayList<>(renderableTemplates.size());
+
+    for (String fullTemplatePath : renderableTemplates) {
       String relativeUnderRoot = fullTemplatePath.substring(templateRoot.length() + 1);
       String javaRelative = stripSuffix(relativeUnderRoot);
 
@@ -84,6 +99,30 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
     }
 
     return List.copyOf(generated);
+  }
+
+  private boolean shouldSkipTemplateBecauseWebNotSelected(
+      String fullTemplatePath, boolean webSelected) {
+    if (webSelected) {
+      return false;
+    }
+    String fileName = fileNameOf(fullTemplatePath);
+    return WEB_REQUIRED_GOVERNANCE_TEMPLATES.contains(fileName);
+  }
+
+  private String fileNameOf(String path) {
+    int idx = path.lastIndexOf(PATH_SEPARATOR);
+    if (idx < 0) {
+      return path;
+    }
+    return path.substring(idx + 1);
+  }
+
+  private boolean isWebSelected(ProjectBlueprint bp) {
+    var deps = bp.getDependencies();
+    return deps != null
+        && !deps.isEmpty()
+        && deps.asList().stream().anyMatch(WEB_STARTER.matches());
   }
 
   private String resolveTemplateRoot(ProjectLayout layout, EnforcementMode mode) {

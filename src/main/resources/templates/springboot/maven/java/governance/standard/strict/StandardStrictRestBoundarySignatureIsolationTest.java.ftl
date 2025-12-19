@@ -15,55 +15,65 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Strict boundary contracts isolation for HEXAGONAL layout.
+ * Strict REST boundary signature isolation for STANDARD (layered) architecture.
+ * Enforced ONLY when:
+ * - EnforcementMode = STRICT
+ * - spring-boot-starter-web is present
  * Guarantees:
- * - Inbound REST adapter code must not expose domain types in method signatures
- * - Inbound REST transport DTOs must not depend on domain
- * Notes:
- * - REST is assumed under: adapter.in.rest..
- * - DTOs are expected under: adapter.in.rest.dto..
- * - No Spring imports/annotations are used (works even without spring-web on classpath).
+ * - REST controllers must NOT expose domain types in method signatures
+ *   (return types, parameters, generics)
+ * Explicitly allowed:
+ * - Mapper / assembler classes may depend on domain
+ * - Services may use domain internally
+ * Rationale:
+ * - Controller layer is the public HTTP boundary
+ * - Domain types must never cross that boundary
+ * - Mapping is an internal concern and may touch domain
  */
 @AnalyzeClasses(
         packages = "${projectPackageName}",
         importOptions = ImportOption.DoNotIncludeTests.class
 )
-class HexagonalStrictBoundaryContractsIsolationTest {
+class StandardStrictRestBoundarySignatureIsolationTest {
 
     private static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String DOMAIN_PACKAGE_PATTERN = BASE_PACKAGE + ".domain..";
     private static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
+    private static final String DOMAIN_PACKAGE_PATTERN = BASE_PACKAGE + ".domain..";
 
-    private static final String INBOUND_REST_ADAPTER_PATTERN = BASE_PACKAGE + ".adapter.in.rest..";
-    private static final String INBOUND_REST_DTO_PATTERN = BASE_PACKAGE + ".adapter.in.rest.dto..";
+    private static final String CONTROLLER_PATTERN = BASE_PACKAGE + ".controller..";
+    private static final String CONTROLLER_DTO_PATTERN = BASE_PACKAGE + ".controller..dto..";
 
     @ArchTest
-    static final ArchRule inbound_rest_dtos_must_not_depend_on_domain =
+    static final ArchRule controller_dtos_must_not_depend_on_domain =
             noClasses()
                     .that()
-                    .resideInAnyPackage(INBOUND_REST_DTO_PATTERN)
+                    .resideInAnyPackage(CONTROLLER_DTO_PATTERN)
                     .should()
                     .dependOnClassesThat()
                     .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
                     .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule inbound_rest_adapter_must_not_expose_domain_types_in_signatures =
+    static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(INBOUND_REST_ADAPTER_PATTERN)
+                    .resideInAnyPackage(CONTROLLER_PATTERN)
+                    .and()
+                    .areDeclaredInClassesThat()
+                    .areAnnotatedWith(RestController.class)
                     .should(notExposeDomainTypesInSignature())
                     .allowEmptyShould(true);
 
     private static ArchCondition<JavaMethod> notExposeDomainTypesInSignature() {
-        return new ArchCondition<>("not expose domain types in method signatures") {
+        return new ArchCondition<>("not expose domain types in REST controller method signatures") {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
-                for (String violation: SignatureDomainLeakage.findViolations(method)) {
+                for (String violation : SignatureDomainLeakage.findViolations(method)) {
                     events.add(SimpleConditionEvent.violated(method, violation));
                 }
             }
@@ -89,12 +99,14 @@ class HexagonalStrictBoundaryContractsIsolationTest {
             }
 
             if (containsDomainInTypeTree(method.getReturnType())) {
-                violations.add(message(method, "generic return type leaks domain", method.getReturnType()));
+                violations.add(
+                        message(method, "generic return type leaks domain", method.getReturnType()));
             }
 
             for (JavaType pt : method.getParameterTypes()) {
                 if (containsDomainInTypeTree(pt)) {
-                    violations.add(message(method, "generic parameter type leaks domain", pt));
+                    violations.add(
+                            message(method, "generic parameter type leaks domain", pt));
                 }
             }
 

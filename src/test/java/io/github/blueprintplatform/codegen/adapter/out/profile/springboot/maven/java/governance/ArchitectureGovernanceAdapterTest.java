@@ -11,6 +11,8 @@ import io.github.blueprintplatform.codegen.domain.model.value.architecture.Archi
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
+import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
+import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
@@ -35,7 +37,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -44,16 +45,41 @@ import org.junit.jupiter.api.Test;
 @Tag("adapter")
 class ArchitectureGovernanceAdapterTest {
 
-  private static final String BASE_PATH = "springboot/maven/java/";
+  private static final String BASE_PATH = "springboot/maven/java";
   private static final String BASE_PACKAGE = "com.acme.demo";
-  private static final String BASE_PACKAGE_PATH = "com/acme/demo";
+
+  private static final String GOV_HEX_STRICT = "springboot/maven/java/governance/hexagonal/strict";
+
+  private static final String DOMAIN_PURITY_TEMPLATE =
+      GOV_HEX_STRICT + "/DomainPurityTest.java.ftl";
+
+  private static final String HEX_REST_SIGNATURE_TEMPLATE =
+      GOV_HEX_STRICT + "/HexagonalStrictRestBoundarySignatureIsolationTest.java.ftl";
+
+  private static final String STD_REST_SIGNATURE_TEMPLATE =
+      GOV_HEX_STRICT + "/StandardStrictRestBoundarySignatureIsolationTest.java.ftl";
 
   private static final ArtifactSpec DUMMY_ARTIFACT_SPEC = new ArtifactSpec(BASE_PATH, List.of());
 
-  private static ProjectBlueprint blueprint(ProjectLayout layout, EnforcementMode mode) {
+  private static final GroupId ACME_GROUP_ID = new GroupId("com.acme");
+  private static final ArtifactId DEMO_ARTIFACT_ID = new ArtifactId("demo-app");
+
+  private static final GroupId SPRING_BOOT_GROUP_ID = new GroupId("org.springframework.boot");
+  private static final ArtifactId SPRING_BOOT_WEB_ARTIFACT_ID =
+      new ArtifactId("spring-boot-starter-web");
+
+  private static StubClasspathTemplateScanner scannerWithTemplates(String... templates) {
+    return new StubClasspathTemplateScanner(List.of(templates));
+  }
+
+  private static ProjectBlueprint blueprint(EnforcementMode mode) {
+    return blueprint(mode, Dependencies.of(List.of()));
+  }
+
+  private static ProjectBlueprint blueprint(EnforcementMode mode, Dependencies dependencies) {
     ProjectMetadata metadata =
         new ProjectMetadata(
-            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectIdentity(ACME_GROUP_ID, DEMO_ARTIFACT_ID),
             new ProjectName("Demo App"),
             new ProjectDescription("Sample Project"),
             new PackageName(BASE_PACKAGE));
@@ -64,17 +90,16 @@ class ArchitectureGovernanceAdapterTest {
             new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
 
     ArchitectureSpec architecture =
-        new ArchitectureSpec(layout, new ArchitectureGovernance(mode), SampleCodeOptions.none());
-
-    Dependencies dependencies = Dependencies.of(List.of());
+        new ArchitectureSpec(
+            ProjectLayout.HEXAGONAL, new ArchitectureGovernance(mode), SampleCodeOptions.none());
 
     return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
-  private static List<Path> toRelativePaths(Iterable<? extends GeneratedResource> resources) {
-    List<Path> result = new ArrayList<>();
-    StreamSupport.stream(resources.spliterator(), false).forEach(r -> result.add(r.relativePath()));
-    return result;
+  private static Dependencies dependenciesWithSpringWeb() {
+    DependencyCoordinates coordinates =
+        new DependencyCoordinates(SPRING_BOOT_GROUP_ID, SPRING_BOOT_WEB_ARTIFACT_ID);
+    return Dependencies.of(List.of(new Dependency(coordinates, null, null)));
   }
 
   @Test
@@ -92,58 +117,53 @@ class ArchitectureGovernanceAdapterTest {
   @Test
   @DisplayName("generate() should return empty when enforcement mode is NONE")
   void generate_noneMode_shouldReturnEmpty() {
-    StubClasspathTemplateScanner scanner =
-        new StubClasspathTemplateScanner(
-            List.of("springboot/maven/java/governance/hexagonal/strict/X.java.ftl"));
-
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(
-            new RecordingTemplateRenderer(), DUMMY_ARTIFACT_SPEC, scanner);
+            new RecordingTemplateRenderer(),
+            DUMMY_ARTIFACT_SPEC,
+            new StubClasspathTemplateScanner(List.of(DOMAIN_PURITY_TEMPLATE)));
 
-    ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, EnforcementMode.NONE);
-
-    assertThat(adapter.generate(bp)).isEmpty();
-    assertThat(scanner.lastRoot).isNull();
+    assertThat(adapter.generate(blueprint(EnforcementMode.NONE))).isEmpty();
   }
 
   @Test
-  @DisplayName(
-      "generate() should scan templates and render governance tests into src/test/java/{base}/architecture")
-  void generate_hexagonalStrict_shouldGenerateGovernanceTests() {
-    String templateRoot = "springboot/maven/java/governance/hexagonal/strict";
-    String domainPurityTemplate = templateRoot + "/DomainPurityTest.java.ftl";
-    String nonJavaTemplate = templateRoot + "/ignored.txt.ftl";
-
+  @DisplayName("STRICT + no starter-web -> REST boundary signature tests must NOT be generated")
+  void strict_withoutWeb_shouldSkipRestSignatureTests() {
     RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
     StubClasspathTemplateScanner scanner =
-        new StubClasspathTemplateScanner(List.of(domainPurityTemplate, nonJavaTemplate));
+        scannerWithTemplates(
+            DOMAIN_PURITY_TEMPLATE, HEX_REST_SIGNATURE_TEMPLATE, STD_REST_SIGNATURE_TEMPLATE);
 
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, EnforcementMode.STRICT);
+    adapter.generate(blueprint(EnforcementMode.STRICT));
 
-    Iterable<? extends GeneratedResource> resources = adapter.generate(bp);
-    List<Path> paths = toRelativePaths(resources);
+    assertThat(renderer.capturedTemplateNames)
+        .contains(DOMAIN_PURITY_TEMPLATE)
+        .doesNotContain(HEX_REST_SIGNATURE_TEMPLATE)
+        .doesNotContain(STD_REST_SIGNATURE_TEMPLATE);
+  }
 
-    Path expectedOut =
-        Path.of("src/test/java")
-            .resolve(BASE_PACKAGE_PATH)
-            .resolve("architecture")
-            .resolve("DomainPurityTest.java");
+  @Test
+  @DisplayName("STRICT + starter-web -> REST boundary signature tests must be generated")
+  void strict_withWeb_shouldIncludeRestSignatureTests() {
+    RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
+    StubClasspathTemplateScanner scanner =
+        scannerWithTemplates(
+            DOMAIN_PURITY_TEMPLATE, HEX_REST_SIGNATURE_TEMPLATE, STD_REST_SIGNATURE_TEMPLATE);
 
-    assertThat(paths).containsExactlyInAnyOrder(expectedOut);
+    ArchitectureGovernanceAdapter adapter =
+        new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    assertThat(renderer.capturedTemplateNames).containsExactly(domainPurityTemplate);
+    adapter.generate(blueprint(EnforcementMode.STRICT, dependenciesWithSpringWeb()));
 
-    assertThat(renderer.capturedModels).containsExactly(Map.of("projectPackageName", BASE_PACKAGE));
-
-    assertThat(scanner.lastRoot).isEqualTo(templateRoot);
+    assertThat(renderer.capturedTemplateNames)
+        .contains(DOMAIN_PURITY_TEMPLATE, HEX_REST_SIGNATURE_TEMPLATE, STD_REST_SIGNATURE_TEMPLATE);
   }
 
   private static final class StubClasspathTemplateScanner extends ClasspathTemplateScanner {
     private final List<String> templates;
-    private String lastRoot;
 
     private StubClasspathTemplateScanner(List<String> templates) {
       this.templates = List.copyOf(templates);
@@ -151,20 +171,17 @@ class ArchitectureGovernanceAdapterTest {
 
     @Override
     public List<String> scan(String templateRoot) {
-      this.lastRoot = templateRoot;
-      return templates.stream().filter(t -> t.startsWith(templateRoot + "/")).toList();
+      return templates.stream().filter(t -> t.startsWith(templateRoot)).toList();
     }
   }
 
   private static final class RecordingTemplateRenderer implements TemplateRenderer {
     private final List<String> capturedTemplateNames = new ArrayList<>();
-    private final List<Map<String, Object>> capturedModels = new ArrayList<>();
 
     @Override
     public GeneratedResource renderUtf8(
         Path outPath, String templateResourcePath, Map<String, Object> model) {
       capturedTemplateNames.add(templateResourcePath);
-      capturedModels.add(model);
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
     }
   }

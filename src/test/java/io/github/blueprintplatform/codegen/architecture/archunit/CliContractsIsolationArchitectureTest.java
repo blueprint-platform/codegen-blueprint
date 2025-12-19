@@ -25,6 +25,7 @@ class CliContractsIsolationArchitectureTest {
   private static final String CLI_SHARED = BASE_PACKAGE + ".adapter.in.cli.shared..";
   private static final String CLI_SPRINGBOOT = BASE_PACKAGE + ".adapter.in.cli.springboot..";
   private static final String CLI_OPTIONS = BASE_PACKAGE + ".adapter.in.cli.springboot.option..";
+
   @ArchTest
   static final ArchRule cli_transport_contracts_must_not_depend_on_domain =
       noClasses()
@@ -34,7 +35,9 @@ class CliContractsIsolationArchitectureTest {
           .dependOnClassesThat()
           .resideInAnyPackage(DOMAIN_PATTERN)
           .allowEmptyShould(true);
+
   private static final String CLI_MAPPER = BASE_PACKAGE + ".adapter.in.cli.mapper..";
+
   @ArchTest
   static final ArchRule cli_commands_must_not_depend_on_domain_directly =
       noClasses()
