@@ -1,6 +1,8 @@
 # Architecture Enforcement Scope — Codegen Blueprint 1.0.0 GA
 
-> This unified document defines what the **Codegen Blueprint engine enforces today (1.0.0 GA)** and what the **generated project guarantees at output** — a single reference point for architectural truth.
+> This unified document defines what the **Codegen Blueprint engine enforces today (1.0.0 GA)** and what the **generated project guarantees at output** — serving as a single, authoritative reference for architectural truth.
+
+---
 
 ## 📚 Table of Contents
 
@@ -17,37 +19,46 @@
 
 ## 1️⃣ Purpose
 
-Ensure that:
+This document exists to ensure that:
 
-* README **claims** match **engine guarantees**
-* Output is **predictable**, **testable**, and **clean**
-* The foundation enables **strict enforcement** as we evolve
+* README **claims** always match **engine guarantees**
+* Generated output is **predictable**, **testable**, and **architecturally honest**
+* The foundation enables **stronger enforcement** without breaking trust
 
-> 🧠 If we promise it, we enforce it.
+> 🧠 **If we promise it, we enforce it.**
+
+Anything not explicitly listed here is **out of scope** for 1.0.0 GA.
 
 ---
 
 ## 2️⃣ Core Mental Model
 
-| Concept       | Description                                         |
-| ------------- | --------------------------------------------------- |
-| **Engine**    | CLI‑driven executor applying architectural profiles |
-| **Profiles**  | Architecture + runtime stack + generation rules     |
-| **Artifacts** | Generated project assets (structured + validated)   |
+| Concept       | Description                                                   |
+| ------------- | ------------------------------------------------------------- |
+| **Engine**    | CLI‑driven executor applying architectural profiles           |
+| **Profiles**  | Architecture + runtime stack + generation rules               |
+| **Artifacts** | Generated project assets (structured, ordered, and validated) |
 
-📌 The engine today:
+The engine today:
 
-> Generates clean, production‑viable Spring Boot services — with **architecture‑aware** and **test‑ready** output.
+> Generates clean, production‑viable Spring Boot services with **architecture‑aware** and **test‑ready** output.
 
 ---
 
 ## 3️⃣ Engine Enforcement Guarantees (1.0.0 GA)
 
-All items validated via automated tests.
+All guarantees listed in this section are **validated by automated tests**.
+
+This section explicitly distinguishes between:
+
+* **mandatory enforcement inside the Codegen Blueprint engine itself**, and
+* **optional enforcement generated into produced projects**.
+
+---
 
 ### ✔ 3.1 Deterministic Layout
 
-Always **single‑module** + buildable output:
+The engine always produces a **single‑module**, buildable project:
 
 ```
 <artifactId>/
@@ -59,55 +70,67 @@ Always **single‑module** + buildable output:
  └─ README.md
 ```
 
+No hidden modules. No conditional directories.
+
+---
+
 ### ✔ 3.2 Identity & Naming Enforcement
 
-Engine validates **consistency & correctness**:
+The engine validates **consistency and correctness** of:
 
-* groupId
-* artifactId
-* base package
-* PascalCase main class → `<Artifact>Application`
+* `groupId`
+* `artifactId`
+* base package name
+* PascalCase main class → `<ArtifactId>Application`
 
-> ❌ Invalid identifiers → **fail fast**
+> ❌ Invalid identifiers cause **fail‑fast termination**.
+
+---
 
 ### ✔ 3.3 Minimal Runtime Baseline
 
-Project must:
+Every generated project:
 
-* Compile + run instantly
-* Include only explicit dependencies
-* Boot through SpringApplication.run()
+* Compiles and boots immediately
+* Includes **only explicitly requested dependencies**
+* Starts via `SpringApplication.run()`
 
-📌 No accidental demo code.
+📌 No demo leftovers. No accidental scaffolding.
+
+---
 
 ### ✔ 3.4 Test‑Ready Output
 
-Generated project must:
+Generated projects always:
 
-* Contain test bootstrap (`@SpringBootTest`)
-* Pass `mvn verify` immediately after creation
+* Contain a Spring test bootstrap (`@SpringBootTest`)
+* Pass `mvn verify` immediately after generation
 
-Testing == required.
+Testing is **not optional**.
+
+---
 
 ### ✔ 3.5 Engine–Template Separation
 
-Engine **does not depend on**:
+The Codegen Blueprint engine **does not depend on**:
 
-* Spring
-* File system
-* Build systems (Maven, Gradle…)
+* Spring Framework
+* File system APIs
+* Build tools (Maven / Gradle)
 
-Technology lives in **adapters + profiles**.
+Technology details live exclusively in **adapters and profiles**.
 
-> Enables Gradle/Kotlin/Quarkus — **zero** engine refactor.
+> This guarantees future support for Gradle, Kotlin, Quarkus — without engine refactoring.
+
+---
 
 ### ✔ 3.6 Profile‑Defined Execution
 
-Profile determines:
+Profiles fully determine:
 
 * Artifact ordering
-* Template namespace
-* Architecture boundaries
+* Template namespaces
+* Architecture layout semantics
 
 Example:
 
@@ -115,27 +138,31 @@ Example:
 java -jar codegen-blueprint.jar --cli springboot ...
 ```
 
+The engine executes — profiles decide *what* and *how*.
+
+---
+
 ### ✔ 3.7 Generator & Generated Project Architecture Enforcement
 
-The Codegen Blueprint engine enforces its **own architectural boundaries**
-using automated architecture tests (ArchUnit).
+#### Engine‑Level (Mandatory)
 
-This guarantees, inside the generator codebase:
+The Codegen Blueprint codebase enforces **its own architecture** using automated tests (ArchUnit):
 
-* domain purity
-* strict dependency direction
-* adapter and port isolation
+* Domain purity
+* Strict dependency direction
+* Port and adapter isolation
 
-In addition, the engine can **optionally generate architecture tests**
-inside the produced project.
+These guarantees apply **unconditionally** to the generator itself.
 
-Generated project enforcement characteristics:
+#### Generated Project (Optional)
 
-* ArchUnit tests are generated **only when enabled by profile / enforcement mode**
-* Enforcement applies to **structural boundaries** (e.g. hexagonal layers)
-* Rules are **executable and test-driven**, not documentation-only
+The engine can optionally generate **architecture enforcement tests** into produced projects:
 
-⚠️ Generated-project enforcement is **opt-in**, not mandatory in 1.0.0 GA.
+* Generated only when enabled via profile / enforcement mode
+* Implemented as executable ArchUnit tests
+* Focused on **structural boundaries** (e.g. layered or hexagonal layouts)
+
+⚠️ Generated‑project enforcement is **opt‑in** in 1.0.0 GA and never implicit.
 
 ---
 
@@ -147,7 +174,7 @@ Generated project enforcement characteristics:
 springboot-maven-java
 ```
 
-Output must include:
+Every generated project includes:
 
 ```
 <artifactId>/
@@ -159,22 +186,30 @@ Output must include:
  └─ README.md
 ```
 
+---
+
 ### Optional Layout — Hexagonal
+
+Enabled via:
 
 ```
 --layout hexagonal
 ```
 
-Adds enforceable boundaries:
+Enforced structural boundaries:
 
 ```
-adapter/    # tech surfaces
-application # orchestration
-domain      # business rules
-bootstrap   # wiring
+adapters/    # technology surfaces
+application/ # orchestration
+domain/      # business rules
+bootstrap/   # wiring
 ```
+
+---
 
 ### Optional Teaching Example — Sample Code
+
+Enabled via:
 
 ```
 --sample-code basic
@@ -182,10 +217,10 @@ bootstrap   # wiring
 
 Produces:
 
-* REST greeting endpoint
-* Domain‑driven reference
+* A minimal REST greeting endpoint
+* A domain‑driven reference slice
 
-Run instantly:
+Runnable immediately:
 
 ```bash
 ./mvnw spring-boot:run
@@ -197,14 +232,14 @@ Run instantly:
 
 ## 5️⃣ Explicitly Not Enforced (Yet)
 
-We **intentionally** do not enforce:
+The following are **intentionally out of scope** for 1.0.0 GA:
 
-| Item                    | Why                             |
-| ----------------------- | ------------------------------- |
-| Hexagonal by default    | Zero‑friction adoption          |
-| Policy engine           | Requires DSL + governance model |
-| Architecture test rules | Next stage of enforceability    |
-| Org‑wide standards      | Platform‑level roadmap          |
+| Item                                     | Reason                       |
+| ---------------------------------------- | ---------------------------- |
+| Hexagonal layout by default              | Zero‑friction adoption       |
+| Policy engine / DSL                      | Requires governance language |
+| Custom / policy‑level architecture rules | Next enforcement stage       |
+| Org‑wide standards                       | Platform‑level concern       |
 
 > Today: architecture‑aware → Tomorrow: architecture‑policed
 
@@ -214,8 +249,8 @@ We **intentionally** do not enforce:
 
 * 🚫 No bloated opinions
 * 🚫 No magical side‑effects
-* 🚫 No drift from contract
-* 🎯 Precision > volume
+* 🚫 No drift from declared contracts
+* 🎯 Precision over volume
 
 > Narrow now → **explosive ecosystem later**
 
@@ -223,25 +258,25 @@ We **intentionally** do not enforce:
 
 ## 7️⃣ Path Toward Executable Architecture
 
-| Stage | Capability                   | Value                            |
-| ----: | ---------------------------- | -------------------------------- |
-|  v1.1 | Layout enforcement gates     | Real boundaries in code output   |
-|  v1.2 | Auto‑architecture validation | CI fails on drift                |
-|  v1.3 | Policy DSL                   | Governance as code               |
-|  v2.0 | Org‑wide profiles            | Team‑scale compliance automation |
+| Phase | Capability                       | Value                     |
+| ----: | -------------------------------- | ------------------------- |
+|  Next | Layout enforcement gates         | Real boundaries in output |
+|  Next | CI‑level architecture validation | Drift fails fast          |
+|  Next | Policy DSL                       | Governance as code        |
+| Later | Org‑wide profiles                | Team‑scale compliance     |
 
-> Best practices must **execute — not be suggestions**
+> Best practices must **execute — not be suggestions**.
 
 ---
 
 ## 8️⃣ Review Guidance
 
-Any change touching architecture must ask:
+Any change touching architecture must answer:
 
-> ❓ Does this change **claim** enforcement?
+> ❓ **Does this change claim enforcement?**
 
-If **yes** → update this document
-If **no** → adjust README only
+* If **yes** → update this document
+* If **no** → adjust README only
 
 ---
 
@@ -249,7 +284,7 @@ If **no** → adjust README only
 
 **Codegen Blueprint 1.0.0 GA generates:**
 
-* Clean & testable services
+* Clean and testable services
 * Architecture‑aware structure
 * Predictable foundations for evolution
 

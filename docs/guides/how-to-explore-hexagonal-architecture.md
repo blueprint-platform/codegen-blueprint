@@ -251,6 +251,8 @@ bootstrap/
 | Text      | `GeneratedTextResource`   | Safe content        |
 | Binary    | `GeneratedBinaryResource` | Tooling & wrappers  |
 
+> Generated resources are modeled, validated, and ordered — not written ad-hoc.
+
 ---
 
 ## 🧪 Verified Architecture — Testing Strategy
@@ -262,11 +264,49 @@ bootstrap/
 | E2E CLI     | Generated project validity        |
 | ArchUnit    | Enforced architectural boundaries |
 
+Together, these tests ensure that architectural intent is continuously validated
+from generation time through build execution.
+
 > Tests protect **architecture**, not just syntax.
+> Architecture tests protect *dependency direction*, not implementation details.
+
+---
+
+## 🎯 What You Learn from This Repo
+
+| Skill                    | How This Repo Teaches It                                      |
+| ------------------------ | ------------------------------------------------------------- |
+| Hexagonal mastery        | True isolation enforced by ports and dependency direction     |
+| Maintainable scaffolding | Evolution paths encoded from day zero                         |
+| Architecture automation  | Governance-as-Code via executable rules and pipelines          |
+| Multi-stack enablement   | New stacks added without touching the core engine             |
+| Testing for architecture | Architecture validated through tests — not conventions        |
+
+This repository is a **production reference architecture**.
+
+> It prioritizes architectural correctness and evolution over feature completeness.
+
+It is designed to be:
+- studied by experienced developers and architects
+- extended as a platform foundation
+- challenged through architectural change scenarios
+
+It is **not positioned as** a classroom demo, step-by-step tutorial, or framework showcase.
+
+Instead, it serves as a **production-oriented reference** for developers and architects
+who want to study, evaluate, and evolve executable architecture in real systems.
 
 ---
 
 ## 🎮 Try It — CLI Delivery Adapter
+
+This section demonstrates the **actual, supported CLI contract** for Codegen Blueprint **1.0.0 GA** when generating a **Hexagonal Architecture** project.
+
+The command below reflects the real engine behavior, generated structure, and enforcement capabilities — no placeholders, no aspirational flags.
+
+---
+
+### Generate a Hexagonal Spring Boot Project
 
 ```bash
 java -jar codegen-blueprint-1.0.0.jar \
@@ -283,6 +323,40 @@ java -jar codegen-blueprint-1.0.0.jar \
 
 ---
 
+### What This Command Does
+
+This single command:
+
+* Selects the **Spring Boot · Maven · Java 21** profile
+* Generates a **hexagonal (ports & adapters)** source layout
+* Produces a **framework-free domain core** by construction
+* Enables **basic architecture enforcement** via generated ArchUnit tests
+* Adds a **minimal teaching sample** (domain + application + adapter)
+* Outputs a project that **builds and verifies immediately**
+
+No runtime configuration is required.
+No manual wiring is expected.
+
+---
+
+### Resulting Guarantees
+
+The generated project:
+
+* Passes `mvn verify` on first run
+* Enforces architectural boundaries at test time
+* Prevents accidental dependency direction violations
+* Keeps Spring strictly at the edges (`bootstrap` / adapters)
+
+> Architecture is not suggested — it is **enforced by construction**.
+
+---
+
+This CLI adapter is the **primary delivery mechanism** of Codegen Blueprint 1.0.0 GA.
+Everything else in the system exists to make this command **predictable, safe, and evolution-ready**.
+
+---
+
 ## 🔍 Architecture Execution Path (Mental Model)
 
 ```
@@ -296,6 +370,8 @@ ProjectArtifactsPort
  ↓
 ProjectWriterPort
 ```
+
+> No artifact knows about another artifact — only the pipeline knows the order.
 
 ---
 

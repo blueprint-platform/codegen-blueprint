@@ -141,7 +141,7 @@ This is why Blueprint is not a template collection.
 * 🧭 [1.0.0 Release Scope](#-100-release-scope)
 * 🧱 [Architecture Overview](#-architecture-overview)
 * 🔌 [Inbound & Outbound Adapters](#-inbound--outbound-adapters)
-* 🔄 [CLI Usage](#-cli-usage)
+* 🔄 [CLI Usage (Spring Boot)](#-cli-usage-spring-boot)
 * 🧪 [Testing & CI](#-testing--ci)
 * 🚀 [Vision & Roadmap](#-vision--roadmap)
 * ⭐ [Support](#-support)
@@ -488,7 +488,14 @@ Everything required to **build → run → extend** a real service:
 ---
 
 
-## 🔄 CLI Usage
+## 🔄 CLI Usage (Spring Boot)
+
+This section describes the **current, accurate CLI contract** for Codegen Blueprint **1.0.0**.
+It reflects the *actual generated output* and avoids aspirational or misleading examples.
+
+---
+
+### Basic Usage
 
 ```bash
 java -jar codegen-blueprint-1.0.0.jar \
@@ -507,18 +514,156 @@ java -jar codegen-blueprint-1.0.0.jar \
   --target-dir /path/to/output
 ```
 
-**Output (simplified)**
+---
+
+### Available Options (`springboot`)
+
+| Option           | Required | Default    | Description                                               |
+| ---------------- | -------- | ---------- | --------------------------------------------------------- |
+| `--group-id`     | ✔        | –          | Maven `groupId`                                           |
+| `--artifact-id`  | ✔        | –          | Maven `artifactId` (also becomes the project folder name) |
+| `--name`         | ✔        | –          | Human-readable project name                               |
+| `--description`  | ✔        | –          | Project description (minimum 10 characters)               |
+| `--package-name` | ✔        | –          | Base Java package name                                    |
+| `--build-tool`   | ✖        | `maven`    | Build tool (currently only `maven`)                       |
+| `--language`     | ✖        | `java`     | Programming language (currently only `java`)              |
+| `--java`         | ✖        | `21`       | Java version                                              |
+| `--boot`         | ✖        | `3.5`      | Spring Boot version                                       |
+| `--layout`       | ✖        | `standard` | `standard` (layered) or `hexagonal` (ports & adapters)    |
+| `--enforcement`  | ✖        | `none`     | Architecture enforcement: `none`, `basic`, `strict`       |
+| `--sample-code`  | ✖        | `none`     | Sample code level: `none`, `basic`                        |
+| `--dependency`   | ✖        | –          | Dependency alias (repeatable, controlled set)             |
+| `--target-dir`   | ✖        | `.`        | Target directory for generated output                     |
+
+---
+
+### Dependency Aliases (Controlled)
+
+> Available dependency aliases are **intentionally limited** and mapped internally
+> to well-known Spring Boot starters.
+>
+> This avoids uncontrolled dependency sprawl and keeps generated projects aligned
+> with the **architecture-first** philosophy of Codegen Blueprint.
+
+**Available aliases in 1.0.0:**
 
 ```
-greeting-service/
+web
+data_jpa
+validation
+actuator
+security
+devtools
+```
+
+Invalid or unknown aliases will fail fast during CLI execution.
+
+---
+
+### Why This Matters
+
+Codegen Blueprint is **not** a free-form dependency injector.
+
+Dependencies are:
+
+* explicitly modeled
+* version-aligned with the selected platform
+* constrained by design
+
+This ensures generated projects start with:
+
+* a clean dependency graph
+* predictable behavior
+* architecture-safe defaults
+
+> Dependency freedom is a runtime concern —
+> **architectural intent is a generation-time concern.**
+
+---
+
+### Generated Output (Simplified)
+
+> The output directory name **always equals `--artifact-id`**.
+
+```
+greeting/
  ├── pom.xml
- ├── src/main/java/.../GreetingServiceApplication.java
- ├── src/test/java/.../GreetingServiceApplicationTests.java
- ├── src/main/resources/application.yml
- └── .gitignore
+ ├── .gitignore
+ ├── .mvn/
+ │   └── wrapper/
+ │       └── maven-wrapper.properties
+ ├── src/
+ │   ├── main/
+ │   │   ├── java/io/github/blueprintplatform/greeting/...
+ │   │   └── resources/application.yml
+ │   └── test/
+ │       └── java/io/github/blueprintplatform/greeting/...
 ```
 
-> Hexagonal with optional sample = ready‑to‑run REST service
+This output is:
+
+* buildable (`mvn verify`)
+* testable (unit + integration baseline)
+* architecture‑aware by construction
+
+---
+
+### Layout Semantics
+
+**`standard` layout**
+
+```
+controller/
+service/
+repository/
+domain/
+config/
+```
+
+**`hexagonal` layout**
+
+```
+domain/
+application/
+adapters/
+bootstrap/
+```
+
+No Spring annotations are placed inside the domain when hexagonal layout is selected.
+
+---
+
+### Architecture Enforcement
+
+Architecture enforcement is **opt‑in**:
+
+| Mode     | Behavior                                           |
+| -------- | -------------------------------------------------- |
+| `none`   | No architectural rules generated                   |
+| `basic`  | Generated ArchUnit rules enforcing core boundaries |
+| `strict` | Stricter dependency and layering rules             |
+
+When enabled, enforcement rules are generated as **executable ArchUnit tests** under:
+
+```
+src/test/java/.../architecture/**
+```
+
+Violations fail the build deterministically during `mvn verify`.
+
+---
+
+### Important Notes
+
+* Codegen Blueprint does **not** generate cross‑cutting behavior (security, logging, etc.)
+* Those concerns are intended to be **enforced via shared libraries** in later Blueprint Platform phases
+* Generated projects are intentionally minimal, stable, and architecture‑first
+
+> Codegen Blueprint optimizes for **long‑term architectural integrity**, not short‑term scaffolding volume.
+
+---
+
+This section documents **what Codegen Blueprint actually produces today** — no demos, no exaggeration, no placeholders.
 
 ---
 

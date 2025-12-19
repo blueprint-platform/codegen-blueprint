@@ -1,4 +1,4 @@
-# Architecture Governance & AI Collaboration Protocol
+# Architecture Governance & AI Collaboration Protocol — 1.0.0 GA
 
 > **Executable Architecture requires explicit decisions, not accidental code.**
 
@@ -43,6 +43,10 @@ Therefore:
 ## 3. Decision-Making Protocol
 
 Every non-trivial change follows this explicit sequence:
+
+> **Skipping any step invalidates the change — regardless of test results.**
+
+This protocol exists to ensure architectural intent survives beyond individual implementations.
 
 ### 3.1 Intent
 
@@ -112,6 +116,7 @@ Every non-trivial change follows this explicit sequence:
 * Define **what** gets generated and **in which order**
 * Encode architectural policy as configuration
 * Are the single source of truth for generation pipelines
+* Prevent implicit coupling by making generation order explicit
 
 ---
 
@@ -119,6 +124,8 @@ Every non-trivial change follows this explicit sequence:
 
 * Enforcement is **opt-in**, never hidden
 * Rules are generated, not hard-wired
+  > Generated enforcement rules are platform-defined and centrally evolved,  
+  > while remaining visible and reviewable at the service level.
 * Tests > conventions > documentation
 
 Supported levels:
@@ -139,6 +146,7 @@ AI-generated code **must**:
 * Use intent-driven naming
 * Avoid speculative abstractions
 * Be small, reviewable, and reversible
+* Be explainable in architectural terms, not just technical ones
 
 AI-generated code **must not**:
 
@@ -159,6 +167,7 @@ A change may be merged only if:
 * [ ] Tests or rules enforce the claim
 * [ ] README and docs remain truthful
 * [ ] No new drift vectors introduced
+* [ ] No architectural decision was delegated implicitly to tooling or frameworks
 
 > Passing tests alone is not sufficient.
 
