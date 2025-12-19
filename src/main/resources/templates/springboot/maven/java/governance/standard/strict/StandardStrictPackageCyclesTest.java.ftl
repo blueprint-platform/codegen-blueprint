@@ -8,32 +8,23 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 /**
- * Strict package cycle rules.
+ * Strict package cycle rules for STANDARD (layered) architecture.
  * Guarantees:
- * - No cycles across top-level slices
- * - No cycles inside adapter subpackages
+ * - No cyclic dependencies between top-level packages
  * Notes:
- * - For "empty" generated projects, these slices may match no classes.
- *   In that case, allowEmptyShould(true) prevents false-negative failures.
+ * - Applies to controller/service/repository/domain/config style layouts
+ * - Empty projects are allowed (no false negatives)
  */
 @AnalyzeClasses(
         packages = "${projectPackageName}",
         importOptions = ImportOption.DoNotIncludeTests.class
 )
-class HexagonalStrictPackageCyclesTest {
+class StandardStrictPackageCyclesTest {
 
     @ArchTest
-    static final ArchRule layers_must_be_free_of_cycles =
+    static final ArchRule top_level_packages_must_be_free_of_cycles =
             slices()
                     .matching("${projectPackageName}.(*)..")
-                    .should()
-                    .beFreeOfCycles()
-                    .allowEmptyShould(true);
-
-    @ArchTest
-    static final ArchRule adapter_subpackages_must_be_free_of_cycles =
-            slices()
-                    .matching("${projectPackageName}.adapter.(*)..")
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);
