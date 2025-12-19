@@ -11,9 +11,9 @@ import com.tngtech.archunit.lang.ArchRule;
 
 /**
  * Strict domain purity for STANDARD (layered) layout.
- * Domain must depend only on:
- * - JDK types
- * - other domain types
+ * Guarantees:
+ * - Domain depends only on JDK types
+ * - Domain depends only on other domain types
  */
 @AnalyzeClasses(
         packages = "${projectPackageName}",
@@ -33,7 +33,9 @@ class StandardStrictDomainPurityTest {
                     .dependOnClassesThat(
                             describe(
                                     "reside outside domain and are not JDK types",
-                                    (JavaClass c) -> !isAllowedForDomain(c)))
+                                    c -> !isAllowedForDomain(c)
+                            )
+                    )
                     .allowEmptyShould(true);
 
     private static boolean isAllowedForDomain(JavaClass c) {
@@ -43,7 +45,7 @@ class StandardStrictDomainPurityTest {
             return true;
         }
 
-        if (pkg.startsWith("java.") || pkg.startsWith("javax.")) {
+        if (pkg.startsWith("java.")) {
             return true;
         }
 

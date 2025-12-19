@@ -25,7 +25,7 @@ public class CodegenCliExecutor {
   }
 
   public int execute(String[] args) {
-    CommandLine cmd =  getCommandLine();
+    CommandLine cmd = getCommandLine();
     return cmd.execute(args);
   }
 
@@ -40,20 +40,20 @@ public class CodegenCliExecutor {
 
   private CommandLine getCommandLine() {
     CommandLine commandLine =
-            new CommandLine(codegenCommand, factory)
-                    .registerConverter(SpringBootBuildToolOption.class, SpringBootBuildToolOption::fromKey)
-                    .registerConverter(SpringBootLanguageOption.class, SpringBootLanguageOption::fromKey)
-                    .registerConverter(
-                            SpringBootJavaVersionOption.class, SpringBootJavaVersionOption::fromKey)
-                    .registerConverter(SpringBootVersionOption.class, SpringBootVersionOption::fromKey)
-                    .registerConverter(SpringBootLayoutOption.class, SpringBootLayoutOption::fromKey)
-                    .registerConverter(
-                            SpringBootArchitectureEnforcementOption.class,
-                            SpringBootArchitectureEnforcementOption::fromKey)
-                    .registerConverter(
-                            SpringBootSampleCodeOption.class, SpringBootSampleCodeOption::fromKey)
-                    .registerConverter(
-                            SpringBootDependencyOption.class, SpringBootDependencyOption::fromKey);
+        new CommandLine(codegenCommand, factory)
+            .registerConverter(SpringBootBuildToolOption.class, SpringBootBuildToolOption::fromKey)
+            .registerConverter(SpringBootLanguageOption.class, SpringBootLanguageOption::fromKey)
+            .registerConverter(
+                SpringBootJavaVersionOption.class, SpringBootJavaVersionOption::fromKey)
+            .registerConverter(SpringBootVersionOption.class, SpringBootVersionOption::fromKey)
+            .registerConverter(SpringBootLayoutOption.class, SpringBootLayoutOption::fromKey)
+            .registerConverter(
+                SpringBootArchitectureEnforcementOption.class,
+                SpringBootArchitectureEnforcementOption::fromKey)
+            .registerConverter(
+                SpringBootSampleCodeOption.class, SpringBootSampleCodeOption::fromKey)
+            .registerConverter(
+                SpringBootDependencyOption.class, SpringBootDependencyOption::fromKey);
 
     commandLine.setExecutionExceptionHandler(exceptionHandler);
     return commandLine;

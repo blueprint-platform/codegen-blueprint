@@ -19,9 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Strict boundary contracts isolation for HEXAGONAL layout.
- * Enforces:
- * - inbound adapter DTOs must not depend on domain
- * - inbound REST controllers must not expose domain types in method signatures
+ *
+ * Guarantees:
+ * - Inbound REST controllers must not expose domain types in method signatures
+ * - Inbound REST transport types (dto) must not depend on domain
+ *
+ * Notes:
+ * - This rule set assumes REST lives under: adapter.in.rest..
+ * - DTOs are expected under: adapter.in.rest.dto..
  */
 @AnalyzeClasses(
         packages = "${projectPackageName}",
@@ -31,19 +36,17 @@ class HexagonalStrictBoundaryContractsIsolationTest {
 
     private static final String BASE_PACKAGE = "${projectPackageName}";
 
-    // ✅ ArchUnit package patterns (DSL)
     private static final String DOMAIN_PACKAGE_PATTERN = BASE_PACKAGE + ".domain..";
-    private static final String INBOUND_ADAPTER_PATTERN = BASE_PACKAGE + ".adapter.in..";
-    private static final String INBOUND_ADAPTER_DTO_PATTERN = BASE_PACKAGE + ".adapter.in.dto..";
-
-    // ✅ Prefix checks (string)
     private static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
 
+    private static final String INBOUND_REST_ADAPTER_PATTERN = BASE_PACKAGE + ".adapter.in.rest..";
+    private static final String INBOUND_REST_DTO_PATTERN = BASE_PACKAGE + ".adapter.in.rest.dto..";
+
     @ArchTest
-    static final ArchRule inbound_adapter_dtos_must_not_depend_on_domain =
+    static final ArchRule inbound_rest_dtos_must_not_depend_on_domain =
             noClasses()
                     .that()
-                    .resideInAnyPackage(INBOUND_ADAPTER_DTO_PATTERN)
+                    .resideInAnyPackage(INBOUND_REST_DTO_PATTERN)
                     .should()
                     .dependOnClassesThat()
                     .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
@@ -54,7 +57,7 @@ class HexagonalStrictBoundaryContractsIsolationTest {
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(INBOUND_ADAPTER_PATTERN)
+                    .resideInAnyPackage(INBOUND_REST_ADAPTER_PATTERN)
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)

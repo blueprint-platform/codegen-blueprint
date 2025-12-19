@@ -25,9 +25,7 @@ class DomainPurityArchitectureTest {
           .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
           .should()
           .dependOnClassesThat(
-              describe(
-                  "reside outside domain and are not JDK types",
-                  (JavaClass c) -> !isAllowedForDomain(c)))
+              describe("reside outside domain and are not JDK types", c -> !isAllowedForDomain(c)))
           .allowEmptyShould(true);
 
   private static boolean isAllowedForDomain(JavaClass c) {
@@ -37,11 +35,7 @@ class DomainPurityArchitectureTest {
       return true;
     }
 
-    if (pkg.startsWith("java.") || pkg.startsWith("javax.")) {
-      return true;
-    }
-
-    if (pkg.startsWith("com.tngtech.archunit.")) {
+    if (pkg.startsWith("java.")) {
       return true;
     }
 

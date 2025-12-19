@@ -6,7 +6,6 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.*;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.*;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import picocli.CommandLine.Option;
 public class SpringBootGenerateCommand implements Callable<Integer> {
 
   private static final Logger log = LoggerFactory.getLogger(SpringBootGenerateCommand.class);
+  private static final String SPRING_BOOT_FRAMEWORK_KEY = "spring-boot";
 
   private final CreateProjectCommandMapper mapper;
   private final CreateProjectPort createProjectPort;
@@ -133,7 +133,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
 
     var metadata = new CliProjectMetadata(groupId, artifactId, name, description, packageName);
 
-    var techStack = new CliTechStack(Framework.SPRING_BOOT.key(), buildTool.key(), language.key());
+    var techStack = new CliTechStack(SPRING_BOOT_FRAMEWORK_KEY, buildTool.key(), language.key());
 
     var runtimeTargetParams =
         Map.of(

@@ -1,17 +1,17 @@
 package ${projectPackageName}.architecture;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-
 /**
  * Strict layered direction rules for STANDARD layout.
- * Enforces:
+ * Enforces (build-time, deterministic):
  * - controllers must not depend on repositories
- * - controllers must depend only on services (and their own package + JDK)
+ * - controllers must not depend on domain (domain leakage)
  * - services must not depend on controllers
  * - repositories must not depend on services or controllers
  */
@@ -23,14 +23,10 @@ class StandardStrictLayerDependencyRulesTest {
 
     private static final String BASE_PACKAGE = "${projectPackageName}";
 
-    // ✅ ArchUnit package patterns
     private static final String CONTROLLER_PATTERN = BASE_PACKAGE + ".controller..";
     private static final String SERVICE_PATTERN = BASE_PACKAGE + ".service..";
     private static final String REPOSITORY_PATTERN = BASE_PACKAGE + ".repository..";
-
-    // ✅ Prefixes for string checks
-    private static final String CONTROLLER_ROOT = BASE_PACKAGE + ".controller.";
-    private static final String SERVICE_ROOT = BASE_PACKAGE + ".service.";
+    private static final String DOMAIN_PATTERN = BASE_PACKAGE + ".domain..";
 
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_repositories =
@@ -43,15 +39,14 @@ class StandardStrictLayerDependencyRulesTest {
                     .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule controllers_should_not_depend_on_domain_services =
+    static final ArchRule controllers_must_not_depend_on_domain =
             noClasses()
                     .that()
                     .resideInAnyPackage(CONTROLLER_PATTERN)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(BASE_PACKAGE + ".domain..service..")
+                    .resideInAnyPackage(DOMAIN_PATTERN)
                     .allowEmptyShould(true);
-
 
     @ArchTest
     static final ArchRule services_must_not_depend_on_controllers =
