@@ -15,18 +15,18 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Strict boundary contracts isolation for STANDARD (layered) layout.
  * Guarantees:
- * - Controllers must not expose domain types in method signatures (return/params, including generics)
+ * - Controller methods must not expose domain types in method signatures (return/params, including generics)
  * - Transport DTOs under controller..dto.. must not depend on domain
  * Notes:
  * - Controllers live under: controller..
  * - Controller DTOs live under: controller..dto..
  * - This intentionally does NOT forbid internal controller package helper classes (e.g. mapper)
  *   from touching domain; we only block domain exposure in controller method signatures.
+ * - No Spring imports/annotations are used (works even without spring-web on classpath).
  */
 @AnalyzeClasses(
         packages = "${projectPackageName}",
@@ -53,14 +53,11 @@ class StandardStrictBoundaryContractsIsolationTest {
                     .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
+    static final ArchRule controller_methods_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
                     .resideInAnyPackage(CONTROLLER_PATTERN)
-                    .and()
-                    .areDeclaredInClassesThat()
-                    .areAnnotatedWith(RestController.class)
                     .should(notExposeDomainTypesInSignature())
                     .allowEmptyShould(true);
 

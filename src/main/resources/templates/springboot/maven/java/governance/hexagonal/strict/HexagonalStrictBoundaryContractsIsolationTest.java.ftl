@@ -15,18 +15,16 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Strict boundary contracts isolation for HEXAGONAL layout.
- *
  * Guarantees:
- * - Inbound REST controllers must not expose domain types in method signatures
- * - Inbound REST transport types (dto) must not depend on domain
- *
+ * - Inbound REST adapter code must not expose domain types in method signatures
+ * - Inbound REST transport DTOs must not depend on domain
  * Notes:
- * - This rule set assumes REST lives under: adapter.in.rest..
+ * - REST is assumed under: adapter.in.rest..
  * - DTOs are expected under: adapter.in.rest.dto..
+ * - No Spring imports/annotations are used (works even without spring-web on classpath).
  */
 @AnalyzeClasses(
         packages = "${projectPackageName}",
@@ -53,14 +51,11 @@ class HexagonalStrictBoundaryContractsIsolationTest {
                     .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule inbound_rest_controllers_must_not_expose_domain_types_in_signatures =
+    static final ArchRule inbound_rest_adapter_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
                     .resideInAnyPackage(INBOUND_REST_ADAPTER_PATTERN)
-                    .and()
-                    .areDeclaredInClassesThat()
-                    .areAnnotatedWith(RestController.class)
                     .should(notExposeDomainTypesInSignature())
                     .allowEmptyShould(true);
 
@@ -68,7 +63,7 @@ class HexagonalStrictBoundaryContractsIsolationTest {
         return new ArchCondition<>("not expose domain types in method signatures") {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
-                for (String violation : SignatureDomainLeakage.findViolations(method)) {
+                for (String violation: SignatureDomainLeakage.findViolations(method)) {
                     events.add(SimpleConditionEvent.violated(method, violation));
                 }
             }
