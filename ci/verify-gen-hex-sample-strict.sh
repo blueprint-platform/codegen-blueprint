@@ -30,10 +30,10 @@ java -jar "$JAR_PATH" \
   --group-id io.github.blueprintplatform \
   --artifact-id "$ARTIFACT_ID" \
   --name Greeting \
-  --description "Greeting sample built with standard(layered) architecture" \
+  --description "Greeting sample strict enforcement built with hexagonal architecture" \
   --package-name "$PACKAGE_NAME" \
-  --layout standard \
-  --enforcement basic \
+  --layout hexagonal \
+  --enforcement strict \
   --sample-code basic \
   --java "$JAVA_VERSION" \
   --boot "$BOOT_VERSION" \

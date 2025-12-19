@@ -30,16 +30,13 @@ java -jar "$JAR_PATH" \
   --group-id io.github.blueprintplatform \
   --artifact-id "$ARTIFACT_ID" \
   --name Greeting \
-  --description "Greeting sample built with hexagonal architecture" \
+  --description "No sample strict enforcement with hexagonal architecture" \
   --package-name "$PACKAGE_NAME" \
   --layout hexagonal \
-  --enforcement basic \
-  --sample-code basic \
+  --enforcement strict \
+  --sample-code none \
   --java "$JAVA_VERSION" \
   --boot "$BOOT_VERSION" \
-  --dependency web \
-  --dependency data_jpa \
-  --dependency actuator \
   --target-dir "$TARGET_DIR"
 
 ZIP="$TARGET_DIR/$ARTIFACT_ID.zip"
