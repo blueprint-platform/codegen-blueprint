@@ -1,9 +1,8 @@
-package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper;
+package io.github.blueprintplatform.codegen.adapter.out.shared.artifact;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
-import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
+import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
@@ -28,22 +27,22 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
-import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import io.github.blueprintplatform.codegen.testsupport.templating.RecordingTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-class MavenWrapperBuildToolFilesAdapterTest {
+class AbstractMultiTemplateArtifactAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
 
-  private static ProjectBlueprint blueprint() {
+  private static ProjectBlueprint projectBlueprint() {
     ProjectMetadata metadata =
         new ProjectMetadata(
             new ProjectIdentity(
@@ -65,66 +64,58 @@ class MavenWrapperBuildToolFilesAdapterTest {
   }
 
   @Test
-  @DisplayName("artifactKey() should return BUILD_TOOL_FILES")
-  void artifactKey_shouldReturnBuildToolFiles() {
-    MavenWrapperBuildToolFilesAdapter adapter =
-        new MavenWrapperBuildToolFilesAdapter(
-            new NoopTemplateRenderer(),
-            new ArtifactSpec(
-                BASE_PATH,
-                List.of(
-                    new TemplateSpec(
-                        "maven-wrapper.properties.ftl", ".mvn/wrapper/maven-wrapper.properties"),
-                    new TemplateSpec("mvnw.ftl", "mvnw"),
-                    new TemplateSpec("mvnw.cmd.ftl", "mvnw.cmd"))));
-
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_TOOL_FILES);
-  }
-
-  @Test
-  @DisplayName("generate() should render all Maven wrapper build tool files")
-  void generate_shouldRenderAllBuildToolFiles() {
-    GeneratedResource wrapperProps =
-        new GeneratedTextResource(
-            Path.of(".mvn/wrapper/maven-wrapper.properties"), "", StandardCharsets.UTF_8);
-
-    GeneratedResource mvnw = new GeneratedTextResource(Path.of("mvnw"), "", StandardCharsets.UTF_8);
-
-    GeneratedResource mvnwCmd =
-        new GeneratedTextResource(Path.of("mvnw.cmd"), "", StandardCharsets.UTF_8);
+  @DisplayName("generate() should render all templates with same model and return files in order")
+  void generate_shouldRenderAllTemplatesAndReturnFilesInOrder() {
+    GeneratedResource file1 =
+        new GeneratedTextResource(Path.of("out/one.txt"), "1", StandardCharsets.UTF_8);
+    GeneratedResource file2 =
+        new GeneratedTextResource(Path.of("out/two.txt"), "2", StandardCharsets.UTF_8);
+    GeneratedResource file3 =
+        new GeneratedTextResource(Path.of("out/three.txt"), "3", StandardCharsets.UTF_8);
 
     RecordingTemplateRenderer renderer =
-        new RecordingTemplateRenderer(List.of(wrapperProps, mvnw, mvnwCmd));
+        new RecordingTemplateRenderer(List.of(file1, file2, file3));
 
     ArtifactSpec artifactSpec =
         new ArtifactSpec(
             BASE_PATH,
             List.of(
-                new TemplateSpec(
-                    "maven-wrapper.properties.ftl", ".mvn/wrapper/maven-wrapper.properties"),
-                new TemplateSpec("mvnw.ftl", "mvnw"),
-                new TemplateSpec("mvnw.cmd.ftl", "mvnw.cmd")));
+                new TemplateSpec("one.ftl", "out/one.txt"),
+                new TemplateSpec("two.ftl", "out/two.txt"),
+                new TemplateSpec("three.ftl", "out/three.txt")));
 
-    MavenWrapperBuildToolFilesAdapter adapter =
-        new MavenWrapperBuildToolFilesAdapter(renderer, artifactSpec);
+    TestMultiTemplateAdapter adapter = new TestMultiTemplateAdapter(renderer, artifactSpec);
 
-    Iterable<? extends GeneratedResource> result = adapter.generate(blueprint());
+    Iterable<? extends GeneratedResource> result = adapter.generate(projectBlueprint());
 
     assertThat(result)
         .extracting(GeneratedResource::relativePath)
-        .containsExactly(
-            Path.of(".mvn/wrapper/maven-wrapper.properties"), Path.of("mvnw"), Path.of("mvnw.cmd"));
+        .containsExactly(Path.of("out/one.txt"), Path.of("out/two.txt"), Path.of("out/three.txt"));
 
     assertThat(renderer.capturedOutPaths)
-        .containsExactly(
-            Path.of(".mvn/wrapper/maven-wrapper.properties"), Path.of("mvnw"), Path.of("mvnw.cmd"));
+        .containsExactly(Path.of("out/one.txt"), Path.of("out/two.txt"), Path.of("out/three.txt"));
 
     assertThat(renderer.capturedTemplateNames)
-        .containsExactly(
-            "springboot/maven/java/maven-wrapper.properties.ftl",
-            "springboot/maven/java/mvnw.ftl",
-            "springboot/maven/java/mvnw.cmd.ftl");
+        .containsExactly(BASE_PATH + "one.ftl", BASE_PATH + "two.ftl", BASE_PATH + "three.ftl");
 
-    assertThat(renderer.capturedModels).allSatisfy(model -> assertThat(model).isEmpty());
+    assertThat(renderer.capturedModels)
+        .allSatisfy(model -> assertThat(model).isEqualTo(Map.of("key", "value")));
+  }
+
+  private static final class TestMultiTemplateAdapter extends AbstractMultiTemplateArtifactAdapter {
+
+    TestMultiTemplateAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
+      super(renderer, artifactSpec);
+    }
+
+    @Override
+    protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+      return Map.of("key", "value");
+    }
+
+    @Override
+    public ArtifactKey artifactKey() {
+      return null;
+    }
   }
 }

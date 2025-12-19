@@ -90,5 +90,6 @@ if [ -f "./mvnw" ]; then
   chmod +x ./mvnw
   ./mvnw "${MVN_ARGS[@]}"
 else
+  echo "[WARN] mvnw not found, falling back to system Maven (mvn)"
   mvn "${MVN_ARGS[@]}"
 fi

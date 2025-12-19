@@ -37,7 +37,15 @@ ${projectDescription}
 ./mvnw spring-boot:run   # Run the application
 ```
 
-> If Maven is installed globally, you may also use `mvn` instead of `./mvnw`.
+> **macOS / Linux note**
+>
+> If you get a `permission denied` error when running `./mvnw`, make the wrapper executable:
+>
+> ```bash
+> chmod +x mvnw
+> ```
+
+> If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
 <#-- Auto-config hints based on selected features -->
 <#if features?has_content && ((features.h2)!false || (features.actuator)!false || (features.security)!false)>

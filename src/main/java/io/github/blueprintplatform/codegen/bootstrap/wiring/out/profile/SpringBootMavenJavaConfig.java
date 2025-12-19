@@ -52,8 +52,7 @@ public class SpringBootMavenJavaConfig {
   BuildToolFilesPort springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
       TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
 
-    ArtifactSpec spec =
-        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_METADATA));
+    ArtifactSpec spec = mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_FILES));
 
     return new MavenWrapperBuildToolFilesAdapter(renderer, spec);
   }
@@ -161,7 +160,7 @@ public class SpringBootMavenJavaConfig {
     Map<ArtifactKey, ArtifactPort> registry = new EnumMap<>(ArtifactKey.class);
     registry.put(ArtifactKey.BUILD_CONFIG, springBootMavenJavaMavenPomBuildConfigurationAdapter);
     registry.put(
-        ArtifactKey.BUILD_TOOL_METADATA, springBootMavenJavaMavenWrapperBuildToolFilesAdapter);
+        ArtifactKey.BUILD_TOOL_FILES, springBootMavenJavaMavenWrapperBuildToolFilesAdapter);
     registry.put(ArtifactKey.IGNORE_RULES, springBootMavenJavaGitIgnoreAdapter);
     registry.put(ArtifactKey.SOURCE_LAYOUT, springBootMavenJavaSourceLayoutAdapter);
     registry.put(ArtifactKey.APP_CONFIG, springBootMavenJavaApplicationYamlAdapter);

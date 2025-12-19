@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public enum ArtifactKey {
   BUILD_CONFIG("build-config"),
-  BUILD_TOOL_METADATA("build-tool-metadata"),
+  BUILD_TOOL_FILES("build-tool-files"),
   IGNORE_RULES("ignore-rules"),
   SOURCE_LAYOUT("source-layout"),
   APP_CONFIG("app-config"),

@@ -36,12 +36,12 @@
                 <groupId>${d.groupId}</groupId>
                 <artifactId>${d.artifactId}</artifactId>
                 <#if d.versionPropertyKey?? && d.versionPropertyKey?has_content>
-                    <version>${"$"}{${d.versionPropertyKey}}</version>
+                <version>${"$"}{${d.versionPropertyKey}}</version>
                 <#elseif d.version?? && d.version?has_content>
-                    <version>${d.version}</version>
+                <version>${d.version}</version>
                 </#if>
                 <#if d.scope?? && d.scope?has_content>
-                    <scope>${d.scope}</scope>
+                <scope>${d.scope}</scope>
                 </#if>
             </dependency>
         </#list>

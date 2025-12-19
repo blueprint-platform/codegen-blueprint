@@ -9,7 +9,7 @@ codegen:
 
       ordered-artifact-keys:
         - build-config
-        - build-tool-metadata
+        - build-tool-files
         - ignore-rules
         - source-layout
         - app-config
@@ -25,10 +25,16 @@ codegen:
             - template: pom.xml.ftl
               output-path: pom.xml
 
-        build-tool-metadata:
+        build-tool-files:
           templates:
             - template: maven-wrapper.properties.ftl
               output-path: .mvn/wrapper/maven-wrapper.properties
+
+            - template: mvnw.ftl
+              output-path: mvnw
+
+            - template: mvnw.cmd.ftl
+              output-path: mvnw.cmd
 
         ignore-rules:
           templates:
@@ -68,6 +74,5 @@ templating:
   encoding: UTF-8
   handler: RETHROW
   template-path: /templates
-  cache-enabled: true
-  cache-update-delay-ms: 60000
+  cache-enabled: false
 
