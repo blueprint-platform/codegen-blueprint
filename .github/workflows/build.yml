@@ -30,8 +30,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build with Maven (tests + coverage)
+      - name: Build generator (tests + coverage)
         run: mvn -B -q -ntp clean verify
+
+      - name: Make CI scripts executable
+        run: chmod +x ci/*.sh
 
       - name: Verify generated project (hexagonal strict, sample basic)
         env:
@@ -39,9 +42,7 @@ jobs:
           BOOT_VERSION: '3.5'
           ARTIFACT_ID: greeting-j${{ matrix.java }}-b35-hex-strict
           PACKAGE_NAME: io.github.blueprintplatform.greetingj${{ matrix.java }}b35hexstrict
-        run: |
-          chmod +x ci/verify-gen-hex-sample-strict.sh
-          ./ci/verify-gen-hex-sample-strict.sh
+        run: ./ci/verify-gen-hex-sample-strict.sh
 
       - name: Verify generated project (standard strict, sample basic)
         env:
@@ -49,9 +50,7 @@ jobs:
           BOOT_VERSION: '3.5'
           ARTIFACT_ID: greeting-j${{ matrix.java }}-b35-std-strict
           PACKAGE_NAME: io.github.blueprintplatform.greetingj${{ matrix.java }}b35stdstrict
-        run: |
-          chmod +x ci/verify-gen-std-sample-strict.sh
-          ./ci/verify-gen-std-sample-strict.sh
+        run: ./ci/verify-gen-std-sample-strict.sh
 
       - name: Verify generated project (hexagonal strict, no sample)
         env:
@@ -59,9 +58,7 @@ jobs:
           BOOT_VERSION: '3.5'
           ARTIFACT_ID: empty-j${{ matrix.java }}-b35-hex-strict
           PACKAGE_NAME: io.github.blueprintplatform.emptyj${{ matrix.java }}b35hexstrict
-        run: |
-          chmod +x ci/verify-gen-hex-nosample-strict.sh
-          ./ci/verify-gen-hex-nosample-strict.sh
+        run: ./ci/verify-gen-hex-nosample-strict.sh
 
       - name: Verify generated project (standard strict, no sample)
         env:
@@ -69,9 +66,7 @@ jobs:
           BOOT_VERSION: '3.5'
           ARTIFACT_ID: empty-j${{ matrix.java }}-b35-std-strict
           PACKAGE_NAME: io.github.blueprintplatform.emptyj${{ matrix.java }}b35stdstrict
-        run: |
-          chmod +x ci/verify-gen-std-nosample-strict.sh
-          ./ci/verify-gen-std-nosample-strict.sh
+        run: ./ci/verify-gen-std-nosample-strict.sh
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

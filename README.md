@@ -700,7 +700,6 @@ Violations fail the build deterministically during `mvn verify`.
 This section documents **what Codegen Blueprint actually produces today** — no demos, no exaggeration, no placeholders.
 
 ---
-
 ## 🧪 Testing & CI (This Repository)
 
 The following describes the **CI pipeline of the Codegen Blueprint repository itself** —
@@ -725,24 +724,27 @@ This runs the full build lifecycle, including unit tests, integration tests, and
 
 ### CI Pipeline — Build & Test
 
-The GitHub Actions workflow executes a **matrix build** to ensure compatibility and determinism
-across supported Java versions.
+The GitHub Actions workflow executes a **matrix build** to ensure compatibility, determinism,
+and architectural integrity across supported Java versions.
 
 **Key characteristics:**
 
 * Runs on every `push` to `main` and all pull requests
-* Tests **multiple JDKs** in parallel
-* Verifies **generated projects**, not only the generator code
+* Tests **multiple JDKs** in parallel (Java 21 and Java 25)
+* Verifies **generated projects**, not only the generator engine
 
 ---
 
 ### What the CI Pipeline Verifies
 
 * ✔ Generator unit & integration tests
-* ✔ Architecture rules inside the generator itself
-* ✔ Generated project builds (`mvn verify`)
-* ✔ Hexagonal **and** standard layouts
-* ✔ Java 21 **and** Java 25 compatibility
+* ✔ Architecture enforcement rules inside the generator itself
+* ✔ Generated projects are verified using `mvn verify`
+* ✔ Layout coverage: **hexagonal** and **standard (layered)**
+* ✔ Enforcement coverage: **strict**
+* ✔ Output coverage: **sample basic** and **no-sample**
+* ✔ JDK matrix coverage: **Java 21** and **Java 25**
+* ✔ Total verification: **4 generated projects per JDK** (8 projects per CI run)
 * ✔ Code coverage aggregation and reporting
 
 ---
@@ -752,10 +754,12 @@ across supported Java versions.
 ```text
 Checkout repository
 → Build & test generator (mvn clean verify)
-→ Generate hexagonal project (basic)
-→ Verify generated hexagonal project builds
-→ Generate standard project (basic)
-→ Verify generated standard project builds
+→ Generate & verify (mvn verify) 4 projects:
+   - hexagonal + strict + sample basic
+   - standard  + strict + sample basic
+   - hexagonal + strict + no sample
+   - standard  + strict + no sample
+→ Repeat across JDK matrix (21, 25)
 → Upload coverage reports
 ```
 
@@ -769,20 +773,21 @@ The pipeline includes:
 * **CodeQL** — static security analysis
 * **Codecov** — aggregated coverage reporting
 
-> These checks ensure the **generator itself** remains stable, secure, and evolution‑ready.
+> These checks ensure the **generator itself** and its **generated output** remain stable,
+> buildable, and architecture-safe as the platform evolves.
 
 ---
 
 ### Why This Matters
 
-This CI setup guarantees that:
+This CI setup explicitly prevents the class of failures where:
 
-* The generator does not regress silently
-* Generated projects remain buildable as stacks evolve
-* Architecture enforcement continues to work end‑to‑end
+> *“The generator build is green, but the generated project is broken.”*
 
-> Codegen Blueprint is validated not only by tests —
-> but by **building the projects it generates**.
+By validating **real generated projects** across layouts, enforcement modes, and JDK versions,
+Codegen Blueprint treats architectural guarantees as **continuously verified contracts**,
+not one-time scaffolding assumptions.
+
 
 ---
 
