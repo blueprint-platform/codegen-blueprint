@@ -347,9 +347,8 @@
         </h1>
 
         <div class="subtitle">
-          Profile-driven project generator with <strong>executable architecture</strong> —
-          standardized Spring Boot scaffolding plus <strong>explicit architectural boundaries</strong>,
-          designed for long-term architectural consistency across teams.
+          Profile-driven generator with <strong>executable architecture</strong> —
+          explicit architectural boundaries enforced at build time.
         </div>
 
         <div class="bullets">
@@ -408,11 +407,14 @@
           <div class="code-header-dot"></div>
           <span>Generate a new service</span>
         </div>
-        <span>CLI profile · springboot-maven-java</span>
+        <div class="code-header-meta">
+          <span>CLI profile · springboot-maven-java</span>
+          <span class="code-header-hint">Profile selects stack, engine remains stable</span>
+        </div>
       </div>
 
       <div class="code-window">
-        <div class="code-line code-muted">// Generate a Spring Boot project (layout + enforcement)</div>
+        <div class="code-line code-muted">// Generate a service (profile-selected stack · layout + enforcement)</div>
 
         <div class="code-line code-cmd"><span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint-1.0.0.jar</span> &bsol;</div>
         <div class="code-line code-cmd">  --cli <span class="code-str">springboot</span> &bsol;</div>
@@ -430,7 +432,7 @@
         <div class="code-line code-cmd">  --dependency <span class="code-str">data_jpa</span> &bsol;</div>
         <div class="code-line code-cmd">  --target-dir <span class="code-str">/path/to/output</span></div>
 
-        <div class="code-line code-muted" style="margin-top: 8px;">// Defaults → maven · Java 21 · Spring Boot 3.5.x</div>
+        <div class="code-line code-muted" style="margin-top: 8px;">// Profile defaults → maven · Java 21 · Spring Boot 3.5.x</div>
       </div>
     </div>
   </div>
