@@ -27,7 +27,7 @@ class GreetingIdTest {
         GreetingId id = GreetingId.fromString(uuid.toString());
 
         assertThat(id.value()).isEqualTo(uuid);
-        assertThat(id.toString()).isEqualTo(uuid.toString());
+        assertThat(id.toString()).hasToString(uuid.toString());
     }
 
     @Test

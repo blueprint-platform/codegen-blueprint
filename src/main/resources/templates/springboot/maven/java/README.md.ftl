@@ -33,8 +33,13 @@ ${projectDescription}
 ## 🚀 Quick Start
 
 ```bash
-./mvnw clean package     # Build (using wrapper)
-./mvnw spring-boot:run   # Run the application
+# Build (using Maven Wrapper)
+./mvnw clean package
+```
+
+```bash
+# Run the application
+./mvnw spring-boot:run
 ```
 
 > **macOS / Linux note**
