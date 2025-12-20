@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.InvalidDependencyAliasException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.cli.InvalidDependencyAliasException;
 
 public enum SpringBootDependencyOption {
   WEB(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-web"),

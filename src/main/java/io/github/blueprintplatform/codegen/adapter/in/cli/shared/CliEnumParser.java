@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.in.cli.shared;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.InvalidCliOptionException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.cli.InvalidCliOptionException;
 import java.util.Locale;
 
 public final class CliEnumParser {

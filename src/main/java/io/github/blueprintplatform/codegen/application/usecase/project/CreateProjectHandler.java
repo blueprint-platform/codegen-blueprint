@@ -8,7 +8,7 @@ import io.github.blueprintplatform.codegen.application.port.in.project.model.Cre
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
-import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import java.nio.file.Path;
@@ -17,12 +17,12 @@ import java.util.List;
 public class CreateProjectHandler implements CreateProjectPort {
 
   private final ProjectBlueprintMapper blueprintMapper;
-  private final CreateProjectResponseMapper responseMapper;
+  private final CreateProjectResultMapper responseMapper;
   private final CreateProjectExecutionContext executionContext;
 
   public CreateProjectHandler(
       ProjectBlueprintMapper blueprintMapper,
-      CreateProjectResponseMapper responseMapper,
+      CreateProjectResultMapper responseMapper,
       CreateProjectExecutionContext executionContext) {
     this.blueprintMapper = blueprintMapper;
     this.responseMapper = responseMapper;

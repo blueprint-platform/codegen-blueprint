@@ -3,7 +3,7 @@ package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectArchiveInvalidRootException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectArchiveInvalidRootException;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

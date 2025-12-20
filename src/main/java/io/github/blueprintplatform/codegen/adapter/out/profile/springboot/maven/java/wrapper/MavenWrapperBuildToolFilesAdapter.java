@@ -5,8 +5,6 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactS
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.BuildToolFilesPort;
-import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import java.util.Map;
 
 public class MavenWrapperBuildToolFilesAdapter extends AbstractMultiTemplateArtifactAdapter
     implements BuildToolFilesPort {
@@ -18,10 +16,5 @@ public class MavenWrapperBuildToolFilesAdapter extends AbstractMultiTemplateArti
   @Override
   public ArtifactKey artifactKey() {
     return ArtifactKey.BUILD_TOOL_FILES;
-  }
-
-  @Override
-  protected Map<String, Object> buildModel(@SuppressWarnings("unused") ProjectBlueprint blueprint) {
-    return Map.of();
   }
 }

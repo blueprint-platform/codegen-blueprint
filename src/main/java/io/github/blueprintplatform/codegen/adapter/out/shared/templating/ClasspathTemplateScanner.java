@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.shared.templating;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.TemplateScanException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;

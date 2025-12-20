@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ArtifactsPortNotFoundException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.artifact.ArtifactsPortNotFoundException;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;

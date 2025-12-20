@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectWriteException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectWriteException;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
 import java.io.IOException;
 import java.nio.charset.Charset;

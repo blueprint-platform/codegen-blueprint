@@ -11,7 +11,7 @@ import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectA
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
 import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
-import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
+import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
@@ -34,7 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -51,7 +50,7 @@ class CreateProjectHandlerTest {
       "handle() prepares project root, writes artifacts, lists files, and returns archive + summary")
   void handle_prepares_root_writes_artifacts_lists_files_and_archives() {
     var blueprintMapper = new ProjectBlueprintMapper();
-    var responseMapper = new CreateProjectResponseMapper();
+    var resultMapper = new CreateProjectResultMapper();
 
     var fakeRootPort = new FakeRootPort();
     var fakeArtifacts = new FakeArtifactsPort();
@@ -64,7 +63,7 @@ class CreateProjectHandlerTest {
         new CreateProjectExecutionContext(
             fakeRootPort, fakeSelector, fakeWriter, fakeOutput, fakeArchiver);
 
-    var handler = new CreateProjectHandler(blueprintMapper, responseMapper, executionContext);
+    var handler = new CreateProjectHandler(blueprintMapper, resultMapper, executionContext);
 
     var createProjectCommand = getCreateProjectCommand();
 
@@ -212,9 +211,9 @@ class CreateProjectHandlerTest {
     @Override
     public List<ProjectOutputItem> list(Path projectRoot) {
       this.lastProjectRoot = projectRoot;
-      return List.copyOf(artifactsPort.lastEmittedRelativePaths).stream()
+      return artifactsPort.lastEmittedRelativePaths.stream()
           .map(p -> new ProjectOutputItem(p, false, false))
-          .collect(Collectors.toList());
+          .toList();
     }
   }
 

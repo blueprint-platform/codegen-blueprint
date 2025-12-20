@@ -1,7 +1,7 @@
 package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectArchiveIOException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectArchiveInvalidRootException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectArchiveIOException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectArchiveInvalidRootException;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
 import java.io.IOException;
 import java.io.UncheckedIOException;

@@ -2,7 +2,7 @@ package io.github.blueprintplatform.codegen.adapter.out.templating;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import io.github.blueprintplatform.codegen.adapter.error.exception.TemplateRenderingException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateRenderingException;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import java.io.StringWriter;

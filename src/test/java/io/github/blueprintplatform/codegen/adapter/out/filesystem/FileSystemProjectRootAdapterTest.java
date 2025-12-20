@@ -3,9 +3,9 @@ package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectRootAlreadyExistsException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectRootIOException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectRootNotDirectoryException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectRootAlreadyExistsException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectRootIOException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectRootNotDirectoryException;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy;
 import java.io.File;
 import java.io.IOException;

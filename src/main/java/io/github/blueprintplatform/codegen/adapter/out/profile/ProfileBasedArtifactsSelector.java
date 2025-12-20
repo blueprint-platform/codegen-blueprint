@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ArtifactsPortNotFoundException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.artifact.ArtifactsPortNotFoundException;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;

@@ -1,8 +1,8 @@
 package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectRootAlreadyExistsException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectRootIOException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectRootNotDirectoryException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectRootAlreadyExistsException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectRootIOException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectRootNotDirectoryException;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
 import java.io.IOException;

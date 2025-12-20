@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectOutputDiscoveryException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectOutputDiscoveryException;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
 import java.io.IOException;

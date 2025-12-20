@@ -3,7 +3,7 @@ package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ProjectWriteException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectWriteException;
 import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
 import java.io.File;
 import java.io.IOException;

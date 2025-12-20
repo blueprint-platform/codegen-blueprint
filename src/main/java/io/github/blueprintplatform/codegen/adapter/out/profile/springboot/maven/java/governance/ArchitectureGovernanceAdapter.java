@@ -1,7 +1,7 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.governance;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ArchitectureGovernanceTemplatesScanException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.TemplateScanException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.ArchitectureGovernanceTemplatesScanException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;

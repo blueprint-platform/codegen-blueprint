@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.in.cli.mapper;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.UnsupportedRuntimeTargetTypeException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.cli.UnsupportedRuntimeTargetTypeException;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliDependency;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliRuntimeTarget;

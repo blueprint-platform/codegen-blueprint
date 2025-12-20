@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.out.profile;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.ArtifactKeyMismatchException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.artifact.ArtifactKeyMismatchException;
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.SpringBootMavenJavaArtifactsAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenPomBuildConfigurationAdapter;
@@ -19,10 +19,10 @@ import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRender
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.*;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.bootstrap.config.CodegenProfilesProperties;
-import io.github.blueprintplatform.codegen.bootstrap.config.ProfileKeys;
+import io.github.blueprintplatform.codegen.bootstrap.config.keys.ProfileKeys;
+import io.github.blueprintplatform.codegen.bootstrap.config.registry.CodegenProfilesRegistry;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
+import io.github.blueprintplatform.codegen.bootstrap.mapping.ArtifactSpecMapper;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -38,30 +38,30 @@ public class SpringBootMavenJavaConfig {
   @Bean
   BuildConfigurationPort springBootMavenJavaMavenPomBuildConfigurationAdapter(
       TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
+      CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
       PomDependencyMapper pomDependencyMapper) {
 
     ArtifactSpec spec =
-        artifactSpecMapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_CONFIG));
+        artifactSpecMapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.BUILD_CONFIG));
 
     return new MavenPomBuildConfigurationAdapter(renderer, spec, pomDependencyMapper);
   }
 
   @Bean
   BuildToolFilesPort springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
+          TemplateRenderer renderer, CodegenProfilesRegistry registry, ArtifactSpecMapper mapper) {
 
-    ArtifactSpec spec = mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_FILES));
+    ArtifactSpec spec = mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_FILES));
 
     return new MavenWrapperBuildToolFilesAdapter(renderer, spec);
   }
 
   @Bean
   IgnoreRulesPort springBootMavenJavaGitIgnoreAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
+      TemplateRenderer renderer, CodegenProfilesRegistry registry, ArtifactSpecMapper mapper) {
 
-    ArtifactSpec spec = mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.IGNORE_RULES));
+    ArtifactSpec spec = mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.IGNORE_RULES));
     return new GitIgnoreAdapter(renderer, spec);
   }
 
@@ -72,21 +72,21 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   ApplicationConfigurationPort springBootMavenJavaApplicationYamlAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles, ArtifactSpecMapper mapper) {
+      TemplateRenderer renderer, CodegenProfilesRegistry registry, ArtifactSpecMapper mapper) {
 
-    ArtifactSpec spec = mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.APP_CONFIG));
+    ArtifactSpec spec = mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.APP_CONFIG));
     return new ApplicationYamlAdapter(renderer, spec);
   }
 
   @Bean
   MainSourceEntrypointPort springBootMavenJavaMainSourceEntrypointAdapter(
       TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
+      CodegenProfilesRegistry registry,
       ArtifactSpecMapper mapper,
       StringCaseFormatter stringCaseFormatter) {
 
     ArtifactSpec spec =
-        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.MAIN_SOURCE_ENTRY_POINT));
+        mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.MAIN_SOURCE_ENTRY_POINT));
 
     return new MainSourceEntrypointAdapter(renderer, spec, stringCaseFormatter);
   }
@@ -94,12 +94,12 @@ public class SpringBootMavenJavaConfig {
   @Bean
   TestSourceEntrypointPort springBootMavenJavaTestSourceEntrypointAdapter(
       TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
+      CodegenProfilesRegistry registry,
       ArtifactSpecMapper mapper,
       StringCaseFormatter stringCaseFormatter) {
 
     ArtifactSpec spec =
-        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.TEST_SOURCE_ENTRY_POINT));
+        mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.TEST_SOURCE_ENTRY_POINT));
 
     return new TestSourceEntrypointAdapter(renderer, spec, stringCaseFormatter);
   }
@@ -107,13 +107,13 @@ public class SpringBootMavenJavaConfig {
   @Bean
   ArchitectureGovernancePort springBootMavenJavaArchitectureGovernanceAdapter(
       TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
+      CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
       ClasspathTemplateScanner classpathTemplateScanner) {
 
     ArtifactSpec artifactSpec =
         artifactSpecMapper.from(
-            profiles.artifact(PROFILE_KEY, ArtifactKey.ARCHITECTURE_GOVERNANCE));
+            registry.requireArtifact(PROFILE_KEY, ArtifactKey.ARCHITECTURE_GOVERNANCE));
 
     return new ArchitectureGovernanceAdapter(renderer, artifactSpec, classpathTemplateScanner);
   }
@@ -121,12 +121,12 @@ public class SpringBootMavenJavaConfig {
   @Bean
   SampleCodePort springBootMavenJavaSampleCodeAdapter(
       TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
+      CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
       ClasspathTemplateScanner classpathTemplateScanner) {
 
     ArtifactSpec artifactSpec =
-        artifactSpecMapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.SAMPLE_CODE));
+        artifactSpecMapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.SAMPLE_CODE));
 
     return new SampleCodeAdapter(renderer, artifactSpec, classpathTemplateScanner);
   }
@@ -134,12 +134,12 @@ public class SpringBootMavenJavaConfig {
   @Bean
   ProjectDocumentationPort springBootMavenJavaProjectDocumentationAdapter(
       TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
+      CodegenProfilesRegistry registry,
       ArtifactSpecMapper mapper,
       PomDependencyMapper pomDependencyMapper) {
 
     ArtifactSpec spec =
-        mapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.PROJECT_DOCUMENTATION));
+        mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.PROJECT_DOCUMENTATION));
 
     return new ProjectDocumentationAdapter(renderer, spec, pomDependencyMapper);
   }
@@ -177,7 +177,7 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   ProjectArtifactsPort springBootMavenJavaArtifactsAdapter(
-      CodegenProfilesProperties codegenProfilesProperties,
+      CodegenProfilesRegistry codegenProfilesProperties,
       Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry) {
 
     var profile = codegenProfilesProperties.requireProfile(PROFILE_KEY);
@@ -190,7 +190,7 @@ public class SpringBootMavenJavaConfig {
                   ArtifactPort port = springBootMavenJavaArtifactRegistry.get(key);
                   if (port == null) {
                     throw new ProfileConfigurationException(
-                        "bootstrap.artifact.not.found", key.key(), PROFILE_KEY);
+                        "bootstrap.requireArtifact.not.found", key.key(), PROFILE_KEY);
                   }
                   if (!port.artifactKey().equals(key)) {
                     throw new ArtifactKeyMismatchException(key, port.artifactKey().key());

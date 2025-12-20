@@ -3,7 +3,7 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.out.profile;
 import io.github.blueprintplatform.codegen.adapter.out.profile.ProfileBasedArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
-import io.github.blueprintplatform.codegen.bootstrap.config.ProfileKeys;
+import io.github.blueprintplatform.codegen.bootstrap.config.keys.ProfileKeys;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.AdapterException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.base.AdapterException;
 import io.github.blueprintplatform.codegen.application.exception.ApplicationException;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.InfrastructureException;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainException;

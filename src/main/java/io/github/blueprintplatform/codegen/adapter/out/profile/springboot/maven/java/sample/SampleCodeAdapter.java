@@ -1,8 +1,8 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.sample;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeTemplatesNotFoundException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.SampleCodeTemplatesScanException;
-import io.github.blueprintplatform.codegen.adapter.error.exception.TemplateScanException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.sample.SampleCodeTemplatesNotFoundException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.SampleCodeTemplatesScanException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
