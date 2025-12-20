@@ -362,7 +362,7 @@ java -jar codegen-blueprint-1.0.0.jar \
   --description "Greeting sample built with hexagonal architecture" \
   --package-name io.github.blueprintplatform.greeting \
   --layout hexagonal \
-  --enforcement basic \
+  --enforcement strict \
   --sample-code basic \
   --dependency web \
   --dependency data_jpa \

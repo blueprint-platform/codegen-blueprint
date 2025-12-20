@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Codegen Blueprint – Social Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --accent: #38bdf8;
+      --muted: #9ca3af;
+      --text: #e5e7eb;
+      --border: #111827;
+      --badge-bg: #020617;
+      --badge-border: #1f2937;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { width: 1200px; height: 630px; }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 40%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .frame {
+      width: 1120px;
+      height: 560px;
+      border-radius: 28px;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 45%, #020617 100%);
+      box-shadow:
+              0 40px 80px rgba(15, 23, 42, 0.9),
+              0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 22px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+              radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
+              radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.22), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 22px;
+      height: 100%;
+    }
+
+    .left, .right {
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9), inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .left {
+      flex: 3.2;
+      padding: 22px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 14px;
+    }
+
+    .right {
+      flex: 2.2;
+      padding: 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: radial-gradient(circle at top left, rgba(15, 118, 110, 0.35), #020617);
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #e0f2fe, #0ea5e9);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.9);
+      flex: 0 0 auto;
+    }
+
+    .badge-small {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: rgba(2, 6, 23, 0.85);
+      color: #e5e7eb;
+      white-space: nowrap;
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    h1 .highlight {
+      background: linear-gradient(120deg, #38bdf8, #a855f7, #22c55e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--muted);
+      max-width: 610px;
+    }
+
+    .subtitle strong { color: #e5e7eb; font-weight: 650; }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--badge-border);
+      background: radial-gradient(circle at 0 0, rgba(15, 23, 42, 0.9), var(--badge-bg));
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .badge-value { font-weight: 650; color: #e5e7eb; }
+
+    .proof {
+      margin-top: 4px;
+      border-radius: 16px;
+      border: 1px solid rgba(30, 64, 175, 0.45);
+      background: radial-gradient(circle at 0 0, #0f172a, #020617);
+      padding: 12px 12px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.9), inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .proof-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .proof-title strong { color: #e5e7eb; font-weight: 650; }
+
+    .code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .code .muted { color: #6b7280; }
+    .code .key { color: #60a5fa; }
+    .code .str { color: #f97316; }
+    .code-line { white-space: pre; }
+
+    .proof-callout {
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .proof-callout strong { color: #e5e7eb; font-weight: 650; }
+  </style>
+</head>
+
+<body>
+<div class="frame">
+  <div class="content">
+
+    <!-- LEFT -->
+    <div class="left">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="brand-dot"></div>
+          <span>Blueprint Platform</span>
+        </div>
+        <div class="badge-small">Generate once · Enforce at build time</div>
+      </div>
+
+      <h1><span class="highlight">Codegen Blueprint</span></h1>
+
+      <div class="subtitle">
+        Spring Boot scaffolding with <strong>generated architectural guardrails</strong> — when boundaries drift, <strong>the build fails</strong>.
+      </div>
+
+
+      <div class="badges">
+        <div class="badge">
+          <span class="badge-label">Enforcement</span>
+          <span class="badge-value">strict</span>
+        </div>
+        <div class="badge">
+          <span class="badge-label">Guardrails</span>
+          <span class="badge-value">ArchUnit</span>
+        </div>
+      </div>
+
+      <div class="proof-callout">
+        Not conventions. Not diagrams. <strong>Executable architecture.</strong>
+      </div>
+    </div>
+
+    <!-- RIGHT: proof card -->
+    <div class="right">
+      <div class="proof">
+        <div class="proof-title">
+          <span>Build-time proof</span>
+          <span><strong>mvn verify</strong></span>
+        </div>
+
+        <div class="code">
+          <div class="code-line muted">// Abbreviated for preview (see README for full CLI contract)</div>
+          <div class="code-line muted">// Generate with strict enforcement</div>
+
+          <div class="code-line"><span class="key">java</span> -jar <span class="str">codegen-blueprint-1.0.0.jar</span> &bsol;</div>
+          <div class="code-line">  --cli <span class="str">springboot</span> &bsol;</div>
+          <div class="code-line">  --artifact-id <span class="str">greeting</span> &bsol;</div>
+          <div class="code-line">  --layout <span class="str">hexagonal</span> &bsol;</div>
+          <div class="code-line">  --enforcement <span class="str">strict</span></div>
+
+          <div class="code-line muted" style="margin-top: 8px;">// Introduce a boundary violation →</div>
+          <div class="code-line"><span class="key">mvn</span> verify <span class="muted"># FAILS</span></div>
+        </div>
+      </div>
+
+      <div class="proof-callout">
+        Drift is detected <strong>immediately</strong> — no app startup, no runtime checks.
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
