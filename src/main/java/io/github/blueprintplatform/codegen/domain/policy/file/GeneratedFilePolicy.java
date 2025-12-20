@@ -9,8 +9,7 @@ public final class GeneratedFilePolicy {
 
   private static final String FILE_PATH_NOT_BLANK = "file.path.not.blank";
   private static final String FILE_PATH_ABSOLUTE_NOT_ALLOWED = "file.path.absolute.not.allowed";
-  private static final String FILE_PATH_TRAVERSAL_NOT_ALLOWED =
-          "file.path.traversal.not.allowed";
+  private static final String FILE_PATH_TRAVERSAL_NOT_ALLOWED = "file.path.traversal.not.allowed";
 
   private static final String FILE_CONTENT_NOT_BLANK = "file.content.not.blank";
   private static final String FILE_CHARSET_NOT_BLANK = "file.charset.not.blank";
