@@ -16,15 +16,15 @@ This document is the **full, step-by-step proof** that Codegen Blueprint can gen
 - [What this is (and is not)](#what-this-is-and-is-not)
 - [Preconditions](#preconditions)
 - [Part I — Hexagonal Architecture (Ports & Adapters)](#part-i--hexagonal-architecture-ports--adapters)
-    - [Generation — Hexagonal + Strict](#1-generation--hexagonal--strict)
-    - [Baseline — Clean Hexagonal Flow](#2-baseline--clean-hexagonal-flow)
-    - [Intentional Violation — Breaking Hexagonal Isolation](#3-intentional-violation--breaking-hexagonal-isolation)
-    - [Result — Hexagonal Build Failure](#4-result--hexagonal-build-failure)
+  - [Generation — Hexagonal + Strict](#1-generation--hexagonal--strict)
+  - [Baseline — Clean Hexagonal Flow](#2-baseline--clean-hexagonal-flow)
+  - [Intentional Violation — Breaking Hexagonal Isolation](#3-intentional-violation--breaking-hexagonal-isolation)
+  - [Result — Hexagonal Build Failure](#4-result--hexagonal-build-failure)
 - [Part II — Standard (Layered) Architecture](#part-ii--standard-layered-architecture)
-    - [Generation — Standard + Strict](#5-generation--standard--strict)
-    - [Baseline — Clean Layered Flow](#6-baseline--clean-layered-flow)
-    - [Intentional Violation — Domain Leakage](#7-intentional-violation--domain-leakage)
-    - [Result — Standard Build Failure](#8-result--standard-build-failure)
+  - [Generation — Standard + Strict](#5-generation--standard--strict)
+  - [Baseline — Clean Layered Flow](#6-baseline--clean-layered-flow)
+  - [Intentional Violation — Controller → Domain Service Dependency (Illegal)](#7-intentional-violation--controller--domain-service-dependency-illegal)
+  - [Result — Standard Build Failure](#8-result--standard-build-failure)
 - [What this proves](#what-this-proves)
 - [Why this matters](#why-this-matters)
 
@@ -242,22 +242,28 @@ mvn verify
 
 ---
 
-## 7) Intentional Violation — Domain Leakage
+## 7) Intentional Violation — Controller → Domain Service Dependency (Illegal)
 
-Now introduce a violation by injecting and calling a **domain service directly from the controller**.
+Now introduce a deliberate boundary violation by injecting and calling a **domain service**
+directly from the controller.
 
-Again:
+Important observations:
 
-* The code compiles
-* The application would run
-* The mistake is subtle
+* The code still **compiles**
+* The application would **still run**
+* The change looks harmless — and reviewers may miss it
 
-But it violates the layered boundary contract.
+But architecturally it is illegal in **strict standard layered enforcement**:
+
+> **Controllers must not depend on domain services.**
+>
+> Domain models may be used internally (e.g., in mappers),
+> but orchestration and behavior must be reached via the service layer.
 
 <p align="center">
-  <img src="./images/02-standard-domain-violation.png" width="900" alt="Standard controller domain violation"/>
+  <img src="./images/02-standard-domain-violation.png" width="900" alt="Standard controller directly depending on a domain service (violation)"/>
   <br/>
-  <em>Controller directly depending on domain (violation)</em>
+  <em>Controller directly depending on a domain service (intentional violation)</em>
 </p>
 
 ---
