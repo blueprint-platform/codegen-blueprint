@@ -257,6 +257,8 @@ Spring Boot is the first adapter — not the foundation.
   How architectural decisions are made, enforced, and protected  
   → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
 
+---
+
 ### 🧩 Part of the Blueprint Platform
 
 `codegen-blueprint` is the first foundational module of the **Blueprint Platform** — an architecture‑first project generation ecosystem designed to enable consistent, enforceable, and scalable enterprise development.
