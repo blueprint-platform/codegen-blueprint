@@ -15,6 +15,7 @@ class InboundAdapterOutboundPortsIsolationArchitectureTest {
   private static final String INBOUND_ADAPTERS = "..adapter.in..";
 
   private static final String DOMAIN_OUTBOUND_PORTS = "..domain.port.out..";
+
   @ArchTest
   static final ArchRule inbound_adapters_must_not_depend_on_domain_outbound_ports =
       noClasses()
@@ -24,7 +25,9 @@ class InboundAdapterOutboundPortsIsolationArchitectureTest {
           .dependOnClassesThat()
           .resideInAnyPackage(DOMAIN_OUTBOUND_PORTS)
           .allowEmptyShould(true);
+
   private static final String APPLICATION_OUTBOUND_PORTS = "..application.port.out..";
+
   @ArchTest
   static final ArchRule inbound_adapters_must_not_depend_on_application_outbound_ports =
       noClasses()

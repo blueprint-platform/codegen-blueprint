@@ -155,21 +155,34 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
 
 * Application does not depend on adapters
 * Bootstrap is a dependency leaf
-* **Inbound / outbound adapter isolation**
 
-* Inbound adapters cannot depend on outbound adapters (and vice versa)
+* **Adapter direction isolation**
+
+* Inbound adapters must not depend on outbound adapters
+* Outbound adapters must not depend on inbound adapters
+
+* **Inbound adapter → domain isolation**
+
+* Inbound adapters must not depend on domain services
+* Inbound adapters must not depend on domain outbound ports
+
 * **Domain purity**
 
-* Domain depends only on JDK and other domain types
+* Domain depends only on JDK types and other domain types
+
 * **Ports isolation**
 
 * Adapters may depend only on application **ports**, not implementations
+
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
 
 * REST controllers must not expose domain types in method signatures
+* Adapter DTOs must not depend on domain
+
 * **Package cycle prevention**
 
-* No cyclic dependencies across top-level or adapter subpackages
+* No cyclic dependencies across top-level packages
+* No cycles inside adapter subpackages
 
 
 
@@ -180,6 +193,7 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
 * selected **layout**
 * selected **enforcement mode**
 * selected **dependencies**
+
 * Enforcement happens at **build time only** — no runtime checks
 
 ```bash
@@ -194,6 +208,7 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 
 > These rules are generated code.
 > They are part of the project contract and should not be edited manually.
+
 
 
 

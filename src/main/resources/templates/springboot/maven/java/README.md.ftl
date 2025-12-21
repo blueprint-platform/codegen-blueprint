@@ -197,7 +197,7 @@ Architecture enforcement is **disabled** for this project.
 You can enable build-time guardrails by generating the project with:
 
 ```bash
---enforcement basic   # core boundaries
+--enforcement basic   # core architectural guardrails
 --enforcement strict  # strict, fail-fast enforcement
 ```
 
@@ -208,13 +208,14 @@ You can enable build-time guardrails by generating the project with:
 
 Architecture enforcement is **enabled (basic)**.
 
-This project includes **generated ArchUnit tests** that enforce **core architectural boundaries** at build time.
+This project includes **generated ArchUnit tests** that enforce **core architectural guardrails** at build time.
 
 ### What is enforced
 
 * Core dependency direction between architectural layers
 * Protection of the domain from outward dependencies
-* Prevention of the most common boundary violations
+* Prevention of the most common architectural shortcuts
+* Early detection of structural drift
 
 ### How enforcement works
 
@@ -254,21 +255,34 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
 
 * Application does not depend on adapters
 * Bootstrap is a dependency leaf
-* **Inbound / outbound adapter isolation**
 
-* Inbound adapters cannot depend on outbound adapters (and vice versa)
+* **Adapter direction isolation**
+
+* Inbound adapters must not depend on outbound adapters
+* Outbound adapters must not depend on inbound adapters
+
+* **Inbound adapter → domain isolation**
+
+* Inbound adapters must not depend on domain services
+* Inbound adapters must not depend on domain outbound ports
+
 * **Domain purity**
 
-* Domain depends only on JDK and other domain types
+* Domain depends only on JDK types and other domain types
+
 * **Ports isolation**
 
 * Adapters may depend only on application **ports**, not implementations
+
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
 
 * REST controllers must not expose domain types in method signatures
+* Adapter DTOs must not depend on domain
+
 * **Package cycle prevention**
 
-* No cyclic dependencies across top-level or adapter subpackages
+* No cyclic dependencies across top-level packages
+* No cycles inside adapter subpackages
 
 </#if>
 
@@ -277,15 +291,22 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
 
 For **Standard (Layered) Architecture**, strict enforcement guarantees:
 
-* **Layer dependency direction**
+* **Layer dependency direction and bypass prevention**
 
-* Controllers → Services → Repositories (no reverse dependencies)
+* Controllers must not depend on repositories
+* Controllers must not depend on domain services
+* Services must not depend on controllers
+* Repositories must not depend on services or controllers
+
 * **Domain purity**
 
-* Domain does not depend on web, service, or repository layers
+* Domain depends only on JDK types and other domain types
+
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
 
-* Controllers must not expose domain types in method signatures
+* REST controllers must not expose domain types in method signatures
+* Controller DTOs must not depend on domain
+
 * **Package cycle prevention**
 
 * No cyclic dependencies between top-level packages
@@ -299,6 +320,7 @@ For **Standard (Layered) Architecture**, strict enforcement guarantees:
 * selected **layout**
 * selected **enforcement mode**
 * selected **dependencies**
+
 * Enforcement happens at **build time only** — no runtime checks
 
 ```bash
@@ -315,6 +337,7 @@ src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 > They are part of the project contract and should not be edited manually.
 
 </#if>
+
 
 <#if layout == "hexagonal" && sampleCode == "basic">
 

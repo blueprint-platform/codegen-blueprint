@@ -125,15 +125,22 @@ Any architectural drift will **break the build deterministically**.
 
 For **Standard (Layered) Architecture**, strict enforcement guarantees:
 
-* **Layer dependency direction**
+* **Layer dependency direction and bypass prevention**
 
-* Controllers → Services → Repositories (no reverse dependencies)
+* Controllers must not depend on repositories
+* Controllers must not depend on domain services
+* Services must not depend on controllers
+* Repositories must not depend on services or controllers
+
 * **Domain purity**
 
-* Domain does not depend on web, service, or repository layers
+* Domain depends only on JDK types and other domain types
+
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
 
-* Controllers must not expose domain types in method signatures
+* REST controllers must not expose domain types in method signatures
+* Controller DTOs must not depend on domain
+
 * **Package cycle prevention**
 
 * No cyclic dependencies between top-level packages
@@ -146,6 +153,7 @@ For **Standard (Layered) Architecture**, strict enforcement guarantees:
 * selected **layout**
 * selected **enforcement mode**
 * selected **dependencies**
+
 * Enforcement happens at **build time only** — no runtime checks
 
 ```bash
@@ -160,6 +168,7 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 
 > These rules are generated code.
 > They are part of the project contract and should not be edited manually.
+
 
 
 

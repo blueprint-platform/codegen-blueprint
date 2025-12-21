@@ -235,9 +235,9 @@ Spring Boot is the first adapter — not the foundation.
 
 📌 Want the architectural deep dive?
 
-- 📜 **Architecture Enforcement Contract**  
+- 📜 **Architecture Enforcement Scope**  
   Defines *what architectural rules exist*, **when they apply**, and **what will break the build**  
-  → [Architecture Enforcement Contract](docs/architecture/architecture-enforcement-contract.md)
+  → [Architecture Enforcement Scope](docs/architecture/architecture-enforcement-scope.md)
 
 ---
 

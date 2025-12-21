@@ -67,11 +67,19 @@ mvn verify
 
 * Application layer **must not depend on adapters**
 * Bootstrap layer is a **leaf module** (no other module may depend on it)
+* Inbound adapters **must not depend on outbound adapters**
+* Outbound adapters **must not depend on inbound adapters**
+* No cyclic dependencies between top-level packages
 
 **Intent**
 
-* Protects the core use cases from infrastructure concerns
-* Ensures bootstrapping remains replaceable
+* Protects core use cases from infrastructure concerns
+* Prevents accidental adapter-to-adapter coupling
+* Ensures bootstrapping remains replaceable and isolated
+* Detects early structural drift without enforcing full strictness
+
+> **Hexagonal — Basic** is designed to stop *obvious architectural violations*  
+> while keeping the entry barrier low for teams adopting executable architecture.
 
 ---
 
@@ -150,17 +158,22 @@ Rules:
 
 **Guaranteed rules**
 
-* Controllers must not depend on repositories
-* Domain must not depend on:
-
-    * Controllers
-    * Services
-    * Repositories
+* Controllers **must not depend on repositories**
+* Domain **must not depend on:**
+  * Controllers
+  * Services
+  * Repositories
+* No cyclic dependencies between top-level packages
 
 **Intent**
 
 * Prevents shortcutting the service layer
-* Keeps domain isolated from infrastructure and delivery layers
+* Preserves a clear separation between delivery, orchestration, and domain logic
+* Detects early structural drift without enforcing full strict layering
+* Provides safe baseline guardrails for teams adopting layered architecture
+
+> **Standard — Basic** focuses on preventing the most common layered-architecture violations  
+> while intentionally avoiding over-constraining internal service design.
 
 ---
 
