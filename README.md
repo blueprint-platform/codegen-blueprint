@@ -676,8 +676,10 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 * Drift detection & auto-remediation (governance at scale)
 * Platform telemetry for architecture health
 
-📌 Community-driven priorities →  
+📌 Community-driven priorities:
+
 🔗 Participate via [GitHub Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
+
 ---
 
 ### 🧩 Why this matters
@@ -726,4 +728,5 @@ If this project saves your team time or headaches:<br>
 ## 🛡 License
 
 MIT — free for commercial and personal use.
+
 See: [LICENSE](LICENSE)
