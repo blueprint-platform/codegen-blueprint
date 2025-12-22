@@ -1,0 +1,77 @@
+name: "💡 Feature request"
+description: "Suggest an enhancement or new capability for codegen-blueprint"
+title: "feature: <short summary>"
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping evolve **codegen-blueprint** 🚀  
+        This project prioritizes **architectural clarity, determinism, and long-term maintainability**.
+        
+        Please describe *why* the feature is needed, not just *what* it does.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem / Motivation"
+      description: >
+        What limitation, friction, or architectural gap are you experiencing?
+        Please include context (layout, enforcement level, profile, etc.).
+      placeholder: |
+        Example:
+        In multi-profile setups, it's hard to ensure consistent governance
+        rules across generated projects without duplicating configuration.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Proposed solution"
+      description: >
+        Describe the change or capability you'd like to see.
+        Focus on behavior and contracts rather than implementation details.
+      placeholder: |
+        Example:
+        Introduce a profile-level governance preset that can be reused
+        across multiple blueprint configurations.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives considered"
+      description: >
+        Describe any workarounds, design alternatives, or trade-offs you considered.
+        This helps evaluate architectural impact.
+      placeholder: |
+        Example:
+        I considered scripting this externally, but it breaks determinism
+        and makes enforcement non-reproducible.
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: "Impact & trade-offs"
+      description: >
+        How would this affect complexity, learning curve, or generated output?
+        Are there risks or downsides?
+      placeholder: |
+        Example:
+        This may increase initial configuration complexity,
+        but improves long-term consistency across teams.
+
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **Note**  
+        Feature requests are evaluated through the lens of:
+        - architectural consistency
+        - determinism
+        - long-term maintenance cost  
+        
+        Not all ideas will be accepted — but all thoughtful proposals are welcome.

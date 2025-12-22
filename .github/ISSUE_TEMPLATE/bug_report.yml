@@ -1,0 +1,87 @@
+name: "🐞 Bug report"
+description: "Report a bug or unexpected behavior in codegen-blueprint generation output"
+title: "bug: <short summary>"
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue in **codegen-blueprint** 🙏  
+        This project generates **executable architecture**, so precise context helps a lot.
+
+        Please provide the **minimal information** required to reproduce the problem.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Describe the bug"
+      description: "What went wrong? Be clear and specific."
+      placeholder: |
+        Example:
+        - Generated project fails to build when enforcement=STRICT and layout=hexagonal
+        - application.yml is missing when using Spring Boot + Maven + Java profile
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Steps to reproduce"
+      description: "Minimal steps to reproduce the issue."
+      placeholder: |
+        1. Run:
+           java -jar codegen-blueprint.jar --cli springboot \
+             --group-id=com.example \
+             --artifact-id=demo \
+             --layout=hexagonal \
+             --enforcement=strict \
+             --sample-code=basic
+
+        2. Open generated project
+        3. Run `./mvnw verify`
+        4. Observe failure
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected behavior"
+      description: "What should have happened instead?"
+      placeholder: |
+        The generated project should build successfully
+        and all architecture governance tests should pass.
+
+  - type: textarea
+    id: profile
+    attributes:
+      label: "Profile & options used"
+      description: "Which blueprint profile and options were selected?"
+      placeholder: |
+        - Profile: springboot-maven-java
+        - Layout: hexagonal
+        - Enforcement: strict
+        - Sample code: basic
+        - Dependencies: web, validation
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment"
+      description: "Runtime and tool versions."
+      placeholder: |
+        - OS: macOS / Linux / Windows
+        - Java: 21
+        - codegen-blueprint version: 1.0.0
+        - Maven (if relevant): 3.9.x
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: "Additional context"
+      description: "Logs, stack traces, screenshots, or links."
+      placeholder: |
+        - Relevant stack trace
+        - Generated README excerpt
+        - Failing ArchUnit rule output

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: 💬 Start a discussion
+    url: https://github.com/blueprint-platform/codegen-blueprint/discussions
+    about: >
+      Questions, architectural discussions, design feedback,
+      or ideas about profiles, layouts, and executable architecture.
