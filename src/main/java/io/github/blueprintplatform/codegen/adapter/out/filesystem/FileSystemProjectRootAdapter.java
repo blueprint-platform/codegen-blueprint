@@ -13,9 +13,13 @@ public class FileSystemProjectRootAdapter implements ProjectRootPort {
 
   @Override
   public Path prepareRoot(Path targetDir, String artifactId, ProjectRootExistencePolicy policy) {
-    Path projectRoot = targetDir.resolve(artifactId);
-
     try {
+      if (Files.exists(targetDir) && !Files.isDirectory(targetDir)) {
+        throw new ProjectRootNotDirectoryException(targetDir);
+      }
+
+      Path projectRoot = targetDir.resolve(artifactId);
+
       if (Files.exists(projectRoot)) {
 
         if (!Files.isDirectory(projectRoot)) {
@@ -33,7 +37,7 @@ public class FileSystemProjectRootAdapter implements ProjectRootPort {
       return projectRoot;
 
     } catch (IOException e) {
-      throw new ProjectRootIOException(projectRoot, e);
+      throw new ProjectRootIOException(targetDir, e);
     }
   }
 }

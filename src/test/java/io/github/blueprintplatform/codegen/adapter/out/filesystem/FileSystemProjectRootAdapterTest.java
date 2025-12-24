@@ -83,4 +83,17 @@ class FileSystemProjectRootAdapterTest {
             () -> adapter.prepareRoot(targetDir, "demo-app", ProjectRootExistencePolicy.OVERWRITE))
         .isInstanceOf(ProjectRootIOException.class);
   }
+
+  @Test
+  @DisplayName("Should fail when targetDir exists but is not a directory")
+  void shouldFailWhenTargetDirIsNotDirectory() throws IOException {
+    Path fileTargetDir = tempDir.resolve("not-a-dir");
+    Files.writeString(fileTargetDir, "not a directory");
+
+    assertThatThrownBy(
+            () ->
+                adapter.prepareRoot(
+                    fileTargetDir, "demo-app", ProjectRootExistencePolicy.FAIL_IF_EXISTS))
+        .isInstanceOf(ProjectRootNotDirectoryException.class);
+  }
 }
