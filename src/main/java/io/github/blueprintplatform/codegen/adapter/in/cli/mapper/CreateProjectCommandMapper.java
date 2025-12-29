@@ -8,7 +8,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliRunti
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliTechStack;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -31,8 +31,7 @@ public class CreateProjectCommandMapper {
     var platformTarget = toPlatformTarget(request.runtimeTarget());
 
     ProjectLayout layout = ProjectLayout.fromKey(request.architecture().layout());
-    EnforcementMode enforcementMode =
-        EnforcementMode.fromKey(request.architecture().enforcementMode());
+    GuardrailsMode guardrailsMode = GuardrailsMode.fromKey(request.architecture().guardrailsMode());
 
     SampleCodeLevel sampleCodeLevel =
         SampleCodeLevel.fromKey(request.architecture().sampleCodeLevel());
@@ -48,7 +47,7 @@ public class CreateProjectCommandMapper {
         metadata.packageName(),
         techStack,
         layout,
-        enforcementMode,
+        guardrailsMode,
         platformTarget,
         dependencies,
         sampleCodeOptions,

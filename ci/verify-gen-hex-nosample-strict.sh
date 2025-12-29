@@ -3,8 +3,8 @@ set -euo pipefail
 
 LAYOUT="hexagonal"
 SAMPLE_CODE="none"
-ENFORCEMENT="strict"
-DESCRIPTION="No sample strict enforcement with hexagonal architecture"
+GUARDRAILS="strict"
+DESCRIPTION="No sample strict guardrails with hexagonal architecture"
 DEPENDENCIES=""
 
 source "$(dirname "$0")/common-verify-generated.sh"

@@ -14,7 +14,7 @@ Greeting sample built with hexagonal architecture
 | | Java | `21` |
 | | Spring Boot | `3.5.9` |
 | 🏗 Architecture | Layout | `hexagonal` |
-| | Enforcement | `strict` |
+| | Guardrails | `strict` |
 | | Sample Code | `basic` |
 
 ---
@@ -25,7 +25,7 @@ Greeting sample built with hexagonal architecture
 - [Coordinates](#-coordinates)
 - [Quick Start](#-quick-start)
 - [Project Layout](#-project-layout)
-- [Architecture Enforcement](#-architecture-enforcement)
+- [Architecture Guardrails](#-architecture-guardrails)
 - [Included Sample (Basic)](#-included-sample-basic)
 - [Selected Dependencies](#-selected-dependencies)
 - [Scope & Intent](#scope--intent)
@@ -96,15 +96,15 @@ src
 
 ---
 
-## 🧩 Architecture Enforcement
-Architecture enforcement is **enabled (strict)**.
+## 🧩 Architecture Guardrails
+Architecture guardrails are **enabled (strict)**.
 
 This project includes **strict, fail-fast architectural guardrails** generated as executable ArchUnit tests.
 
 Any architectural drift will **break the build deterministically**.
 
-### What is enforced (strict)
-For **Hexagonal Architecture**, strict enforcement guarantees:
+### What strict guardrails evaluate
+For **Hexagonal Architecture**, strict guardrails evaluate:
 
 * **Dependency direction**
     * Application does not depend on adapters
@@ -144,18 +144,17 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
   * No cyclic dependencies across top-level packages
   * No cycles inside adapter subpackages
 
-### How enforcement works
+### How guardrails work
 
 * Rules are generated automatically based on:
+  * selected **layout**
+  * selected **guardrails mode**
+  * selected **dependencies**
 
-* selected **layout**
-* selected **enforcement mode**
-* selected **dependencies**
-
-* Enforcement happens at **build time only** — no runtime checks
+* Guardrails run at **build time only** — no runtime checks
 
 ```bash
-mvn verify  # fails immediately on violation
+mvn verify # surfaces violations and fails fast
 ```
 
 ### Where the rules live
@@ -165,7 +164,7 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 ```
 
 > These rules are generated code.
-> They are part of the project contract and should not be edited manually.
+> They represent the architecture guardrails contract selected at generation time.
 
 ---
 
@@ -234,7 +233,7 @@ You can use this sample in two ways:
 
 ## Scope & Intent
 
-This generated project intentionally focuses on **structural correctness and architectural enforcement**.
+This generated project intentionally focuses on **structural correctness and observable architectural guardrails**.
 
 Delivery concerns (CI/CD, containerization, deployment strategies) are left to the consuming team and platform standards.
 

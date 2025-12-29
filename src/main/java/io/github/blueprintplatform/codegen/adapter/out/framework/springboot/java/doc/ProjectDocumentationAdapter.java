@@ -69,8 +69,7 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
         entry(ProjectDocumentationModel.SPRING_BOOT_VERSION, target.springBoot().defaultVersion()),
         entry(ProjectDocumentationModel.DEPENDENCIES, mapDependencies(deps)),
         entry(ProjectDocumentationModel.LAYOUT, bp.getArchitecture().layout().key()),
-        entry(
-            ProjectDocumentationModel.ENFORCEMENT, bp.getArchitecture().governance().mode().key()),
+        entry(ProjectDocumentationModel.GUARDRAILS, bp.getArchitecture().governance().mode().key()),
         entry(
             ProjectDocumentationModel.SAMPLE_CODE,
             bp.getArchitecture().sampleCodeOptions().level().key()),

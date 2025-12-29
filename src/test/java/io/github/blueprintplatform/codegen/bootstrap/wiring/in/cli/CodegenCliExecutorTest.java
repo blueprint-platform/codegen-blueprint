@@ -122,7 +122,7 @@ class CodegenCliExecutorTest {
       var architecture =
           new ArchitectureSpecSummary(
               lastCreateProjectCommand.layout().key(),
-              lastCreateProjectCommand.enforcementMode().key(),
+              lastCreateProjectCommand.guardrailsMode().key(),
               lastCreateProjectCommand.sampleCodeOptions().level().key());
 
       var project =

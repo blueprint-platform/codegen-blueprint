@@ -4,16 +4,16 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.shared.CliEnumParser;
 import io.github.blueprintplatform.codegen.adapter.in.cli.shared.CliKeyedEnum;
 import java.util.Locale;
 
-public enum SpringBootArchitectureEnforcementOption implements CliKeyedEnum {
+public enum SpringBootArchitectureGuardrailsOption implements CliKeyedEnum {
   NONE,
   BASIC,
   STRICT;
 
   private static final String UNKNOWN_KEY =
-      "adapter.cli.springboot.architecture.enforcement.unknown";
+      "adapter.cli.springboot.architecture.guardrails.unknown";
 
-  public static SpringBootArchitectureEnforcementOption fromKey(String raw) {
-    return CliEnumParser.parse(SpringBootArchitectureEnforcementOption.class, raw, UNKNOWN_KEY);
+  public static SpringBootArchitectureGuardrailsOption fromKey(String raw) {
+    return CliEnumParser.parse(SpringBootArchitectureGuardrailsOption.class, raw, UNKNOWN_KEY);
   }
 
   @Override

@@ -75,10 +75,10 @@ generate_project() {
   local name="$2"
   local description="$3"
   local layout="$4"
-  local enforcement="$5"
+  local guardrails="$5"
   local sample="$6"
 
-  log "Generate: ${artifact_id} (${layout}, enforcement=${enforcement}, sample=${sample})"
+  log "Generate: ${artifact_id} (${layout}, guardrails=${guardrails}, sample=${sample})"
   mkdir -p "$OUT_DIR"
 
   "$JAVA_BIN" -jar "$CODEGEN_JAR" \
@@ -89,7 +89,7 @@ generate_project() {
     --description "$description" \
     --package-name "$PACKAGE_NAME" \
     --layout "$layout" \
-    --enforcement "$enforcement" \
+    --guardrails "$guardrails" \
     --sample-code "$sample" \
     --dependency web \
     --target-dir "$OUT_DIR" >/dev/null

@@ -33,7 +33,7 @@ public class ProjectBlueprintMapper {
 
     PlatformSpec platform = new PlatformSpec(c.techStack(), c.platformTarget());
 
-    ArchitectureGovernance architectureGovernance = new ArchitectureGovernance(c.enforcementMode());
+    ArchitectureGovernance architectureGovernance = new ArchitectureGovernance(c.guardrailsMode());
     ArchitectureSpec architecture =
         new ArchitectureSpec(c.layout(), architectureGovernance, c.sampleCodeOptions());
 

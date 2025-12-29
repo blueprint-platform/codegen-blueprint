@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -61,7 +61,7 @@ class ProjectBlueprintTest {
   private static ArchitectureSpec architecture() {
     return new ArchitectureSpec(
         ProjectLayout.STANDARD,
-        new ArchitectureGovernance(EnforcementMode.NONE),
+        new ArchitectureGovernance(GuardrailsMode.NONE),
         new SampleCodeOptions(SampleCodeLevel.NONE));
   }
 

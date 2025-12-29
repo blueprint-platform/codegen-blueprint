@@ -9,7 +9,7 @@ import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRender
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArchitectureGovernancePort;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
@@ -62,7 +62,7 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
 
   @Override
   public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
-    EnforcementMode mode = blueprint.getArchitecture().governance().mode();
+    GuardrailsMode mode = blueprint.getArchitecture().governance().mode();
     if (!mode.isEnabled()) {
       return List.of();
     }
@@ -131,7 +131,7 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
         && deps.asList().stream().anyMatch(WEB_STARTER.matches());
   }
 
-  private String resolveTemplateRoot(ProjectLayout layout, EnforcementMode mode) {
+  private String resolveTemplateRoot(ProjectLayout layout, GuardrailsMode mode) {
     String basePath = artifactSpec.basePath();
     String normalizedBase =
         basePath.endsWith(PATH_SEPARATOR) ? basePath.substring(0, basePath.length() - 1) : basePath;

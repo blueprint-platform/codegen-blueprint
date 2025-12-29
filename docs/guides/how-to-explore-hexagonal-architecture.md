@@ -1,14 +1,16 @@
 # 🚀 Codegen Blueprint — Hexagonal Architecture Deep Dive
 
-**Executable Architecture in Action — A Production‑Grade Reference**
+**Executable Architecture in Action — A Production-Grade Reference**
 
-This deep‑dive explains **how Hexagonal Architecture (Ports & Adapters)** is **executed and enforced** in Codegen Blueprint — not as guidelines, but **as generated, testable behavior**.
+This deep-dive explains **how Hexagonal Architecture (Ports & Adapters)** is
+**executed and continuously verified** in Codegen Blueprint — not as guidelines,
+but as **generated, testable behavior**.
 
-Architecture decisions are **compiled into the generator and materialized in the output**:
+Architectural decisions are **compiled into the generator and materialized in the output**:
 
-* Domain stays 🔒 framework‑free
+* Domain stays 🔒 framework-free
 * Technology swaps 🔁 without core changes
-* Best practices 🚧 enforced via generated artifacts
+* Architectural intent 🚧 made executable via generated artifacts
 * Generated services 🧱 inherit structure by construction
 
 > **Architecture is not a guideline — it executes.**
@@ -25,7 +27,7 @@ Architecture decisions are **compiled into the generator and materialized in the
 * [Application → Artifact Generation Ports](#-application--artifact-generation-ports)
 * [Artifact Execution Engine](#-artifact-execution-engine)
 * [Profiles — The Architecture Contract](#-profiles--the-architecture-contract)
-* [Source Layout Enforcement](#-source-layout-enforcement)
+* [Source Layout Guardrails](#-source-layout-guardrails)
 * [Resource Model](#-resource-model--better-than-just-files)
 * [Verified Architecture — Testing Strategy](#-verified-architecture--testing-strategy)
 * [What You Learn from This Repo](#-what-you-learn-from-this-repo)
@@ -181,7 +183,7 @@ Artifact generation is modeled as a **first‑class application concern** — no
 | `IgnoreRulesPort`              | `.gitignore`                       |
 | `ProjectDocumentationPort`     | `README.md`                        |
 | `SampleCodePort`               | Optional sample REST / domain code |
-| `ArchitectureGovernancePort`   | Architecture enforcement artifacts |
+| `ArchitectureGovernancePort`   | Architecture guardrails artifacts |
 
 All artifact ports implement:
 
@@ -191,9 +193,9 @@ application.port.out.artifact.ArtifactPort
 
 ### Architecture Governance as an Artifact
 
-`ArchitectureGovernancePort` models **architecture enforcement itself** as a generated artifact.
+`ArchitectureGovernancePort` models **architecture guardrails itself** as a generated artifact.
 
-Depending on profile and enforcement level, this may generate:
+Depending on profile and guardrails level, this may generate:
 
 * ArchUnit‑based architecture tests
 * Layered or Hexagonal boundary rules
@@ -202,11 +204,11 @@ Depending on profile and enforcement level, this may generate:
 Enforcement artifacts are:
 
 * ✔ Generated (not hard‑wired)
-* ✔ Opt‑in (`--enforcement basic | strict`)
+* ✔ Opt‑in (`--guardrails basic | strict`)
 * ✔ Profile‑scoped
 * ✔ Evolvable without engine refactors
 
-> Architecture enforcement is **delivered as code**, like any other artifact.
+> Architecture guardrails is **delivered as code**, like any other artifact.
 
 ---
 
@@ -248,13 +250,13 @@ build-config
 
 Profiles are:
 
-* ✔ Enforced architecture standards
+* ✔ Encode architecture standards explicitly
 * ✔ Reusable across teams
 * ✔ Extensible without core changes
 
 ---
 
-## 📐 Source Layout Enforcement
+## 📐 Source Layout Guardrails
 
 ### Standard
 
@@ -291,12 +293,12 @@ bootstrap/
 
 ## 🧪 Verified Architecture — Testing Strategy
 
-| Test Type   | Ensures                           |
-| ----------- | --------------------------------- |
-| Unit        | Domain & rule correctness         |
-| Integration | Correct wiring                    |
-| E2E CLI     | Generated project validity        |
-| ArchUnit    | Enforced architectural boundaries |
+| Test Type   | Ensures                             |
+| ----------- |-------------------------------------|
+| Unit        | Domain & rule correctness           |
+| Integration | Correct wiring                      |
+| E2E CLI     | Generated project validity          |
+| ArchUnit    | Executable architectural boundaries |
 
 Together, these tests ensure that architectural intent is continuously validated
 from generation time through build execution.
@@ -308,27 +310,30 @@ from generation time through build execution.
 
 ## 🎯 What You Learn from This Repo
 
-| Skill                    | How This Repo Teaches It                                      |
+| Skill                    | How This Repo Makes It Explicit                              |
 | ------------------------ | ------------------------------------------------------------- |
-| Hexagonal mastery        | True isolation enforced by ports and dependency direction     |
-| Maintainable scaffolding | Evolution paths encoded from day zero                         |
-| Architecture automation  | Governance-as-Code via executable rules and pipelines          |
-| Multi-stack enablement   | New stacks added without touching the core engine             |
-| Testing for architecture | Architecture validated through tests — not conventions        |
+| Hexagonal mastery        | Clear dependency direction expressed through ports            |
+| Maintainable scaffolding | Evolution paths encoded and made visible from day zero        |
+| Architecture automation  | Architectural intent delivered as executable artifacts        |
+| Multi-stack enablement   | New stacks added without changing the core engine             |
+| Testing for architecture | Boundaries verified through fast, build-time feedback         |
 
 This repository is a **production reference architecture**.
 
-> It prioritizes architectural correctness and evolution over feature completeness.
+> It prioritizes architectural clarity, continuity, and evolution  
+> over feature breadth or short-term convenience.
 
 It is designed to be:
-- studied by experienced developers and architects
-- extended as a platform foundation
-- challenged through architectural change scenarios
+- explored by experienced developers and architects
+- extended as a long-lived platform foundation
+- challenged through real architectural change scenarios
 
-It is **not positioned as** a classroom demo, step-by-step tutorial, or framework showcase.
+It is **not positioned as** a classroom demo, step-by-step tutorial,
+or framework marketing showcase.
 
-Instead, it serves as a **production-oriented reference** for developers and architects
-who want to study, evaluate, and evolve executable architecture in real systems.
+Instead, it serves as a **production-oriented reference** for teams and individuals
+who want to **observe, evaluate, and evolve executable architecture**
+in real-world systems.
 
 ---
 
@@ -358,7 +363,7 @@ The port does **not** depend on adapters.
 
 This section demonstrates the **actual, supported CLI contract** for Codegen Blueprint **1.0.0 GA** when generating a **Hexagonal Architecture** project.
 
-The command below reflects the real engine behavior, generated structure, and enforcement capabilities — no placeholders, no aspirational flags.
+The command below reflects the real engine behavior, generated structure, and guardrails capabilities — no placeholders, no aspirational flags.
 
 ---
 
@@ -373,7 +378,7 @@ java -jar codegen-blueprint-1.0.0.jar \
   --description "Greeting sample built with hexagonal architecture" \
   --package-name io.github.blueprintplatform.greeting \
   --layout hexagonal \
-  --enforcement strict \
+  --guardrails strict \
   --sample-code basic \
   --dependency web \
   --target-dir /path/to/output
@@ -390,7 +395,7 @@ This single command:
 * Selects the **Spring Boot · Maven · Java 21** profile
 * Generates a **hexagonal (ports & adapters)** source layout
 * Produces a **framework-free domain core** by construction
-* Enables **basic architecture enforcement** via generated ArchUnit tests
+* Enables **basic architecture guardrails** via generated ArchUnit tests
 * Adds a **minimal teaching sample** (domain + application + adapter)
 * Outputs a project that **builds and verifies immediately**
 
@@ -403,17 +408,18 @@ No manual wiring is expected.
 
 The generated project:
 
-* Passes `mvn verify` on first run
-* Enforces architectural boundaries at test time
-* Prevents accidental dependency direction violations
-* Keeps Spring strictly at the edges (`bootstrap` and `adapter` layers)
+* Builds and verifies successfully with `mvn verify` on first run
+* Makes architectural boundaries **explicit and testable** at build time
+* Surfaces unintended dependency direction changes early
+* Keeps Spring consistently at the edges (`bootstrap` and `adapter` layers)
 
-> Architecture is not suggested — it is **enforced by construction**.
+> Architecture is not implied or documented —  
+> it is **made visible through executable structure and tests**.
 
 ---
 
-This CLI adapter is the **primary delivery mechanism** of Codegen Blueprint 1.0.0 GA.
-Everything else in the system exists to make this command **predictable, safe, and evolution-ready**.
+This CLI adapter is the **primary delivery mechanism** of Codegen Blueprint 1.0.0 GA.  
+Everything else in the system exists to make this command **predictable, transparent, and evolution-ready**.
 
 ---
 
@@ -451,7 +457,7 @@ ProjectWriterPort
 ## Appendix — Port Placement Policy (Domain vs Application)
 
 This appendix exists to clarify an intentional design decision
-that is frequently misunderstood when reviewing hexagonal architectures.
+frequently misunderstood when reviewing hexagonal architectures.
 
 In Codegen Blueprint, **ports are not placed arbitrarily**.
 Their location reflects **ownership of responsibility**, not technical convenience.
@@ -513,15 +519,16 @@ These ports model **how a use case is delivered**, not domain rules.
 
 This distinction is intentional and critical for a **generation engine**:
 
-* Domain ports stay stable across delivery mechanisms
-* Application ports evolve with delivery strategies
-* New delivery modes (CLI today, REST tomorrow) do **not** affect domain contracts
-* Enforcement rules remain explainable and enforceable
+* Domain ports remain stable across delivery mechanisms
+* Application ports evolve alongside delivery strategies
+* New delivery modes (CLI today, REST tomorrow) do **not** ripple into domain contracts
+* Architectural rules remain **explicit, explainable, and verifiable** at build time
 
-If all outbound ports lived in the domain, the domain would implicitly own delivery orchestration — which it must not.
+If all outbound ports lived in the domain, the domain would implicitly take ownership
+of delivery orchestration — which it must not.
 
-If all outbound ports lived in the application, the domain would lose the ability to express its required capabilities.
-
+If all outbound ports lived in the application, the domain would lose the ability
+to clearly express the capabilities it requires to stay pure and executable.
 ---
 
 ## Architectural Guarantee

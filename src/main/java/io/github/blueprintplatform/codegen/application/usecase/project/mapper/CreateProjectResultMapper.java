@@ -78,10 +78,10 @@ public class CreateProjectResultMapper {
 
   private ArchitectureSpecSummary toArchitectureSummary(ArchitectureSpec architecture) {
     String layout = architecture.layout().key();
-    String enforcementMode = architecture.governance().mode().key();
+    String guardrailsMode = architecture.governance().mode().key();
     String sampleCode = architecture.sampleCodeOptions().level().key();
 
-    return new ArchitectureSpecSummary(layout, enforcementMode, sampleCode);
+    return new ArchitectureSpecSummary(layout, guardrailsMode, sampleCode);
   }
 
   private TechStackSummary toTechStackSummary(PlatformSpec platform) {

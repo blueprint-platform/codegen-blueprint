@@ -19,7 +19,7 @@ body:
       description: "What went wrong? Be clear and specific."
       placeholder: |
         Example:
-        - Generated project fails to build when enforcement=STRICT and layout=hexagonal
+        - Generated project fails to build when guardrails=STRICT and layout=hexagonal
         - application.yml is missing when using Spring Boot + Maven + Java profile
     validations:
       required: true
@@ -35,7 +35,7 @@ body:
              --group-id=com.example \
              --artifact-id=demo \
              --layout=hexagonal \
-             --enforcement=strict \
+             --guardrails=strict \
              --sample-code=basic
 
         2. Open generated project

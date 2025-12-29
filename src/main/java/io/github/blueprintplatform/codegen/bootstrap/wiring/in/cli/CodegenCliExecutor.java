@@ -48,8 +48,8 @@ public class CodegenCliExecutor {
             .registerConverter(SpringBootVersionOption.class, SpringBootVersionOption::fromKey)
             .registerConverter(SpringBootLayoutOption.class, SpringBootLayoutOption::fromKey)
             .registerConverter(
-                SpringBootArchitectureEnforcementOption.class,
-                SpringBootArchitectureEnforcementOption::fromKey)
+                SpringBootArchitectureGuardrailsOption.class,
+                SpringBootArchitectureGuardrailsOption::fromKey)
             .registerConverter(
                 SpringBootSampleCodeOption.class, SpringBootSampleCodeOption::fromKey)
             .registerConverter(

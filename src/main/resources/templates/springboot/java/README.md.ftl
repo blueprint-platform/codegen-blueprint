@@ -14,7 +14,7 @@ ${projectDescription}
 | | Java | `${javaVersion}` |
 | | Spring Boot | `${springBootVersion}` |
 | 🏗 Architecture | Layout | `${layout}` |
-| | Enforcement | `${enforcement}` |
+| | Guardrails | `${guardrails}` |
 | | Sample Code | `${sampleCode}` |
 
 ---
@@ -28,7 +28,7 @@ ${projectDescription}
 - [Auto Configuration Notes](#-auto-configuration-notes)
 </#if>
 - [Project Layout](#-project-layout)
-- [Architecture Enforcement](#-architecture-enforcement)
+- [Architecture Guardrails](#-architecture-guardrails)
 <#if sampleCode == "basic">
 - [Included Sample (Basic)](#-included-sample-basic)
 </#if>
@@ -156,9 +156,9 @@ src
 
 ---
 
-## 🧩 Architecture Enforcement
-<#if enforcement == "none">
-Architecture enforcement is **disabled** for this project.
+## 🧩 Architecture Guardrails
+<#if guardrails == "none">
+Architecture guardrails are **disabled** for this project.
 
 * No architectural rules are generated
 * The build will not fail due to boundary violations
@@ -167,32 +167,32 @@ Architecture enforcement is **disabled** for this project.
 You can enable build-time guardrails by generating the project with:
 
 ```bash
---enforcement basic   # core architectural guardrails
---enforcement strict  # strict, fail-fast enforcement
+--guardrails basic   # core architectural guardrails
+--guardrails strict  # strict, fail-fast guardrails
 ```
 </#if>
-<#if enforcement == "basic">
-Architecture enforcement is **enabled (basic)**.
+<#if guardrails == "basic">
+Architecture guardrails are **enabled (basic)**.
 
 This project includes **generated ArchUnit tests** that enforce **core architectural guardrails** at build time.
 
-### What is enforced
+### What is evaluated by guardrails
 
 * Core dependency direction between architectural layers
 * Protection of the domain from outward dependencies
 * Prevention of the most common architectural shortcuts
 * Early detection of structural drift
 
-### How enforcement works
+### How guardrails works
 
-* Rules are generated as **executable tests**
-* Violations are detected during:
+* Rules are generated as **executable tests that represent the architectural contract**
+* Violations are surfaced during the build:
 
 ```bash
 mvn verify
 ```
 
-* If a rule is violated, **the build fails immediately**
+* Violations are surfaced during the build and cause it to fail immediately
 
 ### Where the rules live
 
@@ -200,16 +200,16 @@ mvn verify
 src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 ```
 </#if>
-<#if enforcement == "strict">
-Architecture enforcement is **enabled (strict)**.
+<#if guardrails == "strict">
+Architecture guardrails are **enabled (strict)**.
 
 This project includes **strict, fail-fast architectural guardrails** generated as executable ArchUnit tests.
 
 Any architectural drift will **break the build deterministically**.
 
-### What is enforced (strict)
+### What strict guardrails evaluate
 <#if layout == "hexagonal">
-For **Hexagonal Architecture**, strict enforcement guarantees:
+For **Hexagonal Architecture**, strict guardrails evaluate:
 
 * **Dependency direction**
     * Application does not depend on adapters
@@ -250,7 +250,7 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
   * No cycles inside adapter subpackages
 </#if>
 <#if layout == "standard">
-For **Standard (Layered) Architecture**, strict enforcement guarantees:
+For **Standard (Layered) Architecture**, strict guardrails evaluate:
 
 * **Layer dependency direction and bypass prevention**
   * Controllers must not depend on repositories
@@ -275,18 +275,17 @@ For **Standard (Layered) Architecture**, strict enforcement guarantees:
   * No cyclic dependencies between top-level packages
 </#if>
 
-### How enforcement works
+### How guardrails work
 
 * Rules are generated automatically based on:
+  * selected **layout**
+  * selected **guardrails mode**
+  * selected **dependencies**
 
-* selected **layout**
-* selected **enforcement mode**
-* selected **dependencies**
-
-* Enforcement happens at **build time only** — no runtime checks
+* Guardrails run at **build time only** — no runtime checks
 
 ```bash
-mvn verify  # fails immediately on violation
+mvn verify # surfaces violations and fails fast
 ```
 
 ### Where the rules live
@@ -296,7 +295,7 @@ src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 ```
 
 > These rules are generated code.
-> They are part of the project contract and should not be edited manually.
+> They represent the architecture guardrails contract selected at generation time.
 </#if>
 <#if layout == "hexagonal" && sampleCode == "basic">
 
@@ -462,7 +461,7 @@ If you are comfortable with this structure, you are well-positioned to understan
 
 ## Scope & Intent
 
-This generated project intentionally focuses on **structural correctness and architectural enforcement**.
+This generated project intentionally focuses on **structural correctness and observable architectural guardrails**.
 
 Delivery concerns (CI/CD, containerization, deployment strategies) are left to the consuming team and platform standards.
 

@@ -1,35 +1,36 @@
-# Architecture Enforcement Rulebook
+# Architecture Guardrails Rulebook
 
-**Build-time architecture rules generated and enforced by Codegen Blueprint.**
+**Build-time architectural guardrails generated and evaluated by Codegen Blueprint.**
 
-This document defines the complete set of architecture enforcement rules
-that Codegen Blueprint is capable of generating.
+This document defines the complete set of architecture guardrails
+that Codegen Blueprint is capable of generating and applying at build time.
 
 > ⚠️ **Important**
 >
-> This document describes the **rule system itself**.
-> It does **not** guarantee that all rules are active in a given release.
-> Release-level guarantees are declared separately.
+> This document describes the **guardrails system itself**.
+> It does **not** guarantee that all guardrails are active in a given release.
+> Release-level guarantees are declared separately and explicitly.
 
 ---
 
 The goal of this document is **not** to explain ArchUnit
-or teach architecture styles, but to **declare what is enforced, when, and why**.
+or teach architecture styles, but to **make explicit which architectural boundaries
+are generated, how they are evaluated, and why they exist**.
 
 > Architecture here is not documented or recommended.  
-> It is **generated and enforced deterministically at build time**.
+> It is **compiled into build-time feedback through generated, deterministic checks**.
 
 ---
 
-## Enforcement overview
+## Guardrails overview
 
 **Mechanism**
 
-* Enforcement is implemented via **generated ArchUnit tests**.
+* Guardrails are implemented via **generated ArchUnit tests**.
 * Tests are generated based on:
 
 * Selected **layout** (`hexagonal` or `standard`)
-* Selected **enforcement mode** (`none`, `basic`, or `strict`)
+* Selected **guardrails mode** (`none`, `basic`, or `strict`)
 * Rules execute automatically during:
 
 ```bash
@@ -38,9 +39,9 @@ mvn verify
 
 **Default behavior (1.0.0 GA)**
 
-* The CLI default enforcement mode is **`basic`**
-* Architecture enforcement is **enabled by default**
-* `none` must be **explicitly selected** to disable enforcement
+* The CLI default guardrails mode is **`basic`**
+* Architecture guardrails are **enabled by default in GA**
+* `none` must be **explicitly selected** to disable guardrails
 
 **Failure behavior**
 
@@ -50,12 +51,12 @@ mvn verify
 
 ---
 
-## Enforcement modes
+## Guardrails modes
 
 ### none
 
 * No architecture tests are generated.
-* No enforcement guarantees exist.
+* No guardrails guarantees are provided.
 
 ### basic
 
@@ -65,13 +66,13 @@ mvn verify
 
 ### strict
 
-* Full enforcement of architectural boundaries.
+* Comprehensive guardrails for architectural boundaries.
 * Prevents structural drift and accidental coupling.
 * Intended for teams that treat architecture as a **non-negotiable contract**.
 
 ---
 
-## Hexagonal architecture enforcement
+## Hexagonal architecture guardrails
 
 ### Hexagonal — Basic
 
@@ -97,7 +98,7 @@ mvn verify
 
 ### Hexagonal — Strict
 
-**Strict enforcement generates the following rules:**
+**Strict guardrails generate the following rules:**
 
 ---
 
@@ -164,7 +165,7 @@ Rules:
 
 --- 
 
-## Standard (Layered) architecture enforcement
+## Standard (Layered) architecture guardrails
 
 ### Standard — Basic
 
@@ -191,7 +192,7 @@ Rules:
 
 ### Standard — Strict
 
-**Strict enforcement generates the following rules:**
+**Strict guardrails generate the following rules:**
 
 #### Layer dependency direction (and boundary bypass prevention)
 
@@ -232,7 +233,7 @@ Rules:
 
 ---
 
-## What enforcement does NOT cover
+## What guardrails does NOT cover
 
 The following are **explicitly out of scope**:
 
@@ -242,7 +243,7 @@ The following are **explicitly out of scope**:
 * Runtime behavior (transactions, security, performance)
 * Dependency vulnerability scanning
 
-Enforcement is **structural**, not behavioral.
+Guardrails are **structural**, not behavioral.
 
 ---
 
@@ -264,24 +265,24 @@ They are:
 
 ## Versioning guarantee
 
-This enforcement scope is part of the **1.0.0 GA contract**.
+This guardrails scope is part of the **1.0.0 GA contract**.
 
 Changes to these rules are treated as:
 
 * Contract changes
 * Explicit version upgrades
 
-No silent enforcement changes are introduced within a GA line.
+No silent guardrails changes are introduced within a GA line.
 
 ---
 
 ## Summary
 
-Codegen Blueprint enforces architecture by **construction**:
+Codegen Blueprint makes architecture **explicit by construction**:
 
-* Architecture is generated
-* Guardrails are executable
-* Violations fail the build
+* Architectural intent is generated, not implied
+* Guardrails are executable and evaluated at build time
+* Boundary drift is surfaced through fast, deterministic feedback
 
-> If a rule is violated, the build breaks.
-> There are no conventions, exceptions, or runtime excuses.
+> When a rule is violated, the build **signals the drift immediately**.
+> There are no hidden conventions, silent bypasses, or runtime surprises.

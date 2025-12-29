@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.blueprintplatform.codegen.adapter.in.cli.mapper.CreateProjectCommandMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliRuntimeTargetKeys;
-import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootArchitectureEnforcementOption;
+import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootArchitectureGuardrailsOption;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootBuildToolOption;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootDependencyOption;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootJavaVersionOption;
@@ -53,7 +53,7 @@ class SpringBootGenerateCommandTest {
 
     cmd.layout = SpringBootLayoutOption.STANDARD;
     cmd.sampleCode = SpringBootSampleCodeOption.NONE;
-    cmd.enforcementMode = SpringBootArchitectureEnforcementOption.NONE;
+    cmd.guardrails = SpringBootArchitectureGuardrailsOption.NONE;
 
     cmd.dependencies = List.of(SpringBootDependencyOption.WEB);
 
@@ -86,7 +86,7 @@ class SpringBootGenerateCommandTest {
         .containsEntry(CliRuntimeTargetKeys.PARAM_SPRING_BOOT_VERSION, "3.5");
 
     assertThat(r.architecture().layout()).isEqualTo("standard");
-    assertThat(r.architecture().enforcementMode()).isEqualTo("none");
+    assertThat(r.architecture().guardrailsMode()).isEqualTo("none");
     assertThat(r.architecture().sampleCodeLevel()).isEqualTo("none");
 
     assertThat(r.dependencies()).hasSize(1);

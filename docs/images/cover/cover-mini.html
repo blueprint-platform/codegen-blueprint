@@ -240,20 +240,19 @@
           <div class="brand-dot"></div>
           <span>Blueprint Platform</span>
         </div>
-        <div class="badge-small">Generate once · Enforce at build time</div>
+        <div class="badge-small">Generate once · Verify at build time</div>
       </div>
 
       <h1><span class="highlight">Codegen Blueprint</span></h1>
 
       <div class="subtitle">
         Spring Boot <strong>profile</strong> scaffolding with <strong>generated architectural guardrails</strong> —
-        when boundaries drift, <strong>the build fails</strong>.
+        when boundaries drift, <strong>the build signals it early</strong>.
       </div>
-
 
       <div class="badges">
         <div class="badge">
-          <span class="badge-label">Enforcement</span>
+          <span class="badge-label">Guardrails mode</span>
           <span class="badge-value">strict</span>
         </div>
         <div class="badge">
@@ -286,10 +285,10 @@
           <div class="code-line">  --cli <span class="str">springboot</span> &bsol;</div>
           <div class="code-line">  --artifact-id <span class="str">greeting</span> &bsol;</div>
           <div class="code-line">  --layout <span class="str">hexagonal</span> &bsol;</div>
-          <div class="code-line">  --enforcement <span class="str">strict</span></div>
+          <div class="code-line">  --guardrails <span class="str">strict</span></div>
 
           <div class="code-line muted" style="margin-top: 8px;">// Introduce a boundary violation →</div>
-          <div class="code-line"><span class="key">mvn</span> verify <span class="fail">FAILS</span></div>
+          <div class="code-line"><span class="key">mvn</span> verify <span class="fail">signals drift</span></div>
         </div>
       </div>
 

@@ -1,8 +1,8 @@
-# Executable Architecture Proof — Architecture Enforcement Walkthrough
+# Executable Architecture Proof — Guardrails Enforcement Walkthrough
 
 ## Fast Proof (Console-First)
 
-If you want the **GREEN → RED → GREEN** proof in a single command
+If you want the **GREEN → RED → GREEN**  build-time proof in a single command
 (no screenshots, just console output):
 
 ```bash
@@ -17,12 +17,11 @@ screenshots, explanation, and exactly **what failed and why**.
 ---
 
 This document is the **full, step-by-step proof** that Codegen Blueprint can generate
-**executable architectural guardrails** that **fail the build deterministically**
-when boundaries drift.
+**executable architectural guardrails** that **surface boundary drift deterministically during the build.**
 
 > This is not a diagram.
 > This is not a convention.
-> This is **architecture enforced at build time**.
+> This is **architecture evaluated at build time**.
 
 ---
 
@@ -50,12 +49,12 @@ when boundaries drift.
 
 This walkthrough proves a single, concrete claim:
 
-> **When strict enforcement is enabled, architectural boundaries become executable rules that are evaluated during the build.**
+> **When strict guardrails mode is enabled, architectural boundaries become executable rules that are evaluated during the build.**
 
 Specifically, it demonstrates that:
 
 1. Codegen Blueprint generates projects with **explicit architectural models** (Hexagonal or Standard / Layered).
-2. With `--enforcement strict`, those models are translated into **generated ArchUnit rules**.
+2. With `--guardrails strict`, those models are translated into **generated ArchUnit rules**.
 3. Any architectural violation causes **`mvn verify` to fail immediately** — without starting the application.
 
 ---
@@ -65,7 +64,7 @@ Specifically, it demonstrates that:
 ### ✅ This is
 
 * A **build-time architecture proof**
-* A demonstration of **generated enforcement rules**
+* A demonstration of **guardrails rules produced by the generator**
 * A deterministic failure when architectural boundaries are violated
 * A comparison across **two different architectural models**
 
@@ -86,8 +85,8 @@ To reproduce this walkthrough, you only need:
 
 * Codegen Blueprint **1.0.0 (or later)**
 * A project generated via CLI
-* `--enforcement strict` enabled
-* No manual modification of the generated enforcement rules
+* `--guardrails strict` enabled
+* No manual modification of the generated guardrails rules
 
 ---
 
@@ -106,13 +105,13 @@ java -jar codegen-blueprint-1.0.0.jar \
   --description "Greeting sample built with hexagonal architecture" \
   --package-name io.github.blueprintplatform.greeting \
   --layout hexagonal \
-  --enforcement strict \
+  --guardrails strict \
   --sample-code basic \
   --dependency web
 ```
 
-Strict enforcement is enabled from the start.
-All architectural rules are **generated**, not handwritten.
+Strict guardrails mode is enabled from the start.
+All architectural rules are **generated from profiles**, not handwritten.
 
 ---
 
@@ -144,7 +143,7 @@ mvn verify
 
 * ✅ Build passes
 * ✅ All ArchUnit rules are satisfied
-* ✅ Architecture is valid and enforceable
+* ✅ Architecture satisfies the generated guardrails
 
 This establishes the **baseline contract**.
 
@@ -152,7 +151,7 @@ This establishes the **baseline contract**.
 
 ## 3) Intentional Violation — Breaking Hexagonal Isolation
 
-To prove enforcement is real, introduce a deliberate violation.
+To prove that guardrails are **not theoretical**, introduce a deliberate violation.
 
 The controller is modified to depend directly on an **application implementation or domain service**, bypassing the port.
 
@@ -195,7 +194,7 @@ Key facts:
 
 * ❌ No application startup
 * ❌ No runtime checks
-* ❌ No human enforcement
+* ❌ No manual enforcement
 
 The architecture failed **by construction**.
 
@@ -216,12 +215,12 @@ java -jar codegen-blueprint-1.0.0.jar \
   --description "Greeting sample built with standard layered architecture" \
   --package-name io.github.blueprintplatform.greeting \
   --layout standard \
-  --enforcement strict \
+  --guardrails strict \
   --sample-code basic \
   --dependency web
 ```
 
-The same enforcement mode is used, but **different architectural rules apply**.
+The same guardrails mode is used, but **different architectural rules apply**.
 
 ---
 
@@ -232,7 +231,7 @@ In the standard model:
 **Controller → Service → Domain**
 
 Controllers are allowed to depend on services,
-but **must never depend on domain types directly**.
+but **must never depend directly on domain services**.
 
 <p align="center">
   <img src="./images/01-standard-clean-controller.png" width="900" alt="Standard layered clean controller"/>
@@ -265,7 +264,7 @@ Important observations:
 * The application would **still run**
 * The change looks harmless — and reviewers may miss it
 
-But architecturally it is illegal in **strict standard layered enforcement**:
+But architecturally it is illegal in **strict standard layered guardrails**:
 
 > **Controllers must not depend on domain services.**
 >
@@ -302,12 +301,12 @@ The build fails deterministically.
 
 **Different architectures. Different rules. Same outcome.**
 
-* Hexagonal enforces **ports & adapter isolation**
-* Standard enforces **layered dependency direction**
-* Both are enforced **automatically**
-* Both fail the build when violated
+* Hexagonal validates **ports & adapter isolation**
+* Standard validates **layered dependency direction**
+* Both are evaluated **automatically at build time**
+* Both surface **boundary drift** by breaking the build deterministically
 
-No documentation is consulted.
+No documentation is consulted at evaluation time.  
 No conventions are trusted.
 
 ---
@@ -325,26 +324,27 @@ With Codegen Blueprint:
 * Guardrails are executable
 * Drift is detected immediately
 
-> **If a rule is violated, the build breaks.**
+> **If a rule is violated, the build fails fast with explicit feedback.**
 
-No discussions.
+No assumptions.
 
-No conventions.
+No hidden conventions.
 
-No exceptions.
+No silent drift.
 
-That is what **Architecture as a Product** means in practice.
+That is **Architecture as a Product** —
+observable, repeatable, and evaluated at build time.
 
 ---
 
-## Generated Project Output (Optional)
+## Generated Project Output (Reference)
 
-This walkthrough focused on **proving enforcement** — not on showcasing generated artifacts.
+This walkthrough focused on **proving guardrails** — not on showcasing generated artifacts.
 
 If you want to see what **actual projects generated by Codegen Blueprint look like**, including:
 
 * the exact `README.md` files written into generated projects
-* how architecture, enforcement, and sample code are explained to developers
+* how architecture, guardrails, and sample code are explained to developers
 * what a team receives *after* generation
 
 see:
@@ -353,4 +353,6 @@ see:
 [Generated Readmes](./generated-readmes.md)
 
 These READMEs are **real generator output**, not examples.
-They represent the **human-facing side of the same architecture contract** enforced in this walkthrough.
+
+They represent the **human-facing expression of the same architecture contract**
+that is **evaluated and verified** throughout this walkthrough.

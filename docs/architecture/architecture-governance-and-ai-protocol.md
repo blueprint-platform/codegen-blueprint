@@ -1,8 +1,8 @@
 # Architecture Governance & AI Collaboration Protocol — 1.0.0 GA
 
-> **Executable Architecture requires explicit decisions, not accidental code.**
+> **Executable Architecture requires explicit decisions and observable guardrails — not accidental code.**
 
-This document defines how architectural decisions are made, enforced, and protected in the Codegen Blueprint project — including **how AI is allowed to participate**.
+This document defines how architectural decisions are made, **evaluated**, and protected in the Codegen Blueprint project — including **how AI is allowed to participate**.
 
 ---
 
@@ -12,7 +12,7 @@ This document defines how architectural decisions are made, enforced, and protec
 
 Therefore:
 
-* Every architectural claim must map to an enforceable rule or test
+* Every architectural claim must map to an observable guardrails mechanism
 * Every generated artifact must be intentional
 * Nothing enters the repository by accident
 
@@ -74,7 +74,7 @@ This protocol exists to ensure architectural intent survives beyond individual i
 
 *How is this guaranteed?*
 
-* Test, rule, or enforcement mechanism
+* Test, rule, or **guardrails mechanism**
 * Manual guarantees are not accepted
 
 ### 3.5 Drift Check
@@ -93,10 +93,10 @@ This protocol exists to ensure architectural intent survives beyond individual i
 * No IO, filesystem, templating, or delivery logic
 * Contains:
 
-    * Aggregates
-    * Value objects
-    * Policies
-    * Fail-fast domain violations
+  * Aggregates
+  * Value objects
+  * Policies
+  * Fail-fast domain violations
 
 ### Application
 
@@ -120,21 +120,22 @@ This protocol exists to ensure architectural intent survives beyond individual i
 
 ---
 
-## 5. Enforcement Philosophy
+## 5. Architecture Guardrails Philosophy
 
-* Enforcement is **opt-in**, never hidden
-* Rules are generated, not hard-wired
-  > Generated enforcement rules are platform-defined and centrally evolved,  
-  > while remaining visible and reviewable at the service level.
-* Tests > conventions > documentation
+* Architecture guardrails are **opt-in**, never hidden
+* Guardrails rules are **generated**, not hard-wired
 
-Supported levels:
+> Generated guardrails rules are platform-defined and centrally evolved,
+> while remaining visible and reviewable at the service level.
+
+Supported guardrails modes (explicitly selected at generation time):
 
 * `none` — generation only
 * `basic` — structural & dependency guards
 * `strict` — architecture drift prevention
 
-> Architecture must fail fast or not claim enforcement.
+> Architecture guardrails must surface violations deterministically —
+> or they must not be claimed at all.
 
 ---
 
@@ -153,7 +154,7 @@ AI-generated code **must not**:
 * Introduce new architectural concepts
 * Rename public APIs without discussion
 * Add frameworks to core layers
-* Bypass existing enforcement mechanisms
+* Bypass existing guardrails mechanisms
 
 ---
 
@@ -164,7 +165,7 @@ A change may be merged only if:
 * [ ] Architectural intent is explicit
 * [ ] Boundary placement is justified
 * [ ] Contracts are clear and minimal
-* [ ] Tests or rules enforce the claim
+* [ ] Tests or guardrails mechanisms make the claim observable
 * [ ] README and docs remain truthful
 * [ ] No new drift vectors introduced
 * [ ] No architectural decision was delegated implicitly to tooling or frameworks
@@ -184,8 +185,8 @@ This project intentionally resists:
 Instead, it embraces:
 
 * Explicit decisions
-* Enforced boundaries
+* Observable guardrails
 * Collaborative reasoning
 
 > **Architecture is a long-term asset.**
-> This governance exists to protect it. 
+> This governance exists to protect it.

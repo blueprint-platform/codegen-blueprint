@@ -19,7 +19,7 @@ body:
       label: "Problem / Motivation"
       description: >
         What limitation, friction, or architectural gap are you experiencing?
-        Please include context (layout, enforcement level, profile, etc.).
+        Please include context (layout, guardrails level, profile, etc.).
       placeholder: |
         Example:
         In multi-profile setups, it's hard to ensure consistent governance
@@ -51,7 +51,7 @@ body:
       placeholder: |
         Example:
         I considered scripting this externally, but it breaks determinism
-        and makes enforcement non-reproducible.
+        and makes guardrails non-reproducible.
 
   - type: textarea
     id: impact

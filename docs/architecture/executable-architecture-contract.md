@@ -1,6 +1,6 @@
 # Executable Architecture Contract — 1.0.0 GA
 
-**What Codegen Blueprint 1.0.0 GA guarantees, enforces, and produces.**
+**What Codegen Blueprint 1.0.0 GA guarantees, evaluates, and produces.**
 
 This document defines the **exact, non-negotiable architecture guarantees**
 provided by Codegen Blueprint **1.0.0 GA** at generation and build time.
@@ -15,9 +15,9 @@ provided by Codegen Blueprint **1.0.0 GA** at generation and build time.
 
 * [1 Purpose](#1-purpose)
 * [2 Core Mental Model](#2-core-mental-model)
-* [3 Engine Enforcement Guarantees (1.0.0 GA)](#3-engine-enforcement-guarantees-100-ga)
+* [3 Engine Guardrail Guarantees (1.0.0 GA)](#3-engine-guardrails-guarantees-100-ga)
 * [4 Generated Project Scope (Output Contract)](#4-generated-project-scope-output-contract)
-* [5 Explicitly Not Enforced (Yet)](#5-explicitly-not-enforced-yet)
+* [5 Explicitly Not Guardrailed (Yet)](#5-explicitly-not-guardrailed-yet)
 * [6 Intentional Scope Constraints](#6-intentional-scope-constraints)
 * [7 Path Toward Executable Architecture](#7-path-toward-executable-architecture)
 * [8 Review Guidance](#8-review-guidance)
@@ -30,9 +30,9 @@ This document exists to ensure that:
 
 * README **claims** always match **engine guarantees**
 * Generated output is **predictable**, **testable**, and **architecturally honest**
-* The foundation enables **stronger enforcement** without breaking trust
+* The foundation enables **stronger guardrails** without breaking trust
 
-> 🧠 **If we promise it, we enforce it.**
+> 🧠 **If we promise it, the build makes it observable.**
 
 Anything not explicitly listed here is **out of scope** for 1.0.0 GA.
 
@@ -42,7 +42,7 @@ Anything not explicitly listed here is **out of scope** for 1.0.0 GA.
 
 | Concept       | Description                                                   |
 | ------------- | ------------------------------------------------------------- |
-| **Engine**    | CLI‑driven executor applying architectural profiles           |
+| **Engine**    | CLI‑driven generator applying architectural profiles           |
 | **Profiles**  | Architecture + runtime stack + generation rules               |
 | **Artifacts** | Generated project assets (structured, ordered, and validated) |
 
@@ -52,14 +52,14 @@ The engine today:
 
 ---
 
-## 3️⃣ Engine Enforcement Guarantees (1.0.0 GA)
+## 3️⃣ Engine Guardrails Guarantees (1.0.0 GA)
 
 All guarantees listed in this section are **validated by automated tests**.
 
 This section explicitly distinguishes between:
 
-* **mandatory enforcement inside the Codegen Blueprint engine itself**, and
-* **optional enforcement generated into produced projects**.
+* **mandatory guardrails inside the Codegen Blueprint engine itself**, and
+* **optional guardrails generated into produced projects**.
 
 ---
 
@@ -81,7 +81,7 @@ No hidden modules. No conditional directories.
 
 ---
 
-### ✔ 3.2 Identity & Naming Enforcement
+### ✔ 3.2 Identity & Naming Validation
 
 The engine validates **consistency and correctness** of:
 
@@ -98,7 +98,7 @@ The engine validates **consistency and correctness** of:
 
 Every generated project:
 
-* Compiles and boots immediately
+* Compiles and starts without additional configuration
 * Includes **only explicitly requested dependencies**
 * Starts via `SpringApplication.run()`
 
@@ -149,11 +149,11 @@ The engine executes — profiles decide *what* and *how*.
 
 ---
 
-### ✔ 3.7 Generator & Generated Project Architecture Enforcement
+### ✔ 3.7 Generator & Generated Project Architecture Guardrails
 
 #### Engine‑Level (Mandatory)
 
-The Codegen Blueprint codebase enforces **its own architecture** using automated tests (ArchUnit):
+The Codegen Blueprint codebase validates **its own architecture** using automated tests (ArchUnit):
 
 * Domain purity
 * Strict dependency direction
@@ -163,13 +163,13 @@ These guarantees apply **unconditionally** to the generator itself.
 
 #### Generated Project (Optional)
 
-The engine can optionally generate **architecture enforcement tests** into produced projects:
+The engine can optionally generate **architecture guardrails tests** into produced projects:
 
-* Generated only when enabled via profile / enforcement mode
+* Generated only when enabled via profile / guardrails mode
 * Implemented as executable ArchUnit tests
 * Focused on **structural boundaries** (e.g. layered or hexagonal layouts)
 
-⚠️ Generated‑project enforcement is **opt‑in** in 1.0.0 GA and never implicit.
+⚠️ Generated-project guardrails are **opt-in** in 1.0.0 GA and never implicit.
 
 ---
 
@@ -237,16 +237,16 @@ Runnable immediately:
 
 ---
 
-## 5️⃣ Explicitly Not Enforced (Yet)
+## 5️⃣ Explicitly Not Guardrailed (Yet)
 
 The following are **intentionally out of scope** for 1.0.0 GA:
 
-| Item                                     | Reason                       |
-| ---------------------------------------- | ---------------------------- |
-| Hexagonal layout by default              | Zero‑friction adoption       |
-| Policy engine / DSL                      | Requires governance language |
-| Custom / policy‑level architecture rules | Next enforcement stage       |
-| Org‑wide standards                       | Platform‑level concern       |
+| Item                                     | Reason                        |
+| ---------------------------------------- |-------------------------------|
+| Hexagonal layout by default              | Zero‑friction adoption        |
+| Policy engine / DSL                      | Requires governance language  |
+| Custom / policy‑level architecture rules | Next guardrails stage         |
+| Org‑wide standards                       | Platform‑level concern        |
 
 > Today: architecture‑aware → Tomorrow: architecture‑policed
 
@@ -275,7 +275,7 @@ while keeping the **1.0.0 GA contract strict and non-negotiable**.
 
 | Stage | Capability                        | Value                          |
 | ----: | --------------------------------- | ------------------------------ |
-|  Next | Layout enforcement gates          | Structural boundaries enforced |
+|  Next | Layout guardrails gates          | Structural boundaries evaluated |
 |  Next | CI-level architecture validation  | Drift fails fast               |
 |  Next | Policy DSL                        | Governance as code             |
 | Later | Org-wide profiles                 | Team-scale compliance          |
@@ -291,7 +291,7 @@ are documented separately in the main README and are **not part of this GA contr
 
 Any change touching architecture must answer:
 
-> ❓ **Does this change claim enforcement?**
+> ❓ **Does this change claim guardrails?**
 
 * If **yes** → update this document
 * If **no** → adjust README only
@@ -306,4 +306,4 @@ Any change touching architecture must answer:
 * Architecture‑aware structure
 * Predictable foundations for evolution
 
-> 🚀 **Executable Architecture begins here.**
+> 🚀 **Executable Architecture becomes observable — and testable — here.**

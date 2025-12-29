@@ -57,7 +57,7 @@ From this version onward:
 
     * `standard` (layered)
     * `hexagonal` (ports & adapters)
-* Optional executable architecture enforcement:
+* Optional executable architecture guardrails:
 
     * Generated ArchUnit tests (`basic`, `strict`)
 * Generated projects pass `mvn verify` on first run
@@ -84,7 +84,7 @@ Patch releases **do not**:
 
 * Change CLI contracts
 * Modify generated project structure
-* Alter architectural enforcement rules in breaking ways
+* Alter architectural guardrails rules in breaking ways
 
 > If a generated project built successfully on **1.0.0**,  
 > it must continue to build on any **1.0.x** release —  
@@ -99,7 +99,7 @@ Examples of allowed changes:
 
 * New CLI options (opt-in)
 * New profiles or artifacts
-* Additional enforcement modes
+* Additional guardrails modes
 * Extended template coverage
 * Support for newer platform versions (opt-in)
 
@@ -173,4 +173,4 @@ Codegen Blueprint prefers:
 
 Over fast iteration with undefined consequences.
 
-> Architecture is not only generated — it is **versioned, protected, and enforced**.
+> Architecture is not only generated — it is **versioned, protected, and evaluated through executable guardrails.**

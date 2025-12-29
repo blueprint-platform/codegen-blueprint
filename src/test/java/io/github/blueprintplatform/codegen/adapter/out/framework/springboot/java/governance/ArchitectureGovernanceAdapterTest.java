@@ -9,7 +9,7 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.Artifac
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -73,11 +73,11 @@ class ArchitectureGovernanceAdapterTest {
     return new StubClasspathTemplateScanner(List.of(templates));
   }
 
-  private static ProjectBlueprint blueprint(EnforcementMode mode) {
+  private static ProjectBlueprint blueprint(GuardrailsMode mode) {
     return blueprint(mode, Dependencies.of(List.of()));
   }
 
-  private static ProjectBlueprint blueprint(EnforcementMode mode, Dependencies dependencies) {
+  private static ProjectBlueprint blueprint(GuardrailsMode mode, Dependencies dependencies) {
     ProjectMetadata metadata =
         new ProjectMetadata(
             new ProjectIdentity(ACME_GROUP_ID, DEMO_ARTIFACT_ID),
@@ -125,7 +125,7 @@ class ArchitectureGovernanceAdapterTest {
   }
 
   @Test
-  @DisplayName("generate() should return empty when enforcement mode is NONE")
+  @DisplayName("generate() should return empty when guardrails mode is NONE")
   void generate_noneMode_shouldReturnEmpty() {
     RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
     ArchitectureGovernanceAdapter adapter =
@@ -134,7 +134,7 @@ class ArchitectureGovernanceAdapterTest {
             DUMMY_ARTIFACT_SPEC,
             new StubClasspathTemplateScanner(List.of(DOMAIN_PURITY_TEMPLATE)));
 
-    assertThat(adapter.generate(blueprint(EnforcementMode.NONE))).isEmpty();
+    assertThat(adapter.generate(blueprint(GuardrailsMode.NONE))).isEmpty();
     assertThat(renderer.capturedTemplateNames).isEmpty();
     assertThat(renderer.capturedOutPaths).isEmpty();
   }
@@ -150,7 +150,7 @@ class ArchitectureGovernanceAdapterTest {
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    adapter.generate(blueprint(EnforcementMode.STRICT));
+    adapter.generate(blueprint(GuardrailsMode.STRICT));
 
     assertThat(renderer.capturedTemplateNames)
         .contains(DOMAIN_PURITY_TEMPLATE)
@@ -175,7 +175,7 @@ class ArchitectureGovernanceAdapterTest {
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    adapter.generate(blueprint(EnforcementMode.STRICT, dependenciesWithSpringWeb()));
+    adapter.generate(blueprint(GuardrailsMode.STRICT, dependenciesWithSpringWeb()));
 
     assertThat(renderer.capturedTemplateNames)
         .contains(DOMAIN_PURITY_TEMPLATE, HEX_REST_SIGNATURE_TEMPLATE, STD_REST_SIGNATURE_TEMPLATE);

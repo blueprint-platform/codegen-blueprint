@@ -14,7 +14,7 @@ import io.github.blueprintplatform.codegen.application.usecase.project.context.C
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
@@ -90,8 +90,8 @@ class CreateProjectHandlerTest {
     assertThat(result.project().metadata().projectDescription()).isEqualTo("Demo project");
     assertThat(result.project().metadata().packageName()).isEqualTo("com.acme.demo");
     assertThat(result.project().architecture().layout()).isEqualTo(ProjectLayout.STANDARD.key());
-    assertThat(result.project().architecture().enforcementMode())
-        .isEqualTo(EnforcementMode.NONE.key());
+    assertThat(result.project().architecture().guardrailsMode())
+        .isEqualTo(GuardrailsMode.NONE.key());
     assertThat(result.project().architecture().sampleCodeLevel())
         .isEqualTo(SampleCodeOptions.none().level().key());
 
@@ -115,7 +115,7 @@ class CreateProjectHandlerTest {
         "com.acme.demo",
         techStack,
         ProjectLayout.STANDARD,
-        EnforcementMode.NONE,
+        GuardrailsMode.NONE,
         platformTarget,
         List.of(),
         SampleCodeOptions.none(),

@@ -7,12 +7,12 @@ If you believe you’ve found a security vulnerability in **Codegen Blueprint**,
 
 ## Supported Versions
 
-Security fixes are provided for:
+Security fixes are maintained for:
 
 |   Version | Status                           |
-| --------: | -------------------------------- |
+| --------: |----------------------------------|
 |    `main` | ✅ Supported (active development) |
-|   `1.0.x` | ✅ Supported (GA line)            |
+|   `1.0.x` | ✅ Supported (GA patch line)      |
 | `< 1.0.0` | ❌ Not supported                  |
 
 > **Note**
@@ -56,10 +56,10 @@ Please include:
 
 We aim to respond in a timely and transparent manner:
 
-* **Acknowledgement:** typically within a few days
+* **Acknowledgement:** usually within a few days
 * **Triage & Validation:** severity assessment and reproduction
 * **Fix Planning:** prioritized based on impact
-* **Release:** patch published once validated
+* **Release:** patch published once validated when appropriate
 
 For sensitive issues, **coordinated disclosure** will be used.
 
@@ -90,13 +90,13 @@ Severity determines prioritization and disclosure timing.
 
 * Codegen Blueprint generator engine (domain, application, adapter)
 * CLI interface and option parsing
-* Generated architecture enforcement artifacts (ArchUnit rules)
+* Generated architecture guardrails (e.g., ArchUnit tests/rules)
 * Templates, profiles, and build configuration produced by the generator
 * CI/CD configuration and repository automation
 
 ### Out of Scope
 
-* Vulnerabilities confined to third‑party dependencies (please report upstream)
+* Vulnerabilities confined to third‑party dependencies (primary responsibility upstream)
 * Demo or sample code generated for learning purposes only
 * Deployment-specific misconfigurations outside this repository
 * Social engineering or physical attacks
@@ -105,7 +105,7 @@ Severity determines prioritization and disclosure timing.
 
 ## Non‑Qualifying Reports
 
-To keep focus on impactful issues, the following are generally excluded:
+To keep focus on impactful issues, the following are generally out of scope:
 
 * Best-practice suggestions without a concrete exploit
 * Generic rate-limiting or DoS claims without novel vectors

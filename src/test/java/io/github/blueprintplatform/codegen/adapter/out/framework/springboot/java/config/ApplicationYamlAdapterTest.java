@@ -8,7 +8,7 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.Artifac
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -65,7 +65,7 @@ class ApplicationYamlAdapterTest {
     ArchitectureSpec architecture =
         new ArchitectureSpec(
             ProjectLayout.STANDARD,
-            new ArchitectureGovernance(EnforcementMode.NONE),
+            new ArchitectureGovernance(GuardrailsMode.NONE),
             SampleCodeOptions.none());
 
     return ProjectBlueprint.of(metadata, platform, architecture, dependencies);

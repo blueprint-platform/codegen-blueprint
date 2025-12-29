@@ -1,7 +1,7 @@
 # 🧩 Pull Request Template
 
 Thank you for contributing to **codegen-blueprint** 🙌
-This project is architecture-first and contract-driven, so please keep PRs **small, focused, and explicit**.
+This project is architecture-first and contract-driven (profiles, ports, and generated guardrails), so please keep PRs **small, focused, and explicit**.
 
 ---
 
@@ -34,7 +34,7 @@ Explain the architectural intent (if applicable):
 * Does this affect **domain purity**?
 * Does it introduce or modify a **port / adapter boundary**?
 * Does it change **profile behavior** or artifact ordering?
-* Does it affect **architecture governance / enforcement**?
+* Does it affect **architecture guardrails (generation, scope, or behavior)?**?
 
 If **none**, say so explicitly.
 
@@ -45,7 +45,7 @@ If **none**, say so explicitly.
 How was this change validated?
 
 * Unit tests added or updated
-* Integration tests (generated project verification)
+* Integration tests (generated project build & verification)
 * Manual verification (CLI / generated output)
 * CI matrix impact (if any)
 
@@ -55,7 +55,7 @@ How was this change validated?
 
 * [ ] Scope is minimal and focused
 * [ ] Domain layer remains framework-agnostic
-* [ ] Application layer contains no business logic
+* [ ] Application layer contains no business logic (or domain rules)
 * [ ] Ports express intent, not implementation
 * [ ] Adapters contain all IO / framework specifics
 * [ ] Build passes locally: `mvn -q -ntp clean verify`
@@ -70,7 +70,7 @@ How was this change validated?
 
 **Type:** `feature` / `bugfix` / `docs` / `refactor` / `chore` / `test` / `ci`
 **Layer:** `domain` / `application` / `adapter` / `ci` / `docs`
-**Target Release:** (optional) e.g. `v1.0.0`
+**Target Release:** (optional) e.g. `v1.0.0`, `v1.0.1`
 
 ---
 
@@ -79,3 +79,4 @@ How was this change validated?
 > * This project values **architectural clarity over convenience**.
 > * Large or mixed-scope PRs are likely to be requested to split.
 > * If unsure about scope or direction, open a discussion before coding.
+> * Architectural changes should be observable through generated output or build-time feedback.

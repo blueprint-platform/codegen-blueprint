@@ -6,7 +6,7 @@ import io.github.blueprintplatform.codegen.application.port.in.project.model.Cre
 import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyScope;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
@@ -57,7 +57,7 @@ class ProjectBlueprintMapperTest {
         "com.acme.demo",
         techStack,
         ProjectLayout.STANDARD,
-        EnforcementMode.NONE,
+        GuardrailsMode.NONE,
         platformTarget,
         dependencies,
         SampleCodeOptions.none(),

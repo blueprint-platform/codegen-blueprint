@@ -96,11 +96,13 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   SpringBootLayoutOption layout;
 
   @Option(
-      names = {"--enforcement"},
+      names = {"--guardrails"},
       required = false,
-      description = "Architecture enforcement mode. Valid values: ${COMPLETION-CANDIDATES}",
+      description =
+          "Architecture guardrails level. Defines how architectural boundaries are checked "
+              + "and surfaced during the build. Valid values: ${COMPLETION-CANDIDATES}",
       defaultValue = "basic")
-  SpringBootArchitectureEnforcementOption enforcementMode;
+  SpringBootArchitectureGuardrailsOption guardrails;
 
   @Option(
       names = {"--dependency"},
@@ -143,8 +145,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
     var runtimeTarget =
         new CliRuntimeTarget(CliRuntimeTargetKeys.TYPE_SPRING_BOOT_JVM, runtimeTargetParams);
 
-    var architecture =
-        new CliArchitectureSpec(layout.key(), enforcementMode.key(), sampleCode.key());
+    var architecture = new CliArchitectureSpec(layout.key(), guardrails.key(), sampleCode.key());
 
     List<CliDependency> cliDependencies = List.of();
     if (dependencies != null) {

@@ -68,15 +68,21 @@ Codegen Blueprint **does not guarantee**:
 
 * Compatibility with every organizational architecture style
 * Alignment with existing legacy codebases
-* Compliance with undocumented internal company rules
+* Compliance with undocumented or implicit internal company rules
 
-The generator enforces **its own explicit architectural models**:
+Codegen Blueprint operates on **explicit, predefined architectural models**:
 
 * `standard` (layered)
 * `hexagonal` (ports & adapters)
 
+These models define:
+
+* the generated project structure
+* the available architectural guardrails
+* how architectural boundaries are evaluated at build time
+
 If your organization’s architecture diverges from these models,
-Codegen Blueprint is **not obligated to adapt**.
+Codegen Blueprint makes **no guarantee of compatibility or adaptation**.
 
 ---
 
@@ -166,7 +172,7 @@ Together, these documents define the **complete responsibility boundary** of the
 
 ## Final Statement
 
-Codegen Blueprint is designed to be **deliberate, constrained, and enforceable**.
+Codegen Blueprint is designed to be **deliberate, constrained, and guardrails-driven**.
 
 Its strength comes from:
 
@@ -174,6 +180,6 @@ Its strength comes from:
 * intentional limitations
 * architectural integrity over convenience
 
-> If a feature is missing, it is often because adding it would weaken the product.
+> If a feature is missing, it is often because adding it would weaken the architectural contract.
 
-Understanding these non‑guarantees is essential to using Codegen Blueprint correctly.
+Understanding these non-guarantees is essential to using Codegen Blueprint correctly.

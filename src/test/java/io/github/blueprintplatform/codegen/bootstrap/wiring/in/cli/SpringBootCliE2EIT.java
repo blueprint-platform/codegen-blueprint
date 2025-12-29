@@ -109,7 +109,7 @@ class SpringBootCliE2EIT {
       packageName,
       "--layout",
       "hexagonal",
-      "--enforcement",
+      "--guardrails",
       "basic",
       "--sample-code",
       "basic",

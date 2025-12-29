@@ -339,7 +339,7 @@
             <div class="brand-dot"></div>
             <span>Blueprint Platform</span>
           </div>
-          <div class="badge-small">Profile-Driven · Architecture-First · Generate once, enforce forever</div>
+          <div class="badge-small">Profile-Driven · Architecture-First · Generate once, validate continuously</div>
         </div>
 
         <h1>
@@ -348,7 +348,7 @@
 
         <div class="subtitle">
           Profile-driven generator with <strong>executable architecture</strong> —
-          explicit architectural boundaries enforced at build time.
+          explicit architectural boundaries verified at build time.
         </div>
 
         <div class="bullets">
@@ -358,7 +358,7 @@
           </div>
           <div class="bullet">
             <div class="bullet-dot"></div>
-            <div>Build-time guardrails: generated ArchUnit rules that <strong>fail fast</strong> on drift.</div>
+            <div>Build-time guardrails: generated ArchUnit checks that <strong>surface drift early</strong>.</div>
           </div>
           <div class="bullet">
             <div class="bullet-dot"></div>
@@ -414,7 +414,7 @@
       </div>
 
       <div class="code-window">
-        <div class="code-line code-muted">// Generate a service (profile-selected stack · layout + enforcement)</div>
+        <div class="code-line code-muted">// Generate a service (profile-selected stack · layout + guardrails)</div>
 
         <div class="code-line code-cmd"><span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint-1.0.0.jar</span> &bsol;</div>
         <div class="code-line code-cmd">  --cli <span class="code-str">springboot</span> &bsol;</div>
@@ -426,7 +426,7 @@
 
         <div class="code-line code-sep">// Optional flags</div>
         <div class="code-line code-cmd">  --layout <span class="code-str">hexagonal</span> &bsol;</div>
-        <div class="code-line code-cmd">  --enforcement <span class="code-str">strict</span> &bsol;</div>
+        <div class="code-line code-cmd">  --guardrails <span class="code-str">strict</span> &bsol;</div>
         <div class="code-line code-cmd">  --sample-code <span class="code-str">basic</span> &bsol;</div>
         <div class="code-line code-cmd">  --dependency <span class="code-str">web</span> &bsol;</div>
         <div class="code-line code-cmd">  --target-dir <span class="code-str">/path/to/output</span></div>

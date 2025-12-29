@@ -14,7 +14,7 @@ final class ProjectDocumentationModel {
   static final String FRAMEWORK = "framework";
   static final String JAVA_VERSION = "javaVersion";
   static final String LAYOUT = "layout";
-  static final String ENFORCEMENT = "enforcement";
+  static final String GUARDRAILS = "guardrails";
   static final String SAMPLE_CODE = "sampleCode";
   static final String SPRING_BOOT_VERSION = "springBootVersion";
   static final String DEPENDENCIES = "dependencies";

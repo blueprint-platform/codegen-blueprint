@@ -1,23 +1,23 @@
 package io.github.blueprintplatform.codegen.domain.model.value.architecture;
 
-public record ArchitectureGovernance(EnforcementMode mode) {
+public record ArchitectureGovernance(GuardrailsMode mode) {
 
   public ArchitectureGovernance {
     if (mode == null) {
-      mode = EnforcementMode.NONE;
+      mode = GuardrailsMode.NONE;
     }
   }
 
   public static ArchitectureGovernance none() {
-    return new ArchitectureGovernance(EnforcementMode.NONE);
+    return new ArchitectureGovernance(GuardrailsMode.NONE);
   }
 
   public static ArchitectureGovernance basic() {
-    return new ArchitectureGovernance(EnforcementMode.BASIC);
+    return new ArchitectureGovernance(GuardrailsMode.BASIC);
   }
 
   public static ArchitectureGovernance strict() {
-    return new ArchitectureGovernance(EnforcementMode.STRICT);
+    return new ArchitectureGovernance(GuardrailsMode.STRICT);
   }
 
   public boolean isEnabled() {
@@ -25,10 +25,10 @@ public record ArchitectureGovernance(EnforcementMode mode) {
   }
 
   public boolean isStrict() {
-    return mode == EnforcementMode.STRICT;
+    return mode == GuardrailsMode.STRICT;
   }
 
   public boolean isBasic() {
-    return mode == EnforcementMode.BASIC;
+    return mode == GuardrailsMode.BASIC;
   }
 }

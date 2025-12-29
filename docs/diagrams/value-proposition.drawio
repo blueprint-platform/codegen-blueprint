@@ -5,16 +5,16 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="consumers" value="&lt;p class=&quot;p1&quot;&gt;&lt;b&gt;Who benefits&lt;/b&gt;&lt;/p&gt;• Developers&lt;br&gt;• Platform Engineering&lt;br&gt;• Lead Architects&lt;br&gt;• New Team Members" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="20" y="200" width="210" height="140" as="geometry" />
+          <mxGeometry x="30" y="170" width="200" height="140" as="geometry" />
         </mxCell>
         <mxCell id="engine" value="&lt;b&gt;Codegen Blueprint engine&lt;/b&gt;&lt;br&gt;&lt;br&gt;• &lt;span style=&quot;background-color: transparent;&quot;&gt;Profile-driven project generator&lt;/span&gt;&lt;div&gt;• Architecture-aware generation&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;amp; hexagonal-ready layouts&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Executable standards (Architecture as a Product)&lt;/div&gt;&lt;div&gt;• Framework-agnostic core domain&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="250" y="160" width="390" height="200" as="geometry" />
+          <mxGeometry x="250" y="160" width="390" height="180" as="geometry" />
         </mxCell>
-        <mxCell id="profiles" value="&lt;b&gt;Profiles &amp;amp; templates&lt;/b&gt;&lt;div&gt;&lt;b&gt;(YAML + FreeMarker)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;• &lt;code&gt;spring-boot-maven-java&lt;/code&gt; profile&lt;br&gt;• Stack + conventions encoded as rules&lt;/div&gt;&lt;div&gt;• Architecture enforcement level&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(basic | strict)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Ordered artifact generation pipeline&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="250" y="390" width="390" height="200" as="geometry" />
+        <mxCell id="profiles" value="&lt;b&gt;Profiles &amp;amp; templates&lt;/b&gt;&lt;div&gt;&lt;b&gt;(YAML + FreeMarker)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;• &lt;code&gt;spring-boot-maven-java&lt;/code&gt; profile&lt;br&gt;• Stack + conventions encoded as rules&lt;/div&gt;&lt;div&gt;• Architecture guardrails level&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(basic | strict)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Ordered artifact generation pipeline&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="250" y="390" width="390" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="generated" value="&lt;b&gt;Generated services&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div&gt;• &lt;span style=&quot;background-color: transparent;&quot;&gt;Clean, consistent Spring Boot foundation&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Optional hexagonal layout&lt;/div&gt;&lt;div&gt;• Optional architecture enforcement tests&lt;/div&gt;&lt;div&gt;• Testable, evolvable from day zero&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="658" y="190" width="260" height="160" as="geometry" />
+        <mxCell id="generated" value="&lt;b&gt;Generated services&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div&gt;• &lt;span style=&quot;background-color: transparent;&quot;&gt;Clean, consistent Spring Boot foundation&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Optional hexagonal layout&lt;/div&gt;&lt;div&gt;• Optional architecture guardrails tests&lt;/div&gt;&lt;div&gt;• Testable, evolvable from day zero&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="658" y="169" width="242" height="160" as="geometry" />
         </mxCell>
         <mxCell id="titleBand" value="&lt;p class=&quot;p1&quot;&gt;Value Proposition — Why Codegen Blueprint exists&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
           <mxGeometry x="20" y="60" width="900" height="60" as="geometry" />
@@ -36,6 +36,9 @@
             <mxPoint x="610" y="260" as="sourcePoint" />
             <mxPoint x="650" y="260" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="seDN3QykQ5rmsuMApSU4-4" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="60" y="561" width="820" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

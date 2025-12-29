@@ -3,12 +3,14 @@
 Thank you for your interest in contributing to **Codegen Blueprint**.
 
 This project is not a traditional code generator.
-It is an **architecture-first engine** whose primary responsibility is to turn architectural intent into **deterministic, enforceable output**.
+It is an **architecture-first engine** whose primary responsibility is to turn architectural intent into
+**deterministic, executable output that can be verified at build time**.
 
-Contributions are welcome — but only when they **preserve and strengthen the guarantees** this project exists to provide.
+Contributions are welcome — but only when they **preserve and strengthen the architectural guarantees**
+this project exists to provide.
 
-> If you’re looking to add templates quickly or experiment freely, this may not be the right repository.
-> If you care about **architecture as a product**, you’re in the right place.
+> If you’re looking to add templates quickly or experiment freely, this may not be the right repository.  
+> If you care about **architecture as a product — visible, testable, and evolution-ready**, you’re in the right place.
 
 ---
 
@@ -48,7 +50,7 @@ Please search existing discussions and issues first.
 
 ## Contribution Philosophy
 
-**Codegen Blueprint treats architecture as a first‑class, executable product.**
+**Codegen Blueprint treats architecture as a first-class, executable product.**
 
 That means:
 
@@ -60,7 +62,10 @@ Every contribution is evaluated against a single question:
 
 > **Does this preserve or strengthen the architectural guarantees of the generator?**
 
-Changes that weaken determinism, blur boundaries, or bypass enforcement will not be accepted — even if they are technically correct.
+Changes that weaken determinism, blur boundaries, or bypass guardrails will not be accepted — even if they are technically correct.
+
+At the same time, contributions that **improve clarity, explainability, or long-term evolution paths**
+are strongly encouraged, even when they do not add new features.
 
 ---
 
@@ -71,7 +76,7 @@ Typical accepted contribution categories:
 * **docs** — README, guides, architecture explanations
 * **profile** — new or improved stack profiles
 * **artifact** — new artifacts or pipeline improvements
-* **governance** — architecture enforcement rules (ArchUnit)
+* **governance** — architecture guardrails rules (ArchUnit)
 * **cli** — CLI options or contract improvements
 * **engine** — domain / application / adapter internals
 * **ci** — build, test, or verification automation
@@ -99,7 +104,7 @@ domain ← application ← adapter ← bootstrap
     * no ordering randomness
     * no environment‑dependent behavior
 * Generated code is changed **only via templates or models** — never manually
-* Architecture enforcement rules must:
+* Architecture guardrails rules must:
 
     * be explicit
     * be testable
@@ -148,11 +153,11 @@ Additional concepts:
 
 * **Profiles** define the **technology stack** (framework, build tool, language)
   and the **ordered artifact pipeline**.
-* **Blueprint options** (layout, enforcement, sample-code) drive **template
+* **Blueprint options** (layout, guardrails, sample-code) drive **template
   selection and output shape** within artifacts.
 * **Artifacts** define the concrete generated outputs
   (build files, source layout, config, samples, governance tests).
-* **Governance** defines **executable architecture enforcement**
+* **Governance** defines **executable architecture guardrails**
   (e.g. generated ArchUnit rules).
 
 The generator engine must never depend on generated projects.
@@ -176,7 +181,7 @@ Use clear, descriptive prefixes:
 Examples:
 
 * `feature(governance): add strict hexagonal boundary rules`
-* `docs: clarify enforcement guarantees in README`
+* `docs: clarify guardrails guarantees in README`
 
 ### Pull Request Scope
 

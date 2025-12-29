@@ -4,21 +4,21 @@ import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.shared.KeyEnumParser;
 import io.github.blueprintplatform.codegen.domain.shared.KeyedEnum;
 
-public enum EnforcementMode implements KeyedEnum {
+public enum GuardrailsMode implements KeyedEnum {
   NONE("none"),
   BASIC("basic"),
   STRICT("strict");
 
-  private static final ErrorCode UNKNOWN = () -> "project.architecture.enforcement.unknown";
+  private static final ErrorCode UNKNOWN = () -> "project.architecture.guardrails.unknown";
 
   private final String key;
 
-  EnforcementMode(String key) {
+  GuardrailsMode(String key) {
     this.key = key;
   }
 
-  public static EnforcementMode fromKey(String rawKey) {
-    return KeyEnumParser.parse(EnforcementMode.class, rawKey, UNKNOWN);
+  public static GuardrailsMode fromKey(String rawKey) {
+    return KeyEnumParser.parse(GuardrailsMode.class, rawKey, UNKNOWN);
   }
 
   public boolean isEnabled() {
