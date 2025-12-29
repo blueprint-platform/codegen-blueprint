@@ -22,6 +22,19 @@ are generated, how they are evaluated, and why they exist**.
 
 ---
 
+## 📑 Table of Contents
+
+- [Guardrails overview](#guardrails-overview)
+- [Guardrails modes](#guardrails-modes)
+- [Hexagonal architecture guardrails](#hexagonal-architecture-guardrails)
+- [Standard (Layered) architecture guardrails](#standard-layered-architecture-guardrails)
+- [What guardrails does NOT cover](#what-guardrails-does-not-cover)
+- [Generated test locations](#generated-test-locations)
+- [Versioning guarantee](#versioning-guarantee)
+- [Summary](#summary)
+
+---
+
 ## Guardrails overview
 
 **Mechanism**

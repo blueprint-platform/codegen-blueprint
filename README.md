@@ -1,4 +1,4 @@
-# Codegen Blueprint — Architecture-First Project Generator 🚀
+# Codegen Blueprint — Architecture-First Project Generator
 
 [![Build](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/blueprint-platform/codegen-blueprint?logo=github\&label=release)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)

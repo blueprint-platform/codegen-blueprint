@@ -6,11 +6,23 @@ It exists to make one thing explicit:
 
 > **Codegen Blueprint does not only generate code — it generates an explicit, opinionated project-level architecture contract.**
 
-The README files shown here are **not hand-written examples**.
+The README files shown here are **not handwritten examples**.
 They are the **exact `README.md` files generated into projects** created via the CLI.
 
 The term *contract* in this document refers strictly to **project-level guarantees** —
 layout, guardrails, and build-time behavior — as defined by the selected profile and options.
+
+---
+
+## 📑 Table of Contents
+
+- [Why this matters](#why-this-matters)
+- [What you are seeing](#what-you-are-seeing)
+- [Hexagonal Architecture — Generated README](#hexagonal-architecture--generated-readme)
+- [Standard (Layered) Architecture — Generated README](#standard-layered-architecture--generated-readme)
+- [What this proves](#what-this-proves)
+- [Relationship to Executable Architecture Proof](#relationship-to-executable-architecture-proof)
+- [Summary](#summary)
 
 ---
 

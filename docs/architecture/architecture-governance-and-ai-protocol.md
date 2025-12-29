@@ -6,6 +6,19 @@ This document defines how architectural decisions are made, **evaluated**, and p
 
 ---
 
+## 📑 Table of Contents
+
+- [Core Principle](#1-core-principle)
+- [Roles & Responsibilities](#2-roles--responsibilities)
+- [Decision-Making Protocol](#3-decision-making-protocol)
+- [Architectural Boundaries](#4-architectural-boundaries-non-negotiable)
+- [Architecture Guardrails Philosophy](#5-architecture-guardrails-philosophy)
+- [AI Contribution Rules](#6-ai-contribution-rules)
+- [Merge Gate Checklist](#7-merge-gate-checklist)
+- [Guiding Belief](#8-guiding-belief)
+
+---
+
 ## 1. Core Principle
 
 **Architecture is not documentation. It is behavior.**
