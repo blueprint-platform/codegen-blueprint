@@ -265,12 +265,23 @@ The following are **intentionally out of scope** for 1.0.0 GA:
 
 ## 7️⃣ Path Toward Executable Architecture
 
-| Phase | Capability                       | Value                     |
-| ----: | -------------------------------- | ------------------------- |
-|  Next | Layout enforcement gates         | Real boundaries in output |
-|  Next | CI‑level architecture validation | Drift fails fast          |
-|  Next | Policy DSL                       | Governance as code        |
-| Later | Org‑wide profiles                | Team‑scale compliance     |
+This section outlines the **direction of evolution**, not additional GA guarantees.
+
+It intentionally avoids feature timelines and implementation details.
+The purpose is to clarify **how executable architecture matures over time**,
+while keeping the **1.0.0 GA contract strict and non-negotiable**.
+
+> 📌 Ordering matters — each step builds on the previous one.
+
+| Stage | Capability                        | Value                          |
+| ----: | --------------------------------- | ------------------------------ |
+|  Next | Layout enforcement gates          | Structural boundaries enforced |
+|  Next | CI-level architecture validation  | Drift fails fast               |
+|  Next | Policy DSL                        | Governance as code             |
+| Later | Org-wide profiles                 | Team-scale compliance          |
+
+Detailed roadmap, delivery surfaces, and capability expansion
+are documented separately in the main README and are **not part of this GA contract**.
 
 > Best practices must **execute — not be suggestions**.
 

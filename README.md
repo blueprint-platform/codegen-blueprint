@@ -632,7 +632,6 @@ By validating **real generated projects** across layouts, enforcement modes, and
 Codegen Blueprint treats architectural guarantees as **continuously verified contracts**,
 not one-time scaffolding assumptions.
 
-
 ---
 
 ## 🚀 Vision & Roadmap
@@ -644,46 +643,79 @@ not one-time scaffolding assumptions.
 
 **Blueprint Platform** =  
 🔹 Architecture-as-a-Product  
-🔹 Reusable Behavior Libraries  
-🔹 Enforced Consistency Across Teams
+🔹 Enforced Capabilities (via libraries + governance)  
+🔹 Consistency that survives time and team changes
 
-From Day Zero to Production — architecture remains **intentional**, **testable**, and **aligned**.
+From Day Zero to Production — architecture remains **intentional**, **testable**, and **continuously enforced**.
+
+---
+
+### 🧭 Roadmap Principles (Order Matters)
+
+Blueprint evolves in layers — to protect the core promise:
+
+1. **Strengthen the contract & proof** (determinism, enforcement, reproducible demos)
+2. **Add new delivery surfaces** (CLI today → REST tomorrow) without changing the core
+3. **Introduce capabilities via libraries + governance** (enforce behavior, don’t copy-paste it)
+4. **Expand profiles cautiously** (Gradle/Kotlin/etc. increase surface area — scheduled after proof maturity)
 
 ---
 
 ### 🎯 Roadmap
 
 #### 🔹 Phase 1 — Architecture-First Generation (Today)
-* Hexagonal / Layered architecture enforcement (opt-in)
-* **Optional architecture enforcement via generated ArchUnit tests**
-* Profile-driven CLI generation (Spring Boot · Maven · Java 21)
-* Domain purity: **no Spring inside the core**
-* End-to-end testable scaffolding
 
-📌 **1.0.0 GA Objective** → Zero-drift architectural foundations
+* Hexagonal / Standard (Layered) generation (opt-in)
+* Architecture enforcement via **generated ArchUnit guardrails** (`none|basic|strict`)
+* CLI-driven, profile-based generation (Spring Boot · Maven · Java 21)
+* Framework-free domain core by construction
+* End-to-end **buildable output** validated in CI (generated projects verified with `mvn verify`)
 
----
-
-#### 🔹 Phase 2 — Reusable Enterprise Behavior (In Progress)
-* 🔐 Security defaults (OAuth2 / Keycloak)
-* 📡 Resilience / Retries / Standardized error handling
-* 🔍 Observability: tracing + logs + metrics — auto-wired
-* 🧩 Multi-module enterprise service kits (API + Domain + Infra)
-* Generics-aware OpenAPI client generation
-
-📌 Libraries become **switch-on features**, not generated boilerplate
+📌 **1.0.0 GA Objective** → Zero-drift architectural foundations + executable proof
 
 ---
 
-#### 🔹 Phase 3 — Ecosystem Expansion (Roadmap)
-* Gradle & Kotlin support
+#### 🔹 Phase 2 — New Delivery Surface (Planned)
+
+* REST inbound adapter (same core engine, new entrypoint)
+* Interactive onboarding / configuration UX (still contract-first)
+* Safer defaults and clearer intent capture (without widening the domain surface)
+
+📌 Goal → expand accessibility **without rewriting the core**
+
+---
+
+#### 🔹 Phase 3 — Enforced Capabilities (Planned)
+
+Cross-cutting concerns are not generated as boilerplate code.  
+They are delivered as **versioned capabilities** and enforced consistently across services.
+
+* 🔐 Security capability (OAuth2 / Keycloak)
+* 🔍 Observability capability (tracing, logs, metrics)
+* 📡 Resilience capability (retries, timeouts, policies)
+* 🧩 Optional enterprise service kits (API / Domain / Infra)
+* 🔁 Generics-aware OpenAPI clients (separate Blueprint module)
+
+📌 Goal → consistent behavior and upgrades in one place, not duplicated across services
+
+---
+
+#### 🔹 Phase 4 — Profile Expansion (Roadmap)
+
+Profiles accelerate adoption but **increase surface area** (templates, tests, compatibility, support).
+
+* Gradle support (profile)
+* Kotlin support (profile, higher surface area than Gradle)
 * Quarkus + future stack profiles
 * Visual UI — configure → generate → download
-* Drift detection & auto-remediation (governance at scale)
-* Platform telemetry for architecture health
+* Governance at scale: drift detection & remediation ideas
+* Platform telemetry for architecture health (opt-in)
 
-📌 Community-driven priorities:
+📌 Goal → expand stacks **after** the proof and contract are mature
 
+---
+
+📌 Community-driven priorities:  
 🔗 Participate via [GitHub Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
 
 ---
@@ -693,8 +725,8 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 | Without Blueprint | With Blueprint |
 |------------------|----------------|
 | Architecture drifts silently | Guardrails keep intent executable |
-| Boilerplate everywhere | Cross-cutting concerns via libraries |
-| Onboarding takes weeks | Day-zero productivity |
+| Boilerplate everywhere | Capabilities enforced via libraries |
+| Onboarding takes weeks | Day-zero structure + contracts |
 | Standards depend on discipline | Standards enforced by construction |
 
 > 📌 The platform grows → Projects stay clean → Enterprise stays consistent
@@ -703,6 +735,8 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 
 **Blueprint Platform isn’t just code generation —  
 it is strategic architectural continuity.**
+
+---
 
 ## 🤝 Contributing
 
