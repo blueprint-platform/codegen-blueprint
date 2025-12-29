@@ -103,8 +103,6 @@ It treats architecture as a **first-class, executable product** that:
 
 <p align="center">
   <img src="docs/images/architecture/value-proposition.png" width="780" alt="Value proposition of Codegen Blueprint showing stakeholders, architecture engine capabilities, and long-term alignment outcomes"/>
-  <br/>
-  <em>Who benefits → Engine capabilities → What teams get</em>
 </p>
 
 ---
@@ -317,10 +315,6 @@ bootstrap   // Spring wiring + config
   <img src="docs/images/architecture/architecture-overview.png"
        width="860"
        alt="High-level flow of Codegen Blueprint from CLI through use case, domain, artifact generation, and Spring Boot project output"/>
-</p>
-
-<p align="center">
-  <em>CLI → Use case layer → Domain → Artifacts → Spring Boot project</em>
 </p>
 
 ### Guarantees

@@ -1,100 +1,98 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.4 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="26.0.4">
-  <diagram id="architecture-overview" name="Architecture Overview">
-    <mxGraphModel dx="1266" dy="743" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="codegen-blueprint-overview" name="Executable Architecture Overview">
+    <mxGraphModel dx="1571" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="b3doJo-__kluBJuSDAdx-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="applicationDetails" target="titleBand" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="465" y="146" />
-              <mxPoint x="580" y="146" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="t1" value="Codegen Blueprint — Executable Architecture Overview" style="text;html=1;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry y="20" width="1600" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="titleBand" value="Codegen Blueprint — Executable Architecture Overview" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
-          <mxGeometry x="20" y="40" width="1250" height="60" as="geometry" />
+        <mxCell id="inbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F5E9;strokeColor=#7FB27F;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="60" y="220" width="250" height="300" as="geometry" />
         </mxCell>
-        <mxCell id="engineContainer" value="Codegen Blueprint Engine" style="swimlane;rounded=1;whiteSpace=wrap;html=1;horizontal=1;startSize=30;fillColor=#ffffff;strokeColor=#b3b3b3;fontSize=13;fontStyle=1;" parent="1" vertex="1">
-          <mxGeometry x="195" y="130" width="775" height="610" as="geometry" />
+        <mxCell id="inboxTitle" value="Inbound adapters" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="60" y="190" width="250" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="applicationLayer" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;" parent="engineContainer" vertex="1">
-          <mxGeometry x="66" y="44" width="370" height="160" as="geometry" />
+        <mxCell id="cli" value="CLI&#xa;(Picocli + Spring)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7FB27F;strokeWidth=1;" parent="1" vertex="1">
+          <mxGeometry x="90" y="260" width="190" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="applicationDetails" value="&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;Application layer&lt;/span&gt;&lt;br style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;(Use cases &amp;amp; orchestration)&lt;/span&gt;&lt;div&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Generation use cases&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Ordered artifact pipeline&lt;/div&gt;&lt;div&gt;&lt;div&gt;• Ports: ProjectArtifactsPort, ArtifactPort&lt;/div&gt;&lt;/div&gt;&lt;div&gt;• &lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Optional guardrails (basic|strict)&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff9db;strokeColor=#d6b656;fontSize=12;" parent="applicationLayer" vertex="1">
-          <mxGeometry x="20.28" y="18.55" width="329.72" height="121.45" as="geometry" />
+        <mxCell id="rest" value="REST API&#xa;(planned)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#7FB27F;strokeWidth=1;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="90" y="350" width="190" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="domainLayer" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;fontStyle=1;" parent="engineContainer" vertex="1">
-          <mxGeometry x="57" y="220" width="370" height="150" as="geometry" />
+        <mxCell id="outbox" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F5E9;strokeColor=#7FB27F;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="1290" y="220" width="250" height="300" as="geometry" />
         </mxCell>
-        <mxCell id="domainDetails" value="&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;Domain&lt;/span&gt;&lt;div&gt;• ProjectBlueprint aggregate&lt;/div&gt;&lt;div&gt;• Value objects (ids, names, packages, etc.&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Naming &amp;amp; validation policies (explicit invariants)&lt;/div&gt;&lt;div&gt;• Domain violation exceptions (&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;early, unambiguous feedback&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• No Spring / IO / templates&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fde0dc;strokeColor=#b85450;fontSize=12;" parent="domainLayer" vertex="1">
-          <mxGeometry x="17.61904761904762" y="17" width="334.7619047619048" height="120" as="geometry" />
+        <mxCell id="outboxTitle" value="Generated project" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1290" y="190" width="250" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="outboundGroup" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" parent="engineContainer" vertex="1">
-          <mxGeometry x="465" y="60" width="297" height="230" as="geometry" />
+        <mxCell id="outText" value="• Spring Boot service skeleton&lt;br&gt;&amp;nbsp; (runnable &amp;amp; test-ready)&lt;br&gt;• Optional layout&amp;nbsp;&lt;br&gt;&amp;nbsp; &amp;nbsp;- standard (layered)&lt;br&gt;&amp;nbsp; &amp;nbsp;- hexagonal (ports &amp;amp; adapters)&lt;br&gt;• Optional architecture guardrails&amp;nbsp;&lt;div&gt;&amp;nbsp; &amp;nbsp;- generated ArchUnit tests&lt;br&gt;&amp;nbsp; &amp;nbsp;- build-time feedback&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="1310" y="240" width="210" height="260" as="geometry" />
         </mxCell>
-        <mxCell id="outboundDetails" value="&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;Outbound adapters&lt;/span&gt;&lt;div&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Build configuration writer (Maven POM)&lt;/span&gt;&lt;div&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Application configuration writer (YAML)&lt;/span&gt;&lt;br&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Main &amp;amp; test source generators&lt;/span&gt;&lt;br&gt;• &lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Project documentation generator (README)&lt;/span&gt;&lt;br&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Optional architecture guardrails generators&lt;/span&gt;&lt;/div&gt;&lt;div&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Filesystem writer adapter&lt;/span&gt;&lt;/div&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eaf1fb;strokeColor=#6c8ebf;fontSize=12;" parent="outboundGroup" vertex="1">
-          <mxGeometry x="17.472085714285715" y="31.36" width="266.61265714285713" height="168.64" as="geometry" />
+        <mxCell id="engine" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B3B3B3;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="360" y="140" width="900" height="520" as="geometry" />
         </mxCell>
-        <mxCell id="profilesEngine" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;" parent="engineContainer" vertex="1">
-          <mxGeometry x="10" y="390" width="370" height="172" as="geometry" />
+        <mxCell id="engineTitle" value="Codegen Blueprint Engine" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="360" y="110" width="900" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="profilesEngineDetails" value="&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;&lt;b&gt;Profiles &amp;amp; architectural governance&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;&lt;b&gt;(YAML + FreeMarker)&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;• Capture stack: Spring Boot, Maven, Java&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;• Enforce conventions (folders, dependencies, naming)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;• Define architecture guardrails level (basic | strict)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;• Ordered artifact generation pipeline&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 13px;&quot;&gt;• Template namespaces per profile&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f3e8fd;strokeColor=#9673a6;fontSize=12;" parent="profilesEngine" vertex="1">
-          <mxGeometry x="14.23076923076923" y="10.719887955182072" width="341.53846153846155" height="153.2823529411765" as="geometry" />
+        <mxCell id="app" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#D6A84A;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="430" y="200" width="420" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="edge_app_domain" style="endArrow=block;html=1;rounded=0;strokeColor=#d6b656;entryX=0.681;entryY=-0.02;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.639;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" parent="engineContainer" source="applicationDetails" target="domainLayer" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="301.9364161849712" y="190" as="sourcePoint" />
-            <mxPoint x="303.4971098265896" y="208" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="appTitle" value="Application layer&#xa;(use cases &amp; orchestration)" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="430" y="205" width="420" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="edge_app_outbound" style="endArrow=block;html=1;rounded=0;strokeColor=#6c8ebf;exitX=1.003;exitY=0.606;exitDx=0;exitDy=0;exitPerimeter=0;" parent="engineContainer" source="applicationLayer" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="461" y="130" as="sourcePoint" />
-            <mxPoint x="465" y="140" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="appText" value="• Orchestrates generation flow&#xa;• Selects profile + pipeline order&#xa;• Ports: ProjectArtifactsPort, ArtifactPort&#xa;• Optional guardrails (none|basic|strict)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="450" y="250" width="380" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="edge_profiles_outbound" style="endArrow=block;html=1;rounded=0;strokeColor=#9673a6;dashed=1;entryX=0.622;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1.005;exitY=0.198;exitDx=0;exitDy=0;exitPerimeter=0;" parent="engineContainer" source="profilesEngine" target="outboundGroup" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="330" as="sourcePoint" />
-            <mxPoint x="580" y="260" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="domain" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8DADA;strokeColor=#C05A5A;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="430" y="400" width="420" height="170" as="geometry" />
         </mxCell>
-        <mxCell id="b3doJo-__kluBJuSDAdx-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.375;exitY=0.008;exitDx=0;exitDy=0;exitPerimeter=0;" parent="engineContainer" source="domainDetails" target="applicationDetails" edge="1">
+        <mxCell id="domainTitle" value="Domain" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="405" width="420" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="domainText" value="• Pure business rules (framework-free)&#xa;• Aggregates + value objects + policies&#xa;• Deterministic validation (fail-fast)&#xa;• No Spring / IO / templating" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="450" y="440" width="380" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="adapters" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DDEBFF;strokeColor=#5B8AC6;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="880" y="240" width="330" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="adaptersTitle" value="Outbound adapters" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="880" y="245" width="330" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="adaptersText" value="• Build config writer (Maven POM + wrapper)&#xa;• App config writer (YAML)&#xa;• Source + test generators&#xa;• Project docs generator (README)&#xa;• Optional guardrails generators (ArchUnit)&#xa;• Filesystem writer adapter" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="900" y="285" width="290" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="gov" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFE6FF;strokeColor=#7A5BC6;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="880" y="510" width="330" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="govTitle" value="Profiles &amp; architecture governance" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="880" y="515" width="330" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="govText" value="• Captures stack: Spring Boot, Maven, Java&#xa;• Defines generation pipeline order&#xa;• Selects template namespaces per profile&#xa;• Encodes guardrails level (none|basic|strict)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="900" y="545" width="290" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7FB27F;" parent="1" source="cli" target="app" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge_profiles_app" style="endArrow=block;html=1;rounded=0;strokeColor=#9673a6;dashed=1;entryX=0.227;entryY=1.016;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.146;exitY=-0.017;exitDx=0;exitDy=0;exitPerimeter=0;" parent="engineContainer" source="profilesEngine" target="applicationDetails" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="77.55799999999998" y="373" as="sourcePoint" />
-            <mxPoint x="178.66666666666669" y="175" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="e2" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#C05A5A;" parent="1" source="app" target="domain" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="inboundGroup" value="Inbound adapters" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;" parent="1" vertex="1">
-          <mxGeometry x="21" y="190" width="160" height="150" as="geometry" />
+        <mxCell id="e3" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#5B8AC6;" parent="1" source="app" target="adapters" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="inboundCli" value="CLI&#xa;(Picocli + Spring)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" parent="inboundGroup" vertex="1">
-          <mxGeometry x="10" y="23" width="140" height="45" as="geometry" />
+        <mxCell id="e4" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7FB27F;" parent="1" source="adapters" target="outbox" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="inboundRest" value="REST API&#xa;(planned)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;dashed=1;fontSize=12;" parent="inboundGroup" vertex="1">
-          <mxGeometry x="10" y="85" width="140" height="45" as="geometry" />
+        <mxCell id="e5" style="endArrow=open;html=1;dashed=1;dashPattern=8 6;strokeWidth=2;strokeColor=#7A5BC6;" parent="1" source="gov" target="app" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge_inbound_app" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="182" y="280" as="sourcePoint" />
-            <mxPoint x="200" y="280" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="e6" style="endArrow=open;html=1;dashed=1;dashPattern=8 6;strokeWidth=2;strokeColor=#7A5BC6;" parent="1" source="gov" target="adapters" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge_engine_generated" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="970" y="280" as="sourcePoint" />
-            <mxPoint x="990" y="280" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="capTitle" value="Key execution flow" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="360" y="685" width="900" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="generatedProject" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="988" y="190" width="280" height="190" as="geometry" />
-        </mxCell>
-        <mxCell id="gEVyXykAMFdMdvfel-_3-15" value="&lt;span style=&quot;font-size: 13px; font-weight: 700;&quot;&gt;Generated project&lt;/span&gt;&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;•&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Spring Boot service skeleton&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(runnable &amp;amp; test-ready)&lt;/span&gt;&lt;div&gt;• Optional hexagonal layout (opt-in)&lt;/div&gt;&lt;div&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Optional architecture guardrails tests&lt;/span&gt;&lt;br&gt;•&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Clean, enforceable starting point&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot; class=&quot;s1&quot;&gt;for&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;teams&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;fontSize=12;" parent="1" vertex="1">
-          <mxGeometry x="1003" y="207.5" width="251" height="152.5" as="geometry" />
+        <mxCell id="cap" value="CLI → Use case layer → Domain → Artifacts → Spring Boot project" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=2;" parent="1" vertex="1">
+          <mxGeometry x="360" y="710" width="900" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

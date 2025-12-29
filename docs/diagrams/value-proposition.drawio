@@ -1,44 +1,38 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.0.4 Chrome/128.0.6613.186 Electron/32.2.5 Safari/537.36" version="26.0.4">
-  <diagram id="value-proposition" name="Value Proposition">
-    <mxGraphModel dx="1266" dy="743" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="value-proposition" name="value-proposition">
+    <mxGraphModel dx="1676" dy="997" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="consumers" value="&lt;p class=&quot;p1&quot;&gt;&lt;b&gt;Who benefits&lt;/b&gt;&lt;/p&gt;• Developers&lt;br&gt;• Platform Engineering&lt;br&gt;• Lead Architects&lt;br&gt;• New Team Members" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="30" y="170" width="200" height="140" as="geometry" />
+        <mxCell id="frame" value="" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#d0d0d0;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="40" width="1520" height="820" as="geometry" />
         </mxCell>
-        <mxCell id="engine" value="&lt;b&gt;Codegen Blueprint engine&lt;/b&gt;&lt;br&gt;&lt;br&gt;• &lt;span style=&quot;background-color: transparent;&quot;&gt;Profile-driven project generator&lt;/span&gt;&lt;div&gt;• Architecture-aware generation&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;amp; hexagonal-ready layouts&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Executable standards (Architecture as a Product)&lt;/div&gt;&lt;div&gt;• Framework-agnostic core domain&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="250" y="160" width="390" height="200" as="geometry" />
+        <mxCell id="titleBox" value="Value Proposition — Why Codegen Blueprint exists" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=24;strokeColor=#bdbdbd;fillColor=#f5f5f5;" parent="1" vertex="1">
+          <mxGeometry x="240" y="70" width="1120" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="profiles" value="&lt;b&gt;Profiles &amp;amp; templates&lt;/b&gt;&lt;div&gt;&lt;b&gt;(YAML + FreeMarker)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;• &lt;code&gt;spring-boot-maven-java&lt;/code&gt; profile&lt;br&gt;• Stack + conventions encoded as rules&lt;/div&gt;&lt;div&gt;• Architecture guardrails level&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(basic | strict)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Ordered artifact generation pipeline&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="250" y="394" width="390" height="196" as="geometry" />
+        <mxCell id="whoBox" value="Who benefits&#xa;&#xa;• Platform Engineering&#xa;• Lead Architects&#xa;• Developers&#xa;• New Team Members" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#7aa8e6;fillColor=#dbe9ff;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
+          <mxGeometry x="120" y="250" width="360" height="210" as="geometry" />
         </mxCell>
-        <mxCell id="generated" value="&lt;b&gt;Generated services&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div&gt;• &lt;span style=&quot;background-color: transparent;&quot;&gt;Clean, consistent Spring Boot foundation&lt;/span&gt;&lt;/div&gt;&lt;div&gt;• Optional hexagonal layout&lt;/div&gt;&lt;div&gt;• Optional architecture guardrails tests&lt;/div&gt;&lt;div&gt;• Testable, evolvable from day zero&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
-          <mxGeometry x="658" y="169" width="242" height="160" as="geometry" />
+        <mxCell id="engineBox" value="Codegen Blueprint engine&#xa;&#xa;• Profile-driven generation&#xa;• Architecture-aware layouts (standard | hexagonal)&#xa;• Executable guardrails (optional)&#xa;• Framework-agnostic core domain" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#c9a94a;fillColor=#fff0c9;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
+          <mxGeometry x="560" y="230" width="520" height="250" as="geometry" />
         </mxCell>
-        <mxCell id="titleBand" value="&lt;p class=&quot;p1&quot;&gt;Value Proposition — Why Codegen Blueprint exists&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
-          <mxGeometry x="20" y="60" width="900" height="60" as="geometry" />
+        <mxCell id="servicesBox" value="Generated projects&#xa;&#xa;• Clean, consistent Spring Boot foundation&#xa;• Layout choice: standard | hexagonal&#xa;• Architecture guardrails (generated ArchUnit tests)&#xa;• Build-time feedback from day zero" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#7fb36a;fillColor=#dff3d6;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
+          <mxGeometry x="1160" y="250" width="360" height="210" as="geometry" />
         </mxCell>
-        <mxCell id="edge_consumers_engine" style="endArrow=block;html=1;rounded=0;strokeColor=#6c8ebf;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="230" y="245" as="sourcePoint" />
-            <mxPoint x="250" y="245" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="profilesBox" value="Profiles &amp; templates&#xa;(YAML + FreeMarker)&#xa;&#xa;• spring-boot-maven-java profile&#xa;• Stack + conventions encoded as rules&#xa;• Guardrails level: none | basic | strict&#xa;• Ordered artifact generation pipeline" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#c46f6f;fillColor=#f6d6d6;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
+          <mxGeometry x="520" y="560" width="600" height="220" as="geometry" />
         </mxCell>
-        <mxCell id="edge_profiles_engine" style="endArrow=block;html=1;rounded=0;strokeColor=#b85450;" parent="1" source="profiles" target="engine" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="450" y="390" as="sourcePoint" />
-            <mxPoint x="450" y="360" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="edgeWhoToEngine" value="" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9e9e9e;rounded=0;" parent="1" source="whoBox" target="engineBox" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge_engine_generated" style="endArrow=block;html=1;rounded=0;strokeColor=#82b366;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="640" y="244.41616766467064" as="sourcePoint" />
-            <mxPoint x="658" y="244.36227544910173" as="targetPoint" />
-          </mxGeometry>
+        <mxCell id="edgeEngineToServices" value="" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9e9e9e;rounded=0;" parent="1" source="engineBox" target="servicesBox" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="C06SZT5joNZPo9K-LPkG-2" value="&amp;nbsp; &amp;nbsp;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="350" y="595" width="210" height="25" as="geometry" />
+        <mxCell id="edgeProfilesToEngine" value="" style="endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9e9e9e;rounded=0;" parent="1" source="profilesBox" target="engineBox" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="Who benefits → Engine capabilities → What teams get" style="whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=2;fontSize=22;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="384" y="805" width="880" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
