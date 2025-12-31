@@ -30,6 +30,12 @@ Codegen Blueprint exists for that exact moment.
 
 ## Try it in 5 minutes
 
+### Prerequisites
+
+* Java 21
+* Maven 3.9+
+* macOS or Linux (Windows users: see proof walkthrough for alternatives)
+
 > Goal: see **GREEN → RED → GREEN** purely via **build-time guardrails**.
 >
 > No app startup. No runtime checks. Just deterministic feedback during `mvn verify`.
@@ -125,6 +131,10 @@ Earlier `0.x` tags are kept for historical context and experimentation, but they
 **The compatibility and guarantee contract begins with 1.0.0 GA.**
 
 ## 🧭 Architecture as a Product
+
+> In Blueprint, **Executable Architecture** is the outcome,  
+> **guardrails** are the mechanism that enforce it at build time,  
+> and **governance** is how those rules evolve safely over time.
 
 Most teams don’t fail because they chose the wrong framework.  
 They fail because **architecture slowly drifts once the project is “up and running.”**
@@ -265,17 +275,15 @@ Codegen Blueprint today delivers:
 
 ### 🧪 Executable Architecture — Proof
 
-Codegen Blueprint does not rely on conventions, guidelines, or documentation
-to protect architectural intent.
+Codegen Blueprint turns architectural intent into **generated, executable rules**
+that are evaluated during the build.
 
-When **strict guardrails** is enabled, architectural boundaries are translated into
-**generated, executable rules** that are evaluated during the build.
+With **strict guardrails** enabled:
+* architectural boundaries are translated into ArchUnit rules
+* violations fail `mvn verify` deterministically
+* drift surfaces early, while context is still fresh
 
-Violations surface immediately and **fail the build deterministically** —  
-not as a punishment, but as **fast, unambiguous feedback while context is still fresh**,
-when fixes are cheapest and intent is clearest.
-
-👉 **See the full, reproducible executable architecture proof:**  
+👉 See the full, reproducible walkthrough:  
 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 
 ---
