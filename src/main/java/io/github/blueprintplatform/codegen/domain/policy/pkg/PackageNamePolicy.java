@@ -1,12 +1,5 @@
 package io.github.blueprintplatform.codegen.domain.policy.pkg;
 
-import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
-import static io.github.blueprintplatform.codegen.domain.error.code.Field.PACKAGE_NAME;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.RESERVED_PREFIX;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.SEGMENT_FORMAT;
-
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.DotSeparatedSegmentsRule;
@@ -33,10 +26,11 @@ public final class PackageNamePolicy {
 
   private static final Set<String> RESERVED_PREFIXES = Set.of("java", "javax", "sun", "com.sun");
 
-  private static final ErrorCode CODE_NOT_BLANK = compose(PACKAGE_NAME, NOT_BLANK);
-  private static final ErrorCode CODE_LENGTH = compose(PACKAGE_NAME, LENGTH);
-  private static final ErrorCode CODE_SEGMENT_FORMAT = compose(PACKAGE_NAME, SEGMENT_FORMAT);
-  private static final ErrorCode CODE_RESERVED_PREFIX = compose(PACKAGE_NAME, RESERVED_PREFIX);
+  private static final ErrorCode CODE_NOT_BLANK = () -> "project.package-name.not.blank";
+  private static final ErrorCode CODE_LENGTH = () -> "project.package-name.length";
+  private static final ErrorCode CODE_SEGMENT_FORMAT = () -> "project.package-name.segment.format";
+  private static final ErrorCode CODE_RESERVED_PREFIX =
+      () -> "project.package-name.reserved.prefix";
 
   private PackageNamePolicy() {}
 
