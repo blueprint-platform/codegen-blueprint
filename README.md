@@ -18,6 +18,54 @@
 
 ---
 
+## If you’ve ever…
+
+* Your codebase started clean — then **architecture drifted silently** once things were “up and running”.
+* A new developer (or a rushed change) put code in the **wrong layer** — and the only “rule” was tribal knowledge.
+* A review turned into **“is this the right boundary?”** debates — because nothing was **executable**.
+
+Codegen Blueprint exists for that exact moment.
+
+---
+
+## Try it in 5 minutes
+
+> Goal: see **GREEN → RED → GREEN** purely via **build-time guardrails**.
+>
+> No app startup. No runtime checks. Just deterministic feedback during `mvn verify`.
+
+### 1) Build the generator JAR
+
+```bash
+mvn -q clean package
+```
+
+### 2) Run the console-first executable proof
+
+```bash
+cd docs/demo
+chmod +x proof-runner.sh
+CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
+```
+
+### What you should see
+
+* ✅ A project is generated with **strict** guardrails
+* ✅ `mvn verify` passes (baseline)
+* ❌ An intentional boundary violation is introduced
+* ❌ `mvn verify` fails **deterministically** with a generated ArchUnit rule
+* ✅ The violation is reverted and the build returns to green
+
+👉 Full walkthrough (screenshots + exact failures):
+[Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
+
+---
+
+> If you’re looking for a fast scaffold, use Spring Initializr.
+> If you want architecture that stays **observable and executable** over time, start here.
+
+---
+
 ### 🤔 Should I clone this repository?
 
 Clone this project if you’ve ever seen a codebase start clean and slowly drift into chaos —
