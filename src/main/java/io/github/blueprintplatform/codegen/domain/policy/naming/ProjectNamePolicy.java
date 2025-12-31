@@ -1,11 +1,5 @@
 package io.github.blueprintplatform.codegen.domain.policy.naming;
 
-import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
-import static io.github.blueprintplatform.codegen.domain.error.code.Field.PROJECT_NAME;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.INVALID_CHARS;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
-
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.AllowedCharsRule;
@@ -21,9 +15,9 @@ public final class ProjectNamePolicy {
 
   private static final String ALLOWED_CHARS = "[A-Za-z0-9 .,_'()\\-]";
 
-  private static final ErrorCode CODE_NOT_BLANK = compose(PROJECT_NAME, NOT_BLANK);
-  private static final ErrorCode CODE_LENGTH = compose(PROJECT_NAME, LENGTH);
-  private static final ErrorCode CODE_INVALID_CHARS = compose(PROJECT_NAME, INVALID_CHARS);
+  private static final ErrorCode CODE_NOT_BLANK = () -> "project.name.not.blank";
+  private static final ErrorCode CODE_LENGTH = () -> "project.name.length";
+  private static final ErrorCode CODE_INVALID_CHARS = () -> "project.name.invalid.chars";
 
   private ProjectNamePolicy() {}
 
