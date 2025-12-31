@@ -1,11 +1,5 @@
 package io.github.blueprintplatform.codegen.domain.policy.naming;
 
-import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
-import static io.github.blueprintplatform.codegen.domain.error.code.Field.PROJECT_DESCRIPTION;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.CONTROL_CHARS;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
-
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.LengthBetweenRule;
@@ -22,9 +16,9 @@ public final class ProjectDescriptionPolicy {
 
   private static final Pattern NO_CONTROL_CHARS = Pattern.compile("^\\P{Cntrl}*$");
 
-  private static final ErrorCode CODE_NOT_BLANK = compose(PROJECT_DESCRIPTION, NOT_BLANK);
-  private static final ErrorCode CODE_LENGTH = compose(PROJECT_DESCRIPTION, LENGTH);
-  private static final ErrorCode CODE_CONTROL_CHARS = compose(PROJECT_DESCRIPTION, CONTROL_CHARS);
+  private static final ErrorCode CODE_NOT_BLANK = () -> "project.description.not.blank";
+  private static final ErrorCode CODE_LENGTH = () -> "project.description.length";
+  private static final ErrorCode CODE_CONTROL_CHARS = () -> "project.description.control.chars";
 
   private ProjectDescriptionPolicy() {}
 

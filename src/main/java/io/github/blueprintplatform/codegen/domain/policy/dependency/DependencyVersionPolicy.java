@@ -1,11 +1,5 @@
 package io.github.blueprintplatform.codegen.domain.policy.dependency;
 
-import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
-import static io.github.blueprintplatform.codegen.domain.error.code.Field.DEPENDENCY_VERSION;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.INVALID_CHARS;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
-
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.LengthBetweenRule;
@@ -21,9 +15,9 @@ public final class DependencyVersionPolicy {
   private static final int MIN = 1;
   private static final int MAX = 100;
 
-  private static final ErrorCode CODE_NOT_BLANK = compose(DEPENDENCY_VERSION, NOT_BLANK);
-  private static final ErrorCode CODE_LENGTH = compose(DEPENDENCY_VERSION, LENGTH);
-  private static final ErrorCode CODE_INVALID_CHARS = compose(DEPENDENCY_VERSION, INVALID_CHARS);
+  private static final ErrorCode CODE_NOT_BLANK = () -> "dependency.version.not.blank";
+  private static final ErrorCode CODE_LENGTH = () -> "dependency.version.length";
+  private static final ErrorCode CODE_INVALID_CHARS = () -> "dependency.version.invalid.chars";
 
   private DependencyVersionPolicy() {}
 

@@ -1,11 +1,5 @@
 package io.github.blueprintplatform.codegen.domain.policy.identity;
 
-import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
-import static io.github.blueprintplatform.codegen.domain.error.code.Field.GROUP_ID;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.SEGMENT_FORMAT;
-
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.DotSeparatedSegmentsRule;
@@ -23,9 +17,9 @@ public final class GroupIdPolicy {
 
   private static final Pattern SEGMENT = Pattern.compile("^[a-z][a-z0-9]*$");
 
-  private static final ErrorCode CODE_NOT_BLANK = compose(GROUP_ID, NOT_BLANK);
-  private static final ErrorCode CODE_LENGTH = compose(GROUP_ID, LENGTH);
-  private static final ErrorCode CODE_SEGMENT_FORMAT = compose(GROUP_ID, SEGMENT_FORMAT);
+  private static final ErrorCode CODE_NOT_BLANK = () -> "project.group-id.not.blank";
+  private static final ErrorCode CODE_LENGTH = () -> "project.group-id.length";
+  private static final ErrorCode CODE_SEGMENT_FORMAT = () -> "project.group-id.segment.format";
 
   private GroupIdPolicy() {}
 
