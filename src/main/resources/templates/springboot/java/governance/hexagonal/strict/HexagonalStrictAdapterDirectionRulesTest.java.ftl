@@ -14,27 +14,33 @@ import com.tngtech.archunit.lang.ArchRule;
  * - Outbound adapters do not depend on inbound adapters
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = HexagonalStrictAdapterDirectionRulesTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class HexagonalStrictAdapterDirectionRulesTest {
 
-    private static final String INBOUND_ADAPTERS = "..adapter..in..";
-    private static final String OUTBOUND_ADAPTERS = "..adapter..out..";
+    static final String BASE_PACKAGE = "${projectPackageName}";
+
+    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
+    private static final String OUTBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.out..";
 
     @ArchTest
     static final ArchRule inbound_adapters_must_not_depend_on_outbound_adapters =
             noClasses()
-                    .that().resideInAPackage(INBOUND_ADAPTERS)
-                    .should().dependOnClassesThat()
+                    .that()
+                    .resideInAnyPackage(INBOUND_ADAPTERS)
+                    .should()
+                    .dependOnClassesThat()
                     .resideInAnyPackage(OUTBOUND_ADAPTERS)
                     .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule outbound_adapters_must_not_depend_on_inbound_adapters =
             noClasses()
-                    .that().resideInAPackage(OUTBOUND_ADAPTERS)
-                    .should().dependOnClassesThat()
+                    .that()
+                    .resideInAnyPackage(OUTBOUND_ADAPTERS)
+                    .should()
+                    .dependOnClassesThat()
                     .resideInAnyPackage(INBOUND_ADAPTERS)
                     .allowEmptyShould(true);
 }

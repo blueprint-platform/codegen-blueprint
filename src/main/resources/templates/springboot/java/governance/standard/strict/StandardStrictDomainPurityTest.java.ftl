@@ -14,21 +14,27 @@ import com.tngtech.archunit.lang.ArchRule;
  * Guarantees:
  * - Domain depends only on JDK types
  * - Domain depends only on other domain types
+ *
+ * Contract note:
+ * - Rule scope is the generated base package.
+ * - Package matchers are fully qualified to avoid accidental matches.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = StandardStrictDomainPurityTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictDomainPurityTest {
 
-    private static final String DOMAIN_PACKAGE_PATTERN = "${projectPackageName}.domain..";
-    private static final String DOMAIN_ROOT_PREFIX = "${projectPackageName}.domain.";
+    static final String BASE_PACKAGE = "${projectPackageName}";
+
+    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
+    private static final String DOMAIN_ROOT_PREFIX = BASE_PACKAGE + ".domain.";
 
     @ArchTest
     static final ArchRule domain_must_depend_only_on_jdk_and_domain =
             noClasses()
                     .that()
-                    .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
+                    .resideInAnyPackage(DOMAIN)
                     .should()
                     .dependOnClassesThat(
                             describe(

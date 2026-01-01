@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 class SourceLayoutAdapterTest {
 
   private static final String BASE_PACKAGE = "com.acme.demo";
-  private static final String BASE_PACKAGE_PATH = "com/acme/demo";
+  private static final Path BASE_PACKAGE_PATH = Path.of("com", "acme", "demo");
 
   private static ProjectBlueprint blueprint(ProjectLayout layout) {
     ProjectMetadata metadata =
@@ -91,35 +91,30 @@ class SourceLayoutAdapterTest {
     Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
     List<Path> paths = toRelativePaths(resources);
 
-    Path mainBase = Path.of("src/main/java").resolve(BASE_PACKAGE_PATH);
-    Path testBase = Path.of("src/test/java").resolve(BASE_PACKAGE_PATH);
+    Path mainBase = Path.of("src", "main", "java").resolve(BASE_PACKAGE_PATH);
+    Path testBase = Path.of("src", "test", "java").resolve(BASE_PACKAGE_PATH);
 
     List<Path> expected =
         List.of(
             // common dirs
-            Path.of("src/main/java"),
-            Path.of("src/test/java"),
-            Path.of("src/main/resources"),
-            Path.of("src/test/resources"),
+            Path.of("src", "main", "java"),
+            Path.of("src", "test", "java"),
+            Path.of("src", "main", "resources"),
+            Path.of("src", "test", "resources"),
             // base package dirs
             mainBase,
             testBase,
             // standard layered sub-packages (under main base package only)
             mainBase.resolve("controller"),
+            mainBase.resolve(Path.of("controller", "dto")),
             mainBase.resolve("service"),
             mainBase.resolve("repository"),
             mainBase.resolve("config"),
             mainBase.resolve("domain"),
-            mainBase.resolve(Path.of("domain", "model")));
+            mainBase.resolve(Path.of("domain", "model")),
+            mainBase.resolve(Path.of("domain", "service")));
 
-    assertThat(paths)
-        .containsExactlyInAnyOrderElementsOf(expected)
-        .hasSize(expected.size())
-        .noneMatch(
-            p ->
-                p.toString().endsWith("/adapter")
-                    || p.toString().endsWith("/application")
-                    || p.toString().endsWith("/bootstrap"));
+    assertThat(paths).containsExactlyInAnyOrderElementsOf(expected).hasSize(expected.size());
   }
 
   @Test
@@ -132,34 +127,36 @@ class SourceLayoutAdapterTest {
     Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
     List<Path> paths = toRelativePaths(resources);
 
-    Path mainBase = Path.of("src/main/java").resolve(BASE_PACKAGE_PATH);
-    Path testBase = Path.of("src/test/java").resolve(BASE_PACKAGE_PATH);
+    Path mainBase = Path.of("src", "main", "java").resolve(BASE_PACKAGE_PATH);
+    Path testBase = Path.of("src", "test", "java").resolve(BASE_PACKAGE_PATH);
 
     List<Path> expected =
         List.of(
             // common dirs
-            Path.of("src/main/java"),
-            Path.of("src/test/java"),
-            Path.of("src/main/resources"),
-            Path.of("src/test/resources"),
+            Path.of("src", "main", "java"),
+            Path.of("src", "test", "java"),
+            Path.of("src", "main", "resources"),
+            Path.of("src", "test", "resources"),
             // base package dirs
             mainBase,
             testBase,
             // hexagonal sub-packages (under main base package only)
             mainBase.resolve("adapter"),
+            mainBase.resolve(Path.of("adapter", "in")),
+            mainBase.resolve(Path.of("adapter", "out")),
             mainBase.resolve("application"),
+            mainBase.resolve(Path.of("application", "port")),
+            mainBase.resolve(Path.of("application", "port", "in")),
+            mainBase.resolve(Path.of("application", "port", "out")),
+            mainBase.resolve(Path.of("application", "usecase")),
             mainBase.resolve("bootstrap"),
-            mainBase.resolve("domain"));
+            mainBase.resolve("domain"),
+            mainBase.resolve(Path.of("domain", "model")),
+            mainBase.resolve(Path.of("domain", "port")),
+            mainBase.resolve(Path.of("domain", "port", "in")),
+            mainBase.resolve(Path.of("domain", "port", "out")),
+            mainBase.resolve(Path.of("domain", "service")));
 
-    assertThat(paths)
-        .containsExactlyInAnyOrderElementsOf(expected)
-        .hasSize(expected.size())
-        .noneMatch(
-            p ->
-                p.toString().endsWith("/controller")
-                    || p.toString().endsWith("/service")
-                    || p.toString().endsWith("/repository")
-                    || p.toString().endsWith("/config")
-                    || p.toString().endsWith("/domain/model"));
+    assertThat(paths).containsExactlyInAnyOrderElementsOf(expected).hasSize(expected.size());
   }
 }

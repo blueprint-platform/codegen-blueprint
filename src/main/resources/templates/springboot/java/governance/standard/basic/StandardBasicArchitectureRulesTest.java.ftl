@@ -13,23 +13,27 @@ import com.tngtech.archunit.lang.ArchRule;
  * Guarantees:
  * - Controllers must not depend on repositories
  * - Repositories must not depend on controllers
+ * - Controllers must not depend on domain services (service layer only)
  * - Domain must not depend on controller/service/repository layers
  * - No cycles across top-level packages
+ * Notes:
+ * - These rules are structural and rely on the generated package layout.
+ * - Wiring/config isolation is intentionally not enforced at BASIC level to keep adoption friction low.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = StandardBasicArchitectureRulesTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardBasicArchitectureRulesTest {
 
-    private static final String BASE_PACKAGE = "${projectPackageName}";
+    static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String CONTROLLER = "..controller..";
-    private static final String SERVICE = "..service..";
-    private static final String REPOSITORY = "..repository..";
-    private static final String DOMAIN = "..domain..";
+    private static final String CONTROLLER = BASE_PACKAGE + ".controller..";
+    private static final String SERVICE = BASE_PACKAGE + ".service..";
+    private static final String REPOSITORY = BASE_PACKAGE + ".repository..";
+    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
 
-    private static final String DOMAIN_SERVICE = BASE_PACKAGE + ".domain..service..";
+    private static final String DOMAIN_SERVICES = BASE_PACKAGE + ".domain.service..";
 
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_repositories =
@@ -58,11 +62,11 @@ class StandardBasicArchitectureRulesTest {
                     .resideInAnyPackage(CONTROLLER)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN_SERVICE)
+                    .resideInAnyPackage(DOMAIN_SERVICES)
                     .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule domain_must_not_depend_on_controller_or_service_or_repository_layers =
+    static final ArchRule domain_must_not_depend_on_controller_service_or_repository_layers =
             noClasses()
                     .that()
                     .resideInAnyPackage(DOMAIN)
@@ -74,7 +78,7 @@ class StandardBasicArchitectureRulesTest {
     @ArchTest
     static final ArchRule top_level_packages_must_be_free_of_cycles =
             slices()
-                    .matching("${projectPackageName}.(*)..")
+                    .matching(BASE_PACKAGE + ".(*)..")
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);

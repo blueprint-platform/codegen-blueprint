@@ -2,8 +2,8 @@
 
 ## Fast Proof (Console-First)
 
-If you want the **GREEN → RED → GREEN**  build-time proof in a single command
-(no screenshots, just console output):
+If you want to see the **GREEN → RED → GREEN** proof **purely via the console** —
+no screenshots, no explanations, just deterministic build output — run:
 
 ```bash
 cd docs/demo
@@ -11,13 +11,66 @@ chmod +x proof-runner.sh
 CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
 ```
 
-The walkthrough below is the **high-resolution proof**:
-screenshots, explanation, and exactly **what failed and why**.
+### Environment assumptions
+
+* The proof runner is a **bash script** and uses standard Unix tools (`bash`, `unzip`, `chmod`).
+* **macOS / Linux**: works out of the box.
+* **Windows**: run the proof inside **WSL2 (Ubuntu recommended)**.
+
+> The generated projects themselves are **pure Maven + Java**.
+> The Unix tooling is required **only for the proof automation**, not for the generator or the generated output.
 
 ---
 
-This document is the **full, step-by-step proof** that Codegen Blueprint can generate
-**executable architectural guardrails** that **surface boundary drift deterministically during the build.**
+## What this proves
+
+This single command demonstrates — end to end — that Codegen Blueprint can:
+
+* generate a real project with **strict architecture guardrails**
+* evaluate those guardrails **at build time** (`mvn verify`)
+* fail the build **deterministically** when a boundary is violated
+* return to green immediately once the violation is removed
+
+No application startup.
+No runtime checks.
+No custom test harness.
+
+> **Architecture is evaluated by the build itself.**
+
+---
+
+## Proof Flow (High-Level)
+
+The script executes the following sequence:
+
+```
+Generate project
+→ mvn verify (GREEN)
+→ inject boundary violation
+→ mvn verify (RED)
+→ revert violation
+→ mvn verify (GREEN)
+```
+
+This is performed for **real generated code**, not mocks or examples.
+
+---
+
+## Why there is a detailed walkthrough below
+
+The remainder of this document is the **high-resolution proof**:
+
+* screenshots of the generated structure
+* the exact code change that introduces the violation
+* the precise ArchUnit rule that fails
+* the build output showing **why** it failed
+
+This is intentional.
+
+> Executable architecture is only convincing when **failure is observable and explainable** —
+> not just asserted.
+
+---
 
 > This is not a diagram.
 > This is not a convention.

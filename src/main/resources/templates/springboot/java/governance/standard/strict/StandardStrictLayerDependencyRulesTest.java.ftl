@@ -19,62 +19,62 @@ import com.tngtech.archunit.lang.ArchRule;
  * - Business orchestration belongs to the service layer
  * - Domain services must never be invoked directly from controllers
  * Notes:
- * - Domain *models* may still be used internally by mappers
- * - REST signature leakage (return / parameter types) is enforced separately
- * - This rule prevents bypassing the service layer while allowing clean mapping
- * This rule is evaluated at build time via generated ArchUnit tests.
+ * - Domain models may still be used internally by mappers
+ * - REST signature leakage is enforced separately
+ * Contract note:
+ * - Rule scope is the generated base package.
+ * - Package matchers are fully qualified to avoid accidental matches.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = StandardStrictLayerDependencyRulesTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictLayerDependencyRulesTest {
 
-    private static final String BASE_PACKAGE = "${projectPackageName}";
+    static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String CONTROLLER_PATTERN = BASE_PACKAGE + ".controller..";
-    private static final String SERVICE_PATTERN = BASE_PACKAGE + ".service..";
-    private static final String REPOSITORY_PATTERN = BASE_PACKAGE + ".repository..";
-
-    private static final String DOMAIN_SERVICE_PATTERN = BASE_PACKAGE + ".domain..service..";
+    private static final String CONTROLLERS = BASE_PACKAGE + ".controller..";
+    private static final String SERVICES = BASE_PACKAGE + ".service..";
+    private static final String REPOSITORIES = BASE_PACKAGE + ".repository..";
+    private static final String DOMAIN_SERVICES = BASE_PACKAGE + ".domain.service..";
 
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_repositories =
             noClasses()
                     .that()
-                    .resideInAnyPackage(CONTROLLER_PATTERN)
+                    .resideInAnyPackage(CONTROLLERS)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(REPOSITORY_PATTERN)
+                    .resideInAnyPackage(REPOSITORIES)
                     .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_domain_services =
             noClasses()
                     .that()
-                    .resideInAnyPackage(CONTROLLER_PATTERN)
+                    .resideInAnyPackage(CONTROLLERS)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN_SERVICE_PATTERN)
+                    .resideInAnyPackage(DOMAIN_SERVICES)
                     .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule services_must_not_depend_on_controllers =
             noClasses()
                     .that()
-                    .resideInAnyPackage(SERVICE_PATTERN)
+                    .resideInAnyPackage(SERVICES)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(CONTROLLER_PATTERN)
+                    .resideInAnyPackage(CONTROLLERS)
                     .allowEmptyShould(true);
 
     @ArchTest
     static final ArchRule repositories_must_not_depend_on_services_or_controllers =
             noClasses()
                     .that()
-                    .resideInAnyPackage(REPOSITORY_PATTERN)
+                    .resideInAnyPackage(REPOSITORIES)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(SERVICE_PATTERN, CONTROLLER_PATTERN)
+                    .resideInAnyPackage(SERVICES, CONTROLLERS)
                     .allowEmptyShould(true);
 }

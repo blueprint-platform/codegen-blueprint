@@ -1,7 +1,6 @@
 package ${projectPackageName}.architecture.archunit;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
@@ -19,50 +18,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Strict REST boundary signature isolation for STANDARD (layered) architecture.
- * Enforced ONLY when:
- * - EnforcementMode = STRICT
- * - spring-boot-starter-web is present
  * Guarantees:
  * - REST controllers must NOT expose domain types in method signatures
  *   (return types, parameters, generics)
- * Explicitly allowed:
- * - Mapper / assembler classes may depend on domain
- * - Services may use domain internally
- * Rationale:
- * - Controller layer is the public HTTP boundary
- * - Domain types must never cross that boundary
- * - Mapping is an internal concern and may touch domain
+ * Notes:
+ * - Controller DTO domain isolation is enforced separately.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = StandardStrictRestBoundarySignatureIsolationTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictRestBoundarySignatureIsolationTest {
 
-    private static final String BASE_PACKAGE = "${projectPackageName}";
+    static final String BASE_PACKAGE = "${projectPackageName}";
 
     private static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
-    private static final String DOMAIN_PACKAGE_PATTERN = BASE_PACKAGE + ".domain..";
 
-    private static final String CONTROLLER_PATTERN = BASE_PACKAGE + ".controller..";
-    private static final String CONTROLLER_DTO_PATTERN = BASE_PACKAGE + ".controller..dto..";
-
-    @ArchTest
-    static final ArchRule controller_dtos_must_not_depend_on_domain =
-            noClasses()
-                    .that()
-                    .resideInAnyPackage(CONTROLLER_DTO_PATTERN)
-                    .should()
-                    .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
-                    .allowEmptyShould(true);
+    private static final String CONTROLLERS = BASE_PACKAGE + ".controller..";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(CONTROLLER_PATTERN)
+                    .resideInAnyPackage(CONTROLLERS)
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)
@@ -85,39 +64,37 @@ class StandardStrictRestBoundarySignatureIsolationTest {
         private SignatureDomainLeakage() {}
 
         static List<String> findViolations(JavaMethod method) {
-            List<String> violations = new ArrayList<>();
+            var violations = new ArrayList<String>();
 
-            JavaClass rawReturn = method.getRawReturnType();
+            var rawReturn = method.getRawReturnType();
             if (isDomainType(rawReturn)) {
                 violations.add(message(method, "return type leaks domain", rawReturn));
             }
 
-            for (JavaClass p : method.getRawParameterTypes()) {
+            for (var p : method.getRawParameterTypes()) {
                 if (isDomainType(p)) {
                     violations.add(message(method, "parameter type leaks domain", p));
                 }
             }
 
             if (containsDomainInTypeTree(method.getReturnType())) {
-                violations.add(
-                        message(method, "generic return type leaks domain", method.getReturnType()));
+                violations.add(message(method, "generic return type leaks domain", method.getReturnType()));
             }
 
-            for (JavaType pt : method.getParameterTypes()) {
+            for (var pt : method.getParameterTypes()) {
                 if (containsDomainInTypeTree(pt)) {
-                    violations.add(
-                            message(method, "generic parameter type leaks domain", pt));
+                    violations.add(message(method, "generic parameter type leaks domain", pt));
                 }
             }
 
-            return violations;
+            return List.copyOf(violations);
         }
 
         private static boolean containsDomainInTypeTree(JavaType type) {
             if (type == null) {
                 return false;
             }
-            for (JavaClass raw : type.getAllInvolvedRawTypes()) {
+            for (var raw : type.getAllInvolvedRawTypes()) {
                 if (isDomainType(raw)) {
                     return true;
                 }
@@ -129,7 +106,7 @@ class StandardStrictRestBoundarySignatureIsolationTest {
             if (c == null) {
                 return false;
             }
-            String pkg = c.getPackageName();
+            var pkg = c.getPackageName();
             return pkg != null && pkg.startsWith(DOMAIN_PREFIX);
         }
 

@@ -30,45 +30,130 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build generator (tests + coverage)
+      # -------------------------------------------------
+      # Core generator (GA contract) → JDK 21 only
+      # -------------------------------------------------
+      - name: Build generator (tests + coverage) [JDK 21 only]
+        if: matrix.java == '21'
         run: mvn -B -q -ntp clean verify
+
+      # -------------------------------------------------
+      # Forward-compat smoke → JDK 25 only (no core test contract)
+      # Build JAR without tests so we can run generated-project smoke
+      # -------------------------------------------------
+      - name: Build generator JAR (skip tests) [JDK 25 only]
+        if: matrix.java == '25'
+        run: mvn -B -q -ntp -DskipTests clean package
 
       - name: Make CI scripts executable
         run: chmod +x ci/*.sh
 
-      - name: Verify generated project (hexagonal strict, sample basic)
-        env:
-          JAVA_VERSION: ${{ matrix.java }}
-          BOOT_VERSION: '3.5'
-          ARTIFACT_ID: greeting-j${{ matrix.java }}-b35-hex-strict
-          PACKAGE_NAME: io.github.blueprintplatform.greetingj${{ matrix.java }}b35hexstrict
-        run: ./ci/verify-gen-hex-sample-strict.sh
+      # -------------------------------------------------
+      # JDK 21 → full verification set (default + proof + minimal no-sample)
+      # -------------------------------------------------
 
-      - name: Verify generated project (standard strict, sample basic)
+      - name: Verify generated project (hex, guardrails basic, sample basic) [default]
+        if: matrix.java == '21'
         env:
-          JAVA_VERSION: ${{ matrix.java }}
+          JAVA_VERSION: '21'
           BOOT_VERSION: '3.5'
-          ARTIFACT_ID: greeting-j${{ matrix.java }}-b35-std-strict
-          PACKAGE_NAME: io.github.blueprintplatform.greetingj${{ matrix.java }}b35stdstrict
-        run: ./ci/verify-gen-std-sample-strict.sh
+          LAYOUT: hexagonal
+          GUARDRAILS: basic
+          SAMPLE_CODE: basic
+          DEPENDENCIES: web
+          ARTIFACT_ID: gen-j21-b35-hex-grbasic-sbasic
+          PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrbasicsbasic
+          DESCRIPTION: "CI verify (default): hexagonal, guardrails=basic, sample=basic"
+        run: ./ci/verify-gen-hex-guardrails-basic-sample-basic.sh
 
-      - name: Verify generated project (hexagonal strict, no sample)
+      - name: Verify generated project (std, guardrails basic, sample basic) [default]
+        if: matrix.java == '21'
         env:
-          JAVA_VERSION: ${{ matrix.java }}
+          JAVA_VERSION: '21'
           BOOT_VERSION: '3.5'
-          ARTIFACT_ID: empty-j${{ matrix.java }}-b35-hex-strict
-          PACKAGE_NAME: io.github.blueprintplatform.emptyj${{ matrix.java }}b35hexstrict
-        run: ./ci/verify-gen-hex-nosample-strict.sh
+          LAYOUT: standard
+          GUARDRAILS: basic
+          SAMPLE_CODE: basic
+          DEPENDENCIES: web
+          ARTIFACT_ID: gen-j21-b35-std-grbasic-sbasic
+          PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrbasicsbasic
+          DESCRIPTION: "CI verify (default): standard, guardrails=basic, sample=basic"
+        run: ./ci/verify-gen-std-guardrails-basic-sample-basic.sh
 
-      - name: Verify generated project (standard strict, no sample)
+      - name: Verify generated project (hex, guardrails strict, sample none) [no-sample]
+        if: matrix.java == '21'
         env:
-          JAVA_VERSION: ${{ matrix.java }}
+          JAVA_VERSION: '21'
           BOOT_VERSION: '3.5'
-          ARTIFACT_ID: empty-j${{ matrix.java }}-b35-std-strict
-          PACKAGE_NAME: io.github.blueprintplatform.emptyj${{ matrix.java }}b35stdstrict
-        run: ./ci/verify-gen-std-nosample-strict.sh
+          LAYOUT: hexagonal
+          GUARDRAILS: strict
+          SAMPLE_CODE: none
+          ARTIFACT_ID: gen-j21-b35-hex-grstrict-snone
+          PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrstrictsnone
+          DESCRIPTION: "CI verify (no-sample): hexagonal, guardrails=strict, sample=none"
+        run: ./ci/verify-gen-hex-guardrails-strict-sample-none.sh
+
+      - name: Verify generated project (std, guardrails strict, sample none) [no-sample]
+        if: matrix.java == '21'
+        env:
+          JAVA_VERSION: '21'
+          BOOT_VERSION: '3.5'
+          LAYOUT: standard
+          GUARDRAILS: strict
+          SAMPLE_CODE: none
+          ARTIFACT_ID: gen-j21-b35-std-grstrict-snone
+          PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrstrictsnone
+          DESCRIPTION: "CI verify (no-sample): standard, guardrails=strict, sample=none"
+        run: ./ci/verify-gen-std-guardrails-strict-sample-none.sh
+
+      - name: Verify generated project (hex, guardrails strict, sample basic) [proof]
+        if: matrix.java == '21'
+        env:
+          JAVA_VERSION: '21'
+          BOOT_VERSION: '3.5'
+          LAYOUT: hexagonal
+          GUARDRAILS: strict
+          SAMPLE_CODE: basic
+          DEPENDENCIES: web
+          ARTIFACT_ID: gen-j21-b35-hex-grstrict-sbasic
+          PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrstrictsbasic
+          DESCRIPTION: "CI verify (proof): hexagonal, guardrails=strict, sample=basic"
+        run: ./ci/verify-gen-hex-guardrails-strict-sample-basic.sh
+
+      - name: Verify generated project (std, guardrails strict, sample basic) [proof]
+        if: matrix.java == '21'
+        env:
+          JAVA_VERSION: '21'
+          BOOT_VERSION: '3.5'
+          LAYOUT: standard
+          GUARDRAILS: strict
+          SAMPLE_CODE: basic
+          DEPENDENCIES: web
+          ARTIFACT_ID: gen-j21-b35-std-grstrict-sbasic
+          PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrstrictsbasic
+          DESCRIPTION: "CI verify (proof): standard, guardrails=strict, sample=basic"
+        run: ./ci/verify-gen-std-guardrails-strict-sample-basic.sh
+
+      # -------------------------------------------------
+      # JDK 25 → single forward-compat smoke test (generated project only)
+      # -------------------------------------------------
+
+      - name: Verify generated project (hex, guardrails strict, sample basic) [JDK 25 forward smoke]
+        if: matrix.java == '25'
+        env:
+          JAVA_VERSION: '25'
+          BOOT_VERSION: '3.5'
+          LAYOUT: hexagonal
+          GUARDRAILS: strict
+          SAMPLE_CODE: basic
+          DEPENDENCIES: web
+          ARTIFACT_ID: gen-j25-b35-hex-grstrict-sbasic
+          PACKAGE_NAME: io.github.blueprintplatform.genj25b35hexgrstrictsbasic
+          DESCRIPTION: "CI verify (forward smoke): hexagonal, guardrails=strict, sample=basic (JDK 25)"
+        run: ./ci/verify-gen-hex-guardrails-strict-sample-basic.sh
 
       - name: Upload coverage to Codecov
+        if: matrix.java == '21'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -8,25 +8,32 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 @AnalyzeClasses(
-    packages = "io.github.blueprintplatform.codegen",
+    packages = PortsAndAdapterIsolationArchitectureTest.BASE_PACKAGE,
     importOptions = ImportOption.DoNotIncludeTests.class)
 class PortsAndAdapterIsolationArchitectureTest {
+
+  static final String BASE_PACKAGE = "io.github.blueprintplatform.codegen";
+
+  private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
+  private static final String OUTBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.out..";
 
   @ArchTest
   static final ArchRule inbound_adapters_must_not_depend_on_outbound_adapters =
       noClasses()
           .that()
-          .resideInAPackage("..adapter.in..")
+          .resideInAnyPackage(INBOUND_ADAPTERS)
           .should()
           .dependOnClassesThat()
-          .resideInAnyPackage("..adapter.out..");
+          .resideInAnyPackage(OUTBOUND_ADAPTERS)
+          .allowEmptyShould(true);
 
   @ArchTest
   static final ArchRule outbound_adapters_must_not_depend_on_inbound_adapters =
       noClasses()
           .that()
-          .resideInAPackage("..adapter.out..")
+          .resideInAnyPackage(OUTBOUND_ADAPTERS)
           .should()
           .dependOnClassesThat()
-          .resideInAnyPackage("..adapter.in..");
+          .resideInAnyPackage(INBOUND_ADAPTERS)
+          .allowEmptyShould(true);
 }

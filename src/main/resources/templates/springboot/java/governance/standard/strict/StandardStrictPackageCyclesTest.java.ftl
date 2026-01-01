@@ -10,21 +10,25 @@ import com.tngtech.archunit.lang.ArchRule;
 /**
  * Strict package cycle rules for STANDARD (layered) architecture.
  * Guarantees:
- * - No cyclic dependencies between top-level packages
+ * - No cyclic dependencies between top-level packages (under base package)
  * Notes:
- * - Applies to controller/service/repository/domain/config style layouts
  * - Empty projects are allowed (no false negatives)
+ * Contract note:
+ * - Rule scope is the generated base package.
+ * - Slice matching uses fully qualified patterns to avoid accidental matches.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = StandardStrictPackageCyclesTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictPackageCyclesTest {
 
+    static final String BASE_PACKAGE = "${projectPackageName}";
+
     @ArchTest
     static final ArchRule top_level_packages_must_be_free_of_cycles =
             slices()
-                    .matching("${projectPackageName}.(*)..")
+                    .matching(BASE_PACKAGE + ".(*)..")
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);

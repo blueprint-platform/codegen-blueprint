@@ -1,7 +1,6 @@
 package ${projectPackageName}.architecture.archunit;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
@@ -19,51 +18,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Strict REST boundary signature isolation for HEXAGONAL architecture.
- * Enforced ONLY when:
- * - EnforcementMode = STRICT
- * - spring-boot-starter-web is present
  * Guarantees:
  * - REST controllers must NOT expose domain types in method signatures
  *   (return types, parameters, generics)
- * Explicitly allowed:
- * - Mapper / assembler classes may depend on domain
- * - Internal adapter helpers may touch domain
- * Rationale:
- * - REST controllers represent the public HTTP boundary
- * - Domain types must never leak through that boundary
- * - Mapping is allowed internally but must terminate before the controller API
+ * Notes:
+ * - DTO domain isolation is enforced separately.
+ * - This rule is structural and relies on the generated package layout.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = HexagonalStrictRestBoundarySignatureIsolationTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class HexagonalStrictRestBoundarySignatureIsolationTest {
 
-    private static final String BASE_PACKAGE = "${projectPackageName}";
-
+    static final String BASE_PACKAGE = "${projectPackageName}";
     private static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
-    private static final String DOMAIN_PACKAGE_PATTERN = BASE_PACKAGE + ".domain..";
-
-    private static final String INBOUND_ADAPTER_PATTERN = BASE_PACKAGE + ".adapter.in..";
-    private static final String INBOUND_ADAPTER_DTO_PATTERN =
-            BASE_PACKAGE + ".adapter.in..dto..";
-
-    @ArchTest
-    static final ArchRule inbound_adapter_dtos_must_not_depend_on_domain =
-            noClasses()
-                    .that()
-                    .resideInAnyPackage(INBOUND_ADAPTER_DTO_PATTERN)
-                    .should()
-                    .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN_PACKAGE_PATTERN)
-                    .allowEmptyShould(true);
+    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(INBOUND_ADAPTER_PATTERN)
+                    .resideInAnyPackage(INBOUND_ADAPTERS)
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)
@@ -74,7 +51,7 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
         return new ArchCondition<>("not expose domain types in REST controller method signatures") {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
-                for (String violation : SignatureDomainLeakage.findViolations(method)) {
+                for (var violation : SignatureDomainLeakage.findViolations(method)) {
                     events.add(SimpleConditionEvent.violated(method, violation));
                 }
             }
@@ -86,39 +63,38 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
         private SignatureDomainLeakage() {}
 
         static List<String> findViolations(JavaMethod method) {
-            List<String> violations = new ArrayList<>();
+            var violations = new ArrayList<String>();
 
-            JavaClass rawReturn = method.getRawReturnType();
+            var rawReturn = method.getRawReturnType();
             if (isDomainType(rawReturn)) {
-                violations.add(message(method, "return type leaks domain", rawReturn));
+                violations.add(message("return type leaks domain", method, rawReturn));
             }
 
-            for (JavaClass p : method.getRawParameterTypes()) {
+            for (var p : method.getRawParameterTypes()) {
                 if (isDomainType(p)) {
-                    violations.add(message(method, "parameter type leaks domain", p));
+                    violations.add(message("parameter type leaks domain", method, p));
                 }
             }
 
-            if (containsDomainInTypeTree(method.getReturnType())) {
-                violations.add(
-                        message(method, "generic return type leaks domain", method.getReturnType()));
+            var returnType = method.getReturnType();
+            if (containsDomainInTypeTree(returnType)) {
+                violations.add(message("generic return type leaks domain", method, returnType));
             }
 
-            for (JavaType pt : method.getParameterTypes()) {
+            for (var pt : method.getParameterTypes()) {
                 if (containsDomainInTypeTree(pt)) {
-                    violations.add(
-                            message(method, "generic parameter type leaks domain", pt));
+                    violations.add(message("generic parameter type leaks domain", method, pt));
                 }
             }
 
-            return violations;
+            return List.copyOf(violations);
         }
 
         private static boolean containsDomainInTypeTree(JavaType type) {
             if (type == null) {
                 return false;
             }
-            for (JavaClass raw : type.getAllInvolvedRawTypes()) {
+            for (var raw : type.getAllInvolvedRawTypes()) {
                 if (isDomainType(raw)) {
                     return true;
                 }
@@ -130,11 +106,11 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
             if (c == null) {
                 return false;
             }
-            String pkg = c.getPackageName();
+            var pkg = c.getPackageName();
             return pkg != null && pkg.startsWith(DOMAIN_PREFIX);
         }
 
-        private static String message(JavaMethod method, String reason, Object type) {
+        private static String message(String reason, JavaMethod method, Object type) {
             return reason + ": " + method.getFullName() + " -> " + type;
         }
     }

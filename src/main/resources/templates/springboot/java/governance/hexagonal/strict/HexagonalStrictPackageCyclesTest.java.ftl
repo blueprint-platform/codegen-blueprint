@@ -8,24 +8,26 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 /**
- * Strict package cycle rules.
+ * Strict package cycle rules (HEXAGONAL).
  * Guarantees:
- * - No cycles across top-level slices
+ * - No cycles across top-level packages (under base package)
  * - No cycles inside adapter subpackages
  * Notes:
- * - For "empty" generated projects, these slices may match no classes.
- *   In that case, allowEmptyShould(true) prevents false-negative failures.
+ * - Rule scope is the generated base package.
+ * - For empty or minimal projects, allowEmptyShould(true) prevents false failures.
  */
 @AnalyzeClasses(
-        packages = "${projectPackageName}",
+        packages = HexagonalStrictPackageCyclesTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class HexagonalStrictPackageCyclesTest {
 
+    static final String BASE_PACKAGE = "${projectPackageName}";
+
     @ArchTest
-    static final ArchRule layers_must_be_free_of_cycles =
+    static final ArchRule top_level_packages_must_be_free_of_cycles =
             slices()
-                    .matching("${projectPackageName}.(*)..")
+                    .matching(BASE_PACKAGE + ".(*)..")
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);
@@ -33,7 +35,7 @@ class HexagonalStrictPackageCyclesTest {
     @ArchTest
     static final ArchRule adapter_subpackages_must_be_free_of_cycles =
             slices()
-                    .matching("${projectPackageName}.adapter.(*)..")
+                    .matching(BASE_PACKAGE + ".adapter.(*)..")
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);

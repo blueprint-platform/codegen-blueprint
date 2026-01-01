@@ -34,17 +34,22 @@ Codegen Blueprint exists for that exact moment.
 
 * Java 21
 * Maven 3.9+
-* macOS or Linux (Windows users: see proof walkthrough for alternatives)
+* macOS or Linux
+* **Windows:** use **WSL2 (Ubuntu recommended)** — the proof runner requires `bash`, `unzip`, and executable permissions (`chmod`)
 
-> Goal: see **GREEN → RED → GREEN** purely via **build-time guardrails**.
+> Goal: see **GREEN → RED → GREEN** purely via **build-time architecture guardrails**.
 >
 > No app startup. No runtime checks. Just deterministic feedback during `mvn verify`.
+
+---
 
 ### 1) Build the generator JAR
 
 ```bash
 mvn -q clean package
 ```
+
+---
 
 ### 2) Run the console-first executable proof
 
@@ -54,11 +59,17 @@ chmod +x proof-runner.sh
 CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
 ```
 
+> **Windows note**
+>
+> Run the commands above **inside WSL2**. The proof runner is a Bash script and relies on standard Unix tooling.
+
+---
+
 ### What you should see
 
 * ✅ A project is generated with **strict** guardrails
 * ✅ `mvn verify` passes (baseline)
-* ❌ An intentional boundary violation is introduced
+* ❌ An intentional architectural boundary violation is introduced
 * ❌ `mvn verify` fails **deterministically** with a generated ArchUnit rule
 * ✅ The violation is reverted and the build returns to green
 
@@ -135,6 +146,14 @@ Earlier `0.x` tags are kept for historical context and experimentation, but they
 > In Blueprint, **Executable Architecture** is the outcome,  
 > **guardrails** are the mechanism that enforce it at build time,  
 > and **governance** is how those rules evolve safely over time.
+>
+> **Governance is the discipline of evolving the guardrails contract
+> (today implemented as generated ArchUnit rules)
+> without silently changing what the build guarantees.**
+>
+> **Guardrails** here means **explicit, non-negotiable architectural constraints**
+> that are **evaluated automatically during `mvn verify`**
+> (not guidelines, not documentation).
 
 Most teams don’t fail because they chose the wrong framework.  
 They fail because **architecture slowly drifts once the project is “up and running.”**
@@ -164,6 +183,7 @@ It treats architecture as a **first-class, executable product** that:
 </p>
 
 ---
+
 
 🔗 Part of the **Blueprint Platform** → [blueprint-platform](https://github.com/blueprint-platform)
 
@@ -465,22 +485,22 @@ java -jar codegen-blueprint-1.0.0.jar \
 
 ### Available Options (`springboot`)
 
-| Option           | Required | Default    | Description                                               |
-| ---------------- | -------- |------------|-----------------------------------------------------------|
-| `--group-id`     | ✔        | –          | Maven `groupId`                                           |
-| `--artifact-id`  | ✔        | –          | Maven `artifactId` (also becomes the project folder name) |
-| `--name`         | ✔        | –          | Human-readable project name                               |
-| `--description`  | ✔        | –          | Project description (minimum 10 characters)               |
-| `--package-name` | ✔        | –          | Base Java package name                                    |
-| `--build-tool`   | ✖        | `maven`    | Build tool (currently only `maven`)                       |
-| `--language`     | ✖        | `java`     | Programming language (currently only `java`)              |
-| `--java`         | ✖        | `21`       | Java version (21, 25) — GA target: 21                     |
-| `--boot`         | ✖        | `3.5`      | Spring Boot version (3.4, 3.5) — GA target: 3.5           |
-| `--layout`       | ✖        | `standard` | `standard` (layered) or `hexagonal` (ports & adapters)    |
-| `--guardrails`  | ✖        | `basic`    | Architecture guardrails: `none`, `basic`, `strict`       |
-| `--sample-code`  | ✖        | `none`     | Sample code level: `none`, `basic`                        |
-| `--dependency`   | ✖        | –          | Dependency alias (repeatable, controlled set)             |
-| `--target-dir`   | ✖        | `.`        | Target directory for generated output                     |
+| Option            | Required | Default    | Description                                               |
+|-------------------| -------- |------------|-----------------------------------------------------------|
+| `--group-id`      | ✔        | –          | Maven `groupId`                                           |
+| `--artifact-id`   | ✔        | –          | Maven `artifactId` (also becomes the project folder name) |
+| `--name`          | ✔        | –          | Human-readable project name                               |
+| `--description`   | ✔        | –          | Project description (minimum 10 characters)               |
+| `--package-name`  | ✔        | –          | Base Java package name                                    |
+| `--build-tool`    | ✖        | `maven`    | Build tool (currently only `maven`)                       |
+| `--language`      | ✖        | `java`     | Programming language (currently only `java`)              |
+| `--java`          | ✖        | `21`       | Java version (21, 25) — GA target: 21                     |
+| `--boot`          | ✖        | `3.5`      | Spring Boot version (3.4, 3.5) — GA target: 3.5           |
+| `--layout`        | ✖        | `standard` | `standard` (layered) or `hexagonal` (ports & adapters)    |
+| `--guardrails`    | ✖        | `basic`    | Architecture guardrails: `none`, `basic`, `strict`       |
+| `--sample-code`   | ✖        | `none`     | Sample code level: `none`, `basic`                        |
+| `--dependency`    | ✖        | –          | Dependency alias (repeatable, controlled set)             |
+| `--target-dir`    | ✖        | `.`        | Target directory for generated output                     |
 
 ---
 
@@ -591,16 +611,32 @@ No Spring annotations are placed inside the domain when hexagonal layout is sele
 Architecture guardrails in Codegen Blueprint are **opt-in** and designed to create
 a **fast, explicit feedback loop** during development — while context is still fresh.
 
-They do not replace design decisions or reviews;  
+They do not replace design decisions or reviews;
 they make architectural boundaries **visible, testable, and hard to miss**.
 
-| Mode     | Behavior                                                |
-| -------- | ------------------------------------------------------- |
-| `none`   | No architectural checks generated                       |
-| `basic`  | Generated ArchUnit checks for core structural boundaries|
-| `strict` | Stricter dependency and layering checks                 |
+#### Guardrails Modes (Adoption vs Proof)
 
-When enabled, these checks are generated as **executable ArchUnit tests** under:
+| Mode     | Intent & Behavior                                                                                                        |
+| -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `basic`  | **Default (1.0.0 GA)**. Designed for **adoption**. Enforces core structural boundaries without being overly restrictive. |
+| `strict` | **Recommended** for **proof-grade, fail-fast validation**. Enforces stricter dependency, layering, and boundary rules.   |
+| `none`   | **Opt-out only**. Disables guardrails entirely. Intended for special cases; **not recommended** for regular use.         |
+
+> **Default vs Recommended**
+>
+> * Default guardrails mode is **`basic`** to lower adoption friction.
+> * **`strict`** is recommended when architectural boundaries must be enforced as a **hard, build-time contract**.
+> * Selecting `none` is an explicit opt-out and should be a conscious exception.
+
+When enabled, guardrails are generated as **executable ArchUnit tests**
+and evaluated automatically during:
+
+```bash
+mvn verify
+```
+
+Violations fail the build **deterministically**, without starting the application
+and without relying on runtime checks.
 
 ---
 
@@ -619,6 +655,7 @@ This section documents **what Codegen Blueprint produces today** —
 no demos, no aspirational features, no placeholders.
 
 ---
+
 ## 🧪 Testing & CI (This Repository)
 
 The following describes the **CI pipeline of the Codegen Blueprint repository itself** —
@@ -637,34 +674,95 @@ It validates both:
 mvn verify
 ```
 
-This runs the full build lifecycle, including unit tests, integration tests, and architecture rules.
+This runs the full build lifecycle, including unit tests, integration tests, and architecture rules
+for the **generator itself**.
 
 ---
 
 ### CI Pipeline — Build & Test
 
-The GitHub Actions workflow executes a **matrix build** to ensure compatibility, determinism,
-and architectural integrity across supported Java versions.
+The GitHub Actions workflow executes a **selective JDK matrix** designed to balance:
 
-**Key characteristics:**
+* **contract-level confidence** (exhaustive checks on the GA target JDK)
+* **forward compatibility** (early smoke detection on the next JDK)
 
-* Runs on every `push` to `main` and all pull requests
-* Tests **multiple JDKs** in parallel (Java 21 and Java 25)
-* Verifies **generated projects**, not only the generator engine
+Rather than duplicating all checks across all JDKs, the pipeline is intentionally **asymmetric**.
+
+---
+
+### JDK Strategy (Intentional)
+
+| JDK         | Purpose                         | Scope                             |
+| ----------- | ------------------------------- | --------------------------------- |
+| **Java 21** | **GA contract validation**      | Full verification matrix          |
+| **Java 25** | **Forward-compatibility smoke** | Single generated-project scenario |
+
+This reflects the core principle:
+
+> **Architectural guarantees are validated exhaustively on the GA baseline,**
+> while newer JDKs are used only to detect early breakage — not to multiply CI cost.
 
 ---
 
 ### What the CI Pipeline Verifies
 
-* ✔ Generator unit & integration tests
-* ✔ Architectural rules validating the **generator itself** (ArchUnit)
-* ✔ Generated projects are evaluated using `mvn verify`
-* ✔ Layout coverage: **hexagonal** and **standard (layered)**
-* ✔ Guardrails mode coverage: **strict**
-* ✔ Output coverage: **sample basic** and **no-sample**
-* ✔ JDK matrix coverage: **Java 21** and **Java 25**
-* ✔ Total verification: **4 generated projects per JDK** (8 projects per CI run)
-* ✔ Code coverage aggregation and reporting
+#### Generator — Java 21 (GA Baseline)
+
+On **Java 21 only**, the pipeline validates the generator itself:
+
+* ✔ Unit tests
+* ✔ Integration tests
+* ✔ Internal architectural rules (ArchUnit)
+* ✔ Coverage aggregation (JaCoCo)
+* ✔ Coverage upload (Codecov)
+
+This defines the **authoritative GA contract** for the Codegen Blueprint engine.
+
+> The generator codebase is **not** validated against Java 25.
+> Java 21 is the sole supported and guaranteed runtime for the generator itself.
+
+---
+
+#### Generated Projects — Java 21 (Full Contract Matrix)
+
+On **Java 21**, the CI generates and verifies **six real projects**:
+
+* ✔ **hexagonal + guardrails basic + sample basic**
+* ✔ **standard  + guardrails basic + sample basic**
+* ✔ **hexagonal + guardrails strict + sample basic**
+* ✔ **standard  + guardrails strict + sample basic**
+* ✔ **hexagonal + guardrails strict + no sample** *(canary)*
+* ✔ **standard  + guardrails strict + no sample** *(canary)*
+
+These combinations validate:
+
+* layout differences (hexagonal vs standard)
+* guardrails strength (basic vs strict)
+* sample presence vs absence
+
+Together, they define the **1.0.0 GA architectural contract surface**.
+
+---
+
+#### Generated Projects — Java 25 (Forward-Compatibility Smoke)
+
+On **Java 25**, the CI runs **exactly one** generated-project verification:
+
+* ✔ **hexagonal + guardrails strict + sample basic**
+
+This scenario is intentionally chosen because it:
+
+* exercises the **strictest guardrails**
+* includes **real generated application code**
+* represents the **highest architectural sensitivity**
+
+If this passes, confidence is high that:
+
+* the generator output remains compatible with the next JDK
+* no immediate forward-compatibility breakage has been introduced
+
+> Java 25 is **not** a supported runtime for the generator itself.
+> It is used strictly as a **forward-compatibility signal** for generated output.
 
 ---
 
@@ -672,14 +770,20 @@ and architectural integrity across supported Java versions.
 
 ```text
 Checkout repository
-→ Build & test generator (mvn clean verify)
-→ Generate & verify (mvn verify) 4 projects:
-   - hexagonal + strict + sample basic
-   - standard  + strict + sample basic
-   - hexagonal + strict + no sample
-   - standard  + strict + no sample
-→ Repeat across JDK matrix (21, 25)
-→ Upload coverage reports
+→ Java 21:
+     Build & test generator (mvn clean verify)
+     Generate & verify 6 projects
+       - hex  + basic  + sample
+       - std  + basic  + sample
+       - hex  + strict + sample
+       - std  + strict + sample
+       - hex  + strict + no-sample  (canary)
+       - std  + strict + no-sample  (canary)
+     Upload coverage reports
+→ Java 25:
+     Build generator JAR (tests skipped)
+     Generate & verify 1 project
+       - hex + strict + sample (forward smoke)
 ```
 
 ---
@@ -688,12 +792,13 @@ Checkout repository
 
 The pipeline includes:
 
-* **JaCoCo** — unit + integration test coverage
+* **JaCoCo** — unit + integration test coverage *(Java 21 only)*
 * **CodeQL** — static security analysis
-* **Codecov** — aggregated coverage reporting
+* **Codecov** — aggregated coverage reporting *(Java 21 only)*
 
-> These checks ensure the **generator itself** and its **generated output** remain stable,
-> buildable, and architecture-safe as the platform evolves.
+> Coverage reflects **the generator engine**.
+> Generated projects are validated via **successful build and guardrails execution**,
+> not via coverage metrics.
 
 ---
 
@@ -703,9 +808,17 @@ This CI setup explicitly prevents the class of failures where:
 
 > *“The generator build is green, but the generated project is broken.”*
 
-By evaluating **real generated projects** across layouts, guardrails modes, and JDK versions,
-Codegen Blueprint treats architectural guarantees as **continuously verified contracts** —
-not one-time scaffolding assumptions.
+By validating **real generated projects** across:
+
+* architectural layouts
+* guardrails modes
+* sample presence
+* GA and next-generation JDKs
+
+Codegen Blueprint treats architecture as a **continuously verified contract** —
+not a one-time scaffolding decision.
+
+> **If the architecture drifts, the build tells you immediately.**
 
 ---
 
@@ -870,14 +983,17 @@ Start here →
 
 ## ⭐ Support
 
-If this project saves your team time or headaches:<br>
-👉 **Please star the repo — it truly helps visibility!**
+If this project saves your team time or headaches,
+**please consider starring the repository** — it genuinely helps with visibility and long‑term sustainability.
 
-**Barış Saylı** — Creator & Maintainer
+---
 
-* GitHub → https://github.com/bsayli
-* LinkedIn → https://www.linkedin.com/in/bsayli
-* Medium → https://medium.com/@baris.sayli
+**Barış Saylı**  
+Creator & Maintainer
+
+* GitHub: [https://github.com/bsayli](https://github.com/bsayli)
+* LinkedIn: [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
+* Medium: [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
 
 ---
 

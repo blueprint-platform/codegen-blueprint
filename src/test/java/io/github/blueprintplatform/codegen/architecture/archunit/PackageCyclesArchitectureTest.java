@@ -8,18 +8,21 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 @AnalyzeClasses(
-    packages = "io.github.blueprintplatform.codegen",
+    packages = PackageCyclesArchitectureTest.BASE_PACKAGE,
     importOptions = ImportOption.DoNotIncludeTests.class)
 class PackageCyclesArchitectureTest {
 
+  static final String BASE_PACKAGE = "io.github.blueprintplatform.codegen";
+
   @ArchTest
-  static final ArchRule layers_must_be_free_of_cycles =
-      slices().matching("io.github.blueprintplatform.codegen.(*)..").should().beFreeOfCycles();
+  static final ArchRule top_level_packages_must_be_free_of_cycles =
+      slices().matching(BASE_PACKAGE + ".(*)..").should().beFreeOfCycles().allowEmptyShould(true);
 
   @ArchTest
   static final ArchRule adapter_subpackages_must_be_free_of_cycles =
       slices()
-          .matching("io.github.blueprintplatform.codegen.adapter.(*)..")
+          .matching(BASE_PACKAGE + ".adapter.(*)..")
           .should()
-          .beFreeOfCycles();
+          .beFreeOfCycles()
+          .allowEmptyShould(true);
 }

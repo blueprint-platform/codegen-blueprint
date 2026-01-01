@@ -8,30 +8,31 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 /**
- * Strict inbound adapter -> domain outbound port isolation (HEXAGONAL).
+ * Strict inbound DTO isolation (HEXAGONAL).
  * Guarantees:
- * - Inbound adapters must not depend on domain outbound ports.
+ * - Inbound adapter DTOs must not depend on domain types.
  * Contract note:
+ * - DTOs represent boundary data structures and must remain framework-facing only.
  * - Rule scope is the generated base package.
  */
 @AnalyzeClasses(
-        packages = HexagonalStrictInboundAdapterOutboundPortIsolationTest.BASE_PACKAGE,
+        packages = HexagonalStrictInboundDtoDomainIsolationTest.BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
-class HexagonalStrictInboundAdapterOutboundPortIsolationTest {
+class HexagonalStrictInboundDtoDomainIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
-    private static final String DOMAIN_OUTBOUND_PORTS = BASE_PACKAGE + ".domain.port.out..";
+    private static final String INBOUND_ADAPTER_DTOS = BASE_PACKAGE + ".adapter.in..dto..";
+    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
 
     @ArchTest
-    static final ArchRule inbound_adapters_must_not_depend_on_domain_outbound_ports =
+    static final ArchRule inbound_adapter_dtos_must_not_depend_on_domain =
             noClasses()
                     .that()
-                    .resideInAnyPackage(INBOUND_ADAPTERS)
+                    .resideInAnyPackage(INBOUND_ADAPTER_DTOS)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN_OUTBOUND_PORTS)
+                    .resideInAnyPackage(DOMAIN)
                     .allowEmptyShould(true);
 }

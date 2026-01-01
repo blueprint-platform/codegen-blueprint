@@ -2,8 +2,8 @@
 set -euo pipefail
 
 LAYOUT="hexagonal"
-SAMPLE_CODE="none"
 GUARDRAILS="strict"
+SAMPLE_CODE="none"
 DESCRIPTION="Verify generated project: hexagonal layout, strict guardrails, no sample"
 DEPENDENCIES=""
 

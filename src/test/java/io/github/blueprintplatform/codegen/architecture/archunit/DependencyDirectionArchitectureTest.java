@@ -10,13 +10,15 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 @AnalyzeClasses(
-    packages = "io.github.blueprintplatform.codegen",
+    packages = DependencyDirectionArchitectureTest.BASE_PACKAGE,
     importOptions = ImportOption.DoNotIncludeTests.class)
 class DependencyDirectionArchitectureTest {
 
-  private static final String APPLICATION_ROOT = "..application..";
-  private static final String APPLICATION_PORT = "..application.port..";
-  private static final String ADAPTER_ROOT = "..adapter..";
+  static final String BASE_PACKAGE = "io.github.blueprintplatform.codegen";
+
+  private static final String APPLICATION_ROOT = BASE_PACKAGE + ".application..";
+  private static final String APPLICATION_PORTS = BASE_PACKAGE + ".application.port..";
+  private static final String ADAPTER_ROOT = BASE_PACKAGE + ".adapter..";
 
   @ArchTest
   static final ArchRule application_implementation_must_not_depend_on_adapters =
@@ -24,10 +26,11 @@ class DependencyDirectionArchitectureTest {
           .that()
           .resideInAnyPackage(APPLICATION_ROOT)
           .and()
-          .resideOutsideOfPackage(APPLICATION_PORT)
+          .resideOutsideOfPackage(APPLICATION_PORTS)
           .should()
           .dependOnClassesThat()
-          .resideInAnyPackage(ADAPTER_ROOT);
+          .resideInAnyPackage(ADAPTER_ROOT)
+          .allowEmptyShould(true);
 
   @ArchTest
   static final ArchRule adapters_must_not_depend_on_application_implementation =
@@ -35,9 +38,10 @@ class DependencyDirectionArchitectureTest {
           .that()
           .resideInAnyPackage(ADAPTER_ROOT)
           .should()
-          .dependOnClassesThat(applicationImplementation());
+          .dependOnClassesThat(applicationImplementation())
+          .allowEmptyShould(true);
 
-  private static final String BOOTSTRAP_ROOT = "..bootstrap..";
+  private static final String BOOTSTRAP_ROOT = BASE_PACKAGE + ".bootstrap..";
 
   @ArchTest
   static final ArchRule bootstrap_must_not_be_depended_on =
@@ -46,15 +50,20 @@ class DependencyDirectionArchitectureTest {
           .resideOutsideOfPackage(BOOTSTRAP_ROOT)
           .should()
           .dependOnClassesThat()
-          .resideInAnyPackage(BOOTSTRAP_ROOT);
+          .resideInAnyPackage(BOOTSTRAP_ROOT)
+          .allowEmptyShould(true);
 
   private static com.tngtech.archunit.base.DescribedPredicate<JavaClass>
       applicationImplementation() {
     return describe(
         "reside in application but outside application.port",
-        c ->
-            c.getPackageName() != null
-                && c.getPackageName().contains(".application.")
-                && !c.getPackageName().contains(".application.port."));
+        c -> {
+          String pkg = c.getPackageName();
+          if (pkg == null || pkg.isBlank()) {
+            return false;
+          }
+          return pkg.startsWith(BASE_PACKAGE + ".application.")
+              && !pkg.startsWith(BASE_PACKAGE + ".application.port.");
+        });
   }
 }

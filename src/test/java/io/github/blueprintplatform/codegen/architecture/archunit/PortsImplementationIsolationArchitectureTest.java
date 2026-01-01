@@ -10,28 +10,38 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 @AnalyzeClasses(
-    packages = "io.github.blueprintplatform.codegen",
+    packages = PortsImplementationIsolationArchitectureTest.BASE_PACKAGE,
     importOptions = ImportOption.DoNotIncludeTests.class)
 class PortsImplementationIsolationArchitectureTest {
 
-  private static final String ADAPTER = "..adapter..";
+  static final String BASE_PACKAGE = "io.github.blueprintplatform.codegen";
+
+  private static final String ADAPTERS = BASE_PACKAGE + ".adapter..";
+
+  private static final String APPLICATION_PREFIX = BASE_PACKAGE + ".application.";
+  private static final String APPLICATION_PORT_PREFIX = BASE_PACKAGE + ".application.port.";
 
   @ArchTest
   static final ArchRule adapters_must_not_depend_on_application_implementation =
       noClasses()
           .that()
-          .resideInAPackage(ADAPTER)
+          .resideInAnyPackage(ADAPTERS)
           .should()
-          .dependOnClassesThat(
-              describe(
-                  "reside in application outside application.port",
-                  PortsImplementationIsolationArchitectureTest::isApplicationImplementationType));
+          .dependOnClassesThat(applicationImplementationTypes())
+          .allowEmptyShould(true);
+
+  private static com.tngtech.archunit.base.DescribedPredicate<JavaClass>
+      applicationImplementationTypes() {
+    return describe(
+        "application implementation types (application but outside application.port)",
+        PortsImplementationIsolationArchitectureTest::isApplicationImplementationType);
+  }
 
   private static boolean isApplicationImplementationType(JavaClass c) {
     String pkg = c.getPackageName();
     if (pkg == null || pkg.isBlank()) {
       return false;
     }
-    return pkg.contains(".application.") && !pkg.contains(".application.port.");
+    return pkg.startsWith(APPLICATION_PREFIX) && !pkg.startsWith(APPLICATION_PORT_PREFIX);
   }
 }

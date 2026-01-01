@@ -2,8 +2,8 @@
 set -euo pipefail
 
 LAYOUT="standard"
-SAMPLE_CODE="basic"
 GUARDRAILS="strict"
+SAMPLE_CODE="basic"
 DESCRIPTION="Verify generated project: standard (layered) layout, strict guardrails, basic sample"
 DEPENDENCIES="web"
 
