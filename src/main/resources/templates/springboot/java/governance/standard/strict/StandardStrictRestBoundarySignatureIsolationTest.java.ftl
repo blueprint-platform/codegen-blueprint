@@ -1,10 +1,9 @@
 package ${projectPackageName}.architecture.archunit;
 
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PREFIX;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN_SEGMENT;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_CONTROLLER;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_DOMAIN;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
@@ -30,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  * - Works for both flat package roots and nested sub-root structures.
  * Contract note:
  * - Rule scope is the generated application base package.
- * - Package matchers are fully qualified to avoid accidental matches.
+ * - Pattern helpers are derived locally (rule-scoped, NOT contract).
  */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
@@ -38,12 +37,18 @@ import org.springframework.web.bind.annotation.RestController;
 )
 class StandardStrictRestBoundarySignatureIsolationTest {
 
+    private static final String CONTROLLER_PATTERN = familyPattern(FAMILY_CONTROLLER);
+    private static final String BASE_PREFIX = BASE_PACKAGE + ".";
+
+    // Implementation detail for robust detection (NOT contract).
+    private static final String DOMAIN_DOTTED_TOKEN = "." + FAMILY_DOMAIN + ".";
+
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(CONTROLLER)
+                    .resideInAnyPackage(CONTROLLER_PATTERN)
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)
@@ -110,11 +115,18 @@ class StandardStrictRestBoundarySignatureIsolationTest {
                 return false;
             }
             var pkg = c.getPackageName();
-            return pkg != null && pkg.startsWith(BASE_PREFIX) && pkg.contains(DOMAIN_SEGMENT);
+            if (pkg == null || pkg.isBlank()) {
+                return false;
+            }
+            return pkg.startsWith(BASE_PREFIX) && pkg.contains(DOMAIN_DOTTED_TOKEN);
         }
 
         private static String message(JavaMethod method, String reason, Object type) {
             return reason + ": " + method.getFullName() + " -> " + type;
         }
+    }
+
+    private static String familyPattern(String family) {
+        return BASE_PACKAGE + ".." + family + "..";
     }
 }

@@ -1,44 +1,92 @@
 package ${projectPackageName}.architecture.archunit;
 
 /**
- * Central scope definition for STANDARD (layered) architecture guardrails.
- * Purpose:
- * - Provide a single, authoritative package contract for all standard rules
- * - Prevent duplication of package patterns across rule classes
- * Design note:
- * - This scope defines structural boundaries, not dependency rules
- * - Patterns are intentionally broad to support both flat roots and sub-roots
- * - Segment constants are provided for string-based package analysis
+ * Canonical vocabulary for STANDARD (layered) architecture guardrails.
+ * <h2>What this is</h2>
+ * This class is the authoritative <b>package contract</b> for the generated STANDARD layout.
+ * It defines canonical names of top-level families and their canonical subpackages.
+ * <h2>What this is NOT</h2>
+ * <ul>
+ *   <li>Not a rule set (rules live in ArchUnit tests).</li>
+ *   <li>Not a matcher library (tests may build patterns using these constants).</li>
+ *   <li>Not a suggestion (renaming these is a contract change, by design).</li>
+ * </ul>
+ * <h2>Contract intent</h2>
+ * The generator emits this package schema. Guardrails validate it.
+ * Any change to these names is not a refactor; it is an intentional contract change.
  */
 final class StandardGuardrailsScope {
 
+    /**
+     * Base package of the generated application.
+     * Guardrails analyze classes under this root.
+     */
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    // ArchUnit package patterns (for resideInAnyPackage)
-    static final String CONTROLLER = BASE_PACKAGE + "..controller..";
-    static final String CONTROLLER_DTO = BASE_PACKAGE + "..controller..dto..";
+    // ---------------------------------------------------------------------------------------------
+    // Top-level families (canonical, contract)
+    // ---------------------------------------------------------------------------------------------
 
-    static final String SERVICE = BASE_PACKAGE + "..service..";
-    static final String REPOSITORY = BASE_PACKAGE + "..repository..";
+    /**
+     * Delivery layer (entrypoints).
+     * Example: REST controllers.
+     */
+    static final String FAMILY_CONTROLLER = "controller";
 
-    static final String DOMAIN = BASE_PACKAGE + "..domain..";
-    static final String DOMAIN_MODEL = BASE_PACKAGE + "..domain.model..";
-    static final String DOMAIN_SERVICE = BASE_PACKAGE + "..domain.service..";
+    /**
+     * Application services (use-case orchestration in layered style).
+     */
+    static final String FAMILY_SERVICE = "service";
 
-    static final String CONFIG = BASE_PACKAGE + "..config..";
+    /**
+     * Persistence layer (repositories, data access).
+     */
+    static final String FAMILY_REPOSITORY = "repository";
 
-    // ArchUnit slice patterns (for slices().matching)
-    static final String TOP_LEVEL_SLICE = BASE_PACKAGE + ".(*)..";
+    /**
+     * Domain layer (domain model + domain services).
+     * Framework-agnostic as a rule of thumb, within the layered model.
+     */
+    static final String FAMILY_DOMAIN = "domain";
 
-    static final String CONTROLLER_SLICE = BASE_PACKAGE + "..controller.(*)..";
-    static final String SERVICE_SLICE = BASE_PACKAGE + "..service.(*)..";
-    static final String REPOSITORY_SLICE = BASE_PACKAGE + "..repository.(*)..";
-    static final String DOMAIN_SLICE = BASE_PACKAGE + "..domain.(*)..";
-    static final String CONFIG_SLICE = BASE_PACKAGE + "..config.(*)..";
+    /**
+     * Configuration / wiring (framework configuration, bean wiring, etc.).
+     */
+    static final String FAMILY_CONFIG = "config";
 
-    // String-based package segments (for JavaClass#getPackageName analysis)
-    static final String BASE_PREFIX = BASE_PACKAGE + ".";
-    static final String DOMAIN_SEGMENT = ".domain.";
+    // ---------------------------------------------------------------------------------------------
+    // Controller sub-vocabulary (canonical, contract)
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * DTO namespace under controller.
+     * Boundary objects for delivery layer (request/response models).
+     */
+    static final String CONTROLLER_DTO = "dto";
+
+    // ---------------------------------------------------------------------------------------------
+    // Domain sub-vocabulary (canonical, contract)
+    // ---------------------------------------------------------------------------------------------
+
+    /**
+     * Domain model namespace (entities/value objects/aggregates).
+     */
+    static final String DOMAIN_MODEL = "model";
+
+    /**
+     * Domain services namespace (domain behavior that does not naturally belong to a single entity).
+     */
+    static final String DOMAIN_SERVICE = "service";
+
+    // ---------------------------------------------------------------------------------------------
+    // Convenience: fully-qualified family roots (for messages / expectations)
+    // ---------------------------------------------------------------------------------------------
+
+    static final String ROOT_CONTROLLER = BASE_PACKAGE + "." + FAMILY_CONTROLLER;
+    static final String ROOT_SERVICE = BASE_PACKAGE + "." + FAMILY_SERVICE;
+    static final String ROOT_REPOSITORY = BASE_PACKAGE + "." + FAMILY_REPOSITORY;
+    static final String ROOT_DOMAIN = BASE_PACKAGE + "." + FAMILY_DOMAIN;
+    static final String ROOT_CONFIG = BASE_PACKAGE + "." + FAMILY_CONFIG;
 
     private StandardGuardrailsScope() {}
 }

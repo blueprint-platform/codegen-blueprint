@@ -1,11 +1,12 @@
 package ${projectPackageName}.architecture.archunit;
 
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN_SERVICE;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.REPOSITORY;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.SERVICE;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN_SERVICE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_CONTROLLER;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_DOMAIN;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_REPOSITORY;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_SERVICE;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -37,6 +38,15 @@ import com.tngtech.archunit.lang.ArchRule;
 )
 class StandardStrictLayerDependencyRulesTest {
 
+    // ---------------------------------------------------------------------------------------------
+    // Rule-scoped patterns (NOT contract)
+    // ---------------------------------------------------------------------------------------------
+
+    private static final String CONTROLLER = familyPattern(FAMILY_CONTROLLER);
+    private static final String SERVICE = familyPattern(FAMILY_SERVICE);
+    private static final String REPOSITORY = familyPattern(FAMILY_REPOSITORY);
+    private static final String DOMAIN_SERVICE_PATTERN = domainServicePattern();
+
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_repositories =
             noClasses()
@@ -54,7 +64,7 @@ class StandardStrictLayerDependencyRulesTest {
                     .resideInAnyPackage(CONTROLLER)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN_SERVICE)
+                    .resideInAnyPackage(DOMAIN_SERVICE_PATTERN)
                     .allowEmptyShould(true);
 
     @ArchTest
@@ -76,4 +86,16 @@ class StandardStrictLayerDependencyRulesTest {
                     .dependOnClassesThat()
                     .resideInAnyPackage(SERVICE, CONTROLLER)
                     .allowEmptyShould(true);
+
+    // ---------------------------------------------------------------------------------------------
+    // Local pattern helpers (rule-scoped, NOT contract)
+    // ---------------------------------------------------------------------------------------------
+
+    private static String familyPattern(String family) {
+        return BASE_PACKAGE + ".." + family + "..";
+    }
+
+    private static String domainServicePattern() {
+        return BASE_PACKAGE + ".." + FAMILY_DOMAIN + "." + DOMAIN_SERVICE + "..";
+    }
 }

@@ -13,14 +13,12 @@ import org.junit.jupiter.api.Assertions;
  * Purpose:
  * - Fail fast if the guardrails scope is empty (no classes found under the configured base package).
  * Why this exists:
- * - After generation, teams may refactor the root package name.
+ * - A common post-generation change is refactoring the root package name.
  * - If the root package changes but {@link StandardGuardrailsScope#BASE_PACKAGE} is not updated,
- *   ArchUnit evaluates an empty scope and architecture guardrails silently stop working.
+ *   ArchUnit may import zero classes and rules can appear "green" while guardrails are effectively disabled.
  * Contract note:
- * - This is NOT a layered dependency rule.
- * - This is a guardrails integrity check to prevent a false-green build.
- * Remediation:
- * - Update {@link StandardGuardrailsScope#BASE_PACKAGE} to match the new root package
+ * - This is not a layered dependency rule; it's an integrity check for the guardrails contract.
+ * - If this test fails, update {@link StandardGuardrailsScope#BASE_PACKAGE} to match the new root package
  *   (or re-generate the project with the intended package name).
  */
 @AnalyzeClasses(

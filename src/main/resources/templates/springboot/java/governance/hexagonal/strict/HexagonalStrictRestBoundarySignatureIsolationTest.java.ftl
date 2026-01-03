@@ -1,9 +1,10 @@
 package ${projectPackageName}.architecture.archunit;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.ADAPTER_IN;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.BASE_PACKAGE;
-import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.DOMAIN;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_ADAPTER;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_DOMAIN;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
@@ -28,8 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
  * - DTO domain isolation is enforced by a separate rule
  * - This rule focuses solely on API surface leakage
  * - Structural by nature and independent of package root shape
- * Contract note:
- * - Rule scope is the generated application boundary
  */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
@@ -42,7 +41,7 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(ADAPTER_IN)
+                    .resideInAnyPackage(inboundAdapterPattern())
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)
@@ -69,23 +68,23 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
 
             var rawReturn = method.getRawReturnType();
             if (isDomainType(rawReturn)) {
-                violations.add(message("return type leaks domain", method, rawReturn));
+                violations.add(message("return type leaks domain", method, rawReturn.getFullName()));
             }
 
             for (var p : method.getRawParameterTypes()) {
                 if (isDomainType(p)) {
-                    violations.add(message("parameter type leaks domain", method, p));
+                    violations.add(message("parameter type leaks domain", method, p.getFullName()));
                 }
             }
 
             var returnType = method.getReturnType();
             if (containsDomainInTypeTree(returnType)) {
-                violations.add(message("generic return type leaks domain", method, returnType));
+                violations.add(message("generic return type leaks domain", method, returnType.getName()));
             }
 
             for (var pt : method.getParameterTypes()) {
                 if (containsDomainInTypeTree(pt)) {
-                    violations.add(message("generic parameter type leaks domain", method, pt));
+                    violations.add(message("generic parameter type leaks domain", method, pt.getName()));
                 }
             }
 
@@ -109,11 +108,19 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
                 return false;
             }
             var pkg = c.getPackageName();
-            return pkg != null && pkg.startsWith(DOMAIN);
+            return pkg != null && pkg.contains(domainToken());
         }
 
-        private static String message(String reason, JavaMethod method, Object type) {
+        private static String message(String reason, JavaMethod method, String type) {
             return reason + ": " + method.getFullName() + " -> " + type;
         }
+    }
+
+    private static String inboundAdapterPattern() {
+        return BASE_PACKAGE + ".." + FAMILY_ADAPTER + "." + ADAPTER_IN + "..";
+    }
+
+    private static String domainToken() {
+        return "." + FAMILY_DOMAIN + ".";
     }
 }

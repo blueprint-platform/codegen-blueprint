@@ -1,9 +1,10 @@
 package ${projectPackageName}.architecture.archunit;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
 import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER_DTO;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_CONTROLLER;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_DOMAIN;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -12,13 +13,13 @@ import com.tngtech.archunit.lang.ArchRule;
 
 /**
  * Strict controller DTO isolation (STANDARD).
- * Guarantees:
- * - Controller DTOs must not depend on domain types.
- * Notes:
- * - Works for both flat package roots and nested sub-root structures.
- * Contract note:
- * - Rule scope is the generated application base package.
- * - Package matchers are fully qualified to avoid accidental matches.
+ * <h2>Guarantee</h2>
+ * Controller DTOs must not depend on domain types.
+ * <h2>Notes</h2>
+ * <ul>
+ *   <li>Works for both flat roots and nested bounded contexts.</li>
+ *   <li>Match patterns are derived from the canonical contract ({@link StandardGuardrailsScope}).</li>
+ * </ul>
  */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
@@ -30,9 +31,21 @@ class StandardStrictControllerDtoDomainIsolationTest {
     static final ArchRule controller_dtos_must_not_depend_on_domain =
             noClasses()
                     .that()
-                    .resideInAnyPackage(CONTROLLER_DTO)
+                    .resideInAnyPackage(controllerDtoPattern())
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(DOMAIN)
+                    .resideInAnyPackage(domainFamilyPattern())
                     .allowEmptyShould(true);
+
+    // ---------------------------------------------------------------------------------------------
+    // Local pattern helpers (rule-scoped, NOT contract)
+    // ---------------------------------------------------------------------------------------------
+
+    private static String controllerDtoPattern() {
+        return BASE_PACKAGE + ".." + FAMILY_CONTROLLER + "." + CONTROLLER_DTO + "..";
+    }
+
+    private static String domainFamilyPattern() {
+        return BASE_PACKAGE + ".." + FAMILY_DOMAIN + "..";
+    }
 }
