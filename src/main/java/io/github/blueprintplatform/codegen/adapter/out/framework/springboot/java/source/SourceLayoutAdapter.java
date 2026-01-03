@@ -6,6 +6,8 @@ import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,14 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
           Path.of("domain", "model"),
           Path.of("domain", "service"));
 
+  private static final List<String> HEX_TOP_LEVEL_FAMILIES =
+      List.of("adapter", "application", "domain", "bootstrap");
+
+  private static final List<String> STANDARD_TOP_LEVEL_FAMILIES =
+      List.of("controller", "service", "repository", "domain", "config");
+
+  private static final String PACKAGE_INFO_FILE = "package-info.java";
+
   @Override
   public ArtifactKey artifactKey() {
     return ArtifactKey.SOURCE_LAYOUT;
@@ -65,10 +75,27 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
     addDirectories(resources, COMMON_DIRS);
     addDirectories(resources, List.of(mainBasePackageDir, testBasePackageDir));
 
-    var segments = blueprint.getArchitecture().layout().isHexagonal() ? HEX_DIRS : STANDARD_DIRS;
+    var isHex = blueprint.getArchitecture().layout().isHexagonal();
+
+    var segments = isHex ? HEX_DIRS : STANDARD_DIRS;
     addDirectoriesUnder(resources, mainBasePackageDir, segments);
 
+    addTopLevelPackageInfoMarkers(resources, mainBasePackageDir, packageName, isHex);
+
     return List.copyOf(resources);
+  }
+
+  private void addTopLevelPackageInfoMarkers(
+      List<GeneratedResource> out,
+      Path mainBasePackageDir,
+      PackageName basePackage,
+      boolean isHex) {
+    var families = isHex ? HEX_TOP_LEVEL_FAMILIES : STANDARD_TOP_LEVEL_FAMILIES;
+    for (var family : families) {
+      var relativePath = mainBasePackageDir.resolve(family).resolve(PACKAGE_INFO_FILE);
+      var content = "package " + basePackage.value() + "." + family + ";\n";
+      out.add(new GeneratedTextResource(relativePath, content, StandardCharsets.UTF_8));
+    }
   }
 
   private Path resolveBasePackageDir(Path javaRoot, PackageName packageName) {

@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Assertions;
  * Contract note:
  * - If this test fails, at least one bounded context contains code that does not conform
  *   to the generated STANDARD package contract (likely a rename-based escape).
+ * - If this test fails due to no detected bounded context, it indicates guardrails are effectively disabled
+ *   (e.g. canonical family renamed, root structure altered, or no controller exists while strict guardrails are enabled).
  */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
@@ -54,7 +56,12 @@ class StandardUnknownFamilyTest {
         var contexts = detectControllerContexts(classes);
 
         if (contexts.isEmpty()) {
-            return;
+            Assertions.fail(
+                    "No STANDARD bounded context was detected under scope '" + BASE_PACKAGE + "'. "
+                            + "Expected at least one context containing '" + CONTROLLER + "'. "
+                            + "This may indicate that the root package or canonical family names were changed "
+                            + "(or that no controller exists while strict guardrails are enabled)."
+            );
         }
 
         var violationsByContext = new TreeMap<String, Set<String>>();

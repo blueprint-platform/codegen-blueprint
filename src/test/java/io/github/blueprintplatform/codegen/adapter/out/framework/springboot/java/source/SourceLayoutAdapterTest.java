@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
@@ -26,6 +25,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,22 +54,26 @@ class SourceLayoutAdapterTest {
             new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
             new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
 
-    ArchitectureSpec architecture =
-        new ArchitectureSpec(layout, ArchitectureGovernance.none(), SampleCodeOptions.none());
+    ArchitectureSpec architecture = new ArchitectureSpec(layout, null, SampleCodeOptions.none());
 
     Dependencies dependencies = Dependencies.of(List.of());
 
     return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
-  private static List<Path> toRelativePaths(Iterable<? extends GeneratedResource> resources) {
+  private static List<Path> directoriesOf(Iterable<? extends GeneratedResource> resources) {
     List<Path> result = new ArrayList<>();
     StreamSupport.stream(resources.spliterator(), false)
-        .forEach(
-            r -> {
-              assertThat(r).isInstanceOf(GeneratedDirectory.class);
-              result.add(r.relativePath());
-            });
+        .filter(r -> r instanceof GeneratedDirectory)
+        .forEach(r -> result.add(r.relativePath()));
+    return result;
+  }
+
+  private static List<Path> textFilesOf(Iterable<? extends GeneratedResource> resources) {
+    List<Path> result = new ArrayList<>();
+    StreamSupport.stream(resources.spliterator(), false)
+        .filter(r -> r instanceof GeneratedTextResource)
+        .forEach(r -> result.add(r.relativePath()));
     return result;
   }
 
@@ -77,34 +81,28 @@ class SourceLayoutAdapterTest {
   @DisplayName("artifactKey() should return SOURCE_LAYOUT")
   void artifactKey_shouldReturnSourceLayout() {
     SourceLayoutAdapter adapter = new SourceLayoutAdapter();
-
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.SOURCE_LAYOUT);
   }
 
   @Test
-  @DisplayName(
-      "generate() with STANDARD layout should create base/package directories and layered sub-packages")
-  void generate_standardLayout_shouldCreateLayeredSubPackages() {
+  @DisplayName("generate() with STANDARD layout should create directories and package-info markers")
+  void generate_standardLayout_shouldCreateLayeredSubPackagesAndMarkers() {
     SourceLayoutAdapter adapter = new SourceLayoutAdapter();
     ProjectBlueprint blueprint = blueprint(ProjectLayout.STANDARD);
 
     Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
-    List<Path> paths = toRelativePaths(resources);
 
     Path mainBase = Path.of("src", "main", "java").resolve(BASE_PACKAGE_PATH);
     Path testBase = Path.of("src", "test", "java").resolve(BASE_PACKAGE_PATH);
 
-    List<Path> expected =
+    List<Path> expectedDirs =
         List.of(
-            // common dirs
             Path.of("src", "main", "java"),
             Path.of("src", "test", "java"),
             Path.of("src", "main", "resources"),
             Path.of("src", "test", "resources"),
-            // base package dirs
             mainBase,
             testBase,
-            // standard layered sub-packages (under main base package only)
             mainBase.resolve("controller"),
             mainBase.resolve(Path.of("controller", "dto")),
             mainBase.resolve("service"),
@@ -114,33 +112,38 @@ class SourceLayoutAdapterTest {
             mainBase.resolve(Path.of("domain", "model")),
             mainBase.resolve(Path.of("domain", "service")));
 
-    assertThat(paths).containsExactlyInAnyOrderElementsOf(expected).hasSize(expected.size());
+    List<Path> expectedMarkers =
+        List.of(
+            mainBase.resolve(Path.of("controller", "package-info.java")),
+            mainBase.resolve(Path.of("service", "package-info.java")),
+            mainBase.resolve(Path.of("repository", "package-info.java")),
+            mainBase.resolve(Path.of("domain", "package-info.java")),
+            mainBase.resolve(Path.of("config", "package-info.java")));
+
+    assertThat(directoriesOf(resources)).containsExactlyInAnyOrderElementsOf(expectedDirs);
+    assertThat(textFilesOf(resources)).containsExactlyInAnyOrderElementsOf(expectedMarkers);
   }
 
   @Test
   @DisplayName(
-      "generate() with HEXAGONAL layout should create base/package directories and hexagonal sub-packages")
-  void generate_hexagonalLayout_shouldCreateHexagonalSubPackages() {
+      "generate() with HEXAGONAL layout should create directories and package-info markers")
+  void generate_hexagonalLayout_shouldCreateHexagonalSubPackagesAndMarkers() {
     SourceLayoutAdapter adapter = new SourceLayoutAdapter();
     ProjectBlueprint blueprint = blueprint(ProjectLayout.HEXAGONAL);
 
     Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
-    List<Path> paths = toRelativePaths(resources);
 
     Path mainBase = Path.of("src", "main", "java").resolve(BASE_PACKAGE_PATH);
     Path testBase = Path.of("src", "test", "java").resolve(BASE_PACKAGE_PATH);
 
-    List<Path> expected =
+    List<Path> expectedDirs =
         List.of(
-            // common dirs
             Path.of("src", "main", "java"),
             Path.of("src", "test", "java"),
             Path.of("src", "main", "resources"),
             Path.of("src", "test", "resources"),
-            // base package dirs
             mainBase,
             testBase,
-            // hexagonal sub-packages (under main base package only)
             mainBase.resolve("adapter"),
             mainBase.resolve(Path.of("adapter", "in")),
             mainBase.resolve(Path.of("adapter", "out")),
@@ -157,6 +160,14 @@ class SourceLayoutAdapterTest {
             mainBase.resolve(Path.of("domain", "port", "out")),
             mainBase.resolve(Path.of("domain", "service")));
 
-    assertThat(paths).containsExactlyInAnyOrderElementsOf(expected).hasSize(expected.size());
+    List<Path> expectedMarkers =
+        List.of(
+            mainBase.resolve(Path.of("adapter", "package-info.java")),
+            mainBase.resolve(Path.of("application", "package-info.java")),
+            mainBase.resolve(Path.of("domain", "package-info.java")),
+            mainBase.resolve(Path.of("bootstrap", "package-info.java")));
+
+    assertThat(directoriesOf(resources)).containsExactlyInAnyOrderElementsOf(expectedDirs);
+    assertThat(textFilesOf(resources)).containsExactlyInAnyOrderElementsOf(expectedMarkers);
   }
 }
