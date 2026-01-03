@@ -1,10 +1,8 @@
 package ${projectPackageName}.architecture.archunit;
 
 import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.PackageMatcher;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -17,25 +15,23 @@ import org.junit.jupiter.api.Assertions;
 
 /**
  * Unknown-family guardrail (STANDARD, context-scoped).
+ *
  * Purpose:
  * - Prevent silent guardrails degradation caused by renaming canonical package families
  *   inside a STANDARD bounded context (e.g. {@code controller -> controllers}, {@code service -> services}).
- * - Avoid "repo policing": packages outside detected bounded contexts are NOT restricted
- *   (e.g. {@code medium}, {@code docs}, {@code playground} are allowed).
+ * - Avoid "repo policing": packages outside detected bounded contexts are NOT restricted.
+ *
  * Heuristic (context detection):
- * - Any sub-root that contains a {@code controller} package is treated as a bounded context.
+ * - Any context root that contains a {@code controller} package is treated as a bounded context.
+ *
  * Rule (within each detected context):
  * - Every class under that context root must be located under a canonical STANDARD family as the FIRST segment:
  *   {@code controller}, {@code service}, {@code repository}, {@code domain}, {@code config}.
+ *
  * Notes:
  * - Works with both flat roots and nested sub-root structures (bounded contexts).
  * - {@code repository} is allowed even if persistence is not used.
  * - This is a schema integrity rule, not a dependency rule.
- * Contract note:
- * - If this test fails, at least one bounded context contains code that does not conform
- *   to the generated STANDARD package contract (likely a rename-based escape).
- * - If this test fails due to no detected bounded context, it indicates guardrails are effectively disabled
- *   (e.g. canonical family renamed, root structure altered, or no controller exists while strict guardrails are enabled).
  */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
@@ -51,6 +47,9 @@ class StandardUnknownFamilyTest {
             "config"
     );
 
+    private static final String TOKEN_CONTROLLER_DOT = ".controller.";
+    private static final String TOKEN_CONTROLLER_END = ".controller";
+
     @ArchTest
     static void only_known_standard_package_families_are_allowed_within_detected_contexts(JavaClasses classes) {
         var contexts = detectControllerContexts(classes);
@@ -58,7 +57,7 @@ class StandardUnknownFamilyTest {
         if (contexts.isEmpty()) {
             Assertions.fail(
                     "No STANDARD bounded context was detected under scope '" + BASE_PACKAGE + "'. "
-                            + "Expected at least one context containing '" + CONTROLLER + "'. "
+                            + "Expected at least one context containing a 'controller' package. "
                             + "This may indicate that the root package or canonical family names were changed "
                             + "(or that no controller exists while strict guardrails are enabled)."
             );
@@ -74,9 +73,18 @@ class StandardUnknownFamilyTest {
                 if (pkg == null || pkg.isBlank()) {
                     continue;
                 }
+
                 if (!isUnderContext(pkg, contextRoot)) {
                     continue;
                 }
+
+                // IMPORTANT:
+                // Do not let a parent context (e.g., BASE_PACKAGE) "swallow" nested bounded contexts.
+                // If this class belongs to a *more specific* contextRoot, it will be validated there.
+                if (belongsToMoreSpecificContext(pkg, contextRoot, contexts)) {
+                    continue;
+                }
+
                 if (!isInAllowedFamilyWithinContext(pkg, contextRoot)) {
                     offenders.add(c.getFullName());
                 }
@@ -114,7 +122,6 @@ class StandardUnknownFamilyTest {
     }
 
     private static Map<String, Boolean> detectControllerContexts(JavaClasses classes) {
-        var matcher = PackageMatcher.of(CONTROLLER);
         var contexts = new LinkedHashMap<String, Boolean>();
 
         for (var c : classes) {
@@ -122,33 +129,55 @@ class StandardUnknownFamilyTest {
             if (pkg == null || pkg.isBlank()) {
                 continue;
             }
-            if (!matcher.matches(pkg)) {
+
+            var contextRoot = contextRootForControllerPackage(pkg);
+            if (contextRoot == null || contextRoot.isBlank()) {
                 continue;
             }
 
-            var contextRoot = contextRootForControllerPackage(pkg);
-            if (contextRoot != null && !contextRoot.isBlank()) {
-                contexts.putIfAbsent(contextRoot, Boolean.TRUE);
-            }
+            contexts.putIfAbsent(contextRoot, Boolean.TRUE);
         }
 
         return contexts;
     }
 
     private static String contextRootForControllerPackage(String packageName) {
-        var token = ".controller.";
-        int idx = packageName.indexOf(token);
+        if (packageName == null || packageName.isBlank()) {
+            return null;
+        }
+
+        var basePrefix = BASE_PACKAGE + ".";
+        if (!packageName.startsWith(basePrefix)) {
+            return null;
+        }
+
+        int idx = packageName.indexOf(TOKEN_CONTROLLER_DOT);
         if (idx >= 0) {
             return packageName.substring(0, idx);
         }
 
-        token = ".controller";
-        idx = packageName.lastIndexOf(token);
-        if (idx >= 0 && idx + token.length() == packageName.length()) {
+        idx = packageName.lastIndexOf(TOKEN_CONTROLLER_END);
+        if (idx >= 0 && idx + TOKEN_CONTROLLER_END.length() == packageName.length()) {
             return packageName.substring(0, idx);
         }
 
         return null;
+    }
+
+    private static boolean belongsToMoreSpecificContext(String packageName, String currentContextRoot, Map<String, Boolean> contexts) {
+        for (var other : contexts.keySet()) {
+            if (other.equals(currentContextRoot)) {
+                continue;
+            }
+            if (isNestedContext(other, currentContextRoot) && isUnderContext(packageName, other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isNestedContext(String maybeNested, String maybeParent) {
+        return maybeNested.startsWith(maybeParent + ".");
     }
 
     private static boolean isUnderContext(String packageName, String contextRoot) {

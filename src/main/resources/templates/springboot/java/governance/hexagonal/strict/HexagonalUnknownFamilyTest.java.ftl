@@ -1,14 +1,14 @@
 package ${projectPackageName}.architecture.archunit;
 
-import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.APPLICATION;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.BASE_PACKAGE;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.PackageMatcher;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Assertions;
  * Heuristic (context detection):
  * - A sub-root is considered a bounded context if it contains {@code application} code.
  * Rule (within each detected context):
- * - Every class under that context root must be located under at least one canonical HEXAGONAL family segment:
+ * - Every class under that context root must be located under a canonical HEXAGONAL family as the FIRST segment:
  *   {@code adapter}, {@code application}, {@code domain}, {@code bootstrap}.
  * Notes:
  * - Works with both flat roots and nested sub-root structures.
@@ -51,15 +51,15 @@ class HexagonalUnknownFamilyTest {
 
         if (contexts.isEmpty()) {
             Assertions.fail(
-                    "No hexagonal bounded context was detected under scope '" + BASE_PACKAGE + "'. "
-                            + "Expected at least one context containing '" + APPLICATION + "'. "
+                    "No HEXAGONAL bounded context was detected under scope '" + BASE_PACKAGE + "'. "
+                            + "Expected at least one context containing an 'application' package. "
                             + "This may indicate that the root package or canonical family names were changed."
             );
         }
 
         var violationsByContext = new TreeMap<String, Set<String>>();
 
-        for (var contextRoot : contexts) {
+        for (var contextRoot : contexts.keySet()) {
             var offenders = new LinkedHashSet<String>();
 
             for (var c : classes) {
@@ -70,6 +70,14 @@ class HexagonalUnknownFamilyTest {
                 if (!isUnderContext(pkg, contextRoot)) {
                     continue;
                 }
+
+                // IMPORTANT:
+                // Do not let a parent context (e.g., BASE_PACKAGE) "swallow" nested bounded contexts.
+                // If this class belongs to a *more specific* contextRoot, it will be validated there.
+                if (belongsToAnotherContext(pkg, contextRoot, contexts)) {
+                    continue;
+                }
+
                 if (!isInAllowedFamilyWithinContext(pkg, contextRoot)) {
                     offenders.add(c.getFullName());
                 }
@@ -88,7 +96,7 @@ class HexagonalUnknownFamilyTest {
                 .append("Unknown package families detected inside HEXAGONAL bounded contexts under base scope '")
                 .append(BASE_PACKAGE).append("'. ")
                 .append("Bounded contexts are inferred by presence of 'application'. ")
-                .append("Within each detected context, every class must reside under the canonical families: ")
+                .append("Within each detected context, every class must reside under the canonical families as the FIRST segment: ")
                 .append(ALLOWED_FAMILIES).append(".\n\n")
                 .append("Violations:\n");
 
@@ -106,22 +114,66 @@ class HexagonalUnknownFamilyTest {
         Assertions.fail(message.toString());
     }
 
-    private static Set<String> detectApplicationContexts(JavaClasses classes) {
-        var contexts = new LinkedHashSet<String>();
-        var matcher = PackageMatcher.of(APPLICATION);
+    private static Map<String, Boolean> detectApplicationContexts(JavaClasses classes) {
+        var contexts = new LinkedHashMap<String, Boolean>();
 
         for (var c : classes) {
             var pkg = c.getPackageName();
             if (pkg == null || pkg.isBlank()) {
                 continue;
             }
-            if (!matcher.matches(pkg)) {
+
+            var contextRoot = contextRootForApplicationPackage(pkg);
+            if (contextRoot == null || contextRoot.isBlank()) {
                 continue;
             }
-            contexts.add(extractContextPrefix(pkg));
+
+            contexts.putIfAbsent(contextRoot, Boolean.TRUE);
         }
 
         return contexts;
+    }
+
+    private static boolean belongsToAnotherContext(String packageName, String currentContextRoot, Map<String, Boolean> contexts) {
+        for (var other : contexts.keySet()) {
+            if (other.equals(currentContextRoot)) {
+                continue;
+            }
+            // other is a more specific (nested) context under current
+            if (isUnderContext(packageName, other) && isNestedContext(other, currentContextRoot)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isNestedContext(String maybeNested, String maybeParent) {
+        return maybeNested.startsWith(maybeParent + ".");
+    }
+
+    private static String contextRootForApplicationPackage(String packageName) {
+        if (packageName == null || packageName.isBlank()) {
+            return null;
+        }
+
+        var basePrefix = BASE_PACKAGE + ".";
+        if (!packageName.startsWith(basePrefix)) {
+            return null;
+        }
+
+        var token = ".application.";
+        int idx = packageName.indexOf(token);
+        if (idx >= 0) {
+            return packageName.substring(0, idx);
+        }
+
+        token = ".application";
+        idx = packageName.lastIndexOf(token);
+        if (idx >= 0 && idx + token.length() == packageName.length()) {
+            return packageName.substring(0, idx);
+        }
+
+        return null;
     }
 
     private static boolean isUnderContext(String packageName, String contextRoot) {
@@ -145,45 +197,5 @@ class HexagonalUnknownFamilyTest {
         String firstSegment = dotIdx < 0 ? remainder : remainder.substring(0, dotIdx);
 
         return ALLOWED_FAMILIES.contains(firstSegment);
-    }
-
-    private static String extractContextPrefix(String packageName) {
-        if (packageName.equals(BASE_PACKAGE)) {
-            return BASE_PACKAGE;
-        }
-
-        var basePrefix = BASE_PACKAGE + ".";
-        if (!packageName.startsWith(basePrefix)) {
-            return BASE_PACKAGE;
-        }
-
-        var remainder = packageName.substring(basePrefix.length());
-
-        int adapterIdx = remainder.indexOf(".adapter.");
-        int appIdx = remainder.indexOf(".application.");
-        int domainIdx = remainder.indexOf(".domain.");
-        int bootstrapIdx = remainder.indexOf(".bootstrap.");
-
-        int idx = minPositive(adapterIdx, appIdx, domainIdx, bootstrapIdx);
-        if (idx < 0) {
-            return BASE_PACKAGE;
-        }
-
-        var subRoot = remainder.substring(0, idx);
-        if (subRoot.isBlank()) {
-            return BASE_PACKAGE;
-        }
-
-        return basePrefix + subRoot;
-    }
-
-    private static int minPositive(int... values) {
-        int min = Integer.MAX_VALUE;
-        for (int v : values) {
-            if (v >= 0 && v < min) {
-                min = v;
-            }
-        }
-        return min == Integer.MAX_VALUE ? -1 : min;
     }
 }

@@ -1,7 +1,6 @@
 package ${projectPackageName}.architecture.archunit;
 
 import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
-import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.PackageMatcher;
@@ -9,7 +8,9 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import org.junit.jupiter.api.Assertions;
 
@@ -17,23 +18,30 @@ import org.junit.jupiter.api.Assertions;
  * Standard (layered) package schema sanity check (bounded-context heuristic).
  * Purpose:
  * - Prevent silent architecture drift when teams rename or relocate core package families after generation.
- * - Validate schema completeness per bounded context, without requiring every possible family everywhere.
+ * - Validate schema completeness per bounded context.
  * Heuristic (context detection):
- * - Any sub-root that contains a {@code controller} package is treated as a bounded context.
+ * - Any context root that contains {@code controller} is treated as a bounded context.
  * Guarantees (per detected context):
  * - If a context has {@code controller}, it MUST also have {@code service} and {@code domain}.
  * Notes:
  * - Works with both flat roots and nested sub-root structures.
  * - {@code repository} is intentionally NOT required (persistence is optional).
- * Contract note:
- * - This is a schema integrity rule, not a dependency rule.
- * - If this test fails, at least one detected bounded context no longer conforms to the generated STANDARD contract.
+ * - Schema integrity rule (not a dependency rule).
  */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardPackageSchemaSanityTest {
+
+    private static final Set<String> REQUIRED_FAMILIES = Set.of("service", "domain");
+
+    private static final String TOKEN_CONTROLLER_DOT = ".controller.";
+    private static final String TOKEN_CONTROLLER_END = ".controller";
+
+    private static final PackageMatcher CONTROLLER_MATCHER = PackageMatcher.of(BASE_PACKAGE + "..controller..");
+    private static final PackageMatcher SERVICE_MATCHER = PackageMatcher.of(BASE_PACKAGE + "..service..");
+    private static final PackageMatcher DOMAIN_MATCHER = PackageMatcher.of(BASE_PACKAGE + "..domain..");
 
     @ArchTest
     static void bounded_contexts_with_controller_must_also_have_service_and_domain(JavaClasses classes) {
@@ -44,28 +52,22 @@ class StandardPackageSchemaSanityTest {
         }
 
         var violations = new TreeMap<String, String>();
-        for (var entry : contexts.entrySet()) {
-            var contextRoot = entry.getKey();
 
-            boolean hasService = containsAnyClassInPackagePattern(classes, contextRoot + "..service..");
-            boolean hasDomain = containsAnyClassInPackagePattern(classes, contextRoot + "..domain..");
+        for (var contextRoot : contexts.keySet()) {
+            boolean hasService = containsFamilyInExactContext(classes, contextRoot, SERVICE_MATCHER, contexts);
+            boolean hasDomain = containsFamilyInExactContext(classes, contextRoot, DOMAIN_MATCHER, contexts);
 
             if (hasService && hasDomain) {
                 continue;
             }
 
-            var missing = new StringBuilder();
-            if (!hasService) {
-                missing.append("service ");
-            }
-            if (!hasDomain) {
-                missing.append("domain ");
-            }
+            var missing = new LinkedHashSet<String>();
+            if (!hasService) missing.add("service");
+            if (!hasDomain) missing.add("domain");
 
             violations.put(
                     contextRoot,
-                    "missing: " + missing.toString().trim()
-                            + " (expected under '" + contextRoot + "')"
+                    "missing: " + String.join(", ", missing) + " (expected under '" + contextRoot + "')"
             );
         }
 
@@ -90,7 +92,6 @@ class StandardPackageSchemaSanityTest {
     }
 
     private static Map<String, Boolean> detectControllerContexts(JavaClasses classes) {
-        var matcher = PackageMatcher.of(CONTROLLER);
         var contexts = new LinkedHashMap<String, Boolean>();
 
         for (var c : classes) {
@@ -98,37 +99,91 @@ class StandardPackageSchemaSanityTest {
             if (pkg == null || pkg.isBlank()) {
                 continue;
             }
-            if (!matcher.matches(pkg)) {
+            if (!CONTROLLER_MATCHER.matches(pkg)) {
                 continue;
             }
 
             var contextRoot = contextRootForControllerPackage(pkg);
-            if (contextRoot != null && !contextRoot.isBlank()) {
-                contexts.putIfAbsent(contextRoot, Boolean.TRUE);
+            if (contextRoot == null || contextRoot.isBlank()) {
+                continue;
             }
+
+            contexts.putIfAbsent(contextRoot, Boolean.TRUE);
         }
 
         return contexts;
     }
 
     private static String contextRootForControllerPackage(String packageName) {
-        var token = ".controller.";
-        int idx = packageName.indexOf(token);
+        if (packageName == null || packageName.isBlank()) {
+            return null;
+        }
+
+        var basePrefix = BASE_PACKAGE + ".";
+        if (!packageName.startsWith(basePrefix)) {
+            return null;
+        }
+
+        int idx = packageName.indexOf(TOKEN_CONTROLLER_DOT);
         if (idx >= 0) {
             return packageName.substring(0, idx);
         }
 
-        token = ".controller";
-        idx = packageName.lastIndexOf(token);
-        if (idx >= 0 && idx + token.length() == packageName.length()) {
+        idx = packageName.lastIndexOf(TOKEN_CONTROLLER_END);
+        if (idx >= 0 && idx + TOKEN_CONTROLLER_END.length() == packageName.length()) {
             return packageName.substring(0, idx);
         }
 
         return null;
     }
 
-    private static boolean containsAnyClassInPackagePattern(JavaClasses classes, String archUnitPackagePattern) {
-        var matcher = PackageMatcher.of(archUnitPackagePattern);
-        return classes.stream().anyMatch(c -> matcher.matches(c.getPackageName()));
+    private static boolean containsFamilyInExactContext(
+            JavaClasses classes,
+            String contextRoot,
+            PackageMatcher familyMatcher,
+            Map<String, Boolean> allContexts
+    ) {
+        var prefix = contextRoot + ".";
+
+        for (var c : classes) {
+            var pkg = c.getPackageName();
+            if (pkg == null || pkg.isBlank()) {
+                continue;
+            }
+
+            if (!(pkg.equals(contextRoot) || pkg.startsWith(prefix))) {
+                continue;
+            }
+
+            if (belongsToMoreSpecificContext(pkg, contextRoot, allContexts)) {
+                continue;
+            }
+
+            if (familyMatcher.matches(pkg)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean belongsToMoreSpecificContext(String packageName, String currentContextRoot, Map<String, Boolean> allContexts) {
+        for (var other : allContexts.keySet()) {
+            if (other.equals(currentContextRoot)) {
+                continue;
+            }
+            if (isNestedContext(other, currentContextRoot) && isUnderContext(packageName, other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isNestedContext(String maybeNested, String maybeParent) {
+        return maybeNested.startsWith(maybeParent + ".");
+    }
+
+    private static boolean isUnderContext(String packageName, String contextRoot) {
+        return packageName.equals(contextRoot) || packageName.startsWith(contextRoot + ".");
     }
 }
