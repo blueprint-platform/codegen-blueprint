@@ -7,8 +7,7 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.sample.Sample
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.SampleCodeTemplatesScanException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
-import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
-import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
@@ -33,8 +32,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framewo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
-import java.nio.charset.StandardCharsets;
+import io.github.blueprintplatform.codegen.testsupport.templating.RecordingTemplateRenderer;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +40,8 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 @Tag("unit")
 @Tag("adapter")
@@ -80,6 +80,25 @@ class SampleCodeAdapterTest {
     return out;
   }
 
+  private static ResourcePatternResolver noopResolver() {
+    return new ResourcePatternResolver() {
+      @Override
+      public Resource[] getResources(String locationPattern) {
+        return new Resource[0];
+      }
+
+      @Override
+      public Resource getResource(String location) {
+        throw new UnsupportedOperationException("noop resolver");
+      }
+
+      @Override
+      public ClassLoader getClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+      }
+    };
+  }
+
   @Test
   @DisplayName("artifactKey() should return SAMPLE_CODE")
   void artifactKey_shouldReturnSampleCode() {
@@ -87,7 +106,7 @@ class SampleCodeAdapterTest {
         new SampleCodeAdapter(
             new RecordingTemplateRenderer(),
             DUMMY_ARTIFACT_SPEC,
-            new StubClasspathTemplateScanner(List.of()));
+            new StubFtlClasspathTemplateScanner(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.SAMPLE_CODE);
   }
@@ -99,7 +118,7 @@ class SampleCodeAdapterTest {
         new SampleCodeAdapter(
             new RecordingTemplateRenderer(),
             DUMMY_ARTIFACT_SPEC,
-            new StubClasspathTemplateScanner(
+            new StubFtlClasspathTemplateScanner(
                 List.of("springboot/java/sample/hexagonal/basic/main/x.java.ftl")));
 
     ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.NONE);
@@ -113,7 +132,7 @@ class SampleCodeAdapterTest {
   void generate_hexagonalBasic_shouldThrowWhenNoTemplatesFound() {
     String templateRoot = "springboot/java/sample/hexagonal/basic";
 
-    StubClasspathTemplateScanner scanner = new StubClasspathTemplateScanner(List.of());
+    StubFtlClasspathTemplateScanner scanner = new StubFtlClasspathTemplateScanner(List.of());
 
     SampleCodeAdapter adapter =
         new SampleCodeAdapter(new RecordingTemplateRenderer(), DUMMY_ARTIFACT_SPEC, scanner);
@@ -133,7 +152,7 @@ class SampleCodeAdapterTest {
         new SampleCodeAdapter(
             new RecordingTemplateRenderer(),
             DUMMY_ARTIFACT_SPEC,
-            new ThrowingClasspathTemplateScanner());
+            new ThrowingFtlClasspathTemplateScanner());
 
     ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
 
@@ -154,8 +173,8 @@ class SampleCodeAdapterTest {
     String ignoredTemplate = templateRoot + "/main/adapter/sample/in/rest/ignored.txt.ftl";
 
     RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
-    StubClasspathTemplateScanner scanner =
-        new StubClasspathTemplateScanner(List.of(mainTemplate, testTemplate, ignoredTemplate));
+    StubFtlClasspathTemplateScanner scanner =
+        new StubFtlClasspathTemplateScanner(List.of(mainTemplate, testTemplate, ignoredTemplate));
 
     SampleCodeAdapter adapter = new SampleCodeAdapter(renderer, artifactSpec, scanner);
 
@@ -186,38 +205,33 @@ class SampleCodeAdapterTest {
     assertThat(scanner.lastRoot).isEqualTo(templateRoot);
   }
 
-  private static final class StubClasspathTemplateScanner extends ClasspathTemplateScanner {
+  private static final class StubFtlClasspathTemplateScanner extends FtlClasspathTemplateScanner {
     private final List<String> templates;
     private String lastRoot;
 
-    private StubClasspathTemplateScanner(List<String> templates) {
+    private StubFtlClasspathTemplateScanner(List<String> templates) {
+      super(noopResolver());
       this.templates = List.copyOf(templates);
     }
 
     @Override
     public List<String> scan(String templateRoot) {
       this.lastRoot = templateRoot;
-      return templates.stream().filter(t -> t.startsWith(templateRoot + "/")).toList();
+      String prefix = templateRoot.endsWith("/") ? templateRoot : templateRoot + "/";
+      return templates.stream().filter(t -> t.startsWith(prefix)).toList();
     }
   }
 
-  private static final class ThrowingClasspathTemplateScanner extends ClasspathTemplateScanner {
+  private static final class ThrowingFtlClasspathTemplateScanner
+      extends FtlClasspathTemplateScanner {
+
+    private ThrowingFtlClasspathTemplateScanner() {
+      super(noopResolver());
+    }
+
     @Override
     public List<String> scan(String templateRoot) {
       throw new TemplateScanException(templateRoot, new IllegalStateException("boom"));
-    }
-  }
-
-  private static final class RecordingTemplateRenderer implements TemplateRenderer {
-    private final List<String> capturedTemplateNames = new ArrayList<>();
-    private final List<Map<String, Object>> capturedModels = new ArrayList<>();
-
-    @Override
-    public GeneratedResource renderUtf8(
-        Path outPath, String templateResourcePath, Map<String, Object> model) {
-      capturedTemplateNames.add(templateResourcePath);
-      capturedModels.add(model);
-      return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
     }
   }
 }

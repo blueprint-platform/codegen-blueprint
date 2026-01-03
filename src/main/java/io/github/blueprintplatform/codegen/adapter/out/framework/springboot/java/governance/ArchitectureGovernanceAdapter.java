@@ -1,10 +1,11 @@
 package io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.governance;
 
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.ArchitectureGovernanceTemplatesNotFoundException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.ArchitectureGovernanceTemplatesScanException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
-import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArchitectureGovernancePort;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
@@ -44,12 +45,12 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
 
   private final TemplateRenderer renderer;
   private final ArtifactSpec artifactSpec;
-  private final ClasspathTemplateScanner templateScanner;
+  private final FtlClasspathTemplateScanner templateScanner;
 
   public ArchitectureGovernanceAdapter(
       TemplateRenderer renderer,
       ArtifactSpec artifactSpec,
-      ClasspathTemplateScanner templateScanner) {
+      FtlClasspathTemplateScanner templateScanner) {
     this.renderer = renderer;
     this.artifactSpec = artifactSpec;
     this.templateScanner = templateScanner;
@@ -72,7 +73,8 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
 
     List<String> templatePaths = scanTemplates(templateRoot);
     if (templatePaths.isEmpty()) {
-      return List.of();
+      throw new ArchitectureGovernanceTemplatesNotFoundException(
+          templateRoot, layout.key(), mode.key());
     }
 
     boolean webSelected = isWebSelected(blueprint);
@@ -126,9 +128,7 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
 
   private boolean isWebSelected(ProjectBlueprint bp) {
     var deps = bp.getDependencies();
-    return deps != null
-        && !deps.isEmpty()
-        && deps.asList().stream().anyMatch(WEB_STARTER.matches());
+    return !deps.isEmpty() && deps.asList().stream().anyMatch(WEB_STARTER.matches());
   }
 
   private String resolveTemplateRoot(ProjectLayout layout, GuardrailsMode mode) {

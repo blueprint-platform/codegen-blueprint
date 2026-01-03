@@ -4,7 +4,7 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.sample.Sample
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.SampleCodeTemplatesScanException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
-import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.SampleCodePort;
@@ -37,12 +37,12 @@ public class SampleCodeAdapter implements SampleCodePort {
 
   private final TemplateRenderer renderer;
   private final ArtifactSpec artifactSpec;
-  private final ClasspathTemplateScanner templateScanner;
+  private final FtlClasspathTemplateScanner templateScanner;
 
   public SampleCodeAdapter(
       TemplateRenderer renderer,
       ArtifactSpec artifactSpec,
-      ClasspathTemplateScanner templateScanner) {
+      FtlClasspathTemplateScanner templateScanner) {
     this.renderer = renderer;
     this.artifactSpec = artifactSpec;
     this.templateScanner = templateScanner;

@@ -2,6 +2,8 @@ package io.github.blueprintplatform.codegen.testsupport.templating;
 
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +18,12 @@ public final class RecordingTemplateRenderer implements TemplateRenderer {
 
   private final List<GeneratedResource> filesToReturn;
 
+  public RecordingTemplateRenderer() {
+    this(List.of());
+  }
+
   public RecordingTemplateRenderer(List<GeneratedResource> filesToReturn) {
-    this.filesToReturn = filesToReturn;
+    this.filesToReturn = (filesToReturn == null) ? List.of() : List.copyOf(filesToReturn);
   }
 
   @Override
@@ -28,8 +34,16 @@ public final class RecordingTemplateRenderer implements TemplateRenderer {
     capturedTemplateNames.add(templateResourcePath);
     capturedModels.add(model);
 
-    GeneratedResource next = filesToReturn.get(renderedFiles.size());
+    GeneratedResource next = nextResource(outPath);
     renderedFiles.add(next);
     return next;
+  }
+
+  private GeneratedResource nextResource(Path outPath) {
+    int idx = renderedFiles.size();
+    if (idx < filesToReturn.size()) {
+      return filesToReturn.get(idx);
+    }
+    return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
   }
 }

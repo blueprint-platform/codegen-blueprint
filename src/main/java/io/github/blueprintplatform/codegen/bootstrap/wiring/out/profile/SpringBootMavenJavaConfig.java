@@ -15,7 +15,7 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
-import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
@@ -112,7 +112,7 @@ public class SpringBootMavenJavaConfig {
       TemplateRenderer renderer,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
-      ClasspathTemplateScanner classpathTemplateScanner) {
+      FtlClasspathTemplateScanner classpathTemplateScanner) {
 
     ArtifactSpec artifactSpec =
         artifactSpecMapper.from(
@@ -126,7 +126,7 @@ public class SpringBootMavenJavaConfig {
       TemplateRenderer renderer,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
-      ClasspathTemplateScanner classpathTemplateScanner) {
+      FtlClasspathTemplateScanner classpathTemplateScanner) {
 
     ArtifactSpec artifactSpec =
         artifactSpecMapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.SAMPLE_CODE));
