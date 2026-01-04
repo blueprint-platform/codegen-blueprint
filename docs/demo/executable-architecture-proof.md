@@ -82,14 +82,6 @@ docs/demo/proof-output/
     └── proof-summary.txt
 ```
 
-A convenience pointer is also maintained:
-
-```
-docs/demo/proof-output/latest/
-```
-
-which always refers to the **most recent run**.
-
 ---
 
 ## What each artifact means

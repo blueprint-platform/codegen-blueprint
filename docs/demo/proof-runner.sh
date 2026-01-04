@@ -40,7 +40,6 @@ PROOF_OUTPUT_ROOT="${PROOF_OUTPUT_ROOT:-${DEMO_DIR}/proof-output}"
 
 RUN_TS="$(date +%Y%m%d-%H%M%S)"
 RUN_DIR="${PROOF_OUTPUT_ROOT}/${RUN_TS}"
-LATEST_DIR="${PROOF_OUTPUT_ROOT}/latest"
 
 LOG_DIR="${RUN_DIR}/logs"
 EXCERPT_DIR="${RUN_DIR}/excerpts"
@@ -797,7 +796,6 @@ main() {
 
   log "DONE: Proof completed successfully (GREEN → RED → GREEN)"
   log "Proof output: ${RUN_DIR}"
-  log "Latest pointer: ${LATEST_DIR}"
 
   if [[ -n "$PROOF_EXPORT_DIR" ]]; then
     log "Artifacts exported to: ${PROOF_EXPORT_DIR}"
