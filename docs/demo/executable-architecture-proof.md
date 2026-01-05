@@ -504,7 +504,7 @@ Test:
 This case matches your schema experiment:
 
 * **Test:** `StandardPackageSchemaSanityTest.each_standard_bounded_context_must_contain_required_canonical_families`
-* **Violation:** canonical family **`controller`** is missing because you renamed it (e.g., `controller` → `controllerx`).
+* **Violation:** canonical family **`controller`** is missing because you renamed it (e.g., `controller` → `controllers`).
 
 #### 9) Baseline — Standard Schema Intact (GREEN)
 
@@ -534,7 +534,7 @@ mvn verify
 
 Introduce the deliberate schema violation by renaming the canonical package family:
 
-* `...controller...` → `...controllerx...`
+* `...controller...` → `...controllers...`
 
 This is illegal because the guardrails schema sanity test requires the canonical families to exist.
 
@@ -565,16 +565,16 @@ The build fails deterministically.
 Console evidence (aligned to your output):
 
 ```
-STANDARD package schema integrity failure under base scope 'io.github.blueprintplatform.greeting'.
-
-Required canonical families: [controller, service, domain]
-Violations:
- - context: io.github.blueprintplatform.greeting
-     present: controller ❌, service ✅, domain ✅
-     missing: controller
-
-Test:
-  StandardPackageSchemaSanityTest.each_standard_bounded_context_must_contain_required_canonical_families
+  STANDARD package schema integrity failure under base scope 'io.github.blueprintplatform.greeting.bp.sample
+  
+  Required canonical families: [controller, service, domain]
+  Violations:
+   - context: io.github.blueprintplatform.greeting.bp.sample
+       present: controller ❌, service ✅, domain ✅
+       missing: controller
+  
+  Test:
+    StandardPackageSchemaSanityTest.each_standard_bounded_context_must_contain_required_canonical_families
 ```
 
 ---

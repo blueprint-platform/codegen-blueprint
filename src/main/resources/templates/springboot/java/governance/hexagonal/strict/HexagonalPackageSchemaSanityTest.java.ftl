@@ -11,7 +11,6 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -195,9 +194,19 @@ class HexagonalPackageSchemaSanityTest {
         return packageName.equals(contextRoot) || packageName.startsWith(contextRoot + ".");
     }
 
-    private static String bestEvidenceUnderContext(JavaClasses classes, String contextRoot, Map<String, Boolean> allContexts) {
-        String best = null;
-        int bestDepth = Integer.MAX_VALUE;
+    private static String bestEvidenceUnderContext(
+            JavaClasses classes,
+            String contextRoot,
+            Map<String, Boolean> allContexts
+    ) {
+        // Prefer evidence that is within a REQUIRED family root (adapter/application/domain),
+        // to avoid misleading diagnostics like "...bootstrap" being shown as the primary evidence.
+        String bestRequired = null;
+        int bestRequiredDepth = Integer.MAX_VALUE;
+
+        // Fallback: shallowest package under this context (stable and deterministic)
+        String bestAny = null;
+        int bestAnyDepth = Integer.MAX_VALUE;
 
         for (var c : classes) {
             var pkg = c.getPackageName();
@@ -211,19 +220,33 @@ class HexagonalPackageSchemaSanityTest {
                 continue;
             }
 
-            // Evidence: the shallowest package under this context (stable and deterministic)
             int depth = segmentCount(pkg);
-            if (depth < bestDepth) {
-                best = pkg;
-                bestDepth = depth;
-            } else if (depth == bestDepth && best != null && pkg.compareTo(best) < 0) {
-                best = pkg;
-            } else if (depth == bestDepth && best == null) {
-                best = pkg;
+
+            // (1) Fallback: shallowest package under context
+            if (depth < bestAnyDepth) {
+                bestAny = pkg;
+                bestAnyDepth = depth;
+            } else if (depth == bestAnyDepth && bestAny != null && pkg.compareTo(bestAny) < 0) {
+                bestAny = pkg;
+            } else if (depth == bestAnyDepth && bestAny == null) {
+                bestAny = pkg;
+            }
+
+            // (2) Preferred evidence: within REQUIRED families (adapter/application/domain)
+            var first = firstSegmentAfterContext(pkg, contextRoot);
+            if (first != null && REQUIRED_FAMILIES_PER_CONTEXT.contains(first)) {
+                if (depth < bestRequiredDepth) {
+                    bestRequired = pkg;
+                    bestRequiredDepth = depth;
+                } else if (depth == bestRequiredDepth && bestRequired != null && pkg.compareTo(bestRequired) < 0) {
+                    bestRequired = pkg;
+                } else if (depth == bestRequiredDepth && bestRequired == null) {
+                    bestRequired = pkg;
+                }
             }
         }
 
-        return best;
+        return bestRequired != null ? bestRequired : bestAny;
     }
 
     private static String buildViolationMessage(List<ContextViolation> violations) {
@@ -240,7 +263,6 @@ class HexagonalPackageSchemaSanityTest {
 
         for (var v : violations) {
             sb.append(" - context: ").append(v.contextRoot()).append("\n");
-            sb.append("     context evidence: ").append(v.contextEvidence() == null ? "<unknown>" : v.contextEvidence()).append("\n");
 
             sb.append("     present: ")
                     .append(FAMILY_ADAPTER).append(v.hasAdapter() ? " ✅" : " ❌").append(", ")

@@ -391,37 +391,37 @@ inject_standard_schema_violation_controller_package_rename() {
   local test_base="${project_dir}/src/test/java/${base_path}"
 
   local main_controller_dir="${main_base}/controller"
-  local main_controllerx_dir="${main_base}/controllerx"
+  local main_controllers_dir="${main_base}/controllers"
 
   [[ -d "$main_controller_dir" ]] || die "STD schema inject: root controller dir not found: ${main_controller_dir}"
 
-  log "Inject STD schema violation (rename root controller dir -> controllerx) (STRUCTURAL + SEMANTIC)"
+  log "Inject STD schema violation (rename root controller dir -> controllers) (STRUCTURAL + SEMANTIC)"
   log "  main dir: ${main_controller_dir}"
 
   backup_path "$main_controller_dir"
-  mv "$main_controller_dir" "$main_controllerx_dir"
+  mv "$main_controller_dir" "$main_controllers_dir"
 
-  find "$main_controllerx_dir" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
-    replace_package_segment_once "$f" "controller" "controllerx"
+  find "$main_controllers_dir" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
+    replace_package_segment_once "$f" "controller" "controllers"
   done
 
   local test_controller_dir="${test_base}/controller"
-  local test_controllerx_dir="${test_base}/controllerx"
+  local test_controllers_dir="${test_base}/controllers"
 
   if [[ -d "$test_controller_dir" ]]; then
     log "  test dir: ${test_controller_dir}"
     backup_path "$test_controller_dir"
-    mv "$test_controller_dir" "$test_controllerx_dir"
-    find "$test_controllerx_dir" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
-      replace_package_segment_once "$f" "controller" "controllerx"
+    mv "$test_controller_dir" "$test_controllers_dir"
+    find "$test_controllers_dir" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
+      replace_package_segment_once "$f" "controller" "controllers"
     done
   fi
 
   [[ ! -d "$main_base/controller" ]] || die "STD schema inject failed: controller dir still exists under ${main_base}"
-  [[ -d "$main_base/controllerx" ]] || die "STD schema inject failed: controllerx dir not created under ${main_base}"
+  [[ -d "$main_base/controllers" ]] || die "STD schema inject failed: controllers dir not created under ${main_base}"
 
   printf "%s\n" "$main_controller_dir"
-  if [[ -d "$test_controllerx_dir" ]]; then
+  if [[ -d "$test_controllers_dir" ]]; then
     printf "%s\n" "$test_controller_dir"
   fi
 }

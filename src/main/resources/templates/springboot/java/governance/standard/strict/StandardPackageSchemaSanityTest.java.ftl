@@ -186,9 +186,18 @@ class StandardPackageSchemaSanityTest {
         return packageName.equals(contextRoot) || packageName.startsWith(contextRoot + ".");
     }
 
-    private static String bestEvidenceUnderContext(JavaClasses classes, String contextRoot, Map<String, Boolean> allContexts) {
-        String best = null;
-        int bestDepth = Integer.MAX_VALUE;
+    private static String bestEvidenceUnderContext(
+            JavaClasses classes,
+            String contextRoot,
+            Map<String, Boolean> allContexts
+    ) {
+        // Prefer evidence that is within a canonical family root (controller/service/domain),
+        String bestCanonical = null;
+        int bestCanonicalDepth = Integer.MAX_VALUE;
+
+        // Fallback: the shallowest package under this context (current behavior)
+        String bestAny = null;
+        int bestAnyDepth = Integer.MAX_VALUE;
 
         for (var c : classes) {
             var pkg = c.getPackageName();
@@ -202,19 +211,34 @@ class StandardPackageSchemaSanityTest {
                 continue;
             }
 
-            // Evidence: the shallowest package under this context (stable and deterministic)
             int depth = segmentCount(pkg);
-            if (depth < bestDepth) {
-                best = pkg;
-                bestDepth = depth;
-            } else if (depth == bestDepth && best != null && pkg.compareTo(best) < 0) {
-                best = pkg;
-            } else if (depth == bestDepth && best == null) {
-                best = pkg;
+
+            // (1) Track shallowest package under context as fallback (stable and deterministic)
+            if (depth < bestAnyDepth) {
+                bestAny = pkg;
+                bestAnyDepth = depth;
+            } else if (depth == bestAnyDepth && bestAny != null && pkg.compareTo(bestAny) < 0) {
+                bestAny = pkg;
+            } else if (depth == bestAnyDepth && bestAny == null) {
+                bestAny = pkg;
+            }
+
+            // (2) Prefer canonical family evidence if possible
+            var first = firstSegmentAfterContext(pkg, contextRoot);
+            if (first != null && REQUIRED_FAMILIES_PER_CONTEXT.contains(first)) {
+                if (depth < bestCanonicalDepth) {
+                    bestCanonical = pkg;
+                    bestCanonicalDepth = depth;
+                } else if (depth == bestCanonicalDepth && bestCanonical != null && pkg.compareTo(bestCanonical) < 0) {
+                    bestCanonical = pkg;
+                } else if (depth == bestCanonicalDepth && bestCanonical == null) {
+                    bestCanonical = pkg;
+                }
             }
         }
 
-        return best;
+        // If we found any canonical evidence, use it; otherwise fallback.
+        return bestCanonical != null ? bestCanonical : bestAny;
     }
 
     private static String buildViolationMessage(List<ContextViolation> violations) {
@@ -231,7 +255,6 @@ class StandardPackageSchemaSanityTest {
 
         for (var v : violations) {
             sb.append(" - context: ").append(v.contextRoot()).append("\n");
-            sb.append("     context evidence: ").append(v.contextEvidence() == null ? "<unknown>" : v.contextEvidence()).append("\n");
 
             sb.append("     present: ")
                     .append(FAMILY_CONTROLLER).append(v.hasController() ? " ✅" : " ❌").append(", ")
