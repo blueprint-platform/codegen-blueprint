@@ -125,7 +125,7 @@ They provide **deterministic** feedback during:
 * Canonical vocabulary (generated contract surface):
   * `src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/StandardGuardrailsScope.java`
 * Generated rules live under:
-* `src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/`
+  * `src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/`
 
 ---
 

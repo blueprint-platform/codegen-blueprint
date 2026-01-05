@@ -15,9 +15,7 @@
     <artifactId>codegen-blueprint</artifactId>
     <version>1.0.0</version>
     <name>codegen-blueprint</name>
-    <description>Hexagonal, profile-driven blueprint engine for generating production-ready project scaffolding across
-        frameworks and languages
-    </description>
+    <description>Architecture-first project generator for Spring Boot with build-time executable architecture guardrails.</description>
     <url>https://github.com/blueprint-platform/codegen-blueprint</url>
 
     <licenses>

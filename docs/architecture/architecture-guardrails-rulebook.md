@@ -615,11 +615,15 @@ Whether a project enables:
 is determined **explicitly by CLI flags and release-level defaults**,  
 not by this document.
 
-For **Codegen Blueprint 1.0.0 GA**:
+For **Codegen Blueprint 1.0.0 GA**, guardrails activation follows the
+**CLI contract and release notes**:
 
-* The default guardrails mode is **`basic`**
-* **`strict`** guardrails are **explicitly opt-in**
-* No project is forced into strict enforcement unless explicitly requested
+* `basic` is the default mode unless explicitly overridden
+* `strict` is opt-in only
+* No project is forced into strict enforcement without an explicit request
+
+> 📌 The authoritative source for defaults and activation behavior
+> is the **CLI contract and the release notes**, not this rulebook.
 
 The **authoritative source** for:
 

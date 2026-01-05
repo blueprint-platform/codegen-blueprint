@@ -90,7 +90,6 @@ Severity determines prioritization and disclosure timing.
 
 * Codegen Blueprint generator engine (domain, application, adapter)
 * CLI interface and option parsing
-* Generated architecture guardrails (e.g., ArchUnit tests/rules)
 * Templates, profiles, and build configuration produced by the generator
 * CI/CD configuration and repository automation
 

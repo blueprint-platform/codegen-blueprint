@@ -26,8 +26,8 @@
 
 Codegen Blueprint exists for that exact moment: when architecture needs to become **observable**, not aspirational.
 
-> If you’re looking for a fast scaffold, use Spring Initializr.  
-> This is for teams who want architecture that stays **observable and executable** over time.
+> This separation keeps the core engine isolated from technology choices
+> and enables future stack expansion **without changing the engine’s architectural contract**.
 
 ---
 
@@ -628,6 +628,8 @@ From Day Zero to Production — architecture stays **intentional**, **testable**
 ---
 
 ### 🧭 Roadmap Principles (Order Matters)
+
+> This roadmap expresses direction and intent, not contractual guarantees.
 
 Blueprint evolves in intentional layers to protect its core promise:
 

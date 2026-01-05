@@ -71,9 +71,9 @@ This single command demonstrates — end to end — that Codegen Blueprint can:
 * fail the build **deterministically** when a boundary is violated
 * return to green immediately once the violation is removed
 
-No app server run.
-No runtime checks.
-No custom test harness.
+No application run (no `spring-boot:run`, no `java -jar`).
+No runtime enforcement — guardrails are evaluated at build time.
+No custom test framework beyond standard JUnit + ArchUnit.
 
 > **Architecture is evaluated by the build itself.**
 
@@ -165,7 +165,7 @@ A machine‑readable and human‑readable execution ledger:
 * exact log and excerpt file references
 * final proof result
 
-This file is the **contractual evidence** that the proof executed as intended.
+This file is the **primary evidence ledger** that the proof executed as intended.
 
 ---
 
@@ -266,7 +266,7 @@ Specifically, it demonstrates that:
 * A style guide
 
 No manual app server is started.
-The proof is driven by **`mvn verify`** (tests may start a Spring test context as part of the build — that is still build-time evaluation).
+The proof is driven by **`mvn verify`**
 
 ---
 

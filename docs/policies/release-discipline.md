@@ -54,7 +54,7 @@ Where:
 
 ## 1.0.0 — General Availability (GA)
 
-Version **1.0.0** marks the point where Codegen Blueprint becomes a **stable product**, not an experiment.
+Version **1.0.0** marks the point where Codegen Blueprint becomes a **contractually stable product**, not an experiment.
 
 From this version onward:
 
@@ -110,7 +110,7 @@ If a project was generated under **1.0.0** and was valid under the GA contract, 
 * A fix that corrects behavior that was **objectively incorrect, unsafe, or security-relevant**.
 * In rare cases, this can **tighten guardrails** when the previous behavior was a bug (e.g., a rule not being applied correctly).
 
-> Patch releases may remove accidental loopholes; they do not redefine the intended contract.
+Patch releases may remove accidental loopholes; they do not redefine the intended contract or introduce new architectural intent.
 
 ---
 

@@ -57,9 +57,10 @@ Therefore:
 
 Every non-trivial change follows this explicit sequence:
 
-> **Skipping any step invalidates the change — regardless of test results.**
+> **Skipping any step makes the change not eligible for merge — regardless of test results.**
 
-This protocol exists to ensure architectural intent survives beyond individual implementations.
+This protocol exists to ensure that architectural intent
+survives beyond individual implementations and tooling outcomes.
 
 ### 3.1 Intent
 
@@ -135,20 +136,23 @@ This protocol exists to ensure architectural intent survives beyond individual i
 
 ## 5. Architecture Guardrails Philosophy
 
-* Architecture guardrails are **opt-in**, never hidden
-* Guardrails rules are **generated**, not hard-wired
+Architecture guardrails exist to make architectural intent
+**visible and enforceable at build time**.
 
-> Generated guardrails rules are platform-defined and centrally evolved,
-> while remaining visible and reviewable at the service level.
+They are:
 
-Supported guardrails modes (explicitly selected at generation time):
+* **explicitly opt-in** — never implicit or hidden
+* **generated artifacts** — not hand-written conventions
+* **evaluated during the build** — not at runtime
+
+Supported guardrails modes are selected explicitly at generation time:
 
 * `none` — generation only
-* `basic` — structural & dependency guards
+* `basic` — structural and dependency boundaries
 * `strict` — architecture drift prevention
 
-> Architecture guardrails must surface violations deterministically —
-> or they must not be claimed at all.
+> Guardrails are only claimed where violations
+> surface deterministically via the build.
 
 ---
 

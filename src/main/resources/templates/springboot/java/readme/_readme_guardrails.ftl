@@ -32,7 +32,7 @@ They provide **deterministic** feedback during:
   * `src/test/java/${packageName?replace('.', '/')}/architecture/archunit/StandardGuardrailsScope.java`
 </#if>
 * Generated rules live under:
-* `src/test/java/${packageName?replace('.', '/')}/architecture/archunit/`
+  * `src/test/java/${packageName?replace('.', '/')}/architecture/archunit/`
 
 ---
 

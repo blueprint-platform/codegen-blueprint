@@ -48,7 +48,7 @@ Anything not explicitly listed here is **out of scope** for 1.0.0 GA.
 
 The engine today:
 
-> Generates clean, production‑viable Spring Boot services with **architecture‑aware** and **test‑ready** output.
+> Generates deterministic, build-verified Spring Boot projects with **architecture-aware** and **test-ready** output.
 
 ---
 
@@ -311,4 +311,4 @@ Any change touching architecture must answer:
 * Architecture‑aware structure
 * Predictable foundations for evolution
 
-> 🚀 **Executable Architecture becomes observable — and testable — here.**
+> **Executable Architecture becomes observable — and testable — here.**
