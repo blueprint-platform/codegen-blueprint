@@ -540,4 +540,3 @@ to clearly express the capabilities it requires to stay pure and executable.
 
 This is **not hexagonal drift**.
 It is **explicit responsibility separation** aligned with executable architecture.
-

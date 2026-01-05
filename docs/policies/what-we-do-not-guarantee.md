@@ -2,14 +2,16 @@
 
 This document defines the **explicit non‑guarantees** of Codegen Blueprint.
 
-It exists to prevent **incorrect expectations**, protect the architectural intent of the project,
-and make the scope of responsibility unambiguous.
+It exists to prevent **incorrect expectations**, protect the architectural intent of the project, and make the scope of responsibility unambiguous.
 
 > Codegen Blueprint is opinionated by design.
 > What it does *not* do is as important as what it does.
 
-If a behavior, capability, or outcome is **not explicitly guaranteed here or in the Release Discipline**,
-it must be assumed to be **out of scope**.
+If a behavior, capability, or outcome is **not explicitly guaranteed** in the authoritative contract set below, it must be assumed to be **out of scope**:
+
+* **Executable Architecture Contract — 1.0.0 GA**
+* **Release Discipline**
+* The **README** sections that explicitly define **GA promise / scope** (and only those)
 
 ---
 
@@ -29,7 +31,7 @@ It is a statement of **intentional design boundaries**.
 
 ## ❌ What Codegen Blueprint Does NOT Guarantee
 
-### 1. Runtime Behavior or Production Correctness
+### 1) Runtime Behavior or Production Correctness
 
 Codegen Blueprint **does not guarantee**:
 
@@ -45,24 +47,19 @@ The generator focuses on **architectural structure and boundaries**, not runtime
 
 ---
 
-### 2. Framework Best Practices Beyond Explicit Guarantees
+### 2) Framework “Best Practices” or Idiomatic Usage Beyond the Contract
 
-Codegen Blueprint **does not claim** that:
+Codegen Blueprint **does not guarantee**:
 
-* Generated code represents the “best possible” Spring Boot implementation
-* Framework usage reflects every evolving best practice
-* Generated APIs or services follow all community conventions
+* That generated code is the “best possible” or fully idiomatic implementation for a given framework
+* That framework usage reflects every evolving community convention
+* That generated APIs or service design follow a comprehensive framework style guide
 
-Only guarantees **explicitly stated** in:
-
-* `release-discipline.md`
-* README GA scope sections
-
-are considered contractual.
+Only what is **explicitly stated** in the contract set (GA contract + policies + explicit README GA scope) is considered guaranteed.
 
 ---
 
-### 3. Universal Architecture Compatibility
+### 3) Universal Architecture Compatibility
 
 Codegen Blueprint **does not guarantee**:
 
@@ -78,15 +75,14 @@ Codegen Blueprint operates on **explicit, predefined architectural models**:
 These models define:
 
 * the generated project structure
-* the available architectural guardrails
+* the available architecture guardrails
 * how architectural boundaries are evaluated at build time
 
-If your organization’s architecture diverges from these models,
-Codegen Blueprint makes **no guarantee of compatibility or adaptation**.
+If your organization’s architecture diverges from these models, Codegen Blueprint makes **no guarantee of compatibility or adaptation**.
 
 ---
 
-### 4. Unlimited Dependency Freedom
+### 4) Unlimited Dependency Freedom
 
 Codegen Blueprint **intentionally does not guarantee**:
 
@@ -105,20 +101,19 @@ Dependency aliases are **restricted by design** to:
 
 ---
 
-### 5. Backward Compatibility Outside Declared Contracts
+### 5) Backward Compatibility Outside Declared Contracts
 
 Codegen Blueprint **does not guarantee**:
 
 * Backward compatibility across major versions
-* Stability of experimental or pre‑GA features
+* Stability of experimental or pre‑GA behavior
 * Compatibility for versions not explicitly listed as supported
 
-Compatibility guarantees **begin at 1.0.0 GA**
-and apply **only within the declared version line**.
+Compatibility guarantees **begin at 1.0.0 GA** and apply **only within the declared version line**.
 
 ---
 
-### 6. Automatic Migration or Upgrade Assistance
+### 6) Automatic Migration or Upgrade Assistance
 
 Codegen Blueprint **does not guarantee**:
 
@@ -130,7 +125,7 @@ Generated projects are **starting points**, not managed artifacts.
 
 ---
 
-### 7. Absence of Required Architectural Decisions
+### 7) Absence of Required Architectural Decisions
 
 Codegen Blueprint **does not remove the need** for:
 
@@ -144,7 +139,7 @@ The generator **encodes intent**, but it does not replace architects.
 
 ---
 
-### 8. Template Stability as a Public API
+### 8) Templates as a Public API or Supported Extension Surface
 
 Templates are **not** considered a public API.
 
@@ -152,9 +147,9 @@ Codegen Blueprint **does not guarantee**:
 
 * Stability of internal template structure
 * Backward compatibility for custom template overrides
-* Support for undocumented template hooks
+* Any supported or stable “template hook” / override mechanism
 
-Only generated output contracts are protected — not template internals.
+Only **generated output contracts** are protected — not template internals.
 
 ---
 
@@ -162,9 +157,10 @@ Only generated output contracts are protected — not template internals.
 
 This document must be read together with:
 
-* **Release Discipline** — what *is* guaranteed and versioned
-* **SECURITY.md** — what security responsibilities are accepted
-* **CONTRIBUTING.md** — what contributions are acceptable
+* **Executable Architecture Contract — 1.0.0 GA** — the authoritative guarantee surface
+* **Release Discipline** — versioning, compatibility, and change boundaries
+* **SECURITY.md** — accepted security responsibilities
+* **CONTRIBUTING.md** — contribution expectations and boundaries
 
 Together, these documents define the **complete responsibility boundary** of the project.
 
@@ -172,7 +168,7 @@ Together, these documents define the **complete responsibility boundary** of the
 
 ## Final Statement
 
-Codegen Blueprint is designed to be **deliberate, constrained, and guardrails-driven**.
+Codegen Blueprint is designed to be **deliberate, constrained, and guardrails‑driven**.
 
 Its strength comes from:
 
@@ -180,6 +176,6 @@ Its strength comes from:
 * intentional limitations
 * architectural integrity over convenience
 
-> If a feature is missing, it is often because adding it would weaken the architectural contract.
+> If a feature is missing, it may be because adding it would weaken the architectural contract.
 
-Understanding these non-guarantees is essential to using Codegen Blueprint correctly.
+Understanding these non‑guarantees is essential to using Codegen Blueprint correctly.

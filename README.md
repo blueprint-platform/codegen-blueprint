@@ -143,6 +143,7 @@ It turns architectural intent into **executable guardrails** with **fast, determ
 > **GA contract source of truth**
 >
 > What is guaranteed (and only what is guaranteed) is defined in:
+> 
 > → [Executable Architecture Contract — 1.0.0 GA](docs/architecture/executable-architecture-contract.md)
 
 ---
@@ -186,15 +187,19 @@ Spring Boot is the first delivery adapter — not the foundation.
 ### Architecture docs (from capability → GA contract → guide → collaboration)
 
 * 📜 **Architecture Guardrails Rulebook** — full rule surface the engine can generate *(capability reference; not a GA guarantee)*
+
   → [Architecture Guardrails Rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
 * 🔒 **Executable Architecture Contract — 1.0.0 GA** — authoritative GA guarantee surface *(if it’s not listed, it’s not guaranteed)*
+
   → [Executable Architecture Contract — 1.0.0 GA](docs/architecture/executable-architecture-contract.md)
 
 * 🧭 **How to Explore This Codebase (Hexagonal Guide)** — practical guide to ports/adapters, boundaries, and profile‑driven execution
+
   → [Hexagonal Architecture Guide](docs/guides/how-to-explore-hexagonal-architecture.md)
 
 * 🧠 **Architecture Governance & AI Collaboration Protocol** — how decisions stay visible and consistent in multi‑contributor / AI‑assisted work
+
   → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
 
 ---
