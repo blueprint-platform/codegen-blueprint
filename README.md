@@ -179,8 +179,7 @@ but as a **structural foundation** that keeps the core stable as delivery surfac
 > Generate once.  
 > Evolve across frameworks, runtimes, and languages — **without rewriting the core**.
 
-This section describes the **architecture of the generator** (engine), not the layout of the generated project.
-Generated project layout options (`standard` vs `hexagonal`) are documented separately in the CLI section.
+> This section covers the generator’s architecture (the engine). For generated project layouts (`standard` / `hexagonal`), see the CLI section.
 
 Spring Boot is the first delivery adapter — not the foundation.
 
