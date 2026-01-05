@@ -351,13 +351,8 @@ Inbound adapters depend **only on application ports**.
   <em>Case 1 — Baseline (GREEN): inbound adapter depends only on an application port</em>
 </p>
 
-Run the build:
-
-```bash
-mvn verify
-```
-
-**Result:** ✅ Build passes.
+This snapshot shows the **initial generated state** of a hexagonal project with strict guardrails enabled.
+No architectural violation has been introduced at this point.
 
 ---
 
@@ -445,13 +440,9 @@ In the standard model, controllers must remain delivery-only and must **not** de
   <em>Case 2 — Baseline (GREEN): controller does not depend on repository</em>
 </p>
 
-Run:
 
-```bash
-mvn verify
-```
-
-**Result:** ✅ Build passes.
+This snapshot represents the **initial generated structure** of a standard layered project.
+At this stage, no forbidden dependency exists.
 
 ---
 
@@ -520,13 +511,7 @@ A detected bounded context root must contain all required canonical families:
   <em>Case 3 — Baseline (GREEN): standard schema contains controller/service/domain</em>
 </p>
 
-Run:
-
-```bash
-mvn verify
-```
-
-**Result:** ✅ Build passes.
+This snapshot shows the **unaltered, generated package schema** before any canonical family is renamed or removed.
 
 ---
 

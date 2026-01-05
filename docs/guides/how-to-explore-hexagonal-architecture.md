@@ -1,4 +1,4 @@
-# 🚀 Codegen Blueprint — Hexagonal Architecture Deep Dive
+# Codegen Blueprint — Hexagonal Architecture Deep Dive
 
 **Executable Architecture in Action — A Production-Grade Reference**
 
@@ -529,6 +529,7 @@ of delivery orchestration — which it must not.
 
 If all outbound ports lived in the application, the domain would lose the ability
 to clearly express the capabilities it requires to stay pure and executable.
+
 ---
 
 ## Architectural Guarantee
