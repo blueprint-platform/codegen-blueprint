@@ -40,7 +40,7 @@ and want boundaries that remain **visible and verifiable** as systems, teams, an
 * Maven 3.9+
 * macOS / Linux / WSL (the proof runner is a shell script)
 
-> Goal: see **GREEN → RED → GREEN** using **build-time architecture guardrails**.
+> **Goal:** see **GREEN → RED → GREEN** using **build-time architecture guardrails (strict mode)**.
 >
 > No app startup required. Guardrails run during `mvn verify` and fail the build deterministically on boundary violations.
 
@@ -80,7 +80,7 @@ CODEGEN_JAR="$(ls -1 ../../target/codegen-blueprint-*.jar | head -n 1)" ./proof/
 * ❌ `mvn verify` fails **deterministically** with a generated ArchUnit rule
 * ✅ The violation is reverted and the build returns to green
 
-Full walkthrough (screenshots + exact failures):
+**Executable evidence bundle (screenshots, exact failures, and proof artifacts):**
 
 👉 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 

@@ -110,7 +110,7 @@ If a project was generated under **1.0.0** and was valid under the GA contract, 
 * A fix that corrects behavior that was **objectively incorrect, unsafe, or security-relevant**.
 * In rare cases, this can **tighten guardrails** when the previous behavior was a bug (e.g., a rule not being applied correctly).
 
-Patch releases may remove accidental loopholes; they do not redefine the intended contract or introduce new architectural intent.
+> Patch releases may remove accidental loopholes; they do not redefine the intended contract or introduce new architectural intent.
 
 ---
 
