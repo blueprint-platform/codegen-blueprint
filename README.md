@@ -24,10 +24,11 @@
 * A new developer (or a rushed change) shipped code into the **wrong layer** — and the only “rule” was tribal knowledge.
 * Reviews turned into **“is this the right boundary?”** debates — because nothing was **executable**.
 
-Codegen Blueprint exists for that exact moment: when architecture needs to become **observable**, not aspirational.
+Codegen Blueprint exists for that exact moment:
+when architecture needs to become **observable and testable** — not aspirational.
 
-> This separation keeps the core engine isolated from technology choices
-> and enables future stack expansion **without changing the engine’s architectural contract**.
+It is designed for teams who care about **architectural integrity over time**,
+and want boundaries that remain **visible and verifiable** as systems, teams, and pressure evolve.
 
 ---
 
@@ -97,7 +98,7 @@ Full walkthrough (screenshots + exact failures):
 * 🧾 [Project history (short)](#-project-history-short)
 * 🧭 [Architecture as an executable product](#-architecture-as-an-executable-product)
 * 🎯 [Who is this for?](#-who-is-this-for)
-* 🥇 [What makes it different?](#-what-makes-it-different)
+* 🥇 [What makes Codegen Blueprint different?](#-what-makes-codegen-blueprint-different)
 * 🧩 [Generate vs deliver capabilities (cross-cutting concerns)](#-generate-vs-deliver-capabilities-cross-cutting-concerns)
 * 🧩 [Part of the Blueprint Platform](#-part-of-the-blueprint-platform)
 * 🧭 [1.0.0 Release Scope](#-100-release-scope)
@@ -126,7 +127,7 @@ It turns architectural intent into **executable guardrails** with **fast, determ
 
 ### 🚫 Not the best fit
 
-* You only want a quick starter template (use Spring Initializr).
+* You only need a quick starter template without build-time guardrails.
 * You expect cross‑cutting runtime behavior (security/logging/etc.) to be generated as boilerplate.
 
 ---
@@ -155,8 +156,6 @@ A **CLI-driven**, **profile-based**, **architecture-aware** project generator th
 📌 Current GA profile: **springboot-maven-java**
 
 > Generated projects: Spring Boot **3.5 (default)** or **3.4** · Java **21 (GA baseline)** · Maven **3.9+**
->
-> Generated output may target newer JDKs (e.g., **Java 25**), but that is **not** part of the GA contract.
 
 It delivers:
 
@@ -174,18 +173,23 @@ It delivers:
 Architecture isn’t only drawn — it **executes** here.
 
 Codegen Blueprint (the generator itself) is built with **Hexagonal Architecture** — not as a stylistic preference,
-but as a **structural foundation** that keeps the core stable as delivery surfaces evolve.
+but as a **structural foundation** that keeps the core engine isolated from technology choices
+and stable as delivery surfaces evolve.
 
 > Generate once.  
 > Evolve across frameworks, runtimes, and languages — **without rewriting the core**.
 
-> This section covers the generator’s architecture (the engine). For generated project layouts (`standard` / `hexagonal`), see the CLI section.
+This separation allows the engine to preserve its architectural contract
+while enabling future stack expansion through replaceable adapters.
 
-Spring Boot is the first delivery adapter — not the foundation.
+> This section covers the generator’s architecture (the engine itself).  
+> For generated project layouts (`standard` / `hexagonal`), see the CLI documentation.
+
+Spring Boot is the **first delivery adapter** — not the foundation.
 
 ### Architecture docs (from capability → GA contract → guide → collaboration)
 
-* 📜 **Architecture Guardrails Rulebook** — full rule surface the engine can generate *(capability reference; not a GA guarantee)*
+* 📜 **Architecture Guardrails Rulebook** — full guardrails semantics and rule vocabulary *(descriptive reference; not a GA guarantee)*
 
   → [Architecture Guardrails Rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
@@ -269,15 +273,26 @@ Codegen Blueprint targets what happens **after** generation:
 
 ---
 
-## 🥇 What makes it different?
+## 🥇 What makes Codegen Blueprint different?
 
-| Capability focus         | Spring Initializr / JHipster | Codegen Blueprint |
-| ------------------------ | ---------------------------- | ----------------- |
-| Folder scaffolding       | ✔                            | ✔                 |
-| Architecture guardrails  | ⚠️                           | **✔**             |
-| Framework-free domain    | ❌                            | **✔**             |
-| Profile-driven evolution | ⚠️                           | **✔**             |
-| Anti-drift roadmap       | ❌                            | **✔**             |
+Codegen Blueprint does **not** compete on scaffolding speed, template volume,
+or framework convenience.
+
+Its focus is **architectural continuity** —
+making architectural boundaries **explicit, observable, and verifiable**
+as systems evolve over time.
+
+| Focus area                   | Traditional project generators | Codegen Blueprint |
+| ---------------------------- | ------------------------------ | ----------------- |
+| Primary goal                 | Fast project start             | Architectural continuity |
+| Architecture boundaries      | Implicit or documented         | **Executable & verified** |
+| Drift detection              | Manual (reviews, discipline)   | **Build-time feedback** |
+| Domain isolation             | Optional / framework-led       | **By construction** |
+| Long-term evolution strategy | Out of scope                   | **First-class concern** |
+
+Codegen Blueprint exists for teams who have already felt the cost of
+silent architecture drift — and want boundaries that remain
+**visible and testable**, not dependent on tribal knowledge or reviews.
 
 ---
 
@@ -403,22 +418,22 @@ java -jar codegen-blueprint-1.0.0.jar \
 
 ### Available Options (`springboot`)
 
-| Option           | Required | Default    | Description                                                                                     |
-| ---------------- | -------- | ---------- | ----------------------------------------------------------------------------------------------- |
-| `--group-id`     | ✔        | –          | Maven `groupId`.                                                                                |
-| `--artifact-id`  | ✔        | –          | Maven `artifactId` (also becomes the output folder name).                                       |
-| `--name`         | ✔        | –          | Human-readable project name.                                                                    |
-| `--description`  | ✔        | –          | Project description (**min 10 characters**).                                                    |
-| `--package-name` | ✔        | –          | Base Java package name.                                                                         |
-| `--build-tool`   | ✖        | `maven`    | Build tool (**currently only** `maven`).                                                        |
-| `--language`     | ✖        | `java`     | Programming language (**currently only** `java`).                                               |
-| `--java`         | ✖        | `21`       | **Generated project** Java version: `21`, `25` — **GA target: 21**.                             |
-| `--boot`         | ✖        | `3.5`      | **Generated project** Spring Boot version: `3.4`, `3.5` — **GA baseline: 3.5** (3.4 supported). |
-| `--layout`       | ✖        | `standard` | Project layout: `standard` or `hexagonal`.                                                      |
-| `--guardrails`   | ✖        | `basic`    | Guardrails mode: `none`, `basic`, `strict` (**default: basic; opt-out: none**).                 |
-| `--sample-code`  | ✖        | `none`     | Sample code level: `none`, `basic`.                                                             |
-| `--dependency`   | ✖        | –          | Dependency alias (repeatable; controlled set).                                                  |
-| `--target-dir`   | ✖        | `.`        | Target directory for generated output.                                                          |
+| Option           | Required | Default    | Description                                                                     |
+| ---------------- | -------- | ---------- |---------------------------------------------------------------------------------|
+| `--group-id`     | ✔        | –          | Maven `groupId`.                                                                |
+| `--artifact-id`  | ✔        | –          | Maven `artifactId` (also becomes the output folder name).                       |
+| `--name`         | ✔        | –          | Human-readable project name.                                                    |
+| `--description`  | ✔        | –          | Project description (**min 10 characters**).                                    |
+| `--package-name` | ✔        | –          | Base Java package name.                                                         |
+| `--build-tool`   | ✖        | `maven`    | Build tool (**currently only** `maven`).                                        |
+| `--language`     | ✖        | `java`     | Programming language (**currently only** `java`).                               |
+| `--java`         | ✖        | `21`       | **Generated project** Java version: `21`, `25` — **GA target: 21**.             |
+| `--boot`         | ✖        | `3.5`      | **Generated project** Spring Boot version: `3.4`, `3.5` — (GA baseline: `3.5`)  |
+| `--layout`       | ✖        | `standard` | Project layout: `standard` or `hexagonal`.                                      |
+| `--guardrails`   | ✖        | `basic`    | Guardrails mode: `none`, `basic`, `strict` (**default: basic; opt-out: none**). |
+| `--sample-code`  | ✖        | `none`     | Sample code level: `none`, `basic`.                                             |
+| `--dependency`   | ✖        | –          | Dependency alias (repeatable; controlled set).                                  |
+| `--target-dir`   | ✖        | `.`        | Target directory for generated output.                                          |
 
 ---
 
