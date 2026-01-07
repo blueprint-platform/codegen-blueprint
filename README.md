@@ -172,29 +172,39 @@ It delivers:
 
 📘 **Canonical platform specification**
 
-The canonical definition of **Architecture as a Product** is specified at the platform level.
+The canonical definition of **Architecture as a Product** is defined at the **platform level**.
 
 → [Architecture as a Product — Platform Specification](https://github.com/blueprint-platform/blueprint-platform-spec/blob/main/specs/architecture-as-a-product.md)
 
-This repository provides **executable proof** of that specification
-for the **Spring Boot · Maven · Java** profile.
+This repository provides **executable proof** of that specification, with the **Spring Boot · Maven · Java** profile as its current implementation.
 
-Architecture isn’t only drawn — it **executes** here.
+Architecture here is not merely described — it is **generated, evaluated, and verified**.
 
-Codegen Blueprint (the generator itself) is built with **Hexagonal Architecture** — not as a stylistic preference,
-but as a **structural foundation** that keeps the core engine isolated from technology choices
-and stable as delivery surfaces evolve.
+---
+
+### Generator Architecture (Engine)
+
+Codegen Blueprint (the generator itself) is built using **Hexagonal Architecture** —  
+not as a stylistic choice, but as a **structural foundation**.
+
+This design keeps the core engine:
+
+* isolated from technology choices,
+* stable under delivery-surface changes, and
+* evolvable without architectural rewrites.
 
 > Generate once.  
 > Evolve across frameworks, runtimes, and languages — **without rewriting the core**.
 
-This separation allows the engine to preserve its architectural contract
-while enabling future stack expansion through replaceable adapters.
-
-> This section covers the generator’s architecture (the engine itself).  
-> For generated project layouts (`standard` / `hexagonal`), see the CLI documentation.
+The separation between core and adapters allows the engine to preserve its **architectural contract**
+while enabling future expansion through **replaceable delivery adapters**.
 
 Spring Boot is the **first delivery adapter** — not the foundation.
+
+> This section describes the generator architecture itself.  
+> For generated project layouts (`standard` / `hexagonal`), refer to the CLI documentation.
+
+---
 
 ### Architecture docs (from capability → GA contract → guide → collaboration)
 
@@ -291,7 +301,7 @@ as systems evolve over time.
 
 | Focus area                   | Traditional project generators | Codegen Blueprint |
 | ---------------------------- | ------------------------------ | ----------------- |
-| Primary goal                 | Fast project start             | Architectural continuity |
+| Primary goal                 | Fast project start             | **Architectural continuity** |
 | Architecture boundaries      | Implicit or documented         | **Executable & verified** |
 | Drift detection              | Manual (reviews, discipline)   | **Build-time feedback** |
 | Domain isolation             | Optional / framework-led       | **By construction** |
@@ -311,7 +321,7 @@ Codegen Blueprint makes a deliberate distinction:
 
 | Approach                | What happens                                                 | Long-term effect                              |
 | ----------------------- | ------------------------------------------------------------ | --------------------------------------------- |
-| Generate code           | Copies security/logging/error handling into each service     | ❌ Drift, copy-paste, painful upgrades         |
+| Generate code           | Copies security/logging/error handling into each service     | ❌ **Drift, copy-paste, painful upgrades**     |
 | Deliver as capabilities | Centralized, versioned, opt-in behavior via shared libraries | **✔ Consistency, easier upgrades, alignment** |
 
 > Not everything should be generated.
