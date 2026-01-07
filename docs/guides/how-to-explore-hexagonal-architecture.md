@@ -101,7 +101,7 @@ domain (business rules only)
 Runtime wiring is delivered via `bootstrap` (Spring only at the edges).
 
 * 📌 No Spring inside `domain`
-* 📌 No template engine inside `domain` or `application`
+* 📌 No template engine inside `domain` (templating lives in adapters; the application only orchestrates generation via ports)
 * 📌 No file system assumptions inside business logic
 
 ---
@@ -395,7 +395,7 @@ This single command:
 * Selects the **Spring Boot · Maven · Java 21** profile
 * Generates a **hexagonal (ports & adapters)** source layout
 * Produces a **framework-free domain core** by construction
-* Enables **basic architecture guardrails** via generated ArchUnit tests
+* Enables **strict architecture guardrails** via generated ArchUnit tests
 * Adds a **minimal teaching sample** (domain + application + adapter)
 * Outputs a project that **builds and verifies immediately**
 

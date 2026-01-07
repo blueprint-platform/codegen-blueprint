@@ -718,7 +718,8 @@ Start here:
 
 ## ⭐ Support
 
-If Blueprint is useful in your work, starring the repository helps discoverability and long-term maintenance.
+Community feedback and real-world usage help shape the Blueprint Platform’s direction.
+If you’re using `codegen-blueprint`, sharing experiences or participating in discussions is the most valuable form of support.
 
 ---
 

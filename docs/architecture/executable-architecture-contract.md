@@ -9,6 +9,7 @@ provided by Codegen Blueprint **1.0.0 GA** at generation and build time.
 >
 > If something is **not explicitly listed in this document**,
 > it is **NOT guaranteed** as part of the 1.0.0 GA release.
+
 ---
 
 ## 📚 Table of Contents
@@ -67,9 +68,20 @@ This section explicitly distinguishes between:
 
 For the active GA profile, the engine deterministically produces a **single-module**, buildable project with a **contracted output file set**.
 
-The authoritative list of generated files and paths is defined in **Section 4: Generated Project Scope (Output Contract)**.
+The authoritative list of generated files and paths is defined in  
+**Section 4: Generated Project Scope (Output Contract)**.
 
-> Same inputs → same output (structure + rendered content): no ordering randomness, no environment-dependent behavior.
+> Same inputs → same output (structure + rendered content).
+
+This guarantee explicitly excludes:
+
+* timestamps
+* random or generated identifiers
+* environment-derived values (hostnames, usernames, paths, clocks)
+
+No ordering randomness and no time- or environment-dependent content
+is introduced into generated files.
+
 ---
 
 ### ✔ 3.2 Identity & Naming Validation
@@ -97,12 +109,17 @@ Every generated project:
 
 ---
 
-### ✔ 3.4 Test‑Ready Output
+### ✔ 3.4 Test-Ready Output
 
-Generated projects always:
+Generated projects always include a minimal Spring Boot test entrypoint:
 
-* Contain a Spring test bootstrap (`@SpringBootTest`)
-* Pass `mvn verify` immediately after generation
+* `src/test/java/<basePackage>/<MainApplicationClass>Tests.java` with `@SpringBootTest`
+* A `contextLoads()` test that verifies the generated application wiring
+
+This file is part of the baseline output contract (not optional / not mode-based).
+
+Additionally, on the **GA baseline** (Java 21 + supported Spring Boot line),
+a freshly generated project is expected to pass `mvn verify` immediately.
 
 Testing is **not optional**.
 
@@ -110,16 +127,21 @@ Testing is **not optional**.
 
 ### ✔ 3.5 Engine–Template Separation
 
-The Codegen Blueprint engine **does not depend on**:
+The Codegen Blueprint engine core (**domain + application orchestration**) is **framework-agnostic** and **technology-neutral**.
 
-* Spring Framework
-* File system APIs
-* Build tools (Maven / Gradle)
+Specifically:
 
-Technology details live exclusively in **adapters and profiles**.
+* The **domain model** depends on no frameworks, build tools, or IO APIs.
+* The **application layer** orchestrates use cases via ports, without technology coupling.
+* All **filesystem access, templating, build-tool specifics, and framework integrations**
+  live exclusively in **adapters and profiles**.
 
-> This guarantees future support for Gradle, Kotlin, Quarkus — without engine refactoring.
+The engine defines *what* is generated and *in which order*;  
+adapters and profiles define *how* it is materialized.
 
+> This separation guarantees that new stacks (e.g. Gradle, Kotlin, Quarkus)
+> can be introduced via new adapters and profiles
+> **without refactoring the core engine or domain model**.
 ---
 
 ### ✔ 3.6 Profile‑Defined Execution
@@ -246,14 +268,15 @@ Runnable immediately:
 
 The following are **intentionally out of scope** for 1.0.0 GA:
 
-| Item                                     | Reason                        |
-| ---------------------------------------- |-------------------------------|
-| Hexagonal layout by default              | Zero‑friction adoption        |
-| Policy engine / DSL                      | Requires governance language  |
-| Custom / policy‑level architecture rules | Next guardrails stage         |
-| Org‑wide standards                       | Platform‑level concern        |
+| Item                                     | Reason                       |
+| ---------------------------------------- | ---------------------------- |
+| Hexagonal layout by default              | Zero-friction adoption       |
+| Policy engine / DSL                      | Requires governance language |
+| Custom / policy-level architecture rules | Next guardrails stage        |
+| Org-wide standards                       | Platform-level concern       |
 
-> Today: architecture‑aware → Tomorrow: architecture‑policed
+> Today: architecture-aware →  
+> Later: stronger build-time guardrails and governance packs.
 
 ---
 
