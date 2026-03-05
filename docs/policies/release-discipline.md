@@ -80,7 +80,7 @@ These guarantees define the **minimum bar** that will not regress within the **1
 
   * Generated ArchUnit tests (`basic`, `strict`) with explicit opt-out.
 * Generated projects pass **`mvn verify`** on first run (within the declared supported matrix).
-* Profile-driven stack selection (not ad-hoc flags).
+* Profile-driven stack selection through explicit CLI profiles (not ad-hoc feature flags).
 
 > The authoritative GA guarantee surface is defined in **Executable Architecture Contract — 1.0.0 GA**.
 

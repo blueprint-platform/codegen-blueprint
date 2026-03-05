@@ -9,11 +9,11 @@ If you believe you’ve found a security vulnerability in **Codegen Blueprint**,
 
 Security fixes are maintained for:
 
-|   Version | Status                           |
-| --------: |----------------------------------|
-|    `main` | ✅ Supported (active development) |
-|   `1.0.x` | ✅ Supported (GA patch line)      |
-| `< 1.0.0` | ❌ Not supported                  |
+|   Version | Status                      |
+| --------: |-----------------------------|
+|    `main` | ✅ Active development)       |
+|   `1.0.x` | ✅ Supported (GA patch line) |
+| `< 1.0.0` | ❌ Not supported             |
 
 > **Note**
 > Versions prior to **1.0.0 GA** are considered experimental and are kept only for historical reference.
@@ -95,7 +95,7 @@ Severity determines prioritization and disclosure timing.
 
 ### Out of Scope
 
-* Vulnerabilities confined to third‑party dependencies (primary responsibility upstream)
+* Vulnerabilities confined to third-party dependencies (unless introduced or pinned insecurely by the generator)
 * Demo or sample code generated for learning purposes only
 * Deployment-specific misconfigurations outside this repository
 * Social engineering or physical attacks

@@ -6,16 +6,16 @@ Proof: standard strict guardrails
 
 ## ✨ Project Summary
 
-| Domain | Aspect | Value |
-|------|--------|-------|
+| Domain | Aspect | Value         |
+|------|--------|---------------|
 | 🔧 Tech Stack | Framework | `spring-boot` |
-| | Language | `java` |
-| | Build Tool | `maven` |
-| | Java | `21` |
-| | Spring Boot | `3.5.9` |
-| 🏗 Architecture | Layout | `standard` |
-| | Guardrails | `strict` |
-| | Sample Code | `basic` |
+| | Language | `java`        |
+| | Build Tool | `maven`       |
+| | Java | `21`          |
+| | Spring Boot | `3.5.11`      |
+| 🏗 Architecture | Layout | `standard`    |
+| | Guardrails | `strict`      |
+| | Sample Code | `basic`       |
 
 ---
 

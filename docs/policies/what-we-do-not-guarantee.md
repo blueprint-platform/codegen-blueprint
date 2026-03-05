@@ -11,7 +11,7 @@ If a behavior, capability, or outcome is **not explicitly guaranteed** in the au
 
 * **Executable Architecture Contract — 1.0.0 GA**
 * **Release Discipline**
-* The **README** sections that explicitly define **GA promise / scope** (and only those)
+* The **README sections that describe GA scope**, which must remain consistent with the contract
 
 ---
 
@@ -109,7 +109,7 @@ Codegen Blueprint **does not guarantee**:
 * Stability of experimental or pre‑GA behavior
 * Compatibility for versions not explicitly listed as supported
 
-Compatibility guarantees **begin at 1.0.0 GA** and apply **only within the declared version line**.
+Compatibility guarantees **begin at 1.0.0 GA** and apply **only within the 1.0.x version line**.
 
 ---
 

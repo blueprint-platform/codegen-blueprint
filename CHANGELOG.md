@@ -12,6 +12,22 @@ For details, see: `docs/policies/release-discipline.md`.
 
 ---
 
+## [1.0.1] - 2026-03-05
+
+### Patch release
+
+* Dependency updates (Spring Boot patch-level alignment)
+* Documentation clarifications
+* Minor internal fixes and stability improvements
+
+No contract changes.  
+No generated project structure changes.  
+No CLI behavior changes.
+
+Fully compatible with the **1.0.0 GA contract**.
+
+---
+
 ## [1.0.0] - 2026-01-05
 
 Codegen Blueprint **1.0.0 GA** marks the point where this repository becomes a **product contract** — not an experiment.

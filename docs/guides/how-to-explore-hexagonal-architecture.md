@@ -370,7 +370,7 @@ The command below reflects the real engine behavior, generated structure, and gu
 ### Generate a Hexagonal Spring Boot Project
 
 ```bash
-java -jar codegen-blueprint-1.0.0.jar \
+java -jar codegen-blueprint-<version>.jar \
   --cli springboot \
   --group-id io.github.blueprintplatform \
   --artifact-id greeting \

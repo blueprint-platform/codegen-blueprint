@@ -1,14 +1,17 @@
-# Executable Architecture Contract — 1.0.0 GA
+# Executable Architecture Contract — 1.0.x GA
 
-**What Codegen Blueprint 1.0.0 GA guarantees, evaluates, and produces.**
+> 📌 Note  
+> This document is the **1.0.x GA contract**. Patch releases in the **1.0.x line** may update patch-level dependencies (e.g., Spring Boot `3.5.x`) without changing the meaning of these guarantees. Any semantic change requires an explicit contract update.
+
+**What Codegen Blueprint 1.0.x GA guarantees, evaluates, and produces.**
 
 This document defines the **exact, non-negotiable architecture guarantees**
-provided by Codegen Blueprint **1.0.0 GA** at generation and build time.
+provided by Codegen Blueprint **1.0.x GA** at generation and build time.
 
 > ⚠️ **GA Contract**
 >
 > If something is **not explicitly listed in this document**,
-> it is **NOT guaranteed** as part of the 1.0.0 GA release.
+> it is **NOT guaranteed** as part of the 1.0.x GA release.
 
 ---
 
@@ -16,7 +19,7 @@ provided by Codegen Blueprint **1.0.0 GA** at generation and build time.
 
 * [1 Purpose](#1-purpose)
 * [2 Core Mental Model](#2-core-mental-model)
-* [3 Engine Guardrail Guarantees (1.0.0 GA)](#3-engine-guardrails-guarantees-100-ga)
+* [3 Engine Guardrail Guarantees (1.0.x GA)](#3-engine-guardrails-guarantees-10x-ga)
 * [4 Generated Project Scope (Output Contract)](#4-generated-project-scope-output-contract)
 * [5 Explicitly Not Guardrailed (Yet)](#5-explicitly-not-guardrailed-yet)
 * [6 Intentional Scope Constraints](#6-intentional-scope-constraints)
@@ -35,7 +38,7 @@ This document exists to ensure that:
 
 > 🧠 **If we promise it, the build makes it observable.**
 
-Anything not explicitly listed here is **out of scope** for 1.0.0 GA.
+Anything not explicitly listed here is **out of scope** for 1.0.x GA.
 
 ---
 
@@ -53,7 +56,7 @@ The engine today:
 
 ---
 
-## 3️⃣ Engine Guardrails Guarantees (1.0.0 GA)
+## 3️⃣ Engine Guardrails Guarantees (1.0.x GA)
 
 All guarantees listed in this section are **validated by automated tests**.
 
@@ -118,7 +121,7 @@ Generated projects always include a minimal Spring Boot test entrypoint:
 
 This file is part of the baseline output contract (not optional / not mode-based).
 
-Additionally, on the **GA baseline** (Java 21 + supported Spring Boot line),
+Additionally, on the **GA baseline** (Java 21 + supported Spring Boot `3.4.x` or `3.5.x` line),
 a freshly generated project is expected to pass `mvn verify` immediately.
 
 Testing is **not optional**.
@@ -182,7 +185,7 @@ The engine can optionally generate **architecture guardrails tests** into produc
 * Implemented as executable ArchUnit tests
 * Focused on **structural boundaries** (e.g. layered or hexagonal layouts)
 
-⚠️ Generated-project guardrails are **opt-in** in 1.0.0 GA and never implicit.
+⚠️ Generated-project guardrails are **opt-in** in 1.0.x GA and never implicit.
 
 ---
 
@@ -213,8 +216,8 @@ Every generated project is **single-module** and includes:
  └─ README.md
 ```
 
-> `README.md` and generated ArchUnit tests (when enabled via --guardrails) are part of the **delivered contract surface**.
-
+> Generated ArchUnit tests (when enabled via `--guardrails`) are part of the **delivered contract surface**.  
+> `README.md` is a generated artifact intended to remain consistent with the contract, but its wording is not itself a stability boundary.
 
 ---
 
@@ -266,7 +269,7 @@ Runnable immediately:
 
 ## 5️⃣ Explicitly Not Guardrailed (Yet)
 
-The following are **intentionally out of scope** for 1.0.0 GA:
+The following are **intentionally out of scope** for 1.0.x GA:
 
 | Item                                     | Reason                       |
 | ---------------------------------------- | ---------------------------- |
@@ -297,7 +300,7 @@ This section outlines the **direction of evolution**, not additional GA guarante
 
 It intentionally avoids feature timelines and implementation details.
 The purpose is to clarify **how executable architecture matures over time**,
-while keeping the **1.0.0 GA contract strict and non-negotiable**.
+while keeping the **1.0.x GA contract strict and non-negotiable**.
 
 > 📌 Ordering matters — each step builds on the previous one.
 
@@ -328,7 +331,7 @@ Any change touching architecture must answer:
 
 ### Final Statement
 
-**Codegen Blueprint 1.0.0 GA generates:**
+**Codegen Blueprint 1.0.x GA generates:**
 
 * Clean and testable services
 * Architecture‑aware structure

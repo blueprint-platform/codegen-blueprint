@@ -33,8 +33,8 @@ class SpringBootCliE2EIT {
 
   static Stream<Arguments> scenarios() {
     return Stream.of(
-        Arguments.of(true, "21", "3.5", "3.5.9", null),
-        Arguments.of(true, "25", "3.5", "3.5.9", null),
+        Arguments.of(true, "21", "3.5", "3.5.11", null),
+        Arguments.of(true, "25", "3.5", "3.5.11", null),
         Arguments.of(true, "21", "3.4", "3.4.13", null),
         Arguments.of(false, "25", "3.4", "3.4.13", "platform.target.incompatible"));
   }

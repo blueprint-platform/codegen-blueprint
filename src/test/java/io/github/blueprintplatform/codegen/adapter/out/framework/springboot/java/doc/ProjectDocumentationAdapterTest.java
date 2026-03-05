@@ -137,7 +137,7 @@ class ProjectDocumentationAdapterTest {
         .containsEntry(ProjectDocumentationModel.LANGUAGE, "java")
         .containsEntry(ProjectDocumentationModel.FRAMEWORK, "spring-boot")
         .containsEntry(ProjectDocumentationModel.JAVA_VERSION, "21")
-        .containsEntry(ProjectDocumentationModel.SPRING_BOOT_VERSION, "3.5.9")
+        .containsEntry(ProjectDocumentationModel.SPRING_BOOT_VERSION, "3.5.11")
         .containsEntry(ProjectDocumentationModel.LAYOUT, "standard")
         .containsEntry(ProjectDocumentationModel.GUARDRAILS, "none")
         .containsEntry(ProjectDocumentationModel.SAMPLE_CODE, "none");
