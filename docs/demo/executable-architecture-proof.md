@@ -42,7 +42,7 @@ This document provides an end-to-end **GREEN → RED → GREEN** proof that Code
     - [9) Baseline — Standard Schema Intact (GREEN)](#9-baseline--standard-schema-intact-green)
     - [10) Intentional Violation — Break Canonical Schema (RED trigger)](#10-intentional-violation--break-canonical-schema-red-trigger)
     - [11) Result — Schema Sanity Failure (RED evidence)](#11-result--schema-sanity-failure-red-evidence)
-- [What this proves](#what-this-proves-1)
+- [Final Proof Outcome](#final-proof-outcome)
 - [Why this matters](#why-this-matters-1)
 
 
@@ -56,7 +56,7 @@ This document provides an end-to-end **GREEN → RED → GREEN** proof that Code
 >
 > This proof assumes you are running from a local clone of the
 > `codegen-blueprint` repository and have already built the generator JAR.
-> This section documents the **verification protocol**, not initial setup.
+> This section documents the verification protocol only. Building the generator itself is outside the scope of this walkthrough.
 
 If you want to see the **GREEN → RED → GREEN** proof (**strict architecture guardrails**)  
 **purely via the console** — no screenshots, no explanations, just deterministic build output — run:
@@ -582,7 +582,7 @@ Console evidence (aligned to your output):
 
 ---
 
-## What this proves
+## Final Proof Outcome
 
 **Different architectures. Different rules. Same outcome.**
 

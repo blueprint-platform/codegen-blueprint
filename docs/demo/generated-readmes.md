@@ -13,7 +13,7 @@ They are the **exact `README.md` files generated into projects** created via the
 >
 > In this document, *contract* means the **generated project’s output contract** (what the generated project says about itself: layout, guardrails mode, build-time behavior, onboarding).
 >
-> This is **not** the repository’s **1.0.0 GA guarantee surface**. GA guarantees live in the dedicated contract/policy docs.
+> This is **not** the repository’s ** GA guarantee surface**. GA guarantees live in the dedicated contract/policy docs.
 
 ---
 

@@ -122,14 +122,14 @@ class SpringBootGenerateCommandTest {
           new ProjectMetadataSummary(
               "com.acme", "demo-app", "Demo App", "Demo application for Acme", "com.acme.demo");
 
-      var techStack = new TechStackSummary("spring-boot", "3.5.9", "maven", null, "java", "21");
+      var techStack = new TechStackSummary("spring-boot", "3.5.11", "maven", null, "java", "21");
 
       var runtimeTarget =
           new RuntimeTargetSummary(
               "spring-boot-jvm",
               Map.of(
                   "javaVersion", "21",
-                  "springBootVersion", "3.5.9"));
+                  "springBootVersion", "3.5.11"));
 
       var architecture = new ArchitectureSpecSummary("standard", "none", "none");
 

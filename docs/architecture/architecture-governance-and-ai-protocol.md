@@ -1,4 +1,4 @@
-# Architecture Governance & AI Collaboration Protocol — 1.0.0 GA
+# Architecture Governance & AI Collaboration Protocol
 
 > **Executable Architecture requires explicit decisions and observable guardrails — not accidental code.**
 

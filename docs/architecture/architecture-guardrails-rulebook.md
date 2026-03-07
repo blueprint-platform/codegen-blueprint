@@ -588,7 +588,7 @@ All generated tests are deterministic, versioned, and evaluated at build time.
 This guardrails rulebook defines the **stable contract vocabulary and rule semantics**
 that Codegen Blueprint is capable of generating and evaluating at build time.
 
-It guarantees that, within a **GA release line**:
+It guarantees that, within the **1.0.x GA contract line**:
 
 * The **meaning, scope, and intent** of documented guardrails are stable and versioned
 * Any change to guardrail **semantics or interpretation** is treated as a **contract change**
@@ -615,7 +615,7 @@ Whether a project enables:
 is determined **explicitly by CLI flags and release-level defaults**,  
 not by this document.
 
-For **Codegen Blueprint 1.0.0 GA**, guardrails activation follows the
+For the **1.0.x GA contract line**, guardrails activation follows the
 **CLI contract and release notes**:
 
 * `basic` is the default mode unless explicitly overridden
