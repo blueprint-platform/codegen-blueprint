@@ -30,8 +30,15 @@ It is designed for teams who care about **architectural integrity over time**, a
 
 ---
 
-> **Background:** Why build-time architecture guardrails matter (especially under AI-speed refactoring) is explained here:  
-> [Why Architecture Drift Is Faster Than Ever — And Why AI Makes Guardrails Mandatory](https://medium.com/@baris.sayli/why-architecture-drift-is-faster-than-ever-and-why-ai-makes-guardrails-mandatory-4854e13309c4)
+> **Background reading**
+>
+> If you want the broader architectural context behind this repository:
+>
+> - [Why Architecture Drift Is Faster Than Ever — And Why AI Makes Guardrails Mandatory](https://medium.com/@baris.sayli/why-architecture-drift-is-faster-than-ever-and-why-ai-makes-guardrails-mandatory-4854e13309c4)  
+>   Why build-time architecture guardrails matter — especially under AI-speed refactoring.
+>
+> - [The Project That Finally Taught Me Hexagonal Architecture](https://dev.to/barissayli/the-project-that-finally-taught-me-hexagonal-architecture-1c5h)  
+>   The real project journey behind the engine — how architectural struggle, reset, and rebuild shaped Codegen Blueprint.
 
 ---
 
@@ -756,9 +763,11 @@ If you’re using `codegen-blueprint`, sharing experiences or participating in d
 ## 👤 Maintainer
 
 **Barış Saylı** — Creator & Maintainer
-* GitHub: [https://github.com/bsayli](https://github.com/bsayli)
-* LinkedIn: [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
-* Medium: [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
+
+* GitHub: https://github.com/bsayli
+* LinkedIn: https://www.linkedin.com/in/bsayli
+* Dev.to: https://dev.to/barissayli
+* Medium: https://medium.com/@baris.sayli
 
 ---
 
