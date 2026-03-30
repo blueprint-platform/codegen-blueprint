@@ -12,6 +12,21 @@ For details, see: `docs/policies/release-discipline.md`.
 
 ---
 
+## [1.0.2] - 2026-03-30
+
+### Patch release
+
+* Spring Boot updated to **3.5.13** (deterministic patch alignment)
+* README improvements for clarity and positioning
+
+No contract changes.  
+No generated project structure changes.  
+No CLI behavior changes.
+
+Fully compatible with the **1.0.x GA contract**.
+
+---
+
 ## [1.0.1] - 2026-03-05
 
 ### Patch release

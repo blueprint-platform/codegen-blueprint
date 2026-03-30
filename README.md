@@ -466,7 +466,7 @@ java -jar <jar> --cli springboot <options...>
 ### Basic Usage
 
 ```bash
-java -jar codegen-blueprint-1.0.1.jar \
+java -jar codegen-blueprint-1.0.2.jar \
   --cli springboot \
   --group-id io.github.blueprintplatform \
   --artifact-id greeting \
@@ -480,7 +480,7 @@ java -jar codegen-blueprint-1.0.1.jar \
   --target-dir /path/to/output
 ```
 
-> Tip: `target/codegen-blueprint-1.0.1.jar`
+> Tip: `target/codegen-blueprint-1.0.2.jar`
 
 ---
 
