@@ -12,7 +12,7 @@ Proof: hexagonal strict guardrails
 | | Language | `java`        |
 | | Build Tool | `maven`       |
 | | Java | `21`          |
-| | Spring Boot | `3.5.11`      |
+| | Spring Boot | `3.5.13`      |
 | 🏗 Architecture | Layout | `hexagonal`   |
 | | Guardrails | `strict`      |
 | | Sample Code | `basic`       |

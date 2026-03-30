@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.11</version>
+        <version>3.5.13</version>
         <relativePath/>
     </parent>
 
     <groupId>io.github.blueprint-platform</groupId>
     <artifactId>codegen-blueprint</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>codegen-blueprint</name>
     <description>Architecture-first project generator for Spring Boot with build-time executable architecture guardrails.</description>
     <url>https://github.com/blueprint-platform/codegen-blueprint</url>
