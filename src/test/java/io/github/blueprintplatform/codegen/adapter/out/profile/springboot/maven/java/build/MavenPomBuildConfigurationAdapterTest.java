@@ -122,7 +122,7 @@ class MavenPomBuildConfigurationAdapterTest {
         .containsEntry(MavenPomBuildModel.KEY_GROUP_ID, "com.acme")
         .containsEntry(MavenPomBuildModel.KEY_ARTIFACT_ID, "demo-app")
         .containsEntry(MavenPomBuildModel.KEY_JAVA_VERSION, "21")
-        .containsEntry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, "3.5.13")
+        .containsEntry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, "3.5.14")
         .containsEntry(MavenPomBuildModel.KEY_PROJECT_NAME, "Demo App")
         .containsEntry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, "Sample Project");
 

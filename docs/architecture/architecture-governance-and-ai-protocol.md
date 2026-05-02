@@ -141,14 +141,14 @@ Architecture guardrails exist to make architectural intent
 
 They are:
 
-* **explicitly opt-in** — never implicit or hidden
+* **default-enabled (opt-out)** — active unless explicitly disabled
 * **generated artifacts** — not hand-written conventions
 * **evaluated during the build** — not at runtime
 
-Supported guardrails modes are selected explicitly at generation time:
+Supported guardrails modes are configurable at generation time:
 
-* `none` — generation only
-* `basic` — structural and dependency boundaries
+* `none` — generation only (guardrails disabled)
+* `basic` — structural and dependency boundaries (default)
 * `strict` — architecture drift prevention
 
 > Guardrails are only claimed where violations

@@ -179,13 +179,14 @@ These guarantees apply **unconditionally** to the generator itself.
 
 #### Generated Project (Optional)
 
-The engine can optionally generate **architecture guardrails tests** into produced projects:
+The engine generates **architecture guardrails tests** into produced projects by default:
 
-* Generated only when enabled via profile / guardrails mode
+* Enabled by default at **basic** level (configurable via `--guardrails`)
+* Can be adjusted to `none`, `basic`, or `strict`
 * Implemented as executable ArchUnit tests
 * Focused on **structural boundaries** (e.g. layered or hexagonal layouts)
 
-⚠️ Generated-project guardrails are **opt-in** in 1.0.x GA and never implicit.
+⚠️ Generated-project guardrails are **default-enabled (opt-out)** in 1.0.x GA. They are only omitted when explicitly set to `none`.
 
 ---
 

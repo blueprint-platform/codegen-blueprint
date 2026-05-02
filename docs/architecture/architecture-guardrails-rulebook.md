@@ -9,8 +9,7 @@ that Codegen Blueprint is capable of generating and evaluating at build time.
 >
 > This document describes the **guardrails system and its architectural contract**.
 > It does **not** imply that all guardrails are enabled in every generated project.
-> **Release-level guarantees, defaults, and opt-in behavior** are declared explicitly by the CLI and release notes.
-
+> **Release-level guarantees, defaults, and configuration behavior** are declared explicitly by the CLI and release notes.
 ---
 
 ## 📑 Table of Contents
@@ -603,24 +602,18 @@ It guarantees that, within the **1.0.x GA contract line**:
 
 ### Activation and defaults (important)
 
-This rulebook defines **what guardrails mean**,  
+This rulebook defines **what guardrails mean**,
 not **which guardrails are enabled in a generated project**.
 
-Whether a project enables:
-
-* `none`
-* `basic`
-* `strict`
-
-is determined **explicitly by CLI flags and release-level defaults**,  
+Guardrails activation is determined by the **CLI contract and release-level defaults**,
 not by this document.
 
 For the **1.0.x GA contract line**, guardrails activation follows the
 **CLI contract and release notes**:
 
-* `basic` is the default mode unless explicitly overridden
-* `strict` is opt-in only
-* No project is forced into strict enforcement without an explicit request
+* `basic` is the default mode
+* `strict` is explicitly selectable via `--guardrails`
+* `none` disables guardrails explicitly
 
 > 📌 The authoritative source for defaults and activation behavior
 > is the **CLI contract and the release notes**, not this rulebook.
@@ -628,7 +621,7 @@ For the **1.0.x GA contract line**, guardrails activation follows the
 The **authoritative source** for:
 
 * default guardrails mode
-* opt-in / opt-out behavior
+* configuration behavior (`none` | `basic` | `strict`)
 * availability of guardrails per layout
 
 is the **CLI contract and the release notes**, not this rulebook.

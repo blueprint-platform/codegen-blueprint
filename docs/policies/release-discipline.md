@@ -24,13 +24,15 @@ The project’s contract surface is defined by the following documents, in order
 
 1. **Executable Architecture Contract — 1.0.0 GA**
 
-  * Authoritative guardrails + generated-output guarantee surface.
+* Authoritative guardrails + generated-output guarantee surface.
+
 2. **Release Discipline** (this document)
 
-  * Authoritative versioning + compatibility discipline.
+* Authoritative versioning + compatibility discipline.
+
 3. **What We Explicitly Do NOT Guarantee**
 
-  * Authoritative non-guarantees and responsibility boundaries.
+* Authoritative non-guarantees and responsibility boundaries.
 
 **Conflict rule:** If anything here is ambiguous or appears to conflict, the **GA contract wins**.
 
@@ -47,7 +49,7 @@ MAJOR.MINOR.PATCH
 Where:
 
 * **MAJOR** — Deliberate architectural/contract reset (breaking change).
-* **MINOR** — Backward-compatible capability expansion (opt-in).
+* **MINOR** — Backward-compatible capability expansion (explicit and additive).
 * **PATCH** — Bug fixes and non-behavioral corrections (no intentional contract expansion).
 
 ---
@@ -74,11 +76,13 @@ These guarantees define the **minimum bar** that will not regress within the **1
 * **Framework-free domain core** by construction.
 * Supported architecture layouts:
 
-  * `standard` (layered)
-  * `hexagonal` (ports & adapters)
-* **Executable architecture guardrails** (opt-in, mode-based):
+  * `standard` (layered, default)
+  * `hexagonal` (ports & adapters, explicitly selectable)
+* **Executable architecture guardrails (default-enabled, configurable):**
 
-  * Generated ArchUnit tests (`basic`, `strict`) with explicit opt-out.
+  * Generated ArchUnit tests (`none`, `basic`, `strict`)
+  * `basic` is the default mode
+  * Configurable via CLI (`--guardrails`)
 * Generated projects pass **`mvn verify`** on first run (within the declared supported matrix).
 * Profile-driven stack selection through explicit CLI profiles (not ad-hoc feature flags).
 
@@ -120,11 +124,11 @@ Minor releases introduce **new capabilities without breaking existing guarantees
 
 Examples of allowed changes:
 
-* New CLI options (opt-in).
+* New CLI options (explicitly selectable).
 * New profiles or artifacts.
 * Additional guardrails modes.
 * Extended template coverage.
-* Support for newer platform versions (opt-in).
+* Support for newer platform versions (explicitly selectable).
 
 Minor releases **must not**:
 

@@ -12,7 +12,7 @@ Proof: standard strict guardrails
 | | Language | `java`        |
 | | Build Tool | `maven`       |
 | | Java | `21`          |
-| | Spring Boot | `3.5.13`      |
+| | Spring Boot | `3.5.14`      |
 | 🏗 Architecture | Layout | `standard`    |
 | | Guardrails | `strict`      |
 | | Sample Code | `basic`       |
