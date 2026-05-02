@@ -12,15 +12,37 @@ For details, see: `docs/policies/release-discipline.md`.
 
 ---
 
+## [1.0.3] - 2026-05-02
+
+### Patch release
+
+* Spring Boot updated to **3.5.14**
+* ArchUnit updated to **1.4.2** (from 1.4.1)
+* Maven Wrapper updated to **3.9.15** (from 3.9.12)
+* Documentation terminology alignment:
+
+  * Replaced misleading **"opt-in"** wording
+  * Clarified **default-enabled (opt-out)** behavior for guardrails
+  * Clarified **defaulted layout selection** (`standard`)
+  * Aligned documentation with the actual **CLI contract behavior**
+
+No contract changes.
+No generated project structure changes.
+No CLI behavior changes.
+
+Fully compatible with the **1.0.x GA contract**.
+
+---
+
 ## [1.0.2] - 2026-03-30
 
 ### Patch release
 
-* Spring Boot updated to **3.5.13** (deterministic patch alignment)
+* Spring Boot updated to **3.5.14** (deterministic patch alignment)
 * README improvements for clarity and positioning
 
-No contract changes.  
-No generated project structure changes.  
+No contract changes.
+No generated project structure changes.
 No CLI behavior changes.
 
 Fully compatible with the **1.0.x GA contract**.
@@ -35,8 +57,8 @@ Fully compatible with the **1.0.x GA contract**.
 * Documentation clarifications
 * Minor internal fixes and stability improvements
 
-No contract changes.  
-No generated project structure changes.  
+No contract changes.
+No generated project structure changes.
 No CLI behavior changes.
 
 Fully compatible with the **1.0.0 GA contract**.
@@ -50,8 +72,8 @@ Codegen Blueprint **1.0.0 GA** marks the point where this repository becomes a *
 ### Highlights
 
 * **Executable proof included** — reproducible **GREEN → RED → GREEN** validation using **build-time guardrails only**.
-* **Architecture guardrails (opt-in)** — generated **ArchUnit** tests that fail **deterministically** during `mvn verify`.
-* **Two architecture models (opt-in)** — `hexagonal` (ports & adapters) and `standard` (layered).
+* **Architecture guardrails (default-enabled)** — generated **ArchUnit** tests that fail **deterministically** during `mvn verify`; configurable via `--guardrails`.
+* **Two architecture models** — `standard` is the default layout; `hexagonal` can be selected explicitly via `--layout`.
 * **Buildable-by-default output** — generated projects pass **`mvn verify`** immediately after generation.
 * **Explicit GA contract docs** — guarantees, release discipline, and non-goals are written as authoritative policy.
 
@@ -60,24 +82,24 @@ Codegen Blueprint **1.0.0 GA** marks the point where this repository becomes a *
 * Active GA profile: `springboot-maven-java`
 * Compatibility targets:
 
-    * **Java 21**
-    * **Spring Boot 3.4–3.5** (default: **3.5**)
-    * **Maven 3.9+**
+  * **Java 21**
+  * **Spring Boot 3.4–3.5** (default: **3.5**)
+  * **Maven 3.9+**
 
 ### Output contract (generated project)
 
 Generated projects are **single-module** and include:
 
 * `pom.xml` (with Maven Wrapper)
-    * `.mvn/wrapper/maven-wrapper.properties`
-    * `mvnw`
-    * `mvnw.cmd`
+
+  * `.mvn/wrapper/maven-wrapper.properties`
+  * `mvnw`
+  * `mvnw.cmd`
 * `src/main/java/<basePackage>/...`
 * `src/test/java/<basePackage>/...`
 * `src/main/resources/application.yml`
 * `.gitignore`
 * `README.md` (part of the generated contract surface)
-
 
 ### References
 

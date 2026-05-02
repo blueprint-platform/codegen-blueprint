@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.13</version>
+        <version>3.5.14</version>
         <relativePath/>
     </parent>
 
     <groupId>io.github.blueprint-platform</groupId>
     <artifactId>codegen-blueprint</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>codegen-blueprint</name>
     <description>Architecture-first project generator for Spring Boot with build-time executable architecture guardrails.</description>
     <url>https://github.com/blueprint-platform/codegen-blueprint</url>
@@ -45,7 +45,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
         <picocli.version>4.7.7</picocli.version>
-        <archunit.version>1.4.1</archunit.version>
+        <archunit.version>1.4.2</archunit.version>
         <argLine/>
     </properties>
 

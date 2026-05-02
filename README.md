@@ -1,12 +1,14 @@
 # Codegen Blueprint — Architecture-First Project Generator
 
 [![Build](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml)
-[![Release](https://img.shields.io/github/v/tag/blueprint-platform/codegen-blueprint?label=release\&logo=github)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
+[![Release](https://img.shields.io/github/v/tag/blueprint-platform/codegen-blueprint?label=release&logo=github)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
 [![CodeQL](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/codeql.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg)](https://codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main)
-[![Java](https://img.shields.io/badge/Java-21-red?logo=openjdk)](https://openjdk.org/projects/jdk/21/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.13-green?logo=springboot)](https://spring.io/projects/spring-boot)
-[![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
+
+[![Java](https://img.shields.io/badge/Java-21%20%2F%2025-lightgrey?logo=openjdk)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.x%20→%203.5.x-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Maven](https://img.shields.io/badge/Maven-3.9+-blue?logo=apachemaven)](https://maven.apache.org/)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <p align="center">
@@ -14,7 +16,6 @@
 </p>
 
 > **Codegen Blueprint** generates projects where architectural boundaries are not conventions — they are **observable, testable, and enforced by the build from day one**.
-
 ---
 
 ## 🧪 Proof (what you’ll actually see)
@@ -218,7 +219,7 @@ Codegen Blueprint uses **deterministic patch versions**.
 
 | Input | Resolved version |
 |------|------------------|
-| 3.5  | 3.5.13           |
+| 3.5  | 3.5.14           |
 | 3.4  | 3.4.13           |
 
 This ensures:
@@ -466,7 +467,7 @@ java -jar <jar> --cli springboot <options...>
 ### Basic Usage
 
 ```bash
-java -jar codegen-blueprint-1.0.2.jar \
+java -jar codegen-blueprint-1.0.3.jar \
   --cli springboot \
   --group-id io.github.blueprintplatform \
   --artifact-id greeting \
@@ -480,7 +481,7 @@ java -jar codegen-blueprint-1.0.2.jar \
   --target-dir /path/to/output
 ```
 
-> Tip: `target/codegen-blueprint-1.0.2.jar`
+> Tip: `target/codegen-blueprint-1.0.3.jar`
 
 ---
 

@@ -15,7 +15,7 @@ final class MavenPomBuildModel {
   static final String KEY_POM_PROPERTIES = "pomProperties";
 
   static final String ARCH_UNIT_VERSION_KEY = "archunit.version";
-  static final String ARCH_UNIT_VERSION = "1.4.1";
+  static final String ARCH_UNIT_VERSION = "1.4.2";
   static final BuildDependency H2_DB = BuildDependency.of("com.h2database", "h2", null, null);
   static final BuildDependency ARCH_UNIT_TEST =
       BuildDependency.ofWithVersionProperty(
