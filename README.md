@@ -1,7 +1,7 @@
 # Codegen Blueprint — Architecture-First Project Generator
 
 [![Build](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml)
-[![Release](https://img.shields.io/github/v/tag/blueprint-platform/codegen-blueprint?label=release&logo=github)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.0.3-blue)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
 [![CodeQL](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/codeql.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg)](https://codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main)
 
