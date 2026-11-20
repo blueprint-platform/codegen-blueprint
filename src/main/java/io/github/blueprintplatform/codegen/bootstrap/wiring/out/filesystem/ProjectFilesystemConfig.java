@@ -1,6 +1,9 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.out.filesystem;
 
+import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectArchiverAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectOutputAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectPublisher;
+import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectWriterAdapter;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +12,9 @@ import org.springframework.context.annotation.Configuration;
 public class ProjectFilesystemConfig {
   @Bean
   ProjectPublisherPort projectPublisher() {
-    return new FileSystemProjectPublisher();
+    return new FileSystemProjectPublisher(
+        new FileSystemProjectWriterAdapter(),
+        new FileSystemProjectArchiverAdapter(),
+        new FileSystemProjectOutputAdapter());
   }
 }

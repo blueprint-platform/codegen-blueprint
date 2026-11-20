@@ -18,7 +18,11 @@ import org.junit.jupiter.api.io.TempDir;
 class FileSystemProjectPublisherTest {
   @TempDir Path target;
 
-  private final FileSystemProjectPublisher publisher = new FileSystemProjectPublisher();
+  private final FileSystemProjectPublisher publisher =
+      new FileSystemProjectPublisher(
+          new FileSystemProjectWriterAdapter(),
+          new FileSystemProjectArchiverAdapter(),
+          new FileSystemProjectOutputAdapter());
   private final GeneratedTextResource file =
       new GeneratedTextResource(Path.of("src/main.txt"), "test", StandardCharsets.UTF_8);
 

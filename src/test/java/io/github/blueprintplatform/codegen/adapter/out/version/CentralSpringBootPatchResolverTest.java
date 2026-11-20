@@ -5,14 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpServer;
+import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution.Source;
-import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 class CentralSpringBootPatchResolverTest {
   private HttpServer server;
+  private HttpClient client;
   private URI endpoint;
 
   @BeforeEach
@@ -28,11 +30,13 @@ class CentralSpringBootPatchResolverTest {
     server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
     endpoint = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/");
     server.start();
+    client = HttpClient.newHttpClient();
   }
 
   @AfterEach
   void stop() {
     server.stop(0);
+    client.close();
   }
 
   @Test
@@ -54,8 +58,7 @@ class CentralSpringBootPatchResolverTest {
     metadata("<version>4.1.3</version>");
     var versions = selection();
     assertThatThrownBy(() -> versions.select(V4_1))
-        .isInstanceOf(RuntimeException.class)
-        .isNotInstanceOf(SpringBootRepositoryUnavailableException.class)
+        .isInstanceOf(SpringBootResolutionException.class)
         .hasRootCauseMessage("Central parent POM returned HTTP 404");
   }
 
@@ -64,8 +67,7 @@ class CentralSpringBootPatchResolverTest {
     respond("/maven-metadata.xml", 200, "<metadata>");
     var versions = selection();
     assertThatThrownBy(() -> versions.select(V4_1))
-        .isInstanceOf(RuntimeException.class)
-        .isNotInstanceOf(SpringBootRepositoryUnavailableException.class)
+        .isInstanceOf(SpringBootResolutionException.class)
         .hasMessage("adapter.springboot.resolution.failed");
   }
 
@@ -92,7 +94,8 @@ class CentralSpringBootPatchResolverTest {
   }
 
   private BootVersionSelection selection() {
-    return new BootVersionSelection(new CentralSpringBootPatchResolver(endpoint), bundled());
+    var repository = new CentralRepositoryHttp(client, endpoint);
+    return new BootVersionSelection(new CentralSpringBootPatchResolver(repository), bundled());
   }
 
   private static Map<SpringBootVersion, String> bundled() {

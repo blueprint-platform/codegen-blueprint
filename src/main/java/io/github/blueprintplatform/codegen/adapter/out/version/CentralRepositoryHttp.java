@@ -24,15 +24,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** One bounded Central request, including the response body. */
-final class CentralRepositoryHttp {
+public final class CentralRepositoryHttp {
   private final URI base;
-  private final HttpClient client =
-      HttpClient.newBuilder()
-          .connectTimeout(Duration.ofSeconds(3))
-          .followRedirects(HttpClient.Redirect.NEVER)
-          .build();
+  private final HttpClient client;
 
-  CentralRepositoryHttp(URI base) {
+  public CentralRepositoryHttp(HttpClient client, URI base) {
+    this.client = client;
     this.base = base;
   }
 

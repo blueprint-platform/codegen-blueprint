@@ -20,9 +20,18 @@ import java.util.Objects;
 import java.util.SequencedMap;
 
 public final class FileSystemProjectPublisher implements ProjectPublisherPort {
-  private final FileSystemProjectWriterAdapter writer = new FileSystemProjectWriterAdapter();
-  private final FileSystemProjectArchiverAdapter archiver = new FileSystemProjectArchiverAdapter();
-  private final FileSystemProjectOutputAdapter output = new FileSystemProjectOutputAdapter();
+  private final FileSystemProjectWriterAdapter writer;
+  private final FileSystemProjectArchiverAdapter archiver;
+  private final FileSystemProjectOutputAdapter output;
+
+  public FileSystemProjectPublisher(
+      FileSystemProjectWriterAdapter writer,
+      FileSystemProjectArchiverAdapter archiver,
+      FileSystemProjectOutputAdapter output) {
+    this.writer = writer;
+    this.archiver = archiver;
+    this.output = output;
+  }
 
   @Override
   public PublishedProject publish(

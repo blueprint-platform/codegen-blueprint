@@ -11,12 +11,12 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-final class FileSystemProjectArchiverAdapter {
+public final class FileSystemProjectArchiverAdapter {
 
   private static final String ZIP_EXTENSION = ".zip";
   private static final char ZIP_SEPARATOR = '/';
 
-  public Path archive(Path projectRoot, String artifactId) {
+  Path archive(Path projectRoot, String artifactId) {
     if (projectRoot == null) {
       throw new ProjectArchiveInvalidRootException(null);
     }

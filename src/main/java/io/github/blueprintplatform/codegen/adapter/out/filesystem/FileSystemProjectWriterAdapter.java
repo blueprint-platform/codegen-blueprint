@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-final class FileSystemProjectWriterAdapter {
+public final class FileSystemProjectWriterAdapter {
 
   void write(Path projectRoot, Iterable<? extends GeneratedResource> resources) {
     for (var resource : resources) {
@@ -26,7 +26,7 @@ final class FileSystemProjectWriterAdapter {
     }
   }
 
-  public void writeBytes(Path projectRoot, Path relativePath, byte[] content) {
+  void writeBytes(Path projectRoot, Path relativePath, byte[] content) {
     Path target = projectRoot.resolve(relativePath);
     try {
       Path parent = target.getParent();
@@ -39,12 +39,12 @@ final class FileSystemProjectWriterAdapter {
     }
   }
 
-  public void writeText(Path projectRoot, Path relativePath, String content, Charset charset) {
+  void writeText(Path projectRoot, Path relativePath, String content, Charset charset) {
     byte[] bytes = content.getBytes(charset);
     writeBytes(projectRoot, relativePath, bytes);
   }
 
-  public void createDirectories(Path projectRoot, Path relativeDir) {
+  void createDirectories(Path projectRoot, Path relativeDir) {
     Path target = projectRoot.resolve(relativeDir);
     try {
       Files.createDirectories(target);

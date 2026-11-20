@@ -5,7 +5,6 @@ import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchR
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,14 +22,8 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
   private static final String ARTIFACT = "spring-boot-starter-parent";
   private final CentralRepositoryHttp repository;
 
-  public CentralSpringBootPatchResolver() {
-    this(
-        URI.create(
-            "https://repo.maven.apache.org/maven2/org/springframework/boot/" + ARTIFACT + "/"));
-  }
-
-  CentralSpringBootPatchResolver(URI base) {
-    this.repository = new CentralRepositoryHttp(base);
+  public CentralSpringBootPatchResolver(CentralRepositoryHttp repository) {
+    this.repository = repository;
   }
 
   @Override

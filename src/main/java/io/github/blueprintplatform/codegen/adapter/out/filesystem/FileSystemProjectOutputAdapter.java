@@ -10,14 +10,14 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
-final class FileSystemProjectOutputAdapter {
+public final class FileSystemProjectOutputAdapter {
 
   private static final Set<String> EXECUTABLE_FILE_NAMES = Set.of("mvnw", "gradlew");
   private static final Set<String> EXECUTABLE_EXTENSIONS = Set.of(".sh", ".cmd", ".bat");
   private static final Set<String> BINARY_EXTENSIONS =
       Set.of(".jar", ".zip", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".ico");
 
-  public List<ProjectOutputItem> list(Path projectRoot) {
+  List<ProjectOutputItem> list(Path projectRoot) {
     if (projectRoot == null) {
       return List.of();
     }
