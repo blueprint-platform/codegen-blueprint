@@ -64,7 +64,7 @@ class SourceLayoutAdapterTest {
   private static List<Path> directoriesOf(Iterable<? extends GeneratedResource> resources) {
     List<Path> result = new ArrayList<>();
     StreamSupport.stream(resources.spliterator(), false)
-        .filter(r -> r instanceof GeneratedDirectory)
+        .filter(GeneratedDirectory.class::isInstance)
         .forEach(r -> result.add(r.relativePath()));
     return result;
   }
@@ -72,7 +72,7 @@ class SourceLayoutAdapterTest {
   private static List<Path> textFilesOf(Iterable<? extends GeneratedResource> resources) {
     List<Path> result = new ArrayList<>();
     StreamSupport.stream(resources.spliterator(), false)
-        .filter(r -> r instanceof GeneratedTextResource)
+        .filter(GeneratedTextResource.class::isInstance)
         .forEach(r -> result.add(r.relativePath()));
     return result;
   }

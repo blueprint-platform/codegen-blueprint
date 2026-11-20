@@ -169,7 +169,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
     if (result.versionWarning() != null) {
       log.warn("BUNDLED_FALLBACK: {}", result.versionWarning());
     }
-    if (result.project() != null && result.versionSource() != null) {
+    if (log.isInfoEnabled() && result.project() != null && result.versionSource() != null) {
       var target = result.project().runtimeTarget();
       log.info(
           "bootSelector={} bootVersion={} source={}",

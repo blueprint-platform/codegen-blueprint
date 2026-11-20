@@ -25,7 +25,7 @@ class FileSystemProjectPublisherTest {
   @Test
   void preservesExistingArchiveAndCanRetryAfterTheUserRemovesIt() throws Exception {
     Path archive = Files.writeString(target.resolve("demo.zip"), "user content");
-    assertThatThrownBy(() -> publish()).isInstanceOf(ProjectWriteException.class);
+    assertThatThrownBy(this::publish).isInstanceOf(ProjectWriteException.class);
     assertThat(archive).hasContent("user content");
     try (var entries = Files.list(target)) {
       assertThat(entries.toList()).containsExactly(archive);
@@ -40,7 +40,7 @@ class FileSystemProjectPublisherTest {
     Path project = Files.createDirectory(target.resolve("demo"));
     Path ownedByUser = Files.writeString(project.resolve("README.md"), "user content");
 
-    assertThatThrownBy(() -> publish()).isInstanceOf(ProjectWriteException.class);
+    assertThatThrownBy(this::publish).isInstanceOf(ProjectWriteException.class);
     assertThat(ownedByUser).hasContent("user content");
     assertThat(target.resolve("demo.zip")).doesNotExist();
     try (var entries = Files.list(target)) {
@@ -53,8 +53,9 @@ class FileSystemProjectPublisherTest {
     Path project = Files.writeString(target.resolve("demo"), "existing project path");
     Path occupiedTarget = Files.writeString(target.resolve("parent"), "existing target path");
 
-    assertThatThrownBy(() -> publish()).isInstanceOf(ProjectWriteException.class);
-    assertThatThrownBy(() -> publisher.publish(occupiedTarget, "demo", List.of(file)))
+    assertThatThrownBy(this::publish).isInstanceOf(ProjectWriteException.class);
+    var resources = List.of(file);
+    assertThatThrownBy(() -> publisher.publish(occupiedTarget, "demo", resources))
         .isInstanceOf(ProjectWriteException.class);
     assertThat(project).hasContent("existing project path");
     assertThat(occupiedTarget).hasContent("existing target path");
@@ -65,7 +66,7 @@ class FileSystemProjectPublisherTest {
   void treatsBrokenSymlinkAsAnExistingOutput() throws Exception {
     Path missing = target.resolve("missing");
     Path archive = Files.createSymbolicLink(target.resolve("demo.zip"), missing);
-    assertThatThrownBy(() -> publish()).isInstanceOf(ProjectWriteException.class);
+    assertThatThrownBy(this::publish).isInstanceOf(ProjectWriteException.class);
     assertThat(Files.isSymbolicLink(archive)).isTrue();
     assertThat(Files.readSymbolicLink(archive)).isEqualTo(missing);
     assertThat(target.resolve("demo")).doesNotExist();
@@ -75,7 +76,8 @@ class FileSystemProjectPublisherTest {
   @Test
   void rejectsDuplicateOutputBeforeCreatingTheTarget() {
     Path absent = target.resolve("absent");
-    assertThatThrownBy(() -> publisher.publish(absent, "demo", List.of(file, file)))
+    var duplicateResources = List.of(file, file);
+    assertThatThrownBy(() -> publisher.publish(absent, "demo", duplicateResources))
         .isInstanceOf(IllegalArgumentException.class);
     assertThat(absent).doesNotExist();
   }

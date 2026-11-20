@@ -27,6 +27,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framewo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ class SpringBootMavenJavaArtifactsAdapterTest {
                 }));
 
     assertThat(adapter.generate(blueprint))
-        .extracting(resource -> resource.relativePath())
+        .extracting(GeneratedResource::relativePath)
         .containsExactly(first.relativePath(), second.relativePath());
     assertThat(plans.getFirst().dependencies()).containsExactly(dependency);
     assertThat(plans.getFirst().mvcPresent()).isTrue();

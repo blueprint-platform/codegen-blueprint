@@ -12,7 +12,7 @@ public class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifactsPort
 
   @FunctionalInterface
   public interface ArtifactStep {
-    Iterable<? extends GeneratedResource> generate(
+    Iterable<GeneratedResource> generate(
         ProjectBlueprint blueprint, EffectiveDependencies plan);
   }
 
@@ -28,7 +28,7 @@ public class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifactsPort
   }
 
   @Override
-  public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     var dependencies = pom.effectiveDependencies(blueprint);
     boolean mvc =
         dependencies.stream()

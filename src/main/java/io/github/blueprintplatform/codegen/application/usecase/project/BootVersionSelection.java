@@ -1,6 +1,7 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchResolver;
+import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public final class BootVersionSelection {
   public Result select(SpringBootVersion line) {
     try {
       return new Result(resolver.resolveLatest(line), "CENTRAL_LATEST", null);
-    } catch (SpringBootPatchResolver.Unavailable e) {
+    } catch (SpringBootRepositoryUnavailableException e) {
       return new Result(bundled.get(line), "BUNDLED_FALLBACK", e.getMessage());
     }
   }

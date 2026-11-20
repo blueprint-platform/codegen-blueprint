@@ -54,7 +54,7 @@ public class ArchitectureGovernanceAdapter {
     return ArtifactKey.ARCHITECTURE_GOVERNANCE;
   }
 
-  public Iterable<? extends GeneratedResource> generate(
+  public Iterable<GeneratedResource> generate(
       ProjectBlueprint blueprint, boolean webSelected) {
     GuardrailsMode mode = blueprint.getArchitecture().governance().mode();
     if (!mode.isEnabled()) {

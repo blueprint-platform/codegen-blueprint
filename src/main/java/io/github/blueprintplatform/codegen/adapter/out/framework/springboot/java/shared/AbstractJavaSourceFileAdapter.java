@@ -37,7 +37,7 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
   }
 
   @Override
-  public final Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public final Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     String className = buildClassName(blueprint);
     PackageName packageName = blueprint.getMetadata().packageName();
 

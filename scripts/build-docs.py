@@ -14,6 +14,7 @@ from markdown.extensions import Extension
 from markdown.treeprocessors import Treeprocessor
 
 ROOT = Path(__file__).resolve().parents[1]
+STYLESHEET = "site.css"
 GITHUB = "https://github.com/blueprint-platform/codegen-blueprint"
 NAV = {
     "index": "Overview",
@@ -43,25 +44,29 @@ class Links(Treeprocessor):
                 raw = element.get(attr)
                 if not raw:
                     continue
-                url = urlsplit(raw)
-                if url.scheme or url.netloc or not url.path:
-                    continue
-                target = (self.source.parent / unquote(url.path)).resolve()
-                if not target.is_relative_to(ROOT) or not target.is_file():
-                    raise ValueError(f"{self.source.relative_to(ROOT)}: missing local target {raw}")
-                if self.route is None:
-                    continue
-                fragment = f"#{url.fragment}" if url.fragment else ""
-                if target in ROUTES:
-                    relative = os.path.relpath(ROUTES[target], self.route.parent)
-                    element.set(attr, quote(relative) + fragment)
-                elif element.tag == "img" or target.suffix in {".txt", ".svg", ".png"}:
-                    asset = target.relative_to(ROOT / "docs")
-                    self.assets.add(asset)
-                    relative = os.path.relpath(asset, self.route.parent)
-                    element.set(attr, quote(relative) + fragment)
-                else:
-                    element.set(attr, f"{GITHUB}/blob/main/{quote(str(target.relative_to(ROOT)))}{fragment}")
+                rewritten = self.rewrite_link(raw, element.tag)
+                if rewritten is not None:
+                    element.set(attr, rewritten)
+
+    def rewrite_link(self, raw, tag):
+        url = urlsplit(raw)
+        if url.scheme or url.netloc or not url.path:
+            return None
+        target = (self.source.parent / unquote(url.path)).resolve()
+        if not target.is_relative_to(ROOT) or not target.is_file():
+            raise ValueError(f"{self.source.relative_to(ROOT)}: missing local target {raw}")
+        if self.route is None:
+            return None
+
+        fragment = f"#{url.fragment}" if url.fragment else ""
+        if target in ROUTES:
+            destination = ROUTES[target]
+        elif tag == "img" or target.suffix in {".txt", ".svg", ".png"}:
+            destination = target.relative_to(ROOT / "docs")
+            self.assets.add(destination)
+        else:
+            return f"{GITHUB}/blob/main/{quote(str(target.relative_to(ROOT)))}{fragment}"
+        return quote(os.path.relpath(destination, self.route.parent)) + fragment
 
 
 class LocalLinks(Extension):
@@ -123,7 +128,7 @@ def build(site):
             href = os.path.relpath(f"{name}.html", route.parent)
             current = ' aria-current="page"' if name == key else ""
             links.append(f'<a href="{href}"{current}>{escape(label)}</a>')
-        stylesheet = os.path.relpath("site.css", route.parent)
+        stylesheet = os.path.relpath(STYLESHEET, route.parent)
         page = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -150,9 +155,9 @@ def build(site):
         destination = site / asset
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / "docs" / asset, destination)
-    shutil.copyfile(ROOT / "docs/site/site.css", site / "site.css")
+    shutil.copyfile(ROOT / "docs/site" / STYLESHEET, site / STYLESHEET)
     (site / ".nojekyll").touch()
-    expected = set(ROUTES.values()) | assets | {Path("site.css"), Path(".nojekyll")}
+    expected = set(ROUTES.values()) | assets | {Path(STYLESHEET), Path(".nojekyll")}
     actual = {path.relative_to(site) for path in site.rglob("*") if path.is_file()}
     if unexpected := actual - expected:
         raise ValueError(f"Use a fresh output directory. Unexpected files: {sorted(unexpected)}")

@@ -6,5 +6,5 @@ import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedRes
 public interface ArtifactPort {
   ArtifactKey artifactKey();
 
-  Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint);
+  Iterable<GeneratedResource> generate(ProjectBlueprint blueprint);
 }

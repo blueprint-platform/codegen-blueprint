@@ -22,8 +22,15 @@ for layout in ("hex", "standard"):
     log = (run / f"logs/generate-greeting-{layout}.log").read_text(encoding="utf-8")
     print(layout + ": " + re.search(r"bootSelector=\S+ bootVersion=\S+ source=\S+", log).group())
 print()
-for name, status in re.findall(r"^  - (.*?)\s*:\s*(PASS|EXPECTED_FAIL)\s*:", summary, re.M):
-    print(f"{status}: {name.strip()}")
+for line in summary.splitlines():
+    if not line.startswith("  - "):
+        continue
+    fields = line[4:].split(":", 2)
+    if len(fields) != 3:
+        continue
+    name, status, _ = fields
+    if status.strip() in {"PASS", "EXPECTED_FAIL"}:
+        print(f"{status.strip()}: {name.strip()}")
 print()
 for name in ("HEX_violation", "STD_schema_violation", "STD_violation", "HEX_REST_signature", "STD_REST_signature"):
     log = (run / f"logs/{name}.log").read_text(encoding="utf-8")

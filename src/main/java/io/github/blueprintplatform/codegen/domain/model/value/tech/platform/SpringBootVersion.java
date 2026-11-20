@@ -32,7 +32,7 @@ public enum SpringBootVersion implements KeyedEnum {
   public boolean matchesPatch(String patch) {
     return patch != null
         && patch.startsWith(key + ".")
-        && patch.substring(key.length() + 1).matches("0|[1-9][0-9]{0,8}");
+        && patch.substring(key.length() + 1).matches("0|[1-9]\\d{0,8}");
   }
 
   @Override

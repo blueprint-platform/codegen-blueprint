@@ -22,7 +22,7 @@ public abstract class AbstractMultiTemplateArtifactAdapter implements ArtifactPo
   }
 
   @Override
-  public final Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public final Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     List<TemplateSpec> templates = artifactSpec.templates();
 
     Map<String, Object> model = buildModel(blueprint);

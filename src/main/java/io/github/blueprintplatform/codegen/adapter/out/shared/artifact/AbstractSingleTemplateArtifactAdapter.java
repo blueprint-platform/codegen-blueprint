@@ -20,11 +20,11 @@ public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactP
   }
 
   @Override
-  public final Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public final Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     return render(buildModel(blueprint));
   }
 
-  protected final Iterable<? extends GeneratedResource> render(Map<String, Object> model) {
+  protected final Iterable<GeneratedResource> render(Map<String, Object> model) {
     TemplateSpec templateSpec = artifactSpec.templates().getFirst();
 
     Path outPath = Path.of(templateSpec.outputPath());

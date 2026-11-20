@@ -24,7 +24,7 @@ class BinaryContentTest {
   @Test
   @DisplayName("Should defensively copy in ctor and accessor")
   void shouldDefensivelyCopyCtorAndAccessor() {
-    byte[] original = new byte[] {1, 2, 3};
+    byte[] original = {1, 2, 3};
 
     BinaryContent content = new BinaryContent(original);
     original[0] = 9;

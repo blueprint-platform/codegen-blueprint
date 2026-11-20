@@ -22,40 +22,46 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
   private static final List<Path> COMMON_DIRS =
       List.of(SRC_MAIN_JAVA, SRC_TEST_JAVA, SRC_MAIN_RESOURCES, SRC_TEST_RESOURCES);
 
+  private static final String ADAPTER = "adapter";
+  private static final String APPLICATION = "application";
+  private static final String DOMAIN = "domain";
+  private static final String SERVICE = "service";
+  private static final String CONTROLLER = "controller";
+
   private static final List<Path> HEX_DIRS =
       List.of(
-          Path.of("adapter"),
-          Path.of("adapter", "in"),
-          Path.of("adapter", "out"),
-          Path.of("application"),
-          Path.of("application", "port"),
-          Path.of("application", "port", "in"),
-          Path.of("application", "port", "out"),
-          Path.of("application", "usecase"),
+          Path.of(ADAPTER),
+          Path.of(ADAPTER, "in"),
+          Path.of(ADAPTER, "out"),
+          Path.of(APPLICATION),
+          Path.of(APPLICATION, "port"),
+          Path.of(APPLICATION, "port", "in"),
+          Path.of(APPLICATION, "port", "out"),
+          Path.of(APPLICATION, "usecase"),
           Path.of("bootstrap"),
-          Path.of("domain"),
-          Path.of("domain", "model"),
-          Path.of("domain", "port"),
-          Path.of("domain", "port", "in"),
-          Path.of("domain", "port", "out"),
-          Path.of("domain", "service"));
+          Path.of(DOMAIN),
+          Path.of(DOMAIN, "model"),
+          Path.of(DOMAIN, "port"),
+          Path.of(DOMAIN, "port", "in"),
+          Path.of(DOMAIN, "port", "out"),
+          Path.of(DOMAIN, SERVICE));
 
   private static final List<Path> STANDARD_DIRS =
       List.of(
-          Path.of("controller"),
-          Path.of("controller", "dto"),
-          Path.of("service"),
+          Path.of(CONTROLLER),
+          Path.of(CONTROLLER, "dto"),
+          Path.of(SERVICE),
           Path.of("repository"),
           Path.of("config"),
-          Path.of("domain"),
-          Path.of("domain", "model"),
-          Path.of("domain", "service"));
+          Path.of(DOMAIN),
+          Path.of(DOMAIN, "model"),
+          Path.of(DOMAIN, SERVICE));
 
   private static final List<String> HEX_TOP_LEVEL_FAMILIES =
-      List.of("adapter", "application", "domain", "bootstrap");
+      List.of(ADAPTER, APPLICATION, DOMAIN, "bootstrap");
 
   private static final List<String> STANDARD_TOP_LEVEL_FAMILIES =
-      List.of("controller", "service", "repository", "domain", "config");
+      List.of(CONTROLLER, SERVICE, "repository", DOMAIN, "config");
 
   private static final String PACKAGE_INFO_FILE = "package-info.java";
 
@@ -65,7 +71,7 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
   }
 
   @Override
-  public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     var packageName = blueprint.getMetadata().packageName();
 
     var mainBasePackageDir = resolveBasePackageDir(SRC_MAIN_JAVA, packageName);

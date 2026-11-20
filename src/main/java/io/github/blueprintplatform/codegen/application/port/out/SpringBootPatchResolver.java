@@ -5,10 +5,4 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.Spri
 public interface SpringBootPatchResolver {
 
   String resolveLatest(SpringBootVersion line);
-
-  final class Unavailable extends RuntimeException {
-    public Unavailable(String phase, Throwable cause) {
-      super(phase + ": " + cause.getClass().getSimpleName(), cause);
-    }
-  }
 }

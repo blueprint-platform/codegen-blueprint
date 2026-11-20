@@ -2,6 +2,7 @@ package io.github.blueprintplatform.codegen.adapter.out.version;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
 import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchResolver;
+import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -139,7 +140,7 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
       response.cancel(true);
       Throwable cause = e instanceof ExecutionException ? e.getCause() : e;
       if (!headersReceived.get() && isConnectionFailure(cause)) {
-        throw new Unavailable(phase, cause);
+        throw new SpringBootRepositoryUnavailableException(phase, cause);
       }
       throw new IllegalStateException("Central " + phase + " failed: " + cause.getMessage(), cause);
     }

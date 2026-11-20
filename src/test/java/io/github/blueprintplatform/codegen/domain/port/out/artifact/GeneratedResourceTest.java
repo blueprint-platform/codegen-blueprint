@@ -56,7 +56,7 @@ class GeneratedResourceTest {
   @DisplayName(
       "BinaryContent should defensively copy, and equals/hashCode/toString should be stable")
   void binaryContent_shouldBeImmutableAndValueBased() {
-    byte[] original = new byte[] {1, 2, 3};
+    byte[] original = {1, 2, 3};
 
     BinaryContent c1 = new BinaryContent(original);
 
@@ -80,7 +80,7 @@ class GeneratedResourceTest {
   @Test
   @DisplayName("Binary should defensively copy bytes in ctor and accessor")
   void binary_shouldDefensivelyCopyBytes() {
-    byte[] original = new byte[] {1, 2, 3};
+    byte[] original = {1, 2, 3};
 
     GeneratedBinaryResource binary =
         new GeneratedBinaryResource(Path.of("bin.dat"), new BinaryContent(original));

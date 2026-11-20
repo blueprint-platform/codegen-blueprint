@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpServer;
-import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchResolver;
+import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.IOException;
@@ -50,18 +50,20 @@ class CentralSpringBootPatchResolverTest {
   @Test
   void missingParentDoesNotFallback() {
     metadata("<version>4.1.3</version>");
-    assertThatThrownBy(() -> selection().select(V4_1))
+    var versions = selection();
+    assertThatThrownBy(() -> versions.select(V4_1))
         .isInstanceOf(RuntimeException.class)
-        .isNotInstanceOf(SpringBootPatchResolver.Unavailable.class)
+        .isNotInstanceOf(SpringBootRepositoryUnavailableException.class)
         .hasRootCauseMessage("Central parent POM returned HTTP 404");
   }
 
   @Test
   void malformedMetadataDoesNotFallback() {
     respond("/maven-metadata.xml", 200, "<metadata>");
-    assertThatThrownBy(() -> selection().select(V4_1))
+    var versions = selection();
+    assertThatThrownBy(() -> versions.select(V4_1))
         .isInstanceOf(RuntimeException.class)
-        .isNotInstanceOf(SpringBootPatchResolver.Unavailable.class)
+        .isNotInstanceOf(SpringBootRepositoryUnavailableException.class)
         .hasMessage("adapter.springboot.resolution.failed");
   }
 

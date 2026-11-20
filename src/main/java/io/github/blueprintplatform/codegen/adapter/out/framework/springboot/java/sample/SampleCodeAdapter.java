@@ -54,7 +54,7 @@ public class SampleCodeAdapter implements SampleCodePort {
   }
 
   @Override
-  public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     SampleCodeLevel level = blueprint.getArchitecture().sampleCodeOptions().level();
     ProjectLayout layout = blueprint.getArchitecture().layout();
 

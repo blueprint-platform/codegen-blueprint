@@ -216,7 +216,8 @@ class ArchitectureGovernanceAdapterTest {
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    assertThatThrownBy(() -> adapter.generate(blueprint(GuardrailsMode.STRICT), false))
+    ProjectBlueprint project = blueprint(GuardrailsMode.STRICT);
+    assertThatThrownBy(() -> adapter.generate(project, false))
         .isInstanceOf(ArchitectureGovernanceTemplatesNotFoundException.class);
 
     assertThat(renderer.capturedTemplateNames).isEmpty();
@@ -225,7 +226,6 @@ class ArchitectureGovernanceAdapterTest {
 
   private static final class StubFtlClasspathTemplateScanner extends FtlClasspathTemplateScanner {
     private final List<String> templates;
-    private String lastRoot;
 
     private StubFtlClasspathTemplateScanner(List<String> templates) {
       super(noopResolver());
@@ -234,7 +234,6 @@ class ArchitectureGovernanceAdapterTest {
 
     @Override
     public List<String> scan(String templateRoot) {
-      this.lastRoot = templateRoot;
       String prefix = templateRoot.endsWith("/") ? templateRoot : templateRoot + "/";
       return templates.stream().filter(t -> t.startsWith(prefix)).toList();
     }

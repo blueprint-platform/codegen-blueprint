@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -44,8 +43,8 @@ class FileSystemProjectWriterAdapterTest {
 
     Files.writeString(temp.resolve(relative), "old");
 
-    Assertions.assertThatThrownBy(
-            () -> writer.writeBytes(temp, relative, "new".getBytes(StandardCharsets.UTF_8)))
+    byte[] replacement = "new".getBytes(StandardCharsets.UTF_8);
+    assertThatThrownBy(() -> writer.writeBytes(temp, relative, replacement))
         .isInstanceOf(ProjectWriteException.class);
 
     assertThat(Files.readString(temp.resolve(relative))).isEqualTo("old");

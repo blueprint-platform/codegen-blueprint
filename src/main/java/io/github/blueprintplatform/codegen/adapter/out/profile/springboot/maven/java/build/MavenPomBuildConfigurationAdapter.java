@@ -40,7 +40,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     return buildModel(bp, effectiveDependencies(bp));
   }
 
-  public Iterable<? extends GeneratedResource> generate(
+  public Iterable<GeneratedResource> generate(
       ProjectBlueprint bp, List<BuildDependency> dependencies) {
     return render(buildModel(bp, dependencies));
   }

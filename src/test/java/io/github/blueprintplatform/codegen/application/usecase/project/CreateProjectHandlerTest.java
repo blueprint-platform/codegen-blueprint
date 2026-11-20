@@ -129,8 +129,8 @@ class CreateProjectHandlerTest {
     final List<Path> lastEmittedRelativePaths = new ArrayList<>();
 
     @Override
-    public Iterable<? extends GeneratedResource> generate(ProjectBlueprint bp) {
-      var files =
+    public Iterable<GeneratedResource> generate(ProjectBlueprint bp) {
+      List<GeneratedResource> files =
           List.of(
               new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8),
               new GeneratedTextResource(Path.of(".gitignore"), "*.class", StandardCharsets.UTF_8),
