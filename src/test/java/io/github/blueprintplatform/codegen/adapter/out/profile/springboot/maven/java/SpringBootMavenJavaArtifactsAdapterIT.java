@@ -65,7 +65,7 @@ class SpringBootMavenJavaArtifactsAdapterIT {
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     PlatformTarget platformTarget =
-        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
     PlatformSpec platform = new PlatformSpec(techStack, platformTarget);
 
     ArchitectureSpec architecture =

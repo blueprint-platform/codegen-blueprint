@@ -8,6 +8,6 @@ public final class ProjectWriteException extends AdapterException {
   private static final String KEY = "adapter.project.write.failed";
 
   public ProjectWriteException(Path path, Throwable cause) {
-    super(KEY, cause, path);
+    super(KEY, cause, path, cause.getMessage());
   }
 }

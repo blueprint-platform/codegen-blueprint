@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.domain.policy.tech;
 
 import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion.JAVA_21;
 import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion.JAVA_25;
-import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion.V3_4;
-import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion.V3_5;
+import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion.V4_1;
+import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion.V4_2;
 import static java.util.Map.entry;
 
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
@@ -29,7 +29,8 @@ public final class CompatibilityPolicy {
   private static final ErrorCode TARGET_INCOMPATIBLE = () -> "platform.target.incompatible";
 
   private static final Map<SpringBootVersion, Set<JavaVersion>> SPRINGBOOT_JAVA_SUPPORT =
-      Map.ofEntries(entry(V3_5, EnumSet.of(JAVA_21, JAVA_25)), entry(V3_4, EnumSet.of(JAVA_21)));
+      Map.ofEntries(
+          entry(V4_2, EnumSet.of(JAVA_21, JAVA_25)), entry(V4_1, EnumSet.of(JAVA_21, JAVA_25)));
 
   private CompatibilityPolicy() {}
 

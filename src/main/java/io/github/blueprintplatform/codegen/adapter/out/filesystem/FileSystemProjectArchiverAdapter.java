@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -38,7 +39,8 @@ public class FileSystemProjectArchiverAdapter implements ProjectArchiverPort {
 
     Path archivePath = parent.resolve(baseName + ZIP_EXTENSION);
 
-    try (ZipOutputStream zipOut = new ZipOutputStream(Files.newOutputStream(archivePath))) {
+    try (ZipOutputStream zipOut =
+        new ZipOutputStream(Files.newOutputStream(archivePath, StandardOpenOption.CREATE_NEW))) {
       writeDirectoryToZip(projectRoot, baseName, zipOut);
       return archivePath;
     } catch (IOException e) {
@@ -51,14 +53,16 @@ public class FileSystemProjectArchiverAdapter implements ProjectArchiverPort {
     Path normalizedRoot = root.toAbsolutePath().normalize();
 
     try (Stream<Path> paths = Files.walk(normalizedRoot)) {
-      paths.forEachOrdered(
-          path -> {
-            try {
-              writeEntry(normalizedRoot, rootName, path, zos);
-            } catch (IOException e) {
-              throw new UncheckedIOException(e);
-            }
-          });
+      paths
+          .sorted()
+          .forEachOrdered(
+              path -> {
+                try {
+                  writeEntry(normalizedRoot, rootName, path, zos);
+                } catch (IOException e) {
+                  throw new UncheckedIOException(e);
+                }
+              });
     } catch (UncheckedIOException e) {
       throw e.getCause();
     }

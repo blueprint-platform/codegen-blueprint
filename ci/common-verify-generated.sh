@@ -5,8 +5,8 @@ ROOT_DIR="$(pwd)"
 WORK_DIR="$(mktemp -d)"
 TARGET_DIR="$WORK_DIR/out"
 
-JAVA_VERSION="${JAVA_VERSION:-21}"
-BOOT_VERSION="${BOOT_VERSION:-3.5}"
+JAVA_VERSION="${JAVA_VERSION:-25}"
+BOOT_VERSION="${BOOT_VERSION:-4.2}"
 ARTIFACT_ID="${ARTIFACT_ID:-greeting}"
 PACKAGE_NAME="${PACKAGE_NAME:-io.github.blueprintplatform.greeting}"
 
@@ -23,20 +23,12 @@ trap cleanup EXIT
 
 mkdir -p "$TARGET_DIR"
 
-# Prefer glob directly; avoids SC2012 and handles "no match" safely.
-JAR_PATH=""
-for f in "$ROOT_DIR"/target/codegen-blueprint-*.jar; do
-  if [[ -f "$f" ]]; then
-    JAR_PATH="$f"
-    break
-  fi
-done
-
-if [[ -z "${JAR_PATH:-}" ]] || [[ ! -f "$JAR_PATH" ]]; then
-  echo "Jar not found under: $ROOT_DIR/target"
-  ls -la "$ROOT_DIR/target" || true
-  exit 1
+JAR_PATH="${CODEGEN_JAR:-}"
+if [[ -z "$JAR_PATH" ]]; then
+  FINAL_NAME="$(mvn -q -ntp help:evaluate -Dexpression=project.build.finalName -DforceStdout)"
+  JAR_PATH="$ROOT_DIR/target/$FINAL_NAME.jar"
 fi
+test -f "$JAR_PATH"
 
 CLI_ARGS=(
   --spring.main.web-application-type=none
@@ -61,7 +53,14 @@ if [[ -n "${DEPENDENCIES:-}" ]]; then
   done
 fi
 
-java -jar "$JAR_PATH" "${CLI_ARGS[@]}"
+GENERATOR_OPTS=(-jar)
+if [[ "${EXPECT_BOOT_SOURCE:-}" == BUNDLED_FALLBACK ]]; then
+  GENERATOR_OPTS=(-Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=1 -jar)
+fi
+"${GENERATOR_JAVA:-java}" "${GENERATOR_OPTS[@]}" "$JAR_PATH" "${CLI_ARGS[@]}" | tee "$WORK_DIR/cli.log"
+if [[ -n "${EXPECT_BOOT_SOURCE:-}" ]]; then
+  grep -F "source=$EXPECT_BOOT_SOURCE" "$WORK_DIR/cli.log"
+fi
 
 ZIP="$TARGET_DIR/$ARTIFACT_ID.zip"
 if [[ ! -f "$ZIP" ]]; then
@@ -81,32 +80,23 @@ fi
 
 cd "$GEN_DIR"
 
-find_mockito_agent() {
-  local repo="${HOME}/.m2/repository"
-  [[ -d "$repo/org/mockito/mockito-core" ]] || return 0
-
-  # Pick latest version directory (lexicographically sorted works for semver-ish dirs)
-  local latest_dir=""
-  latest_dir="$(find "$repo/org/mockito/mockito-core" -mindepth 1 -maxdepth 1 -type d -print \
-    | sort -V | tail -n 1 || true)"
-
-  [[ -n "$latest_dir" ]] || return 0
-
-  find "$latest_dir" -maxdepth 1 -type f -name 'mockito-core-*.jar' -print \
-    | sort -V | tail -n 1 || true
-}
-
-MOCKITO_AGENT="$(find_mockito_agent)"
-MVN_ARGS=(-q -ntp verify)
-
-if [[ -n "${MOCKITO_AGENT:-}" ]] && [[ -f "${MOCKITO_AGENT:-}" ]]; then
-  MVN_ARGS=(-q -ntp -DargLine="-javaagent:${MOCKITO_AGENT}" verify)
+chmod +x ./mvnw
+./mvnw -B -ntp clean verify
+main_class="$(find target/classes -name '*Application.class' -print -quit)"
+test -f "$main_class"
+javap -verbose "$main_class" | grep -F "major version: $((JAVA_VERSION + 44))"
+if [[ "$SAMPLE_CODE" == basic ]]; then
+  for suite in GreetingSampleHttpIT GreetingControllerWebMvcIT; do
+    report="$(find target/failsafe-reports -name "TEST-*.$suite.xml" -print -quit)"
+    test -f "$report"
+    grep -El 'tests="[1-9][0-9]*"' "$report"
+  done
 fi
-
-if [[ -f "./mvnw" ]]; then
-  chmod +x ./mvnw
-  ./mvnw "${MVN_ARGS[@]}"
+if [[ "$GUARDRAILS" != none ]]; then
+  find target/surefire-reports -name 'TEST-*.architecture.archunit.*Test.xml' | grep .
 else
-  echo "[WARN] mvnw not found, falling back to system Maven (mvn)"
-  mvn "${MVN_ARGS[@]}"
+  if grep -q 'archunit-junit' pom.xml || find src/test -path '*/architecture/archunit/*' | grep -q .; then
+    echo "Guardrails unexpectedly generated for none" >&2
+    exit 1
+  fi
 fi

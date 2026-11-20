@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,16 +37,18 @@ class FileSystemProjectWriterAdapterTest {
   }
 
   @Test
-  @DisplayName("writeBytes() should overwrite existing file")
-  void writeBytes_shouldOverwriteExistingFile() throws IOException {
+  @DisplayName("writeBytes() should reject existing file")
+  void writeBytes_shouldRejectExistingFile() throws IOException {
     Path temp = Files.createTempDirectory("writer-test2");
     Path relative = Path.of("file.txt");
 
     Files.writeString(temp.resolve(relative), "old");
 
-    writer.writeBytes(temp, relative, "new".getBytes(StandardCharsets.UTF_8));
+    Assertions.assertThatThrownBy(
+            () -> writer.writeBytes(temp, relative, "new".getBytes(StandardCharsets.UTF_8)))
+        .isInstanceOf(ProjectWriteException.class);
 
-    assertThat(Files.readString(temp.resolve(relative))).isEqualTo("new");
+    assertThat(Files.readString(temp.resolve(relative))).isEqualTo("old");
   }
 
   @Test

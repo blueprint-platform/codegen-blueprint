@@ -4,8 +4,8 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.shared.CliEnumParser;
 import io.github.blueprintplatform.codegen.adapter.in.cli.shared.CliKeyedEnum;
 
 public enum SpringBootVersionOption implements CliKeyedEnum {
-  V3_5("3.5"),
-  V3_4("3.4");
+  V4_2("4.2"),
+  V4_1("4.1");
 
   private static final String UNKNOWN_KEY = "adapter.cli.springboot.spring-boot-version.unknown";
 

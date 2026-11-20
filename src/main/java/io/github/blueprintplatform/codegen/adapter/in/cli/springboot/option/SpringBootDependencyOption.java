@@ -3,7 +3,7 @@ package io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option;
 import io.github.blueprintplatform.codegen.adapter.error.exception.cli.InvalidDependencyAliasException;
 
 public enum SpringBootDependencyOption {
-  WEB(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-web"),
+  WEB(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-webmvc"),
   DATA_JPA(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-data-jpa"),
   VALIDATION(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-validation"),
   ACTUATOR(Constants.ORG_SPRINGFRAMEWORK_BOOT, "spring-boot-starter-actuator"),

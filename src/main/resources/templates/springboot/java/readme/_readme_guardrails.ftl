@@ -11,7 +11,7 @@ To enable guardrails, regenerate with:
 ```bash
 --guardrails basic   # adoption-friendly baseline
 --guardrails strict  # contract-first, fail-fast
-````
+```
 <#else>
 ## 🧩 Architecture Guardrails
 
@@ -19,7 +19,7 @@ Guardrails are **generated ArchUnit tests** evaluated at **build time**.
 They provide **deterministic** feedback during:
 
 ```bash
-./mvnw verify
+./mvnw clean verify
 ```
 
 **References**
@@ -68,7 +68,7 @@ Enforced (high level):
 * `adapter.in` ↔ `adapter.out` isolation (no cross-deps)
 * Domain purity: domain depends only on `java.*` + domain types
 * Schema & rename enforcement per detected bounded context
-* REST boundary isolation **only if** `spring-boot-starter-web` is present
+* REST boundary isolation **only if** `spring-boot-starter-webmvc` is present
 </#if>
 
 <#if layout == "standard" && guardrails == "basic">
@@ -103,7 +103,7 @@ Enforced (high level):
 * Layer direction rules across `controller/service/repository/domain/config`
 * Domain purity: domain depends only on `java.*` + domain types
 * Schema & rename enforcement per detected bounded context
-* REST boundary isolation **only if** `spring-boot-starter-web` is present
+* REST boundary isolation **only if** `spring-boot-starter-webmvc` is present
 </#if>
 
 </#if>

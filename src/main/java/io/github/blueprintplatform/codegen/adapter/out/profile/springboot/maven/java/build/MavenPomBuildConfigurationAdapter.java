@@ -12,6 +12,7 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.BuildCo
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,17 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
 
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
+    return buildModel(bp, effectiveDependencies(bp));
+  }
+
+  public Iterable<? extends GeneratedResource> generate(
+      ProjectBlueprint bp, List<BuildDependency> dependencies) {
+    return render(buildModel(bp, dependencies));
+  }
+
+  private Map<String, Object> buildModel(ProjectBlueprint bp, List<BuildDependency> dependencies) {
+    requireLiteral(bp.getMetadata().name().value());
+    requireLiteral(bp.getMetadata().description().value());
     ProjectIdentity id = bp.getMetadata().identity();
     SpringBootJvmTarget target = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
 
@@ -43,11 +55,12 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
         entry(MavenPomBuildModel.KEY_GROUP_ID, id.groupId().value()),
         entry(MavenPomBuildModel.KEY_ARTIFACT_ID, id.artifactId().value()),
         entry(MavenPomBuildModel.KEY_JAVA_VERSION, target.java().asString()),
-        entry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, target.springBoot().defaultVersion()),
+        entry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, target.patchVersion()),
         entry(MavenPomBuildModel.KEY_PROJECT_NAME, bp.getMetadata().name().value()),
         entry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
         entry(MavenPomBuildModel.KEY_POM_PROPERTIES, governancePomProperties(bp)),
-        entry(MavenPomBuildModel.KEY_DEPENDENCIES, buildPomDependencies(bp)));
+        entry(MavenPomBuildModel.KEY_DEPENDENCIES, dependencies),
+        entry("sampleEnabled", isSampleEnabled(bp)));
   }
 
   private Map<String, String> governancePomProperties(ProjectBlueprint bp) {
@@ -57,7 +70,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     return Map.of(MavenPomBuildModel.ARCH_UNIT_VERSION_KEY, MavenPomBuildModel.ARCH_UNIT_VERSION);
   }
 
-  private List<BuildDependency> buildPomDependencies(ProjectBlueprint bp) {
+  public List<BuildDependency> effectiveDependencies(ProjectBlueprint bp) {
     List<BuildDependency> deps = new ArrayList<>();
 
     deps.add(MavenPomBuildModel.CORE_STARTER);
@@ -76,8 +89,35 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     }
 
     deps.add(MavenPomBuildModel.TEST_STARTER);
+    if (isSampleEnabled(bp)) {
+      deps.add(
+          BuildDependency.of(
+              "org.springframework.boot", "spring-boot-starter-webmvc-test", null, "test"));
+      if (deps.stream().anyMatch(d -> d.artifactId().equals("spring-boot-starter-security"))) {
+        deps.add(
+            BuildDependency.of(
+                "org.springframework.boot", "spring-boot-starter-security-test", null, "test"));
+      }
+    }
 
     return List.copyOf(deps);
+  }
+
+  private static void requireLiteral(String value) {
+    if (value.contains("${")
+        || value
+            .codePoints()
+            .anyMatch(
+                cp ->
+                    !(cp == 9
+                        || cp == 10
+                        || cp == 13
+                        || cp >= 32 && cp <= 0xD7FF
+                        || cp >= 0xE000 && cp <= 0xFFFD
+                        || cp >= 0x10000))) {
+      throw new IllegalArgumentException(
+          "Project metadata cannot be represented as literal Maven XML");
+    }
   }
 
   private boolean isSampleEnabled(ProjectBlueprint bp) {

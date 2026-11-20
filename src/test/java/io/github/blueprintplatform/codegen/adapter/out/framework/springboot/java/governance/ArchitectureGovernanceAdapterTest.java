@@ -67,7 +67,7 @@ class ArchitectureGovernanceAdapterTest {
 
   private static final GroupId SPRING_BOOT_GROUP_ID = new GroupId("org.springframework.boot");
   private static final ArtifactId SPRING_BOOT_WEB_ARTIFACT_ID =
-      new ArtifactId("spring-boot-starter-web");
+      new ArtifactId("spring-boot-starter-webmvc");
 
   private static StubFtlClasspathTemplateScanner scannerWithTemplates(String... templates) {
     return new StubFtlClasspathTemplateScanner(List.of(templates));
@@ -88,7 +88,7 @@ class ArchitectureGovernanceAdapterTest {
     PlatformSpec platform =
         new PlatformSpec(
             new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0"));
 
     ArchitectureSpec architecture =
         new ArchitectureSpec(
@@ -153,7 +153,7 @@ class ArchitectureGovernanceAdapterTest {
             DUMMY_ARTIFACT_SPEC,
             new StubFtlClasspathTemplateScanner(List.of(DOMAIN_PURITY_TEMPLATE)));
 
-    assertThat(adapter.generate(blueprint(GuardrailsMode.NONE))).isEmpty();
+    assertThat(adapter.generate(blueprint(GuardrailsMode.NONE), false)).isEmpty();
     assertThat(renderer.capturedTemplateNames).isEmpty();
     assertThat(renderer.capturedOutPaths).isEmpty();
   }
@@ -169,7 +169,7 @@ class ArchitectureGovernanceAdapterTest {
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    adapter.generate(blueprint(GuardrailsMode.STRICT));
+    adapter.generate(blueprint(GuardrailsMode.STRICT), false);
 
     assertThat(renderer.capturedTemplateNames)
         .contains(DOMAIN_PURITY_TEMPLATE)
@@ -194,7 +194,7 @@ class ArchitectureGovernanceAdapterTest {
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    adapter.generate(blueprint(GuardrailsMode.STRICT, dependenciesWithSpringWeb()));
+    adapter.generate(blueprint(GuardrailsMode.STRICT, dependenciesWithSpringWeb()), true);
 
     assertThat(renderer.capturedTemplateNames)
         .contains(DOMAIN_PURITY_TEMPLATE, HEX_REST_SIGNATURE_TEMPLATE, STD_REST_SIGNATURE_TEMPLATE);
@@ -216,7 +216,7 @@ class ArchitectureGovernanceAdapterTest {
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    assertThatThrownBy(() -> adapter.generate(blueprint(GuardrailsMode.STRICT)))
+    assertThatThrownBy(() -> adapter.generate(blueprint(GuardrailsMode.STRICT), false))
         .isInstanceOf(ArchitectureGovernanceTemplatesNotFoundException.class);
 
     assertThat(renderer.capturedTemplateNames).isEmpty();

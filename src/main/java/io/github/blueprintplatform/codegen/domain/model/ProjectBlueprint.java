@@ -1,9 +1,11 @@
 package io.github.blueprintplatform.codegen.domain.model;
 
+import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.policy.tech.CompatibilityPolicy;
 
 public final class ProjectBlueprint {
@@ -32,6 +34,10 @@ public final class ProjectBlueprint {
 
     CompatibilityPolicy.ensureCompatible(platform.techStack(), platform.platformTarget());
 
+    if (platform.platformTarget() instanceof SpringBootJvmTarget target
+        && target.patchVersion() == null) {
+      throw new DomainViolationException(() -> "platform.springboot-patch.required");
+    }
     return new ProjectBlueprint(metadata, platform, architecture, dependencies);
   }
 

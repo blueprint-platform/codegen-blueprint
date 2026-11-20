@@ -1,9 +1,9 @@
 package io.github.blueprintplatform.codegen.bootstrap.config.binding;
 
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component

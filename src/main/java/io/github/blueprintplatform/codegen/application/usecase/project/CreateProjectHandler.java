@@ -1,57 +1,56 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
-import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
-
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
-import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
-import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import java.nio.file.Path;
-import java.util.List;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 
 public class CreateProjectHandler implements CreateProjectPort {
 
   private final ProjectBlueprintMapper blueprintMapper;
   private final CreateProjectResultMapper responseMapper;
-  private final CreateProjectExecutionContext executionContext;
+  private final ProjectArtifactsSelector artifactsSelector;
+  private final ProjectPublisherPort publisher;
+  private final BootVersionSelection bootVersions;
 
   public CreateProjectHandler(
       ProjectBlueprintMapper blueprintMapper,
       CreateProjectResultMapper responseMapper,
-      CreateProjectExecutionContext executionContext) {
+      ProjectArtifactsSelector artifactsSelector,
+      BootVersionSelection bootVersions,
+      ProjectPublisherPort publisher) {
     this.blueprintMapper = blueprintMapper;
     this.responseMapper = responseMapper;
-    this.executionContext = executionContext;
+    this.artifactsSelector = artifactsSelector;
+    this.bootVersions = bootVersions;
+    this.publisher = publisher;
   }
 
   @Override
   public CreateProjectResult handle(CreateProjectCommand createProjectCommand) {
-    ProjectBlueprint blueprint = blueprintMapper.from(createProjectCommand);
+    var prepared = blueprintMapper.prepare(createProjectCommand);
+    var requested = (SpringBootJvmTarget) prepared.platform().platformTarget();
+    var selection = bootVersions.select(requested.springBoot());
+    var target =
+        new SpringBootJvmTarget(requested.java(), requested.springBoot(), selection.patch());
+    ProjectBlueprint blueprint = prepared.blueprint(target);
 
     String artifactId = blueprint.getMetadata().identity().artifactId().value();
 
-    Path projectRoot =
-        executionContext
-            .rootPort()
-            .prepareRoot(createProjectCommand.targetDirectory(), artifactId, FAIL_IF_EXISTS);
-
     ProjectArtifactsPort artifactsPort =
-        executionContext.artifactsSelector().select(blueprint.getPlatform().techStack());
+        artifactsSelector.select(blueprint.getPlatform().techStack());
 
     var resources = artifactsPort.generate(blueprint);
 
-    executionContext.writerPort().write(projectRoot, resources);
-
-    Path archive = executionContext.archiverPort().archive(projectRoot, artifactId);
-
-    List<ProjectOutputItem> projectOutputItems =
-        executionContext.projectOutputPort().list(projectRoot);
-
-    return responseMapper.from(blueprint, projectRoot, projectOutputItems, archive);
+    var published =
+        publisher.publish(createProjectCommand.targetDirectory(), artifactId, resources);
+    return responseMapper.from(
+        blueprint, published.root(), published.files(), published.archive(), selection);
   }
 }

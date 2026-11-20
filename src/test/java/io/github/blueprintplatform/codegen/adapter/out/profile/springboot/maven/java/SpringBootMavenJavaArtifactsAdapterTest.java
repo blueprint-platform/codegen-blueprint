@@ -3,8 +3,8 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependency;
+import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenPomBuildConfigurationAdapter;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -26,9 +26,10 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -45,48 +46,40 @@ class SpringBootMavenJavaArtifactsAdapterTest {
             new PackageName("io.github.blueprintplatform.greeting")),
         new PlatformSpec(
             new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5)),
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0")),
         new ArchitectureSpec(
             ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none()),
         Dependencies.of(List.of()));
   }
 
   @Test
-  @DisplayName("Should return whatever executor returns")
-  void shouldReturnWhateverExecutorReturns() {
-    ProjectBlueprint blueprint = blueprint();
+  void computesOnePlanAndSharesItWithOrderedSteps() {
+    var blueprint = blueprint();
+    var pom = mock(MavenPomBuildConfigurationAdapter.class);
+    var dependency = BuildDependency.of("org.springframework.boot", "spring-boot-starter-webmvc");
+    when(pom.effectiveDependencies(blueprint)).thenReturn(List.of(dependency));
+    var plans = new ArrayList<SpringBootMavenJavaArtifactsAdapter.EffectiveDependencies>();
+    var first = new GeneratedDirectory(Path.of("first"));
+    var second = new GeneratedDirectory(Path.of("second"));
+    var adapter =
+        new SpringBootMavenJavaArtifactsAdapter(
+            pom,
+            List.of(
+                (bp, plan) -> {
+                  plans.add(plan);
+                  return List.of(first);
+                },
+                (bp, plan) -> {
+                  plans.add(plan);
+                  return List.of(second);
+                }));
 
-    ArtifactPipelineExecutor executor = mock(ArtifactPipelineExecutor.class);
-    List<ArtifactPort> ports = List.of(mock(ArtifactPort.class));
-
-    Iterable<? extends GeneratedResource> expected = List.of();
-
-    doReturn(expected).when(executor).execute(ports, blueprint);
-
-    SpringBootMavenJavaArtifactsAdapter adapter =
-        new SpringBootMavenJavaArtifactsAdapter(executor, ports);
-
-    var result = adapter.generate(blueprint);
-
-    assertThat(result).isSameAs(expected);
-  }
-
-  @Test
-  @DisplayName("Should delegate to ArtifactPipelineExecutor with given ports and blueprint")
-  void shouldDelegateToExecutor() {
-    ProjectBlueprint blueprint = blueprint();
-
-    ArtifactPipelineExecutor executor = mock(ArtifactPipelineExecutor.class);
-    List<ArtifactPort> ports = List.of(mock(ArtifactPort.class), mock(ArtifactPort.class));
-
-    when(executor.execute(ports, blueprint)).thenReturn(List.of());
-
-    SpringBootMavenJavaArtifactsAdapter adapter =
-        new SpringBootMavenJavaArtifactsAdapter(executor, ports);
-
-    adapter.generate(blueprint);
-
-    verify(executor, times(1)).execute(ports, blueprint);
-    verifyNoMoreInteractions(executor);
+    assertThat(adapter.generate(blueprint))
+        .extracting(resource -> resource.relativePath())
+        .containsExactly(first.relativePath(), second.relativePath());
+    assertThat(plans.getFirst().dependencies()).containsExactly(dependency);
+    assertThat(plans.getFirst().mvcPresent()).isTrue();
+    assertThat(plans.getLast()).isSameAs(plans.getFirst());
+    verify(pom).effectiveDependencies(blueprint);
   }
 }

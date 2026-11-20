@@ -72,12 +72,13 @@ collect_env_metadata() {
     echo
 
     echo "maven:"
-    if [[ -x "${ROOT_DIR}/mvnw" ]]; then
-      ( "${ROOT_DIR}/mvnw" -v 2>&1 || true )
+    local generated_project="${OUT_DIR:-}/greeting-hex"
+    if [[ -f "$generated_project/mvnw" ]]; then
+      ( cd "$generated_project" && sh ./mvnw -v 2>&1 || true )
     elif command -v mvn >/dev/null 2>&1; then
       ( mvn -v 2>&1 || true )
     else
-      echo "mvn not found on PATH"
+      echo "Maven version unavailable before generation"
     fi
     echo
 

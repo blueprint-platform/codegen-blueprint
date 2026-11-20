@@ -1,21 +1,21 @@
 # Greeting
 
-Proof: hexagonal strict guardrails
+Greeting sample with executable architecture
 
 ---
 
 ## ✨ Project Summary
 
-| Domain | Aspect | Value         |
-|------|--------|---------------|
+| Domain | Aspect | Value |
+|------|--------|-------|
 | 🔧 Tech Stack | Framework | `spring-boot` |
-| | Language | `java`        |
-| | Build Tool | `maven`       |
-| | Java | `21`          |
-| | Spring Boot | `3.5.14`      |
-| 🏗 Architecture | Layout | `hexagonal`   |
-| | Guardrails | `strict`      |
-| | Sample Code | `basic`       |
+| | Language | `java` |
+| | Build Tool | `maven` |
+| | Java | `25` |
+| | Spring Boot | `4.2.0` |
+| 🏗 Architecture | Layout | `hexagonal` |
+| | Guardrails | `strict` |
+| | Sample Code | `basic` |
 
 ---
 
@@ -36,49 +36,30 @@ Proof: hexagonal strict guardrails
 
 | Key          | Value            |
 | ------------ | ---------------- |
-| `groupId`    | `io.github.blueprintplatform`     |
-| `artifactId` | `greeting-hex`  |
-| `package`    | `io.github.blueprintplatform.greeting` |
+| `groupId`    | `com.example`     |
+| `artifactId` | `greeting-hexagonal`  |
+| `package`    | `com.example.greeting` |
 
 ---
 
 ## 🚀 Quick Start
 
+Run with JDK `25`. On macOS or Linux, make the wrapper executable if needed.
+
 ```bash
-# Build (fast feedback)
-./mvnw clean package
+chmod +x mvnw
+./mvnw clean verify
 ```
 
-```bash
-# Verify architecture guardrails (recommended)
-# Runs generated ArchUnit tests and fails fast on architectural violations
-./mvnw verify
-```
+Verification runs the generated ArchUnit tests. A covered rule violation fails the build.
+Verification also runs the greeting sample’s integration tests.
 
-> **Why `mvn verify` matters**
->
-> This project includes **generated architecture guardrails**
-> that are evaluated at **build time**.
->
-> Running `mvn verify` executes these guardrails and serves as
-> the **proof of the architectural contract**.
->
-> Any boundary violation will **fail the build immediately**.
+On Windows, run `mvnw.cmd clean verify`.
 
 ```bash
-# Run the application
 ./mvnw spring-boot:run
 ```
 
-> **macOS / Linux note**
->
-> If you get a `permission denied` error when running `./mvnw`, make the wrapper executable:
->
-> ```bash
-> chmod +x mvnw
-> ```
-
-> If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
 ---
 
@@ -86,7 +67,7 @@ Proof: hexagonal strict guardrails
 ```text
 src
 ├─ main
-│  ├─ java/io/github/blueprintplatform/greeting
+│  ├─ java/com/example/greeting
 │  │  ├─ adapter
 │  │  │  ├─ in
 │  │  │  └─ out
@@ -101,7 +82,7 @@ src
 │  │  └─ bootstrap
 │  └─ resources
 └─ test
-   └─ java/io/github/blueprintplatform/greeting
+   └─ java/com/example/greeting
 ```
 
 > This project follows **Hexagonal Architecture (Ports & Adapters)**.
@@ -122,16 +103,16 @@ Guardrails are **generated ArchUnit tests** evaluated at **build time**.
 They provide **deterministic** feedback during:
 
 ```bash
-./mvnw verify
+./mvnw clean verify
 ```
 
 **References**
 
 * Rulebook (semantics): [Architecture Guardrails Rulebook](https://github.com/blueprint-platform/codegen-blueprint/blob/main/docs/architecture/architecture-guardrails-rulebook.md)
 * Canonical vocabulary (generated contract surface):
-  * `src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/HexagonalGuardrailsScope.java`
+  * `src/test/java/com/example/greeting/architecture/archunit/HexagonalGuardrailsScope.java`
 * Generated rules live under:
-  * `src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/`
+  * `src/test/java/com/example/greeting/architecture/archunit/`
 
 ---
 
@@ -151,7 +132,7 @@ Enforced (high level):
 * `adapter.in` ↔ `adapter.out` isolation (no cross-deps)
 * Domain purity: domain depends only on `java.*` + domain types
 * Schema & rename enforcement per detected bounded context
-* REST boundary isolation **only if** `spring-boot-starter-web` is present
+* REST boundary isolation **only if** `spring-boot-starter-webmvc` is present
 
 
 
@@ -167,7 +148,7 @@ The sample is intentionally isolated under a dedicated package to keep
 your own application code clean and to make removal straightforward.
 
 ```text
-io.github.blueprintplatform.greeting.bp.sample
+com.example.greeting.bp.sample
 ```
 
 This keeps user-owned packages clean and makes the sample removable as a single subtree.
@@ -235,9 +216,7 @@ You can use this sample in two ways:
 ---
 
 ## 📚 Selected Dependencies
-| Dependency | Scope |
-|-----------|-------|
-| `org.springframework.boot:spring-boot-starter-web` | default |
+> No additional dependencies were selected.
 
 ---
 

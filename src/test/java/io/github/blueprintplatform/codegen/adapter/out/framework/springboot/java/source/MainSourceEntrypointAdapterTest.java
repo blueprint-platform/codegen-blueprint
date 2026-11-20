@@ -56,7 +56,7 @@ class MainSourceEntrypointAdapterTest {
     PlatformSpec platform =
         new PlatformSpec(
             new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0"));
 
     ArchitectureSpec architecture =
         new ArchitectureSpec(
@@ -81,7 +81,8 @@ class MainSourceEntrypointAdapterTest {
 
   @Test
   @DisplayName(
-      "generate() should build class name from artifactId (PascalCase + Application) and render file under package path")
+      "generate() should build class name from artifactId (PascalCase + Application) and render"
+          + " file under package path")
   void generate_shouldBuildClassNameFromArtifactIdAndRenderFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 

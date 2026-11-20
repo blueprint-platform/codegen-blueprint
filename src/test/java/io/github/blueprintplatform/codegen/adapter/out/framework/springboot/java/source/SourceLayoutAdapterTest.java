@@ -52,7 +52,7 @@ class SourceLayoutAdapterTest {
     PlatformSpec platform =
         new PlatformSpec(
             new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0"));
 
     ArchitectureSpec architecture = new ArchitectureSpec(layout, null, SampleCodeOptions.none());
 

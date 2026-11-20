@@ -52,30 +52,31 @@ class MavenPomBuildConfigurationAdapterTest {
   private static final String BASE_PATH = "springboot/maven/java/";
 
   private static ProjectBlueprint blueprint(
-          ArchitectureGovernance governance, Dependencies dependencies, SampleCodeOptions sample) {
+      ArchitectureGovernance governance, Dependencies dependencies, SampleCodeOptions sample) {
 
     ProjectMetadata metadata =
-            new ProjectMetadata(
-                    new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
-                    new ProjectName("Demo App"),
-                    new ProjectDescription("Sample Project"),
-                    new PackageName("com.acme.demo"));
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectName("Demo App"),
+            new ProjectDescription("Sample Project"),
+            new PackageName("com.acme.demo"));
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    PlatformTarget target =
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
     PlatformSpec platform = new PlatformSpec(techStack, target);
 
     ArchitectureSpec architecture =
-            new ArchitectureSpec(ProjectLayout.STANDARD, governance, sample);
+        new ArchitectureSpec(ProjectLayout.STANDARD, governance, sample);
 
     return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
   private static Dependency dep(String groupId, String artifactId) {
     return new Dependency(
-            new DependencyCoordinates(new GroupId(groupId), new ArtifactId(artifactId)),
-            new DependencyVersion("1.0.0"),
-            DependencyScope.RUNTIME);
+        new DependencyCoordinates(new GroupId(groupId), new ArtifactId(artifactId)),
+        new DependencyVersion("1.0.0"),
+        DependencyScope.RUNTIME);
   }
 
   @Test
@@ -92,7 +93,8 @@ class MavenPomBuildConfigurationAdapterTest {
 
   @Test
   @DisplayName(
-      "generate() should build model with base deps only when JPA not selected and governance disabled")
+      "generate() should build model with base deps only when JPA not selected and governance"
+          + " disabled")
   void generate_shouldBuildModel_withoutJpa_withoutGovernance() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
@@ -108,7 +110,8 @@ class MavenPomBuildConfigurationAdapterTest {
     ProjectBlueprint bp =
         blueprint(
             ArchitectureGovernance.none(),
-                Dependencies.of(List.of(dep("org.acme", "custom-dep"))), SampleCodeOptions.none());
+            Dependencies.of(List.of(dep("org.acme", "custom-dep"))),
+            SampleCodeOptions.none());
 
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
@@ -122,7 +125,7 @@ class MavenPomBuildConfigurationAdapterTest {
         .containsEntry(MavenPomBuildModel.KEY_GROUP_ID, "com.acme")
         .containsEntry(MavenPomBuildModel.KEY_ARTIFACT_ID, "demo-app")
         .containsEntry(MavenPomBuildModel.KEY_JAVA_VERSION, "21")
-        .containsEntry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, "3.5.14")
+        .containsEntry(MavenPomBuildModel.KEY_SPRING_BOOT_VER, "4.2.0")
         .containsEntry(MavenPomBuildModel.KEY_PROJECT_NAME, "Demo App")
         .containsEntry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, "Sample Project");
 
@@ -142,35 +145,36 @@ class MavenPomBuildConfigurationAdapterTest {
   }
 
   @Test
-  @DisplayName("generate() should add WEB starter when sample code is enabled and web is not selected")
+  @DisplayName(
+      "generate() should add WEB starter when sample code is enabled and web is not selected")
   void generate_shouldAddWeb_whenSampleEnabled_andWebNotSelected() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<BuildDependency> mapped =
-            List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
     RecordingBuildDependencyMapper mapper = new RecordingBuildDependencyMapper(mapped);
 
     ArtifactSpec artifactSpec =
-            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
+        new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
     MavenPomBuildConfigurationAdapter adapter =
-            new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
 
     ProjectBlueprint bp =
-            blueprint(
-                    ArchitectureGovernance.none(),
-                    Dependencies.of(List.of(dep("org.acme", "custom-dep"))),
-                    SampleCodeOptions.basic());
+        blueprint(
+            ArchitectureGovernance.none(),
+            Dependencies.of(List.of(dep("org.acme", "custom-dep"))),
+            SampleCodeOptions.basic());
 
     renderer.nextFile =
-            new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
+        new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
     adapter.generate(bp);
 
     @SuppressWarnings("unchecked")
     List<BuildDependency> deps =
-            (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
+        (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
-    assertThat(deps).hasSize(4);
+    assertThat(deps).hasSize(5);
     assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
     assertThat(deps.get(1)).isSameAs(mapped.getFirst());
     assertThat(deps.get(2)).isEqualTo(MavenPomBuildModel.WEB_STARTER);
@@ -202,7 +206,8 @@ class MavenPomBuildConfigurationAdapterTest {
     ProjectBlueprint bp =
         blueprint(
             ArchitectureGovernance.none(),
-            Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter)), SampleCodeOptions.none());
+            Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter)),
+            SampleCodeOptions.none());
 
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
@@ -251,7 +256,8 @@ class MavenPomBuildConfigurationAdapterTest {
     ProjectBlueprint bp =
         blueprint(
             ArchitectureGovernance.basic(),
-            Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter)), SampleCodeOptions.none());
+            Dependencies.of(List.of(dep("org.acme", "custom-dep"), jpaStarter)),
+            SampleCodeOptions.none());
 
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
@@ -277,5 +283,4 @@ class MavenPomBuildConfigurationAdapterTest {
     assertThat(deps.get(3)).isEqualTo(MavenPomBuildModel.ARCH_UNIT_TEST);
     assertThat(deps.get(4)).isEqualTo(MavenPomBuildModel.TEST_STARTER);
   }
-
 }

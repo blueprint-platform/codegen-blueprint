@@ -67,7 +67,7 @@ class AbstractJavaSourceFileAdapterTest {
                 new PackageName("com.acme.demo")),
             new PlatformSpec(
                 new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-                new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5)),
+                new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0")),
             new ArchitectureSpec(
                 ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none()),
             Dependencies.of(List.of()));

@@ -83,7 +83,11 @@ init_runtime_context() {
   ROOT_DIR="$(ensure_repo_root)"
 
   # Default JAR location if not provided via env
-  CODEGEN_JAR="${CODEGEN_JAR:-${ROOT_DIR}/target/codegen-blueprint-1.0.0.jar}"
+  if [[ -z "$CODEGEN_JAR" ]]; then
+    local final_name
+    final_name="$(mvn -f "$ROOT_DIR/pom.xml" -q -ntp help:evaluate -Dexpression=project.build.finalName -DforceStdout)"
+    CODEGEN_JAR="$ROOT_DIR/target/$final_name.jar"
+  fi
 
   # Default proof-output root (keep stable under docs/demo/)
   PROOF_OUTPUT_ROOT="${PROOF_OUTPUT_ROOT:-${DEMO_DIR}/proof-output}"

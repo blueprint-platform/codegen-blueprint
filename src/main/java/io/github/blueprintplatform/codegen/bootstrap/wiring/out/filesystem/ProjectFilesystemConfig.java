@@ -1,36 +1,14 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.out.filesystem;
 
-import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectArchiverAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectOutputAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectRootAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectWriterAdapter;
-import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
-import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
+import io.github.blueprintplatform.codegen.adapter.out.filesystem.FileSystemProjectPublisher;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ProjectFilesystemConfig {
-
   @Bean
-  public ProjectRootPort fileSystemProjectRootAdapter() {
-    return new FileSystemProjectRootAdapter();
-  }
-
-  @Bean
-  public ProjectWriterPort fileSystemProjectWriterAdapter() {
-    return new FileSystemProjectWriterAdapter();
-  }
-
-  @Bean
-  public ProjectArchiverPort fileSystemProjectArchiverAdapter() {
-    return new FileSystemProjectArchiverAdapter();
-  }
-
-  @Bean
-  public ProjectOutputPort fileSystemProjectOutputAdapter() {
-    return new FileSystemProjectOutputAdapter();
+  ProjectPublisherPort projectPublisher() {
+    return new FileSystemProjectPublisher();
   }
 }

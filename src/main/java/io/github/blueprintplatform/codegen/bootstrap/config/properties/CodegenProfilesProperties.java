@@ -8,4 +8,4 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "codegen")
-public record CodegenProfilesProperties(@Valid @NotNull Map<String, ProfileProperties> profiles) {}
+public record CodegenProfilesProperties(@NotNull Map<String, @Valid ProfileProperties> profiles) {}

@@ -75,14 +75,16 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       names = {"--java"},
       required = false,
       description = "Java version. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "21")
+      defaultValue = "25")
   SpringBootJavaVersionOption javaVersion;
 
   @Option(
       names = {"--boot"},
       required = false,
-      description = "Spring Boot version. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "3.5")
+      description =
+          "Spring Boot minor line (default: 4.2). Valid values: ${COMPLETION-CANDIDATES}. "
+              + "Selects the latest stable patch, with a reported fallback on connection failure.",
+      defaultValue = "4.2")
   SpringBootVersionOption bootVersion;
 
   @Option(
@@ -164,6 +166,17 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
     CreateProjectResult result = createProjectPort.handle(command);
 
     log.info("Spring Boot project generated successfully.");
+    if (result.versionWarning() != null) {
+      log.warn("BUNDLED_FALLBACK: {}", result.versionWarning());
+    }
+    if (result.project() != null && result.versionSource() != null) {
+      var target = result.project().runtimeTarget();
+      log.info(
+          "bootSelector={} bootVersion={} source={}",
+          bootVersion.key(),
+          target.params().get("springBootVersion"),
+          result.versionSource());
+    }
     log.info("Archive path: {}", result.archivePath());
 
     return 0;

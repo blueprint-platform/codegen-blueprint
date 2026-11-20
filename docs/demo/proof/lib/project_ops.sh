@@ -2,19 +2,8 @@
 # Generation, maven verify, backup/restore, injectors (sourced)
 
 run_maven_verify() {
-  # expects to run in project dir
-  if [[ -f "./mvnw" && ! -x "./mvnw" ]]; then
-    chmod +x ./mvnw 2>/dev/null || true
-  fi
-
-  if [[ -x "./mvnw" ]]; then
-    ./mvnw -q -ntp clean verify
-    return $?
-  fi
-
-  require_cmd mvn
-  mvn -q -ntp clean verify
-  return $?
+  # Only the generated wrapper proves the delivered build is usable.
+  sh ./mvnw -q -ntp clean verify
 }
 
 run_verify() {
@@ -70,6 +59,32 @@ run_verify_expect_fail() {
     die "${label}: build PASSED but was expected to FAIL after violation. log: ${log_file}"
   fi
 
+  local rule method
+  case "$label" in
+    "HEX violation")
+      rule=HexagonalStrictPortsIsolationTest
+      method=adapters_must_not_depend_on_application_implementation ;;
+    "STD schema violation")
+      rule=StandardPackageSchemaSanityTest
+      method=each_standard_bounded_context_must_contain_required_canonical_families ;;
+    "HEX REST signature")
+      rule=HexagonalStrictRestBoundarySignatureIsolationTest
+      method=rest_controllers_must_not_expose_domain_types_in_signatures ;;
+    "STD REST signature")
+      rule=StandardStrictRestBoundarySignatureIsolationTest
+      method=rest_controllers_must_not_expose_domain_types_in_signatures ;;
+    "STD violation")
+      rule=StandardStrictLayerDependencyRulesTest
+      method=controllers_must_not_depend_on_repositories ;;
+    *) die "Missing expected architecture rule for $label" ;;
+  esac
+  local report
+  report="$(find "$project_dir/target/surefire-reports" -name "TEST-*.$rule.xml" -print -quit)"
+  if [[ -z "$report" ]] || ! grep -q '<failure' "$report" ||
+      ! grep -F "$rule.$method" "$log_file" | grep '<<< FAILURE!' >/dev/null; then
+    die "$label: build failed without the expected $rule.$method assertion"
+  fi
+
   local excerpt_file
   excerpt_file="$(excerpt_file_for_label "$label")"
   write_excerpt "$log_file" "$excerpt_file"
@@ -94,8 +109,15 @@ generate_project() {
   log "Generate: ${artifact_id} (${layout}, guardrails=${guardrails}, sample=${sample})"
   mkdir -p "$OUT_DIR"
 
-  "$JAVA_BIN" -jar "$CODEGEN_JAR" \
+  local generator_options=(-jar)
+  if [[ "${EXPECT_BOOT_SOURCE:-}" == BUNDLED_FALLBACK ]]; then
+    generator_options=(-Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=1 -jar)
+  fi
+  local cli_log="$LOG_DIR/generate-$artifact_id.log"
+  "$JAVA_BIN" "${generator_options[@]}" "$CODEGEN_JAR" \
     --cli springboot \
+    --boot "${BOOT_VERSION:-4.2}" \
+    --java "${JAVA_VERSION:-25}" \
     --group-id "$GROUP_ID" \
     --artifact-id "$artifact_id" \
     --name "$name" \
@@ -104,8 +126,10 @@ generate_project() {
     --layout "$layout" \
     --guardrails "$guardrails" \
     --sample-code "$sample" \
-    --dependency web \
-    --target-dir "$OUT_DIR" >/dev/null
+    --target-dir "$OUT_DIR" >"$cli_log" 2>&1 || die "Generation failed: $cli_log"
+  if [[ -n "${EXPECT_BOOT_SOURCE:-}" ]] && ! grep -Fq "source=$EXPECT_BOOT_SOURCE" "$cli_log"; then
+    die "Unexpected Boot resolution source: $cli_log"
+  fi
 
   local project_dir="${OUT_DIR}/${artifact_id}"
   [[ -d "$project_dir" ]] || die "Generated project dir not found: $project_dir"
@@ -424,4 +448,28 @@ inject_standard_schema_violation_controller_package_rename() {
   if [[ -d "$test_controllers_dir" ]]; then
     printf "%s\n" "$test_controller_dir"
   fi
+}
+
+inject_rest_signature_violation() {
+  local project_dir="$1"
+  local controller
+  controller="$(find_controller_file "$project_dir")"
+  local package
+  package="$(sed -n 's/^package \(.*\);$/\1/p' "$controller")"
+  local probe
+  probe="$(dirname "$controller")/GuardrailsRestSignatureProbe.java"
+  cat > "$probe" <<JAVA
+package $package;
+
+import $PACKAGE_NAME.bp.sample.domain.model.Greeting;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+class GuardrailsRestSignatureProbe {
+    public Greeting leaksDomainType() {
+        return null;
+    }
+}
+JAVA
+  echo "$probe"
 }

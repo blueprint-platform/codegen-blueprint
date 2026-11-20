@@ -1,16 +1,13 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
-import static io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy.FAIL_IF_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
-import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
-import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
-import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
@@ -26,15 +23,11 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootExistencePolicy;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
+import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -46,24 +39,29 @@ class CreateProjectHandlerTest {
   @TempDir Path tempDir;
 
   @Test
-  @DisplayName(
-      "handle() prepares project root, writes artifacts, lists files, and returns archive + summary")
-  void handle_prepares_root_writes_artifacts_lists_files_and_archives() {
+  void resolvesPatchPublishesArtifactsAndReturnsSummary() {
     var blueprintMapper = new ProjectBlueprintMapper();
     var resultMapper = new CreateProjectResultMapper();
-
-    var fakeRootPort = new FakeRootPort();
     var fakeArtifacts = new FakeArtifactsPort();
     var fakeSelector = new FakeSelector(fakeArtifacts);
-    var fakeWriter = new FakeWriterPort();
-    var fakeOutput = new FakeProjectOutputPort(fakeArtifacts);
-    var fakeArchiver = new FakeArchiverPort();
 
-    var executionContext =
-        new CreateProjectExecutionContext(
-            fakeRootPort, fakeSelector, fakeWriter, fakeOutput, fakeArchiver);
-
-    var handler = new CreateProjectHandler(blueprintMapper, resultMapper, executionContext);
+    var handler =
+        new CreateProjectHandler(
+            blueprintMapper,
+            resultMapper,
+            fakeSelector,
+            new BootVersionSelection(
+                line -> "4.2.0",
+                Map.of(SpringBootVersion.V4_1, "4.1.3", SpringBootVersion.V4_2, "4.2.0")),
+            (target, artifact, resources) -> {
+              assertThat(target).isEqualTo(tempDir);
+              assertThat(artifact).isEqualTo("demo-app");
+              var files = new ArrayList<ProjectOutputItem>();
+              resources.forEach(
+                  resource -> files.add(new ProjectOutputItem(resource.relativePath(), false, false)));
+              return new ProjectPublisherPort.PublishedProject(
+                  target.resolve(artifact), target.resolve(artifact + ".zip"), files);
+            });
 
     var createProjectCommand = getCreateProjectCommand();
 
@@ -72,17 +70,8 @@ class CreateProjectHandlerTest {
     assertThat(result.archivePath()).hasFileName("demo-app.zip");
     assertThat(result.projectRoot()).isEqualTo(tempDir.resolve("demo-app"));
 
-    assertThat(fakeArchiver.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
-    assertThat(fakeArchiver.lastArtifactId).isEqualTo("demo-app");
-
-    assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(tempDir.resolve("demo-app"));
-    assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
-
-    assertThat(fakeOutput.lastProjectRoot).isEqualTo(fakeRootPort.lastPreparedRoot);
-
-    assertThat(fakeWriter.writtenFiles)
-        .containsExactlyInAnyOrderElementsOf(fakeArtifacts.lastEmittedRelativePaths)
-        .hasSize(fakeArtifacts.lastEmittedRelativePaths.size());
+    assertThat(result.versionSource()).isEqualTo("CENTRAL_LATEST");
+    assertThat(result.project().runtimeTarget().params()).containsEntry("springBootVersion", "4.2.0");
 
     assertThat(result.project().metadata().groupId()).isEqualTo("com.acme");
     assertThat(result.project().metadata().artifactId()).isEqualTo("demo-app");
@@ -105,7 +94,8 @@ class CreateProjectHandlerTest {
 
   private CreateProjectCommand getCreateProjectCommand() {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    var platformTarget =
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
 
     return new CreateProjectCommand(
         "com.acme",
@@ -120,18 +110,6 @@ class CreateProjectHandlerTest {
         List.of(),
         SampleCodeOptions.none(),
         tempDir);
-  }
-
-  static class FakeRootPort implements ProjectRootPort {
-    Path lastPreparedRoot;
-    ProjectRootExistencePolicy lastPolicy;
-
-    @Override
-    public Path prepareRoot(Path targetDir, String artifactId, ProjectRootExistencePolicy policy) {
-      this.lastPolicy = policy;
-      this.lastPreparedRoot = targetDir.resolve(artifactId);
-      return lastPreparedRoot;
-    }
   }
 
   static class FakeSelector implements ProjectArtifactsSelector {
@@ -170,7 +148,7 @@ class CreateProjectHandlerTest {
                   StandardCharsets.UTF_8),
               new GeneratedTextResource(
                   Path.of("README.md"),
-                  "# Demo App\n\nThis project was generated by Codegen Initializr.",
+                  "# Demo App\n\nThis project was generated by Codegen Blueprint.",
                   StandardCharsets.UTF_8));
 
       lastEmittedRelativePaths.clear();
@@ -178,54 +156,6 @@ class CreateProjectHandlerTest {
         lastEmittedRelativePaths.add(gf.relativePath());
       }
       return files;
-    }
-  }
-
-  static class FakeWriterPort implements ProjectWriterPort {
-    final List<Path> writtenFiles = new ArrayList<>();
-
-    @Override
-    public void writeBytes(Path projectRoot, Path relativePath, byte[] content) {
-      writtenFiles.add(relativePath);
-    }
-
-    @Override
-    public void writeText(Path projectRoot, Path relativePath, String content, Charset charset) {
-      writtenFiles.add(relativePath);
-    }
-
-    @Override
-    public void createDirectories(Path projectRoot, Path relativeDir) {
-      // noop
-    }
-  }
-
-  static class FakeProjectOutputPort implements ProjectOutputPort {
-    private final FakeArtifactsPort artifactsPort;
-    Path lastProjectRoot;
-
-    FakeProjectOutputPort(FakeArtifactsPort artifactsPort) {
-      this.artifactsPort = artifactsPort;
-    }
-
-    @Override
-    public List<ProjectOutputItem> list(Path projectRoot) {
-      this.lastProjectRoot = projectRoot;
-      return artifactsPort.lastEmittedRelativePaths.stream()
-          .map(p -> new ProjectOutputItem(p, false, false))
-          .toList();
-    }
-  }
-
-  static class FakeArchiverPort implements ProjectArchiverPort {
-    Path lastProjectRoot;
-    String lastArtifactId;
-
-    @Override
-    public Path archive(Path projectRoot, String artifactId) {
-      this.lastProjectRoot = projectRoot;
-      this.lastArtifactId = artifactId;
-      return projectRoot.getParent().resolve(artifactId + ".zip");
     }
   }
 }

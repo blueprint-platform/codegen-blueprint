@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+  --ink: #142b33;
+  --muted: #475e67;
+  --teal: #096457;
+  --border: #d9e5e4;
+  --surface: #f2f7f6;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #fff; color: var(--ink); font: 1rem/1.65 system-ui, sans-serif; }
+header { border-top: 5px solid #197965; border-bottom: 1px solid var(--border); background: var(--surface); }
+.header-inner, nav, main, footer { max-width: 58rem; margin-inline: auto; padding-inline: 1.5rem; }
+.header-inner { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1rem .5rem; }
+.header-inner strong { font-size: 1.25rem; }
+nav { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem 1.15rem; padding-bottom: .8rem; }
+nav a { text-decoration: none; font-weight: 600; }
+nav a[aria-current] { text-decoration: underline; text-underline-offset: .3rem; }
+a { color: var(--teal); text-underline-offset: .15em; }
+a:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+main { padding-block: clamp(1.75rem, 5vw, 3.75rem); overflow-wrap: anywhere; min-height: 60vh; }
+h1, h2, h3 { line-height: 1.18; }
+h1 { margin: 0 0 1.25rem; font-size: clamp(2rem, 5.4vw, 3.15rem); letter-spacing: -.045em; }
+h2 { margin-top: 2rem; font-size: 1.45rem; }
+img { display: block; max-width: 100%; height: auto; }
+code { font: .9em ui-monospace, SFMono-Regular, Consolas, monospace; background: var(--surface); padding: .12em .3em; border-radius: 3px; }
+pre { padding: 1rem; background: #142b33; color: #e4f5f1; border-radius: .6rem; overflow: auto; }
+pre code { background: transparent; padding: 0; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: .55rem .7rem; border: 1px solid var(--border); }
+th { background: var(--surface); }
+blockquote { border-left: 3px solid var(--teal); margin-inline: 0; padding-inline: 1rem; color: var(--muted); }
+footer { border-top: 1px solid var(--border); padding-block: 1rem; color: var(--muted); }
+.skip { position: absolute; left: 1rem; top: -10rem; background: #fff; padding: .5rem; }
+.skip:focus { top: 1rem; }
+@media (max-width: 36rem) {
+  .header-inner, nav, main, footer { padding-inline: 1rem; }
+  table { display: block; overflow-x: auto; }
+}

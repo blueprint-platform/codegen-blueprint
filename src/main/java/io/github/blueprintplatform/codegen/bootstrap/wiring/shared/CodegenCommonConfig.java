@@ -1,7 +1,6 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.shared;
 
 import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
-import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import org.springframework.context.annotation.Bean;
@@ -26,11 +25,6 @@ public class CodegenCommonConfig {
   public FtlClasspathTemplateScanner ftlClasspathTemplateScanner(
       ResourcePatternResolver ftlClasspathTemplateResourcePatternResolver) {
     return new FtlClasspathTemplateScanner(ftlClasspathTemplateResourcePatternResolver);
-  }
-
-  @Bean
-  public ArtifactPipelineExecutor artifactPipelineExecutor() {
-    return new ArtifactPipelineExecutor();
   }
 
   @Bean

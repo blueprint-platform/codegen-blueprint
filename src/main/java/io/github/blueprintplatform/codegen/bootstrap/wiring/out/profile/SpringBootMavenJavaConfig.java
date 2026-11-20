@@ -13,7 +13,6 @@ import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.SpringBootMavenJavaArtifactsAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenPomBuildConfigurationAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
@@ -37,7 +36,7 @@ public class SpringBootMavenJavaConfig {
   private static final String PROFILE_KEY = ProfileKeys.SPRING_BOOT_MAVEN_JAVA;
 
   @Bean
-  BuildConfigurationPort springBootMavenJavaMavenPomBuildConfigurationAdapter(
+  MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter(
       TemplateRenderer renderer,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
@@ -108,7 +107,7 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  ArchitectureGovernancePort springBootMavenJavaArchitectureGovernanceAdapter(
+  ArchitectureGovernanceAdapter springBootMavenJavaArchitectureGovernanceAdapter(
       TemplateRenderer renderer,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
@@ -156,7 +155,6 @@ public class SpringBootMavenJavaConfig {
       ApplicationConfigurationPort springBootMavenJavaApplicationYamlAdapter,
       MainSourceEntrypointPort springBootMavenJavaMainSourceEntrypointAdapter,
       TestSourceEntrypointPort springBootMavenJavaTestSourceEntrypointAdapter,
-      ArchitectureGovernancePort springBootMavenJavaArchitectureGovernanceAdapter,
       SampleCodePort springBootMavenJavaSampleCodeAdapter,
       ProjectDocumentationPort springBootMavenJavaProjectDocumentationAdapter) {
 
@@ -171,8 +169,6 @@ public class SpringBootMavenJavaConfig {
         ArtifactKey.MAIN_SOURCE_ENTRY_POINT, springBootMavenJavaMainSourceEntrypointAdapter);
     registry.put(
         ArtifactKey.TEST_SOURCE_ENTRY_POINT, springBootMavenJavaTestSourceEntrypointAdapter);
-    registry.put(
-        ArtifactKey.ARCHITECTURE_GOVERNANCE, springBootMavenJavaArchitectureGovernanceAdapter);
     registry.put(ArtifactKey.SAMPLE_CODE, springBootMavenJavaSampleCodeAdapter);
     registry.put(ArtifactKey.PROJECT_DOCUMENTATION, springBootMavenJavaProjectDocumentationAdapter);
     return Collections.unmodifiableMap(registry);
@@ -180,17 +176,24 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   ProjectArtifactsPort springBootMavenJavaArtifactsAdapter(
-      ArtifactPipelineExecutor artifactPipelineExecutor,
+      MavenPomBuildConfigurationAdapter pom,
+      ArchitectureGovernanceAdapter governance,
       CodegenProfilesRegistry codegenProfilesProperties,
       Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry) {
 
     var profile = codegenProfilesProperties.requireProfile(PROFILE_KEY);
     var orderedArtifactKeys = profile.orderedArtifactKeys();
 
-    List<ArtifactPort> orderedArtifacts =
+    List<SpringBootMavenJavaArtifactsAdapter.ArtifactStep> orderedArtifacts =
         orderedArtifactKeys.stream()
-            .map(
+            .<SpringBootMavenJavaArtifactsAdapter.ArtifactStep>map(
                 key -> {
+                  if (key == ArtifactKey.ARCHITECTURE_GOVERNANCE) {
+                    if (governance.artifactKey() != key) {
+                      throw new ArtifactKeyMismatchException(key, governance.artifactKey().key());
+                    }
+                    return (blueprint, plan) -> governance.generate(blueprint, plan.mvcPresent());
+                  }
                   ArtifactPort port = springBootMavenJavaArtifactRegistry.get(key);
                   if (port == null) {
                     throw new ProfileConfigurationException(
@@ -201,10 +204,14 @@ public class SpringBootMavenJavaConfig {
                   if (!port.artifactKey().equals(key)) {
                     throw new ArtifactKeyMismatchException(key, port.artifactKey().key());
                   }
-                  return port;
+                  return switch (port) {
+                    case MavenPomBuildConfigurationAdapter build ->
+                        (blueprint, plan) -> build.generate(blueprint, plan.dependencies());
+                    default -> (blueprint, plan) -> port.generate(blueprint);
+                  };
                 })
             .toList();
 
-    return new SpringBootMavenJavaArtifactsAdapter(artifactPipelineExecutor, orderedArtifacts);
+    return new SpringBootMavenJavaArtifactsAdapter(pom, orderedArtifacts);
   }
 }

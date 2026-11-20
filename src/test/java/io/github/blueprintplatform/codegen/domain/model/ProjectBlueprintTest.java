@@ -51,7 +51,7 @@ class ProjectBlueprintTest {
   }
 
   private static PlatformTarget target() {
-    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
   }
 
   private static PlatformSpec platform() {
@@ -76,7 +76,8 @@ class ProjectBlueprintTest {
 
   @Test
   @DisplayName(
-      "of(metadata, platform, architecture, dependencies) should create blueprint with same references")
+      "of(metadata, platform, architecture, dependencies) should create blueprint with same"
+          + " references")
   void of_shouldCreateBlueprint() {
     ProjectMetadata metadata = metadata();
     PlatformSpec platform = platform();
@@ -116,17 +117,13 @@ class ProjectBlueprintTest {
   }
 
   @Test
-  @DisplayName("incompatible platform target should fail with platform.target.incompatible")
-  void of_incompatiblePlatformTarget_shouldFailCompatibility() {
-    PlatformTarget incompatible =
-        new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4);
-
-    PlatformSpec platform = new PlatformSpec(techStack(), incompatible);
-
-    assertThatThrownBy(
-            () -> ProjectBlueprint.of(metadata(), platform, architecture(), dependencies()))
-        .isInstanceOfSatisfying(
-            DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));
+  void acceptsJava25WithBoot41() {
+    var platform =
+        new PlatformSpec(
+            techStack(),
+            new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V4_1, "4.1.3"));
+    assertThat(
+            ProjectBlueprint.of(metadata(), platform, architecture(), dependencies()).getPlatform())
+        .isEqualTo(platform);
   }
 }

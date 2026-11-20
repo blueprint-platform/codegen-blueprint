@@ -1,15 +1,14 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.application.project;
 
+import io.github.blueprintplatform.codegen.adapter.out.version.CentralSpringBootPatchResolver;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
-import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
-import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import io.github.blueprintplatform.codegen.application.usecase.project.*;
-import io.github.blueprintplatform.codegen.application.usecase.project.context.CreateProjectExecutionContext;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectRootPort;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,23 +26,27 @@ public class ProjectUseCaseConfig {
   }
 
   @Bean
-  public CreateProjectExecutionContext createProjectExecutionContext(
-      ProjectRootPort rootPort,
-      ProjectArtifactsSelector artifactsSelector,
-      ProjectWriterPort writerPort,
-      ProjectOutputPort projectOutputPort,
-      ProjectArchiverPort archiverPort) {
-    return new CreateProjectExecutionContext(
-        rootPort, artifactsSelector, writerPort, projectOutputPort, archiverPort);
+  public BootVersionSelection bootVersionSelection() {
+    return new BootVersionSelection(
+        new CentralSpringBootPatchResolver(),
+        Map.of(
+            SpringBootVersion.V4_1, "4.1.3",
+            SpringBootVersion.V4_2, "4.2.0"));
   }
 
   @Bean
   public CreateProjectPort createProjectHandler(
       ProjectBlueprintMapper projectBlueprintMapper,
       CreateProjectResultMapper createProjectResultMapper,
-      CreateProjectExecutionContext createProjectExecutionContext) {
+      ProjectArtifactsSelector artifactsSelector,
+      BootVersionSelection bootVersions,
+      ProjectPublisherPort publisher) {
 
     return new CreateProjectHandler(
-        projectBlueprintMapper, createProjectResultMapper, createProjectExecutionContext);
+        projectBlueprintMapper,
+        createProjectResultMapper,
+        artifactsSelector,
+        bootVersions,
+        publisher);
   }
 }

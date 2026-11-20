@@ -4,10 +4,8 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.templating.Ar
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.ArchitectureGovernanceTemplatesScanException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
-import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArchitectureGovernancePort;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
@@ -21,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort {
+public class ArchitectureGovernanceAdapter {
 
   private static final String PATH_SEPARATOR = "/";
   private static final String GOV_ROOT_DIR = "governance";
@@ -33,10 +31,6 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
   private static final String MODEL_KEY_PROJECT_PACKAGE_NAME = "projectPackageName";
   private static final String OUT_SEGMENT_ARCHITECTURE = "architecture";
   private static final String OUT_SEGMENT_ARCH_UNIT = "archunit";
-
-  private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
-  private static final DependencyFeature WEB_STARTER =
-      new DependencyFeature("web", SPRING_BOOT_GROUP_ID, "spring-boot-starter-web");
 
   private static final Set<String> WEB_REQUIRED_GOVERNANCE_TEMPLATES =
       Set.of(
@@ -56,13 +50,12 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
     this.templateScanner = templateScanner;
   }
 
-  @Override
   public ArtifactKey artifactKey() {
     return ArtifactKey.ARCHITECTURE_GOVERNANCE;
   }
 
-  @Override
-  public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+  public Iterable<? extends GeneratedResource> generate(
+      ProjectBlueprint blueprint, boolean webSelected) {
     GuardrailsMode mode = blueprint.getArchitecture().governance().mode();
     if (!mode.isEnabled()) {
       return List.of();
@@ -76,8 +69,6 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
       throw new ArchitectureGovernanceTemplatesNotFoundException(
           templateRoot, layout.key(), mode.key());
     }
-
-    boolean webSelected = isWebSelected(blueprint);
 
     PackageName pkg = blueprint.getMetadata().packageName();
     String packagePath = pkg.value().replace('.', '/');
@@ -124,11 +115,6 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
       return path;
     }
     return path.substring(idx + 1);
-  }
-
-  private boolean isWebSelected(ProjectBlueprint bp) {
-    var deps = bp.getDependencies();
-    return !deps.isEmpty() && deps.asList().stream().anyMatch(WEB_STARTER.matches());
   }
 
   private String resolveTemplateRoot(ProjectLayout layout, GuardrailsMode mode) {

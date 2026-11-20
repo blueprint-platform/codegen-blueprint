@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="218" viewBox="0 0 960 218" role="img" aria-labelledby="title desc">
+  <title id="title">Codegen Blueprint build proof</title>
+  <desc id="desc">The baseline passed, adding a controller to repository dependency failed the ArchUnit rule, and removing the dependency restored the build.</desc>
+  <rect width="960" height="218" rx="16" fill="#112b32"/>
+  <g font-family="system-ui, sans-serif">
+    <text x="24" y="37" fill="#ecf9f7" font-size="20" font-weight="700">A real generated build</text>
+    <g fill="#1e3b43">
+      <rect x="24" y="58" width="286" height="136" rx="10"/>
+      <rect x="337" y="58" width="286" height="136" rx="10"/>
+      <rect x="650" y="58" width="286" height="136" rx="10"/>
+    </g>
+    <g font-size="16" font-weight="700">
+      <text x="42" y="91" fill="#a7f3d0">PASS · Baseline</text>
+      <text x="355" y="91" fill="#ffbbb2">FAIL · Boundary crossed</text>
+      <text x="668" y="91" fill="#a7f3d0">PASS · Restored</text>
+    </g>
+    <g fill="#ecf9f7" font-size="17">
+      <text x="42" y="124">Generate the standard layout</text>
+      <text x="355" y="124">Controller → repository</text>
+      <text x="668" y="124">Remove the dependency</text>
+    </g>
+    <g fill="#c1d5d9" font-size="14">
+      <text x="42" y="157">Maven verification passes.</text>
+      <text x="355" y="157">ArchUnit fails the build.</text>
+      <text x="668" y="157">Maven verification passes again.</text>
+    </g>
+  </g>
+</svg>

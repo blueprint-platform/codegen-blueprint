@@ -2,6 +2,8 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +11,10 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -22,21 +26,38 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 @SpringBootTest
 @Tag("integration")
 @Tag("cli-e2e")
 class SpringBootCliE2EIT {
 
+  @TestConfiguration
+  static class FixedVersions {
+    @Bean
+    @Primary
+    BootVersionSelection fixedVersions() {
+      var versions =
+          Map.of(
+              SpringBootVersion.V4_1, "4.1.3",
+              SpringBootVersion.V4_2, "4.2.0");
+      return new BootVersionSelection(versions::get, versions);
+    }
+  }
+
   @TempDir Path tempDir;
   @Autowired private CodegenCliExecutor cliExecutor;
 
   static Stream<Arguments> scenarios() {
     return Stream.of(
-        Arguments.of(true, "21", "3.5", "3.5.14", null),
-        Arguments.of(true, "25", "3.5", "3.5.14", null),
-        Arguments.of(true, "21", "3.4", "3.4.13", null),
-        Arguments.of(false, "25", "3.4", "3.4.13", "platform.target.incompatible"));
+        Arguments.of(true, "21", "4.2", "4.2.0", null),
+        Arguments.of(true, "25", "4.2", "4.2.0", null),
+        Arguments.of(true, "21", "4.1", "4.1.3", null),
+        Arguments.of(true, "25", "4.1", "4.1.3", null),
+        Arguments.of(false, "25", "4.1.3", null, "4.1.3"));
   }
 
   private static String artifactId(String java, String boot) {
@@ -46,7 +67,7 @@ class SpringBootCliE2EIT {
 
   private static List<String> zipEntries(ZipFile zipFile) {
     Enumeration<? extends ZipEntry> entries = zipFile.entries();
-    List<String> names = new java.util.ArrayList<>();
+    List<String> names = new ArrayList<>();
     while (entries.hasMoreElements()) {
       names.add(entries.nextElement().getName());
     }
@@ -83,7 +104,8 @@ class SpringBootCliE2EIT {
   @ParameterizedTest(name = "java={1}, boot={2} shouldSucceed={0}")
   @MethodSource("scenarios")
   @DisplayName(
-      "CLI springboot should generate valid archives for supported targets and fail for incompatible target")
+      "CLI springboot should generate valid archives for supported targets and fail for"
+          + " incompatible target")
   void cli_springboot_matrix_shouldBehaveAsExpected(
       boolean shouldSucceed,
       String java,
@@ -171,7 +193,7 @@ class SpringBootCliE2EIT {
             .contains("<groupId>io.github.blueprintplatform</groupId>")
             .contains("<artifactId>" + artifactId + "</artifactId>")
             .contains("<java.version>" + java + "</java.version>")
-            .contains("spring-boot-starter-web")
+            .contains("spring-boot-starter-webmvc")
             .contains("spring-boot-starter-data-jpa")
             .contains("spring-boot-starter-actuator")
             .contains("spring-boot-starter-test");
@@ -192,12 +214,12 @@ class SpringBootCliE2EIT {
         assertThat(readme).contains("Greeting").contains(packageName);
       }
     } else {
-      assertThat(io.exitCode()).isEqualTo(1);
+      assertThat(io.exitCode()).isNotZero();
       assertThat(Files.exists(archivePath))
           .as("Archive should NOT be created for incompatible target")
           .isFalse();
 
-      assertThat(io.stderr()).contains("(code: " + expectedErrorCode + ")");
+      assertThat(io.stderr()).contains(expectedErrorCode);
     }
   }
 

@@ -1,9 +1,7 @@
 package io.github.blueprintplatform.codegen.domain.policy.tech;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -31,26 +29,21 @@ class PlatformTargetSelectorTest {
     TechStack stack = techStack();
 
     PlatformTarget result =
-        PlatformTargetSelector.select(stack, JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+        PlatformTargetSelector.select(stack, JavaVersion.JAVA_21, SpringBootVersion.V4_2);
 
     assertThat(result)
         .isInstanceOf(SpringBootJvmTarget.class)
         .extracting("java")
         .isEqualTo(JavaVersion.JAVA_21);
 
-    assertThat(result).extracting("springBoot").isEqualTo(SpringBootVersion.V3_5);
+    assertThat(result).extracting("springBoot").isEqualTo(SpringBootVersion.V4_2);
   }
 
   @Test
-  @DisplayName("select with incompatible target should delegate to CompatibilityPolicy and fail")
-  void select_incompatibleTarget_shouldFailCompatibility() {
-    TechStack stack = techStack();
-
-    assertThatThrownBy(
-            () -> PlatformTargetSelector.select(stack, JavaVersion.JAVA_25, SpringBootVersion.V3_4))
-        .isInstanceOfSatisfying(
-            DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));
+  void selectsJava25ForBoot41() {
+    assertThat(
+            PlatformTargetSelector.select(techStack(), JavaVersion.JAVA_25, SpringBootVersion.V4_1))
+        .isEqualTo(new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V4_1));
   }
 
   @Test
@@ -60,6 +53,6 @@ class PlatformTargetSelectorTest {
 
     assertThat(targets)
         .isNotEmpty()
-        .contains(new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+        .contains(new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2));
   }
 }

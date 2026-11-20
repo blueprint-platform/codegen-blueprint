@@ -56,7 +56,7 @@ class TestSourceEntrypointAdapterTest {
     PlatformSpec platform =
         new PlatformSpec(
             new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0"));
 
     ArchitectureSpec architecture =
         new ArchitectureSpec(
@@ -81,7 +81,8 @@ class TestSourceEntrypointAdapterTest {
 
   @Test
   @DisplayName(
-      "generate() should build className = PascalCase(artifactId) + ApplicationTests and render file")
+      "generate() should build className = PascalCase(artifactId) + ApplicationTests and render"
+          + " file")
   void generate_shouldBuildClassNameAndRenderFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 

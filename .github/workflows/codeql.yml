@@ -36,7 +36,11 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: java
+          build-mode: manual
           queries: +security-and-quality
+
+      - name: Install the reference Maven
+        run: bash ci/install-reference-maven.sh
 
       - name: Build (codegen-blueprint)
         run: mvn -q -ntp -DskipTests=true clean package

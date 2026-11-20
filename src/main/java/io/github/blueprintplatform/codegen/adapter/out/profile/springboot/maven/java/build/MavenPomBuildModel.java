@@ -15,17 +15,17 @@ final class MavenPomBuildModel {
   static final String KEY_POM_PROPERTIES = "pomProperties";
 
   static final String ARCH_UNIT_VERSION_KEY = "archunit.version";
-  static final String ARCH_UNIT_VERSION = "1.4.2";
+  static final String ARCH_UNIT_VERSION = "1.5.1";
   static final BuildDependency H2_DB = BuildDependency.of("com.h2database", "h2", null, null);
   static final BuildDependency ARCH_UNIT_TEST =
       BuildDependency.ofWithVersionProperty(
-          "com.tngtech.archunit", "archunit-junit5", ARCH_UNIT_VERSION_KEY, "test");
+          "com.tngtech.archunit", "archunit-junit6", ARCH_UNIT_VERSION_KEY, "test");
   private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
   static final DependencyFeature JPA_STARTER =
       new DependencyFeature("jpa", SPRING_BOOT_GROUP_ID, "spring-boot-starter-data-jpa");
 
   static final DependencyFeature WEB_STARTER_FEATURE =
-      new DependencyFeature("web", SPRING_BOOT_GROUP_ID, "spring-boot-starter-web");
+      new DependencyFeature("web", SPRING_BOOT_GROUP_ID, "spring-boot-starter-webmvc");
 
   static final BuildDependency CORE_STARTER =
       BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter");
@@ -34,7 +34,7 @@ final class MavenPomBuildModel {
       BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-test", null, "test");
 
   static final BuildDependency WEB_STARTER =
-      BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-web");
+      BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-webmvc");
 
   private MavenPomBuildModel() {}
 }

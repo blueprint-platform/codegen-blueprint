@@ -5,17 +5,15 @@ import io.github.blueprintplatform.codegen.domain.shared.KeyEnumParser;
 import io.github.blueprintplatform.codegen.domain.shared.KeyedEnum;
 
 public enum SpringBootVersion implements KeyedEnum {
-  V3_5("3.5", "3.5.14"),
-  V3_4("3.4", "3.4.13");
+  V4_2("4.2"),
+  V4_1("4.1");
 
   private static final ErrorCode UNKNOWN = () -> "platform.springboot-version.unknown";
 
   private final String key;
-  private final String defaultPatch;
 
-  SpringBootVersion(String key, String defaultPatch) {
+  SpringBootVersion(String key) {
     this.key = key;
-    this.defaultPatch = defaultPatch;
   }
 
   public static SpringBootVersion fromKey(String raw) {
@@ -31,8 +29,10 @@ public enum SpringBootVersion implements KeyedEnum {
     return key;
   }
 
-  public String defaultVersion() {
-    return defaultPatch;
+  public boolean matchesPatch(String patch) {
+    return patch != null
+        && patch.startsWith(key + ".")
+        && patch.substring(key.length() + 1).matches("0|[1-9][0-9]{0,8}");
   }
 
   @Override

@@ -18,12 +18,18 @@ import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDesc
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
+import io.github.blueprintplatform.codegen.domain.policy.tech.CompatibilityPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectBlueprintMapper {
 
   public ProjectBlueprint from(CreateProjectCommand c) {
+    return prepare(c).blueprint(c.platformTarget());
+  }
+
+  public PreparedProject prepare(CreateProjectCommand c) {
     ProjectMetadata metadata =
         new ProjectMetadata(
             new ProjectIdentity(new GroupId(c.groupId()), new ArtifactId(c.artifactId())),
@@ -39,7 +45,19 @@ public class ProjectBlueprintMapper {
 
     Dependencies dependencies = mapDependencies(c.dependencies());
 
-    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
+    CompatibilityPolicy.ensureCompatible(platform);
+    return new PreparedProject(metadata, platform, architecture, dependencies);
+  }
+
+  public record PreparedProject(
+      ProjectMetadata metadata,
+      PlatformSpec platform,
+      ArchitectureSpec architecture,
+      Dependencies dependencies) {
+    public ProjectBlueprint blueprint(PlatformTarget target) {
+      return ProjectBlueprint.of(
+          metadata, new PlatformSpec(platform.techStack(), target), architecture, dependencies);
+    }
   }
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {

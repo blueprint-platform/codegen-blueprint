@@ -49,43 +49,26 @@ ${projectDescription}
 
 ## 🚀 Quick Start
 
+Run with JDK `${javaVersion}`. On macOS or Linux, make the wrapper executable if needed.
+
 ```bash
-# Build (fast feedback)
-./mvnw clean package
+chmod +x mvnw
+./mvnw clean verify
 ```
 
 <#if guardrails != "none">
-```bash
-# Verify architecture guardrails (recommended)
-# Runs generated ArchUnit tests and fails fast on architectural violations
-./mvnw verify
-```
-
-> **Why `mvn verify` matters**
->
-> This project includes **generated architecture guardrails**
-> that are evaluated at **build time**.
->
-> Running `mvn verify` executes these guardrails and serves as
-> the **proof of the architectural contract**.
->
-> Any boundary violation will **fail the build immediately**.
+Verification runs the generated ArchUnit tests. A covered rule violation fails the build.
+</#if>
+<#if sampleCode == "basic">
+Verification also runs the greeting sample’s integration tests.
 </#if>
 
+On Windows, run `mvnw.cmd clean verify`.
+
 ```bash
-# Run the application
 ./mvnw spring-boot:run
 ```
 
-> **macOS / Linux note**
->
-> If you get a `permission denied` error when running `./mvnw`, make the wrapper executable:
->
-> ```bash
-> chmod +x mvnw
-> ```
-
-> If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 <#if features?has_content && ((features.h2)!false || (features.actuator)!false || (features.security)!false)>
 
 ---

@@ -5,148 +5,142 @@ on:
     branches: [ main ]
     paths-ignore:
       - '**/*.md'
-      - 'docs/**'
+      - 'docs/images/**'
+      - 'docs/site/**'
+      - 'docs/demo/proof-2.0.txt'
   pull_request:
+  schedule:
+    - cron: '25 5 * * 2'
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  engine:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
-        java: [ '21', '25' ]
-
-    name: Build & Test (JDK ${{ matrix.java }})
-
+        java: ['21', '25']
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Make scripts executable
-        run: |
-          chmod +x ci/*.sh
-          chmod +x docs/demo/proof/proof-runner.sh
-          chmod +x docs/demo/proof/lib/*.sh
-
-      - name: ShellCheck (bash scripts) [JDK 21 only]
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: maven
+      - uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38
         if: matrix.java == '21'
-        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38
         with:
           scandir: |
             ci
+            scripts
             docs/demo/proof
-
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: 'temurin'
-          cache: maven
-
-      # -------------------------------------------------
-      # Cache Maven Wrapper distributions (prevents flaky downloads)
-      # -------------------------------------------------
-      - name: Cache Maven Wrapper dists
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.m2/wrapper/dists
-          key: ${{ runner.os }}-mvnw-dists-${{ hashFiles('**/.mvn/wrapper/maven-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-mvnw-dists-
-
-      # -------------------------------------------------
-      # Core generator (GA contract) → JDK 21 only
-      # -------------------------------------------------
-      - name: Build generator (tests + coverage) [JDK 21 only]
-        if: matrix.java == '21'
-        run: mvn -B -q -ntp clean verify
-
-      # -------------------------------------------------
-      # Forward-compat smoke → JDK 25 only (no core test contract)
-      # Build JAR without tests so we can run generated-project smoke
-      # -------------------------------------------------
-      - name: Build generator JAR (skip tests) [JDK 25 only]
-        if: matrix.java == '25'
-        run: mvn -B -q -ntp -DskipTests clean package
-
-      # -------------------------------------------------
-      # JDK 21 → full verification set (default + proof + minimal no-sample)
-      # -------------------------------------------------
-
-      - name: Verify generated project (hex, guardrails basic, sample basic) [default]
-        if: matrix.java == '21'
-        env:
-          ARTIFACT_ID: gen-j21-b35-hex-grbasic-sbasic
-          PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrbasicsbasic
-          DESCRIPTION: "CI verify (default): hexagonal, guardrails=basic, sample=basic"
-        run: ./ci/verify-gen-hex-guardrails-basic-sample-basic.sh
-
-      - name: Verify generated project (std, guardrails basic, sample basic) [default]
-        if: matrix.java == '21'
-        env:
-          ARTIFACT_ID: gen-j21-b35-std-grbasic-sbasic
-          PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrbasicsbasic
-          DESCRIPTION: "CI verify (default): standard, guardrails=basic, sample=basic"
-        run: ./ci/verify-gen-std-guardrails-basic-sample-basic.sh
-
-      - name: Verify generated project (hex, guardrails strict, sample none) [no-sample]
-        if: matrix.java == '21'
-        env:
-          ARTIFACT_ID: gen-j21-b35-hex-grstrict-snone
-          PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrstrictsnone
-          DESCRIPTION: "CI verify (no-sample): hexagonal, guardrails=strict, sample=none"
-        run: ./ci/verify-gen-hex-guardrails-strict-sample-none.sh
-
-      - name: Verify generated project (std, guardrails strict, sample none) [no-sample]
-        if: matrix.java == '21'
-        env:
-          ARTIFACT_ID: gen-j21-b35-std-grstrict-snone
-          PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrstrictsnone
-          DESCRIPTION: "CI verify (no-sample): standard, guardrails=strict, sample=none"
-        run: ./ci/verify-gen-std-guardrails-strict-sample-none.sh
-
-      - name: Verify generated project (hex, guardrails strict, sample basic) [proof]
-        if: matrix.java == '21'
-        env:
-          ARTIFACT_ID: gen-j21-b35-hex-grstrict-sbasic
-          PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrstrictsbasic
-          DESCRIPTION: "CI verify (proof): hexagonal, guardrails=strict, sample=basic"
-        run: ./ci/verify-gen-hex-guardrails-strict-sample-basic.sh
-
-      - name: Verify generated project (std, guardrails strict, sample basic) [proof]
-        if: matrix.java == '21'
-        env:
-          ARTIFACT_ID: gen-j21-b35-std-grstrict-sbasic
-          PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrstrictsbasic
-          DESCRIPTION: "CI verify (proof): standard, guardrails=strict, sample=basic"
-        run: ./ci/verify-gen-std-guardrails-strict-sample-basic.sh
-
-      # -------------------------------------------------
-      # JDK 25 → single forward-compat smoke test (generated project only)
-      # -------------------------------------------------
-
-      - name: Verify generated project (hex, guardrails strict, sample basic) [JDK 25 forward smoke]
-        if: matrix.java == '25'
-        env:
-          JAVA_VERSION: '25'
-          ARTIFACT_ID: gen-j25-b35-hex-grstrict-sbasic
-          PACKAGE_NAME: io.github.blueprintplatform.genj25b35hexgrstrictsbasic
-          DESCRIPTION: "CI verify (forward smoke): hexagonal, guardrails=strict, sample=basic (JDK 25)"
-        run: ./ci/verify-gen-hex-guardrails-strict-sample-basic.sh
-
-      - name: Upload coverage to Codecov
+      - name: Install the reference Maven
+        run: bash ci/install-reference-maven.sh
+      - run: mvn -B -ntp clean verify
+      - name: Upload coverage
         if: matrix.java == '21'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: |
-            target/site/jacoco/jacoco.xml
-            target/site/jacoco-it/jacoco-it.xml
+          files: target/site/jacoco/jacoco.xml,target/site/jacoco-it/jacoco.xml
           flags: codegen-blueprint
-          name: codegen-blueprint
           fail_ci_if_error: false
+      - name: Stage JDK 21 build
+        if: matrix.java == '21'
+        run: |
+          final_name="$(mvn -q -ntp help:evaluate -Dexpression=project.build.finalName -DforceStdout)"
+          mkdir -p target/delivery
+          cp "target/$final_name.jar" target/delivery/
+          printf '%s.jar\n' "$final_name" > target/delivery/name
+          project_version="$(mvn -q -ntp help:evaluate -Dexpression=project.version -DforceStdout)"
+          java -jar "target/$final_name.jar" --cli --version | grep -Fx "$project_version"
+          (cd target/delivery && sha256sum "$final_name.jar" > SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        if: matrix.java == '21'
+        with:
+          name: generator
+          path: target/delivery/
+          if-no-files-found: error
+
+  generated:
+    if: github.event_name != 'schedule'
+    needs: engine
+    strategy:
+      fail-fast: false
+      matrix:
+        boot: ['4.1', '4.2']
+        java: ['21', '25']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: |
+            21
+            25
+            ${{ matrix.java }}
+          distribution: temurin
+          cache: maven
+      - uses: actions/download-artifact@v4
+        with:
+          name: generator
+          path: target/delivery
+      - name: Verify generated outputs
+        env:
+          BOOT_VERSION: ${{ matrix.boot }}
+          JAVA_VERSION: ${{ matrix.java }}
+          EXPECT_BOOT_SOURCE: BUNDLED_FALLBACK
+        run: |
+          (cd target/delivery && sha256sum -c SHA256SUMS)
+          export CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
+          if [[ "$JAVA_VERSION" == 21 ]]; then
+            export GENERATOR_JAVA="$JAVA_HOME_25_X64/bin/java"
+          else
+            export GENERATOR_JAVA="$JAVA_HOME_21_X64/bin/java"
+          fi
+          for layout in standard hexagonal; do
+            LAYOUT=$layout GUARDRAILS=strict SAMPLE_CODE=basic bash ci/common-verify-generated.sh
+            LAYOUT=$layout GUARDRAILS=strict SAMPLE_CODE=none bash ci/common-verify-generated.sh
+            LAYOUT=$layout GUARDRAILS=basic SAMPLE_CODE=basic DEPENDENCIES=web bash ci/common-verify-generated.sh
+          done
+          LAYOUT=standard GUARDRAILS=none SAMPLE_CODE=none bash ci/common-verify-generated.sh
+          LAYOUT=hexagonal GUARDRAILS=strict SAMPLE_CODE=basic DEPENDENCIES='data_jpa security' bash ci/common-verify-generated.sh
+      - name: Prove generated architecture failures
+        env:
+          BOOT_VERSION: ${{ matrix.boot }}
+          JAVA_VERSION: ${{ matrix.java }}
+          EXPECT_BOOT_SOURCE: BUNDLED_FALLBACK
+        run: |
+          export CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
+          bash docs/demo/proof/proof-runner.sh
+
+  upstream:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        boot: ['4.1', '4.2']
+        java: ['21', '25']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: maven
+      - name: Install the reference Maven
+        run: bash ci/install-reference-maven.sh
+      - run: mvn -B -ntp clean verify
+      - name: Verify the published candidate
+        env:
+          BOOT_VERSION: ${{ matrix.boot }}
+          JAVA_VERSION: ${{ matrix.java }}
+          EXPECT_BOOT_SOURCE: CENTRAL_LATEST
+          LAYOUT: hexagonal
+          GUARDRAILS: strict
+          SAMPLE_CODE: basic
+        run: bash ci/common-verify-generated.sh

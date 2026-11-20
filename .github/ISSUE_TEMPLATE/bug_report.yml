@@ -59,7 +59,7 @@ body:
       label: "Profile & options used"
       description: "Which blueprint profile and options were selected?"
       placeholder: |
-        - Profile: springboot-maven-java
+        - Boot selector, resolved patch and source: 4.2 / 4.2.0 / CENTRAL_LATEST
         - Layout: hexagonal
         - Enforcement: strict
         - Sample code: basic
@@ -72,9 +72,9 @@ body:
       description: "Runtime and tool versions."
       placeholder: |
         - OS: macOS / Linux / Windows
-        - Java: 21
-        - codegen-blueprint version: 1.0.x (e.g., 1.0.1)
-        - Maven (if relevant): 3.9.x
+        - Generator JDK / generated JDK: 21 / 25
+        - Codegen Blueprint version: output of --cli --version
+        - Maven or wrapper version: 3.9.16
 
   - type: textarea
     id: additional

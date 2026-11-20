@@ -49,7 +49,7 @@ class SpringBootGenerateCommandTest {
     cmd.buildTool = SpringBootBuildToolOption.MAVEN;
     cmd.language = SpringBootLanguageOption.JAVA;
     cmd.javaVersion = SpringBootJavaVersionOption.JAVA_21;
-    cmd.bootVersion = SpringBootVersionOption.V3_5;
+    cmd.bootVersion = SpringBootVersionOption.V4_2;
 
     cmd.layout = SpringBootLayoutOption.STANDARD;
     cmd.sampleCode = SpringBootSampleCodeOption.NONE;
@@ -83,7 +83,7 @@ class SpringBootGenerateCommandTest {
     assertThat(r.runtimeTarget().type()).isEqualTo(CliRuntimeTargetKeys.TYPE_SPRING_BOOT_JVM);
     assertThat(r.runtimeTarget().params())
         .containsEntry(CliRuntimeTargetKeys.PARAM_JAVA_VERSION, "21")
-        .containsEntry(CliRuntimeTargetKeys.PARAM_SPRING_BOOT_VERSION, "3.5");
+        .containsEntry(CliRuntimeTargetKeys.PARAM_SPRING_BOOT_VERSION, "4.2");
 
     assertThat(r.architecture().layout()).isEqualTo("standard");
     assertThat(r.architecture().guardrailsMode()).isEqualTo("none");
@@ -91,7 +91,7 @@ class SpringBootGenerateCommandTest {
 
     assertThat(r.dependencies()).hasSize(1);
     assertThat(r.dependencies().getFirst().groupId()).isEqualTo("org.springframework.boot");
-    assertThat(r.dependencies().getFirst().artifactId()).isEqualTo("spring-boot-starter-web");
+    assertThat(r.dependencies().getFirst().artifactId()).isEqualTo("spring-boot-starter-webmvc");
     assertThat(r.dependencies().getFirst().version()).isNull();
     assertThat(r.dependencies().getFirst().scope()).isNull();
 
@@ -122,14 +122,14 @@ class SpringBootGenerateCommandTest {
           new ProjectMetadataSummary(
               "com.acme", "demo-app", "Demo App", "Demo application for Acme", "com.acme.demo");
 
-      var techStack = new TechStackSummary("spring-boot", "3.5.14", "maven", null, "java", "21");
+      var techStack = new TechStackSummary("spring-boot", "4.2.0", "maven", null, "java", "21");
 
       var runtimeTarget =
           new RuntimeTargetSummary(
               "spring-boot-jvm",
               Map.of(
                   "javaVersion", "21",
-                  "springBootVersion", "3.5.14"));
+                  "springBootVersion", "4.2.0"));
 
       var architecture = new ArchitectureSpecSummary("standard", "none", "none");
 

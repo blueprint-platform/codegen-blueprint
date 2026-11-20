@@ -1,3 +1,4 @@
+<#ftl output_format="XML" auto_esc=true>
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -21,6 +22,7 @@
     <description>${projectDescription}</description>
 
     <properties>
+        <argLine/>
         <java.version>${javaVersion}</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <#if pomProperties??>
@@ -49,6 +51,24 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions><execution><goals><goal>properties</goal></goals></execution></executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration><argLine>@{argLine} "-javaagent:<#noparse>${org.mockito:mockito-core:jar}</#noparse>"</argLine></configuration>
+            </plugin>
+            <#if sampleEnabled>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions><execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution></executions>
+                <configuration><argLine>@{argLine} "-javaagent:<#noparse>${org.mockito:mockito-core:jar}</#noparse>"</argLine></configuration>
+            </plugin>
+            </#if>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

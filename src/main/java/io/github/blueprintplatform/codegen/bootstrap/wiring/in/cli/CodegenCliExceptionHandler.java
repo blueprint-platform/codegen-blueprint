@@ -33,7 +33,14 @@ public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
       return 1;
     }
 
-    Throwable cause = (ex.getCause() != null) ? ex.getCause() : ex;
+    Throwable cause =
+        ex instanceof DomainException
+                || ex instanceof ApplicationException
+                || ex instanceof AdapterException
+                || ex instanceof BootstrapException
+                || ex.getCause() == null
+            ? ex
+            : ex.getCause();
 
     return switch (cause) {
       case DomainException domainException -> {
@@ -47,6 +54,12 @@ public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
       }
       case AdapterException adapterException -> {
         printLocalizedError(cmd, adapterException.getMessageKey(), adapterException.getArgs());
+        for (Throwable suppressed :
+            adapterException.getCause() == null
+                ? new Throwable[0]
+                : adapterException.getCause().getSuppressed()) {
+          cmd.getErr().println("codegen: cleanup: " + suppressed.getMessage());
+        }
         yield 3;
       }
       case BootstrapException bootstrapException -> {

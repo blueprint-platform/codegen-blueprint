@@ -62,7 +62,8 @@ class ProjectDocumentationAdapterTest {
             new PackageName("com.acme.demo"));
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    PlatformTarget target =
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
     PlatformSpec platform = new PlatformSpec(techStack, target);
 
     ArchitectureSpec architecture =
@@ -96,7 +97,8 @@ class ProjectDocumentationAdapterTest {
 
   @Test
   @DisplayName(
-      "generate() should build correct project documentation model and delegate dependencies mapping")
+      "generate() should build correct project documentation model and delegate dependencies"
+          + " mapping")
   void generate_shouldBuildCorrectModelForProjectDocumentation() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
@@ -137,7 +139,7 @@ class ProjectDocumentationAdapterTest {
         .containsEntry(ProjectDocumentationModel.LANGUAGE, "java")
         .containsEntry(ProjectDocumentationModel.FRAMEWORK, "spring-boot")
         .containsEntry(ProjectDocumentationModel.JAVA_VERSION, "21")
-        .containsEntry(ProjectDocumentationModel.SPRING_BOOT_VERSION, "3.5.14")
+        .containsEntry(ProjectDocumentationModel.SPRING_BOOT_VERSION, "4.2.0")
         .containsEntry(ProjectDocumentationModel.LAYOUT, "standard")
         .containsEntry(ProjectDocumentationModel.GUARDRAILS, "none")
         .containsEntry(ProjectDocumentationModel.SAMPLE_CODE, "none");

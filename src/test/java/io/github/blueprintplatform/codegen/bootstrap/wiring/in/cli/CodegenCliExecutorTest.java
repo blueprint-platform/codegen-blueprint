@@ -56,7 +56,7 @@ class CodegenCliExecutorTest {
     assertThat(cmd.dependencies()).hasSize(1);
     var dep = cmd.dependencies().getFirst();
     assertThat(dep.groupId()).isEqualTo("org.springframework.boot");
-    assertThat(dep.artifactId()).isEqualTo("spring-boot-starter-web");
+    assertThat(dep.artifactId()).isEqualTo("spring-boot-starter-webmvc");
   }
 
   private int getExitCode(RecordingCreateProjectPort useCase) {
@@ -110,14 +110,14 @@ class CodegenCliExecutorTest {
               lastCreateProjectCommand.projectDescription(),
               lastCreateProjectCommand.packageName());
 
-      var techStack = new TechStackSummary("spring-boot", "3.5.14", "maven", null, "java", "21");
+      var techStack = new TechStackSummary("spring-boot", "4.2.0", "maven", null, "java", "21");
 
       var runtimeTarget =
           new RuntimeTargetSummary(
               "spring-boot-jvm",
               Map.of(
                   "javaVersion", "21",
-                  "springBootVersion", "3.5.14"));
+                  "springBootVersion", "4.2.0"));
 
       var architecture =
           new ArchitectureSpecSummary(

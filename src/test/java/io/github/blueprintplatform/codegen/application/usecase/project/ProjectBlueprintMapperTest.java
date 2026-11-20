@@ -47,7 +47,8 @@ class ProjectBlueprintMapperTest {
 
   private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> dependencies) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    var platformTarget =
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
 
     return new CreateProjectCommand(
         "com.acme",

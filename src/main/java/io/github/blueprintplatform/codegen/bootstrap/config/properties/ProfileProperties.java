@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Map;
 
 public record ProfileProperties(
-    @Valid @NotNull List<ArtifactKey> orderedArtifactKeys,
-    @Valid @NotNull Map<String, ArtifactDefinition> artifacts) {}
+    @NotNull List<@NotNull ArtifactKey> orderedArtifactKeys,
+    @NotNull Map<String, @Valid ArtifactDefinition> artifacts) {}

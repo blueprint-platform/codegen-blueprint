@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.14</version>
+        <version>4.1.3</version>
         <relativePath/>
     </parent>
 
     <groupId>io.github.blueprint-platform</groupId>
     <artifactId>codegen-blueprint</artifactId>
-    <version>1.0.3</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>codegen-blueprint</name>
     <description>Architecture-first project generator for Spring Boot with build-time executable architecture guardrails.</description>
     <url>https://github.com/blueprint-platform/codegen-blueprint</url>
@@ -43,10 +43,12 @@
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
         <picocli.version>4.7.7</picocli.version>
-        <archunit.version>1.4.2</archunit.version>
+        <archunit.version>1.5.1</archunit.version>
         <argLine/>
+        <jacocoUnitArgLine/>
+        <jacocoItArgLine/>
     </properties>
 
     <dependencies>
@@ -85,7 +87,7 @@
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit-junit5</artifactId>
+            <artifactId>archunit-junit6</artifactId>
             <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -136,7 +138,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <argLine>@{jacocoUnitArgLine} @{argLine} "-javaagent:${org.mockito:mockito-core:jar}"</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -154,7 +156,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                            <argLine>@{jacocoItArgLine} @{argLine} "-javaagent:${org.mockito:mockito-core:jar}"</argLine>
                             <includes>
                                 <include>**/*IT.java</include>
                             </includes>
@@ -170,6 +172,7 @@
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
+                        <configuration><propertyName>jacocoUnitArgLine</propertyName></configuration>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
@@ -177,6 +180,7 @@
 
                     <execution>
                         <id>prepare-agent-integration</id>
+                        <configuration><propertyName>jacocoItArgLine</propertyName></configuration>
                         <goals>
                             <goal>prepare-agent-integration</goal>
                         </goals>

@@ -18,12 +18,7 @@ public class FileSystemProjectWriterAdapter implements ProjectWriterPort {
       if (parent != null) {
         Files.createDirectories(parent);
       }
-      Files.write(
-          target,
-          content,
-          StandardOpenOption.CREATE,
-          StandardOpenOption.TRUNCATE_EXISTING,
-          StandardOpenOption.WRITE);
+      Files.write(target, content, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
     } catch (IOException e) {
       throw new ProjectWriteException(target, e);
     }

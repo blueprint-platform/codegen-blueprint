@@ -1,5 +1,6 @@
 package ${projectPackageName}.bp.sample.controller;
 
+import ${projectPackageName}.bp.sample.controller.mapper.GreetingResponseMapper;
 import ${projectPackageName}.bp.sample.domain.model.Greeting;
 import ${projectPackageName}.bp.sample.domain.model.value.GreetingId;
 import ${projectPackageName}.bp.sample.domain.model.value.GreetingText;
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,6 +20,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc(addFilters = false)
+@org.springframework.context.annotation.Import(GreetingResponseMapper.class)
 @WebMvcTest(controllers = GreetingController.class)
 @Tag("integration")
 class GreetingControllerWebMvcIT {

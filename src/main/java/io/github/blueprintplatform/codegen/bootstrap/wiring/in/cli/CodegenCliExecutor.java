@@ -55,6 +55,10 @@ public class CodegenCliExecutor {
             .registerConverter(
                 SpringBootDependencyOption.class, SpringBootDependencyOption::fromKey);
 
+    String artifactVersion = CodegenCommand.class.getPackage().getImplementationVersion();
+    String version = artifactVersion == null ? "development" : artifactVersion;
+    commandLine.getCommandSpec().version(version);
+    commandLine.getSubcommands().get("springboot").getCommandSpec().version(version);
     commandLine.setExecutionExceptionHandler(exceptionHandler);
     return commandLine;
   }

@@ -102,6 +102,17 @@ main() {
   restore_file "$std_controller"
   run_verify "$std_dir" "STD fixed"
 
+  local probe
+  probe="$(inject_rest_signature_violation "$hex_dir")"
+  run_verify_expect_fail "$hex_dir" "HEX REST signature"
+  rm "$probe"
+  run_verify "$hex_dir" "HEX REST fixed"
+
+  probe="$(inject_rest_signature_violation "$std_dir")"
+  run_verify_expect_fail "$std_dir" "STD REST signature"
+  rm "$probe"
+  run_verify "$std_dir" "STD REST fixed"
+
   log "DONE: Proof completed successfully (GREEN → RED → GREEN)"
   log "Proof output: ${RUN_DIR}"
   log "Tip: set KEEP_WORK_DIR=1 to inspect generated projects under ${WORK_DIR}"
