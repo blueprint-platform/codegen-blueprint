@@ -1,30 +1,42 @@
-# Codegen Blueprint repository contract
+# Codegen Blueprint operating contract
 
-## Authority and boundaries
+Preserve **Architecture as an Executable Contract**. Codegen Blueprint delivers a project and ZIP. The generated project's Maven build enforces the selected architecture rules.
 
-- The human architect owns architectural intent and merge decisions. Agents draft implementation and gather proof. For non-trivial changes record intent, boundary, contract, executable proof, and drift check. See [Architecture Governance & AI Protocol](docs/maintainers/architecture-governance-and-ai-protocol.md).
-- Use [the approved 2.0 architecture design](CODEGEN_BLUEPRINT_2_0_0_ARCHITECTURE_DESIGN.md) for the active implementation and acceptance gates. The [architecture contract](docs/architecture/executable-architecture-contract.md) defines current guarantees. Apply [Release Discipline](docs/maintainers/release-discipline.md).
-- This is one Maven module. `domain` owns blueprint, value objects, validation and compatibility. Keep it framework-free and free of IO implementations. Resource and writer port signatures use JDK value types. `application` depends on domain and owns command/result contracts, use-case sequencing, artifact selection/generation, ZIP and output discovery ports. Keep Spring, Picocli, FreeMarker and filesystem implementation out of core.
-- CLI DTOs enter through `CreateProjectCommandMapper` and `CreateProjectPort`. Keep inbound adapters off outbound ports and core implementations. Outbound adapters implement ports and own technology-specific models. Bootstrap assembles them and owns Spring/Picocli wiring.
-- Use the existing seam for the change. Keep edits scoped and reviewable. New architectural concepts, public API renames and contract changes need a human decision. Add abstractions when a concrete requirement justifies the additional indirection.
+## Authority and ownership
 
-## Generation and compatibility
+The human architect owns product scope, architectural intent and publication. Use source, build configuration and executed tests to establish current behavior. Reconcile user-facing claims with the [architecture contract](docs/architecture/executable-architecture-contract.md), [CLI reference](docs/cli.md) and [compatibility reference](docs/compatibility.md). For consequential changes, record the intent, affected boundary, observable contract and executable proof. Follow the [governance protocol](docs/maintainers/architecture-governance-and-ai-protocol.md).
 
-- `application.yml` owns artifact selection and order for `spring-boot-maven-java`. Bootstrap binds definitions and key-to-port mappings. Artifact adapters own applicability and model/output derivation. Templates own rendered syntax. For an artifact change check key, registry, profile, template paths and generated outputs together.
-- Preserve the 2.0 CLI and generated contracts. The generator compiles for Java 21 and runs on Java 21/25, with Boot 4.1.3 owned by the root POM. Generated Boot lines are 4.1/4.2 and targets Java 21/25. Defaults are Boot 4.2 and Java 25. Preserve stable patch discovery and explicit bundled fallback reporting.
-- Resolve CLI aliases in `SpringBootDependencyOption`. Keep normalization/duplicate policy in domain and the effective Maven dependency plan in the profile adapter. Check implicit MVC, JPA H2 and ArchUnit. POM and strict REST guardrails consume the same effective MVC decision.
-- Preserve ordered materialization and UTF-8. Publish through the staging and exclusive-claim boundary. Preserve existing outputs and report identity/cleanup uncertainty. Compare generated trees and content for determinism. ZIP byte identity and executable permission require separate evidence.
+| Area | Owns |
+| --- | --- |
+| `domain` | `ProjectBlueprint`, value objects, invariants and compatibility policy. Pure Java, without framework or IO implementations. |
+| `application` | Use-case ordering and ports. `CreateProjectHandler` coordinates resolution, generation and publication through those ports. |
+| `adapter.in` | Picocli options and aliases. Map requests through `CreateProjectCommandMapper` to `CreateProjectPort`. |
+| `adapter.out` | Central transport, profile-specific generation, template rendering and filesystem publication. |
+| `bootstrap` | Spring/Picocli wiring and profile bindings. Keep framework types and adapter implementations out of core. |
 
-## Guardrails and proof
+Use an existing seam before adding one. Follow the complete change path from the input or registry to the generated output and the test that exercises it.
 
-- Preserve `none` (no generated guardrails or ArchUnit dependency), default `basic`, and layout-specific `strict`. Keep scope sanity, canonical package schema and anchor drift checks aligned with layouts and samples. Preserve legitimate empty optional scopes and check selector coverage before changing `allowEmptyShould`. Build sample-free output as well as populated samples. For changed rules confirm a compiling violation fails at the intended ArchUnit assertion.
-- From repository root on Java 21, run `mvn -B -ntp test` for Surefire or `mvn -B -ntp clean verify` for Surefire, engine ArchUnit, Failsafe and the executable JAR. Root CLI E2E uses the real executor in-process. Root integration tests establish wiring, generation and CLI/result behavior.
-- After root verify, use `bash ci/verify-generated.sh standard` for a PR cell or `bash ci/verify-generated.sh full` for the release cell. Set `BOOT_VERSION=4.1` or `4.2` and `JAVA_VERSION=21` or `25` with the matching build JDK. The scripts verify the packaged JAR output, then run the generated wrapper and check ArchUnit and sample Failsafe reports.
-- For the negative demo run `bash ci/proof/proof-runner.sh` after packaging. Confirm the expected ArchUnit report failure and restored green build. Separate local results, configured CI and observed remote executions.
+## Contracts that cross layers
 
-## Documentation and publication
+- **Versions.** The root [POM](pom.xml) owns the generator's Boot runtime and Java 21 compile target. Run the generator on Java 21 or 25. Public Boot selectors are `4.1` and `4.2`, with generated defaults Boot 4.2 and Java 25. The generated POM pins the resolved exact patch. Keep supported lines, Central latest, bundled verified references and tested minimum edges distinct. Eligible connection failures produce visible `BUNDLED_FALLBACK`. Bad metadata and invalid or missing parents fail explicitly. A fallback selects a generation patch; Maven still needs its distribution and dependencies.
+- **Artifacts and templates.** [Profile configuration](src/main/resources/application.yml) owns artifact selection and order. Bootstrap maps keys to implementations. Adapters own applicability and model construction. FreeMarker templates own rendered syntax. Keep the effective dependency decision in the Maven profile so the POM and strict REST rules agree when a sample implicitly enables MVC.
+- **Guardrails.** Preserve `none`, default `basic` and layout-specific `strict` for both standard and hexagonal. Keep package schema, scope and anchor checks aligned with actual generated classes. Allow empty scopes only where the feature is optional. For a changed rule, prove that a compilable violation fails at the named ArchUnit assertion and that restoration passes. See the [rulebook](docs/architecture/architecture-guardrails-rulebook.md).
+- **Output and failure.** Preserve ordered UTF-8 generation, staging, exclusive publication and ownership-aware cleanup. Protect both existing output paths and report cleanup uncertainty. Compare generated trees and file contents for determinism. ZIP byte identity and crash-atomic publication are outside that guarantee. Preserve the generated wrapper, Failsafe discovery and Maven-resolved Mockito agent.
 
-- Treat compatibility, CLI reference and the architecture contract as the authorities for user-facing docs. Build Pages and execute the canonical quickstart as described in the [documentation tooling guide](docs/maintainers/documentation.md).
+## Verification
 
-- Update the affected README, rulebook or contract documentation when behavior changes. Review generated README template and tracked demo README snapshots together for intentional output changes. Keep transient projects, ZIPs and proof logs out of commits. Internal templates are implementation details and generated output is the public review surface.
-- Treat version bumps, release tags, binaries and public publication as explicit maintainer decisions. Use local verification by default. Obtain explicit authorization for release/publication actions and verify version, artifact and contract alignment before publishing.
+Run from the repository root. Use Maven 3.9.16 as the engine reference.
+
+| Change surface | Command and evidence |
+| --- | --- |
+| Engine logic | `mvn -B -ntp test` runs Surefire, including engine ArchUnit. |
+| Wiring, packaging or runtime | `mvn -B -ntp clean verify` runs engine tests, Failsafe and JAR packaging. Run on JDK 21 and 25 for JVM-sensitive changes. Engine CLI integration tests exercise the executor in-process. |
+| Generated output | `BOOT_VERSION=4.2 JAVA_VERSION=25 bash ci/verify-generated.sh standard` uses a packaged JAR, generated wrapper and test reports. Select the affected cell and its build JDK. Use `CODEGEN_JAR` to reuse the artifact across JDKs. |
+| Negative architecture proof | `PROOF_MODE=standard bash ci/proof/proof-runner.sh` verifies the controller-to-repository case. Omit `PROOF_MODE` to run all five cases. Compilation and download failures do not establish a rule failure. |
+| Docs and generated README | Follow the [docs tooling guide](docs/maintainers/documentation.md) for the Pages build, actual quickstart and snapshot drift checks. |
+
+Use the [release checklist](docs/maintainers/release-discipline.md) for the four-cell Standard matrix, Full release checks and scheduled Central candidates. Report which commands ran, the relevant JDK and Boot patch, and any gaps. Distinguish local evidence from observed hosted CI.
+
+## Repository hygiene and publication
+
+Keep generated examples only where they serve as reviewed verification artifacts. Regenerate the [tracked README examples](docs/examples/generated-projects.md) when changing their template. Keep transient projects, ZIPs and raw logs out of commits. Repository guidance must work in a clean checkout. Link only to tracked local files, review the staged list, and leave unrelated and untracked files alone. Version promotion, tags, publication and deployment require explicit maintainer authorization.
