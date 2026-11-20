@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="375" viewBox="0 0 960 375" role="img" aria-labelledby="title description">
+  <title id="title">ArchUnit rejects the direct controller-to-repository dependency</title>
+  <desc id="description">The generated standard project passes. Adding a field of type LoggingGreetingAuditRepository to GreetingController creates a compiling edge from controller to repository. The rule controllers_must_not_depend_on_repositories fails Maven verification. Removing the field and import makes verification pass again.</desc>
+  <defs>
+    <pattern id="grid" width="23" height="23" patternUnits="userSpaceOnUse"><path d="M23 0H0V23" fill="none" stroke="#24404c" opacity=".55"/></pattern>
+  </defs>
+  <rect width="960" height="375" rx="20" fill="#0b1d29"/>
+  <rect x="25" y="77" width="910" height="218" rx="11" fill="url(#grid)" stroke="#395566"/>
+  <g font-family="system-ui, sans-serif" fill="#ecfaf6">
+    <text x="30" y="48" font-size="29" font-weight="700">One field crosses the persistence boundary</text>
+    <text x="52" y="151" font-size="25" font-weight="700">GreetingController</text>
+    <text x="907" y="151" font-size="24" font-weight="700" text-anchor="end">LoggingGreetingAuditRepository</text>
+    <text x="52" y="121" font-size="14" fill="#adc5cc">HTTP ENTRY POINT</text>
+    <text x="907" y="121" font-size="14" fill="#adc5cc" text-anchor="end">PERSISTENCE IMPLEMENTATION</text>
+  </g>
+  <path d="M52 175h856m-12-8 12 8-12 8" fill="none" stroke="#ff969f" stroke-width="2.5" stroke-dasharray="8 5"/>
+  <circle cx="480" cy="175" r="17" fill="#522e40" stroke="#ff969f" stroke-width="2"/>
+  <path d="m474 169 12 12m0-12-12 12" stroke="#ffd0d2" stroke-width="2.4"/>
+  <g font-family="ui-monospace, monospace">
+    <text x="52" y="225" font-size="18" fill="#ecfaf6">private LoggingGreetingAuditRepository __archViolation;</text>
+    <text x="52" y="265" font-size="17" fill="#ffbec2">controllers_must_not_depend_on_repositories</text>
+  </g>
+  <path d="M43 329h872" stroke="#395566" stroke-width="2"/>
+  <g font-family="system-ui, sans-serif" font-weight="650" font-size="17">
+    <circle cx="46" cy="329" r="6" fill="#3dedbf"/><text x="62" y="355" fill="#a5f6dd">Baseline passes</text>
+    <circle cx="480" cy="329" r="6" fill="#ff969f"/><text x="480" y="355" text-anchor="middle" fill="#ffbec2">Compiles · ArchUnit fails</text>
+    <circle cx="914" cy="329" r="6" fill="#3dedbf"/><text x="899" y="355" text-anchor="end" fill="#a5f6dd">Restored build passes</text>
+  </g>
+</svg>

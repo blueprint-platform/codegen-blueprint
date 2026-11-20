@@ -28,12 +28,7 @@ The following behaviors are unacceptable:
 
 ## Reporting an Issue
 
-If you experience or witness unacceptable behavior, please report it by:
-
-* Opening an issue, or
-* Contacting the maintainer privately at **[baris.sayli@gmail.com](mailto:baris.sayli@gmail.com)**.
-
-Reports will be handled promptly and confidentially.
+Report unacceptable behavior privately to the maintainer at [baris.sayli@gmail.com](mailto:baris.sayli@gmail.com). Reports will be handled confidentially.
 
 ## Attribution
 

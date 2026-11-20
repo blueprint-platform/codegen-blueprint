@@ -80,6 +80,26 @@ fi
 
 cd "$GEN_DIR"
 
+if [[ "${VERIFY_BOOT_4_1_0_EDGE:-0}" == 1 ]]; then
+  # Only this temporary fixture uses an exact patch.
+  [[ "$BOOT_VERSION" == 4.1 && "${EXPECT_BOOT_SOURCE:-}" == BUNDLED_FALLBACK ]]
+  python3 - "$WORK_DIR/cli.log" <<'PYTHON'
+from pathlib import Path
+import re
+import sys
+
+log = Path(sys.argv[1]).read_text()
+match = re.search(r"bootVersion=(4[.]1[.][0-9]+) source=BUNDLED_FALLBACK", log)
+assert match, "Missing 4.1 fallback patch"
+pom = Path("pom.xml")
+original = pom.read_text(encoding="utf-8")
+parent = f"<version>{match[1]}</version>"
+assert original.count(parent) == 1, "Expected one generated parent patch"
+print(f"Minimum compatibility fixture: {match[1]} -> 4.1.0")
+pom.write_text(original.replace(parent, "<version>4.1.0</version>"), encoding="utf-8")
+PYTHON
+fi
+
 chmod +x ./mvnw
 ./mvnw -B -ntp clean verify
 main_class="$(find target/classes -name '*Application.class' -print -quit)"

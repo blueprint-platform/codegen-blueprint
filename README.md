@@ -1,23 +1,65 @@
 # Codegen Blueprint
 
-**Architecture as an Executable Contract.** Generate a Java and Maven Spring Boot project with architecture rules already wired into its build. When a change crosses a covered boundary, ArchUnit identifies the dependency and Maven fails the build.
+**Architecture as an Executable Contract**
+
+Start a Java/Maven Spring Boot project with package boundaries that Maven can enforce. Codegen Blueprint delivers the sources, the Maven wrapper and the ArchUnit tests selected for your layout. As the code evolves, a covered dependency can turn a successful compile into a failed build with a named architecture rule.
 
 **Generate → Enforce → Prove**
 
-[Generate your first project](docs/quickstart.md) · [See a real build fail](docs/demo/executable-architecture-proof.md) · [Compatibility](docs/compatibility.md)
+[Generate your first project](docs/quickstart.md) · [Reproduce a boundary failure](docs/examples/boundary-proof.md) · [Explore the docs](docs/index.md)
 
-![Verified sequence showing a clean build, a build failing for controller-to-repository coupling, and a clean build after restoration](docs/images/proof-2.0.svg)
+[![The generated standard project passes, a controller-to-repository dependency fails its ArchUnit rule, and the restored project passes](docs/assets/proof-2.0.svg)](docs/examples/boundary-proof.md)
 
-Pick **standard** for a layered project or **hexagonal** for ports and adapters. Guardrails default to `basic`. Choose `strict` to enforce additional boundaries, or `none` to omit ArchUnit.
+## Generate a project
 
-The 2.0 development build runs on **Java 21 or 25** and targets **Boot 4.1 or 4.2** with **Java 21 or 25**. It defaults to **Boot 4.2 / Java 25**. The quickstart uses the snapshot JAR built from this checkout. Published binaries and their own documentation remain available on [GitHub Releases](https://github.com/blueprint-platform/codegen-blueprint/releases).
+From this checkout, use JDK 25 and Maven 3.9.16. The commands use the 2.0 development JAR. The [quickstart](docs/quickstart.md) is the example CI executes and also accepts a supplied JAR.
 
-| I want to… | Start here |
+```bash
+mvn -B -ntp clean package
+OUTPUT_DIR="$(mktemp -d)"
+java -jar target/codegen-blueprint-2.0.0-SNAPSHOT.jar --cli springboot \
+  --group-id com.example --artifact-id greeting --name Greeting \
+  --description 'Greeting sample' --package-name com.example.greeting \
+  --layout standard --guardrails strict --sample-code basic \
+  --target-dir "$OUTPUT_DIR"
+cd "$OUTPUT_DIR/greeting"
+sh ./mvnw -B -ntp clean verify
+```
+
+Expect a project directory and a sibling ZIP. The sample's Failsafe tests exercise a real HTTP server. A first Maven build needs access to the wrapper distribution and dependencies.
+
+## Choose what the build enforces
+
+| Layout | How to structure a feature |
 | --- | --- |
-| Generate and verify a project | [Quickstart](docs/quickstart.md) |
-| Look up flags or troubleshoot patch resolution | [CLI reference](docs/cli.md) |
-| Understand the guarantees and rule coverage | [Architecture contract](docs/architecture/executable-architecture-contract.md) · [Guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md) |
-| Move from 1.x or evaluate 2.0 | [Migration guide](docs/guides/migrate-to-2.0.md) · [Release notes](docs/releases/2.0.0.md) |
-| Work on the generator | [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) |
+| **Standard** | Put HTTP entry points in `controller`, orchestration in `service` and persistence access in `repository`. |
+| **Hexagonal** | Put entry points in `adapter.in` and infrastructure in `adapter.out`. Define application ports and use cases in `application`, business types in `domain`, and wiring in `bootstrap`. |
 
-[Documentation index](docs/index.md) · [MIT license](LICENSE)
+| Guardrails | What gets generated |
+| --- | --- |
+| `none` | Project structure with no generated ArchUnit dependency or rules. |
+| `basic` (default) | Layout-specific scope checks and core dependency restrictions. |
+| `strict` | Basic coverage plus stronger layout-specific boundaries, including checks for REST signatures when MVC is present. |
+
+[Inspect both generated layouts](docs/examples/generated-projects.md) · [Read the rulebook](docs/architecture/architecture-guardrails-rulebook.md)
+
+## Prove that a boundary holds
+
+The proof adds this field to the standard sample's `GreetingController`, using the repository import from the example above. Add the import and this field to the existing controller:
+
+```java
+import com.example.greeting.bp.sample.repository.LoggingGreetingAuditRepository;
+
+// Inside GreetingController
+private LoggingGreetingAuditRepository __archViolation;
+```
+
+The field compiles. During `clean verify` the rule `controllers_must_not_depend_on_repositories` fails because the field type couples the HTTP controller directly to persistence. Removing the field and its import restores the passing build.
+
+[Reproduce the proof](docs/examples/boundary-proof.md) · [Inspect the recorded results](docs/examples/proof-2.0.txt)
+
+## Supported targets
+
+The generator runs on **Java 21 or 25**. It generates Maven projects for **Spring Boot 4.1 or 4.2**, each with **Java 21 or 25**. Defaults are **Boot 4.2 / Java 25**. Pass `--boot 4.1` or `--java 21` to choose an alternative. The CLI reports the exact stable patch written to the POM and explicitly reports when a connection failure selects the bundled reference.
+
+[Compatibility](docs/compatibility.md) · [CLI reference](docs/cli.md) · [Architecture contract](docs/architecture/executable-architecture-contract.md) · [Release notes](docs/release-notes.md) · [Contributing](CONTRIBUTING.md)

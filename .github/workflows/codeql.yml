@@ -43,7 +43,7 @@ jobs:
         run: bash ci/install-reference-maven.sh
 
       - name: Build (codegen-blueprint)
-        run: mvn -q -ntp -DskipTests=true clean package
+        run: mvn -q -ntp clean test-compile
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

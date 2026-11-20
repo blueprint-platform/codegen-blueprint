@@ -5,13 +5,13 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# shellcheck source=docs/demo/proof/lib/env.sh
+# shellcheck source=ci/proof/lib/env.sh
 source "${SCRIPT_DIR}/lib/env.sh"
 
-# shellcheck source=docs/demo/proof/lib/io.sh
+# shellcheck source=ci/proof/lib/io.sh
 source "${SCRIPT_DIR}/lib/io.sh"
 
-# shellcheck source=docs/demo/proof/lib/project_ops.sh
+# shellcheck source=ci/proof/lib/project_ops.sh
 source "${SCRIPT_DIR}/lib/project_ops.sh"
 
 cleanup() {
@@ -42,7 +42,21 @@ on_exit() {
 }
 trap on_exit EXIT
 
+prove_controller_repository_boundary() {
+  local std_dir="$1"
+  local std_controller
+  std_controller="$(find_controller_file "$std_dir")"
+  inject_standard_violation_controller_depends_on_repository "$std_dir" "$std_controller"
+  run_verify_expect_fail "$std_dir" "STD violation"
+  restore_file "$std_controller"
+  run_verify "$std_dir" "STD fixed"
+}
+
 main() {
+  case "${PROOF_MODE:-full}" in
+    standard|full) ;;
+    *) echo "PROOF_MODE must be standard or full" >&2; exit 2 ;;
+  esac
   init_runtime_context
 
   require_file "$CODEGEN_JAR"
@@ -61,6 +75,22 @@ main() {
   collect_env_metadata
 
   local hex_dir std_dir
+  std_dir="$(generate_project \
+    "greeting-standard" \
+    "Greeting (Standard Layered)" \
+    "Greeting sample built with standard layered architecture" \
+    "standard" \
+    "strict" \
+    "basic")"
+
+
+  if [[ "${PROOF_MODE:-full}" == standard ]]; then
+    run_verify "$std_dir" "STD baseline"
+    prove_controller_repository_boundary "$std_dir"
+    log "DONE: Controller → Repository proof passed (GREEN → RED → GREEN)"
+    return
+  fi
+
   hex_dir="$(generate_project \
     "greeting-hex" \
     "Greeting (Hexagonal)" \
@@ -69,13 +99,6 @@ main() {
     "strict" \
     "basic")"
 
-  std_dir="$(generate_project \
-    "greeting-standard" \
-    "Greeting (Standard Layered)" \
-    "Greeting sample built with standard layered architecture" \
-    "standard" \
-    "strict" \
-    "basic")"
 
   log "HEX dir: ${hex_dir}"
   log "STD dir: ${std_dir}"
@@ -95,12 +118,7 @@ main() {
   restore_files <<< "$std_schema_touched"
   run_verify "$std_dir" "STD schema fixed"
 
-  local std_controller
-  std_controller="$(find_controller_file "$std_dir")"
-  inject_standard_violation_controller_depends_on_repository "$std_dir" "$std_controller"
-  run_verify_expect_fail "$std_dir" "STD violation"
-  restore_file "$std_controller"
-  run_verify "$std_dir" "STD fixed"
+  prove_controller_repository_boundary "$std_dir"
 
   local probe
   probe="$(inject_rest_signature_violation "$hex_dir")"

@@ -13,4 +13,4 @@ Strict REST signature checks are generated when MVC is present, whether selected
 
 `none` retains the selected layout while omitting ArchUnit. Sample integration tests remain independent of the guardrails setting.
 
-Use the [executable proof](../demo/executable-architecture-proof.md) to reproduce a failing rule. See the [architecture contract](executable-architecture-contract.md) for scope and limits.
+Use the [executable proof](../examples/boundary-proof.md) to reproduce a failing rule. See the [architecture contract](executable-architecture-contract.md) for scope and limits.

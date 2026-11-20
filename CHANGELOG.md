@@ -7,4 +7,4 @@
 - Align generated MVC dependencies and strict REST rules, run sample integration tests during verification, and protect existing output paths.
 - Run the generator on Boot 4.1.3 with a Java 21 minimum runtime.
 
-See the [release notes](docs/releases/2.0.0.md) and [migration guide](docs/guides/migrate-to-2.0.md).
+See the [release notes](docs/release-notes.md).

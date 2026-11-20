@@ -1,87 +1,34 @@
-name: "🐞 Bug report"
-description: "Report a bug or unexpected behavior in codegen-blueprint generation output"
-title: "bug: <short summary>"
-labels: ["bug"]
-assignees: []
+name: Bug report
+description: Report a reproducible CLI, generated build, or guardrail problem.
+labels: [bug]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Thank you for reporting an issue in **codegen-blueprint** 🙏  
-        This project generates **executable architecture**, so precise context helps a lot.
-
-        Please provide the **minimal information** required to reproduce the problem.
-
   - type: textarea
-    id: description
+    id: behavior
     attributes:
-      label: "Describe the bug"
-      description: "What went wrong? Be clear and specific."
-      placeholder: |
-        Example:
-        - Generated project fails to build when guardrails=STRICT and layout=hexagonal
-        - application.yml is missing when using Spring Boot + Maven + Java profile
+      label: Expected and actual behavior
+      description: Identify the affected command, generated artifact, or architecture rule.
     validations:
       required: true
-
   - type: textarea
     id: reproduction
     attributes:
-      label: "Steps to reproduce"
-      description: "Minimal steps to reproduce the issue."
-      placeholder: |
-        1. Run:
-           java -jar codegen-blueprint.jar --cli springboot \
-             --group-id=com.example \
-             --artifact-id=demo \
-             --layout=hexagonal \
-             --guardrails=strict \
-             --sample-code=basic
-
-        2. Open generated project
-        3. Run `./mvnw verify`
-        4. Observe failure
+      label: Steps to reproduce
+      description: Include the full generator command, the build command, and any source changes needed to reproduce the result. Redact secrets and private paths.
     validations:
       required: true
-
-  - type: textarea
-    id: expected
-    attributes:
-      label: "Expected behavior"
-      description: "What should have happened instead?"
-      placeholder: |
-        The generated project should build successfully
-        and all architecture governance tests should pass.
-
-  - type: textarea
-    id: profile
-    attributes:
-      label: "Profile & options used"
-      description: "Which blueprint profile and options were selected?"
-      placeholder: |
-        - Boot selector, resolved patch and source: 4.2 / 4.2.0 / CENTRAL_LATEST
-        - Layout: hexagonal
-        - Enforcement: strict
-        - Sample code: basic
-        - Dependencies: web, validation
-
   - type: textarea
     id: environment
     attributes:
-      label: "Environment"
-      description: "Runtime and tool versions."
+      label: Environment
+      description: Include Codegen Blueprint version or commit, OS, generator and project JDKs, Maven wrapper version, and the resolved Boot patch and source printed by the CLI.
       placeholder: |
-        - OS: macOS / Linux / Windows
-        - Generator JDK / generated JDK: 21 / 25
-        - Codegen Blueprint version: output of --cli --version
-        - Maven or wrapper version: 3.9.16
-
+        Codegen Blueprint 2.0.0-SNAPSHOT (commit)
+        Linux, generator JDK 21, project JDK 25, Maven 3.9.16
+        bootSelector=4.2 bootVersion=4.2.0 source=BUNDLED_FALLBACK
+    validations:
+      required: true
   - type: textarea
-    id: additional
+    id: evidence
     attributes:
-      label: "Additional context"
-      description: "Logs, stack traces, screenshots, or links."
-      placeholder: |
-        - Relevant stack trace
-        - Generated README excerpt
-        - Failing ArchUnit rule output
+      label: Build or rule evidence
+      description: Include the relevant log excerpt or report name. For an ArchUnit failure, include the assertion and dependency it reports.

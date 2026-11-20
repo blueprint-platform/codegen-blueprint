@@ -2,7 +2,7 @@
 
 The proof starts from two generated Spring Boot projects. It runs Maven verification, introduces one compilable boundary violation at a time, checks the failing ArchUnit rule, restores the change and verifies again.
 
-![Three verified states for a standard controller-to-repository dependency](../images/proof-2.0.svg)
+![Three verified states for a standard controller-to-repository dependency](../assets/proof-2.0.svg)
 
 ## Run the proof
 
@@ -11,10 +11,10 @@ Build the snapshot from the repository root, then run with JDK 25.
 ```bash
 mvn -B -ntp clean package
 CODEGEN_JAR="$PWD/target/codegen-blueprint-2.0.0-SNAPSHOT.jar" \
-  bash docs/demo/proof/proof-runner.sh
+  bash ci/proof/proof-runner.sh
 ```
 
-The runner prints its evidence directory under `docs/demo/proof-output/`. Set `PROOF_OUTPUT_ROOT` for another location. To reproduce the bundled-reference test run, set `EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK`. That proof-only setting blocks the generator’s Central connection and checks the source reported by the CLI. The generated Maven build still needs access to dependencies.
+The runner prints its evidence directory under `target/architecture-proof/`. Set `PROOF_OUTPUT_ROOT` for another location. To reproduce the bundled-reference test run, set `EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK`. That proof-only setting blocks the generator’s Central connection and checks the source reported by the CLI. The generated Maven build still needs access to dependencies.
 
 ## Recorded 2.0 result
 

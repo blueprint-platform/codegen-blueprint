@@ -20,6 +20,12 @@ a:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
 main { padding-block: clamp(1.75rem, 5vw, 3.75rem); overflow-wrap: anywhere; min-height: 60vh; }
 h1, h2, h3 { line-height: 1.18; }
 h1 { margin: 0 0 1.25rem; font-size: clamp(2rem, 5.4vw, 3.15rem); letter-spacing: -.045em; }
+.home main > h1 { max-width: 18ch; font-size: clamp(2.3rem, 7vw, 4.2rem); }
+.home main > h1 + p { max-width: 52ch; color: var(--muted); font-size: 1.15rem; }
+.home main > h1 + p + p a:first-child {
+  display: inline-block; padding: .5rem .8rem; border-radius: .35rem;
+  background: var(--teal); color: #fff; font-weight: 650;
+}
 h2 { margin-top: 2rem; font-size: 1.45rem; }
 img { display: block; max-width: 100%; height: auto; }
 code { font: .9em ui-monospace, SFMono-Regular, Consolas, monospace; background: var(--surface); padding: .12em .3em; border-radius: 3px; }

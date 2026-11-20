@@ -20,9 +20,6 @@ PROOF_OUTPUT_ROOT="${PROOF_OUTPUT_ROOT:-}"
 ROOT_DIR="${ROOT_DIR:-}"
 CODEGEN_JAR="${CODEGEN_JAR:-}"
 
-LIB_DIR="${LIB_DIR:-}"       # docs/demo/proof/lib
-PROOF_DIR="${PROOF_DIR:-}"   # docs/demo/proof
-DEMO_DIR="${DEMO_DIR:-}"     # docs/demo
 
 WORK_DIR="${WORK_DIR:-}"
 OUT_DIR="${OUT_DIR:-}"
@@ -75,10 +72,7 @@ ensure_repo_root() {
 # Context init
 # -------------------------
 init_runtime_context() {
-  # This file lives under: docs/demo/proof/lib
-  LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  PROOF_DIR="$(cd "${LIB_DIR}/.." && pwd)"   # docs/demo/proof
-  DEMO_DIR="$(cd "${PROOF_DIR}/.." && pwd)"  # docs/demo
+  # This file lives under: ci/proof/lib
 
   ROOT_DIR="$(ensure_repo_root)"
 
@@ -89,8 +83,8 @@ init_runtime_context() {
     CODEGEN_JAR="$ROOT_DIR/target/$final_name.jar"
   fi
 
-  # Default proof-output root (keep stable under docs/demo/)
-  PROOF_OUTPUT_ROOT="${PROOF_OUTPUT_ROOT:-${DEMO_DIR}/proof-output}"
+  # Keep local proof output under the Maven build directory.
+  PROOF_OUTPUT_ROOT="${PROOF_OUTPUT_ROOT:-${ROOT_DIR}/target/architecture-proof}"
 
   # Workspace (temp)
   WORK_DIR="$(mktemp -d -t codegen-proof-XXXXXX)"

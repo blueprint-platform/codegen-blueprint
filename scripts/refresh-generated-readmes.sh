@@ -21,7 +21,7 @@ for layout in standard hexagonal; do
 done
 for layout in standard hexagonal; do
   generated="$scratch/greeting-$layout/README.md"
-  snapshot="$root/docs/demo/generated/$layout/README.md"
+  snapshot="$root/docs/examples/$layout.md"
   if [[ "$mode" == --check ]]; then
     diff -u "$snapshot" "$generated"
   else

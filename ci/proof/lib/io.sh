@@ -73,6 +73,9 @@ collect_env_metadata() {
 
     echo "maven:"
     local generated_project="${OUT_DIR:-}/greeting-hex"
+    if [[ ! -f "$generated_project/mvnw" ]]; then
+      generated_project="${OUT_DIR:-}/greeting-standard"
+    fi
     if [[ -f "$generated_project/mvnw" ]]; then
       ( cd "$generated_project" && sh ./mvnw -v 2>&1 || true )
     elif command -v mvn >/dev/null 2>&1; then

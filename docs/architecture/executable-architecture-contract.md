@@ -2,7 +2,7 @@
 
 Codegen Blueprint 2.0 delivers a Spring Boot project directory, a sibling ZIP and the architecture tests for the chosen layout and mode. The generated project owns its build and subsequent lifecycle.
 
-![The CLI validates a blueprint, resolves a concrete Boot patch and publishes a Maven project whose build runs ArchUnit](../images/architecture-2.0.svg)
+![The CLI validates a blueprint, resolves a concrete Boot patch and publishes a Maven project whose build runs ArchUnit](../assets/architecture-2.0.svg)
 
 ## Guarantees
 
@@ -16,4 +16,4 @@ Codegen Blueprint 2.0 delivers a Spring Boot project directory, a sibling ZIP an
 
 The build enforces rules on imported classes matching its scope. The guardrails do not certify application behavior, runtime architecture, production security or every possible layering policy. After delivery, application design, code changes, dependencies and deployment belong to the consumer.
 
-The [compatibility reference](../compatibility.md) defines platform support. The [proof](../demo/executable-architecture-proof.md) shows which violations were executed.
+The [compatibility reference](../compatibility.md) defines platform support. The [proof](../examples/boundary-proof.md) shows which violations were executed.

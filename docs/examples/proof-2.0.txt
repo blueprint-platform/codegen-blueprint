@@ -1,7 +1,7 @@
 Codegen Blueprint 2.0 executable proof
-timestamp: 2026-11-21T01:21:46+03:00
+timestamp: 2026-11-21T02:04:55+03:00
 java version "25.0.4" 2026-07-21 LTS
-JAR SHA-256: 61b6c3c12a2ab71de2269593c45824b8fd067b5a72721f91fd5329c1eb5cfbc3
+JAR SHA-256: d733ca6d259e6f889420ad595e456ee31a35f5a4947efd86d069ac1f1a75e082
 Apache Maven 3.9.16
 
 hex: bootSelector=4.2 bootVersion=4.2.0 source=BUNDLED_FALLBACK

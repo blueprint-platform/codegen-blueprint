@@ -19,7 +19,8 @@ GITHUB = "https://github.com/blueprint-platform/codegen-blueprint"
 NAV = {
     "index": "Overview",
     "quickstart": "Quickstart",
-    "demo/executable-architecture-proof": "Proof",
+    "examples/boundary-proof": "Proof",
+    "examples/generated-projects": "Examples",
     "compatibility": "Compatibility",
     "cli": "CLI",
     "architecture/executable-architecture-contract": "Architecture",
@@ -27,9 +28,7 @@ NAV = {
 PAGES = {
     **NAV,
     "architecture/architecture-guardrails-rulebook": "Guardrails",
-    "guides/migrate-to-2.0": "Migration",
-    "releases/2.0.0": "Release notes",
-    "policies/release-discipline": "Release readiness",
+    "release-notes": "Release notes",
 }
 ROUTES = {ROOT / "docs" / f"{name}.md": Path(f"{name}.html") for name in PAGES}
 
@@ -53,8 +52,10 @@ class Links(Treeprocessor):
         if url.scheme or url.netloc or not url.path:
             return None
         target = (self.source.parent / unquote(url.path)).resolve()
-        if not target.is_relative_to(ROOT) or not target.is_file():
+        if not target.is_relative_to(ROOT) or not target.exists():
             raise ValueError(f"{self.source.relative_to(ROOT)}: missing local target {raw}")
+        if tag == "img" and not target.is_file():
+            raise ValueError(f"{self.source.relative_to(ROOT)}: image is not a file {raw}")
         if self.route is None:
             return None
 
@@ -65,7 +66,8 @@ class Links(Treeprocessor):
             destination = target.relative_to(ROOT / "docs")
             self.assets.add(destination)
         else:
-            return f"{GITHUB}/blob/main/{quote(str(target.relative_to(ROOT)))}{fragment}"
+            view = "tree" if target.is_dir() else "blob"
+            return f"{GITHUB}/{view}/main/{quote(str(target.relative_to(ROOT)))}{fragment}"
         return quote(os.path.relpath(destination, self.route.parent)) + fragment
 
 
@@ -118,8 +120,9 @@ def check_site(site):
 
 def build(site):
     assets = set()
-    for source in ("README.md", "AGENTS.md", "CONTRIBUTING.md", "CHANGELOG.md", "SECURITY.md"):
-        render(ROOT / source, None, assets)
+    for source in (*ROOT.glob("*.md"), *(ROOT / ".github").glob("*.md"), *(ROOT / "docs").rglob("*.md")):
+        if source not in ROUTES:
+            render(source, None, assets)
     for source, route in ROUTES.items():
         body = render(source, route, assets)
         key = route.with_suffix("").as_posix()
@@ -129,6 +132,7 @@ def build(site):
             current = ' aria-current="page"' if name == key else ""
             links.append(f'<a href="{href}"{current}>{escape(label)}</a>')
         stylesheet = os.path.relpath(STYLESHEET, route.parent)
+        page_class = ' class="home"' if key == "index" else ""
         page = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -137,7 +141,7 @@ def build(site):
 <title>{escape(PAGES[key])} · Codegen Blueprint</title>
 <link rel="stylesheet" href="{stylesheet}">
 </head>
-<body>
+<body{page_class}>
 <a class="skip" href="#content">Skip to content</a>
 <header>
 <div class="header-inner"><strong>Codegen Blueprint</strong><a href="{GITHUB}">GitHub</a></div>
@@ -155,7 +159,7 @@ def build(site):
         destination = site / asset
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / "docs" / asset, destination)
-    shutil.copyfile(ROOT / "docs/site" / STYLESHEET, site / STYLESHEET)
+    shutil.copyfile(ROOT / "scripts/pages" / STYLESHEET, site / STYLESHEET)
     (site / ".nojekyll").touch()
     expected = set(ROUTES.values()) | assets | {Path(STYLESHEET), Path(".nojekyll")}
     actual = {path.relative_to(site) for path in site.rglob("*") if path.is_file()}

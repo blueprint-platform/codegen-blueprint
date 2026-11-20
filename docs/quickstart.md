@@ -36,4 +36,4 @@ The CLI prints the selected Boot patch and its source. The output contains the p
 
 For a Java 21 generated project, pass `--java 21` and build with JDK 21. To use the older supported Boot line, pass `--boot 4.1`. See the [CLI reference](cli.md) for the other options.
 
-To see a build fail on a specific architecture rule, follow the [green → red → green proof](demo/executable-architecture-proof.md).
+To see a build fail on a specific architecture rule, follow the [green → red → green proof](examples/boundary-proof.md).

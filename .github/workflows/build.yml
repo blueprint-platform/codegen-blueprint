@@ -3,26 +3,25 @@ name: Build & Test
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - '**/*.md'
-      - 'docs/images/**'
-      - 'docs/site/**'
-      - 'docs/demo/proof-2.0.txt'
   pull_request:
+  workflow_dispatch:
   schedule:
     - cron: '25 5 * * 2'
 
 permissions:
   contents: read
 
+concurrency:
+  group: build-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   engine:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        java: ['21', '25']
+        java: ${{ fromJSON(github.event_name == 'schedule' && '["21"]' || '["21","25"]') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -36,12 +35,11 @@ jobs:
           scandir: |
             ci
             scripts
-            docs/demo/proof
       - name: Install the reference Maven
         run: bash ci/install-reference-maven.sh
       - run: mvn -B -ntp clean verify
       - name: Upload coverage
-        if: matrix.java == '21'
+        if: matrix.java == '21' && github.event_name != 'schedule'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -92,33 +90,64 @@ jobs:
         env:
           BOOT_VERSION: ${{ matrix.boot }}
           JAVA_VERSION: ${{ matrix.java }}
-          EXPECT_BOOT_SOURCE: BUNDLED_FALLBACK
+          PROOF_OUTPUT_ROOT: ${{ runner.temp }}/architecture-proof
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && 'full' || 'standard' }}
         run: |
           (cd target/delivery && sha256sum -c SHA256SUMS)
-          export CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
+          CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
+          export CODEGEN_JAR
           if [[ "$JAVA_VERSION" == 21 ]]; then
             export GENERATOR_JAVA="$JAVA_HOME_25_X64/bin/java"
           else
             export GENERATOR_JAVA="$JAVA_HOME_21_X64/bin/java"
           fi
-          for layout in standard hexagonal; do
-            LAYOUT=$layout GUARDRAILS=strict SAMPLE_CODE=basic bash ci/common-verify-generated.sh
-            LAYOUT=$layout GUARDRAILS=strict SAMPLE_CODE=none bash ci/common-verify-generated.sh
-            LAYOUT=$layout GUARDRAILS=basic SAMPLE_CODE=basic DEPENDENCIES=web bash ci/common-verify-generated.sh
-          done
-          LAYOUT=standard GUARDRAILS=none SAMPLE_CODE=none bash ci/common-verify-generated.sh
-          LAYOUT=hexagonal GUARDRAILS=strict SAMPLE_CODE=basic DEPENDENCIES='data_jpa security' bash ci/common-verify-generated.sh
-      - name: Prove generated architecture failures
+          bash ci/verify-generated.sh "$VERIFICATION_MODE"
+      - name: Save architecture proof
+        if: always() && (github.event_name == 'workflow_dispatch' || (matrix.boot == '4.2' && matrix.java == '25'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-proof-boot-${{ matrix.boot }}-java-${{ matrix.java }}
+          path: ${{ runner.temp }}/architecture-proof/
+          if-no-files-found: warn
+      - name: Check a cold generated wrapper and test fork
+        if: github.event_name == 'workflow_dispatch' && matrix.boot == '4.2'
         env:
-          BOOT_VERSION: ${{ matrix.boot }}
-          JAVA_VERSION: ${{ matrix.java }}
           EXPECT_BOOT_SOURCE: BUNDLED_FALLBACK
+          JAVA_VERSION: ${{ matrix.java }}
+          LAYOUT: hexagonal
+          GUARDRAILS: strict
+          SAMPLE_CODE: basic
         run: |
-          export CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
-          bash docs/demo/proof/proof-runner.sh
+          CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
+          export CODEGEN_JAR
+          export MAVEN_USER_HOME="$RUNNER_TEMP/cold-wrapper"
+          export MAVEN_OPTS="-Dmaven.repo.local=$RUNNER_TEMP/cold-repository"
+          bash ci/verify-project.sh
+
+  quickstart:
+    if: github.event_name != 'schedule'
+    needs: engine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - uses: actions/download-artifact@v4
+        with:
+          name: generator
+          path: target/delivery
+      - run: |
+          (cd target/delivery && sha256sum -c SHA256SUMS)
+          jar="$PWD/target/delivery/$(cat target/delivery/name)"
+          python3 scripts/verify-quickstart.py "$jar"
+          bash scripts/refresh-generated-readmes.sh "$jar" --check
 
   upstream:
     if: github.event_name == 'schedule'
+    needs: engine
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -132,9 +161,10 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: temurin
           cache: maven
-      - name: Install the reference Maven
-        run: bash ci/install-reference-maven.sh
-      - run: mvn -B -ntp clean verify
+      - uses: actions/download-artifact@v4
+        with:
+          name: generator
+          path: target/delivery
       - name: Verify the published candidate
         env:
           BOOT_VERSION: ${{ matrix.boot }}
@@ -143,4 +173,8 @@ jobs:
           LAYOUT: hexagonal
           GUARDRAILS: strict
           SAMPLE_CODE: basic
-        run: bash ci/common-verify-generated.sh
+        run: |
+          (cd target/delivery && sha256sum -c SHA256SUMS)
+          CODEGEN_JAR="$PWD/target/delivery/$(cat target/delivery/name)"
+          export CODEGEN_JAR
+          bash ci/verify-project.sh

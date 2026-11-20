@@ -9,4 +9,6 @@ Release candidate documentation for the current `2.0.0-SNAPSHOT` branch. The 2.0
 - Project publication protects existing output directories and sibling ZIPs. POM text is XML-escaped. Cleanup is best-effort for owned output.
 - The generator runs on Java 21 or 25 with its own Spring Boot 4.1.3 runtime.
 
-See the [migration guide](../guides/migrate-to-2.0.md), [compatibility](../compatibility.md) and [release gates](../policies/release-discipline.md).
+Breaking CLI changes include minor-only Boot selectors (`4.1` and `4.2`), removal of Boot 3.x/4.0 generation, and a Java 25 default. Existing output paths must be cleared or changed before generating again.
+
+See [compatibility](compatibility.md) and [release gates](maintainers/release-discipline.md).

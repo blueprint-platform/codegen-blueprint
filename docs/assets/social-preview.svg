@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title">
+  <title id="title">Codegen Blueprint · Architecture as an Executable Contract</title>
+  <defs>
+    <linearGradient id="surface" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop stop-color="#132c3b"/><stop offset="1" stop-color="#091923"/></linearGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#395566" opacity=".65"/></pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="#3dedbf" stroke-width="1.4"/></marker>
+  </defs>
+  <rect width="1280" height="640" fill="url(#surface)"/>
+  <path d="M672 80H1216V558H672Z" fill="url(#grid)" stroke="#395566"/>
+  <path d="M672 112V80h32m480 0h32v32m0 414v32h-32m-480 0h-32v-32" fill="none" stroke="#6b8d9c" stroke-width="3"/>
+  <g font-family="system-ui, sans-serif">
+    <text x="71" y="122" font-size="27" font-weight="700" fill="#3dedbf">Codegen Blueprint</text>
+    <g fill="#ecfaf6" font-size="62" font-weight="750">
+      <text x="67" y="215">Architecture as</text><text x="67" y="290">an Executable</text><text x="67" y="365">Contract</text>
+    </g>
+    <text x="71" y="434" font-size="26" fill="#adc5cc">Spring Boot projects with build-time boundaries</text>
+    <text x="71" y="546" font-size="27" font-weight="700" fill="#a5f6dd">Generate → Enforce → Prove</text>
+  </g>
+  <rect x="719" y="130" width="263" height="80" rx="8" fill="#16303d" stroke="#6b8d9c" stroke-width="2"/>
+  <rect x="719" y="279" width="263" height="80" rx="8" fill="#16303d" stroke="#6b8d9c" stroke-width="2"/>
+  <rect x="719" y="429" width="263" height="80" rx="8" fill="#16303d" stroke="#6b8d9c" stroke-width="2"/>
+  <g fill="none" stroke="#3dedbf" stroke-width="3" marker-end="url(#arrow)">
+    <path d="M850 210v67"/><path d="M850 359v68"/>
+  </g>
+  <path d="M982 170h92q18 0 18 18v263q0 18-18 18h-92" fill="none" stroke="#ff969f" stroke-width="3" stroke-dasharray="10 7"/>
+  <circle cx="1092" cy="319" r="27" fill="#522e40" stroke="#ff969f" stroke-width="3"/>
+  <path d="m1081 308 22 22m0-22-22 22" stroke="#ffd0d2" stroke-width="4"/>
+  <g font-family="ui-monospace, monospace" font-size="24" fill="#ecfaf6" text-anchor="middle">
+    <text x="850" y="178">controller</text>
+    <text x="850" y="327">service</text>
+    <text x="850" y="477">repository</text>
+  </g>
+  <rect x="1011" y="348" width="162" height="31" rx="5" fill="#102635"/>
+  <text x="1092" y="370" font-family="system-ui, sans-serif" font-size="21" fill="#ffbec2" text-anchor="middle">Rule violation</text>
+</svg>

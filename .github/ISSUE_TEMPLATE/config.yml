@@ -1,8 +1,8 @@
 blank_issues_enabled: false
-
 contact_links:
-  - name: 💬 Start a discussion
+  - name: Questions and design discussions
     url: https://github.com/blueprint-platform/codegen-blueprint/discussions
-    about: >
-      Questions, architectural discussions, design feedback,
-      or ideas about profiles, layouts, and executable architecture.
+    about: Ask about generation, layouts, guardrails, or project direction.
+  - name: Report a security issue privately
+    url: https://github.com/blueprint-platform/codegen-blueprint/security/policy
+    about: Use the private reporting instructions for vulnerabilities.

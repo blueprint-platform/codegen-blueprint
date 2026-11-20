@@ -1,24 +1,16 @@
 version: 2
 updates:
-  - package-ecosystem: "maven"
-    directory: "/"
+  - package-ecosystem: maven
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "04:00"
-      timezone: "Europe/Istanbul"
-
+      interval: weekly
     open-pull-requests-limit: 3
-
-    labels:
-      - "security"
-      - "dependencies"
-
-    commit-message:
-      prefix: "chore(deps)"
-      include: "scope"
-
     ignore:
-      - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
+      - dependency-name: org.springframework.boot:spring-boot-starter-parent
         update-types:
-          - "version-update:semver-major"
+          - version-update:semver-major
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
