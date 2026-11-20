@@ -4,10 +4,8 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractM
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.BuildToolFilesPort;
 
-public class MavenWrapperBuildToolFilesAdapter extends AbstractMultiTemplateArtifactAdapter
-    implements BuildToolFilesPort {
+public class MavenWrapperBuildToolFilesAdapter extends AbstractMultiTemplateArtifactAdapter {
 
   public MavenWrapperBuildToolFilesAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
     super(renderer, artifactSpec);

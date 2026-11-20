@@ -6,17 +6,18 @@ import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactI
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.SequencedMap;
 
 public final class FileSystemProjectPublisher implements ProjectPublisherPort {
   private final FileSystemProjectWriterAdapter writer = new FileSystemProjectWriterAdapter();
@@ -27,25 +28,25 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
   public PublishedProject publish(
       Path target, String artifactId, Iterable<? extends GeneratedResource> resources) {
     String name = new ArtifactId(artifactId).value();
-    List<GeneratedResource> manifest = validatedManifest(resources);
     Path root = target.resolve(name);
     Path zip = target.resolve(name + ".zip");
-    List<OwnedPath> claimed = new ArrayList<>();
+    var claims = new OutputClaims(root);
     Path staging = null;
     Object stagingKey = null;
     try {
+      var manifest = validatedManifest(resources);
       Files.createDirectories(target);
       staging = Files.createTempDirectory(target, ".codegen-");
       stagingKey = attributes(staging).fileKey();
       Path tree = Files.createDirectory(staging.resolve(name));
       writer.write(tree, manifest);
       Path stagedZip = archiver.archive(tree, name);
-      publishStaged(tree, stagedZip, root, zip, claimed);
+      publishStaged(tree, stagedZip, root, zip, claims);
       var result = new PublishedProject(root, zip, output.list(root));
       deleteStaging(staging, stagingKey);
       return result;
     } catch (IOException | RuntimeException failure) {
-      rollbackOutput(claimed, root, failure);
+      claims.rollback(failure);
       if (staging != null) {
         try {
           deleteStaging(staging, stagingKey);
@@ -58,95 +59,47 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
   }
 
   private static void publishStaged(
-      Path tree, Path stagedZip, Path root, Path zip, List<OwnedPath> claimed) throws IOException {
+      Path tree, Path stagedZip, Path root, Path zip, OutputClaims claims) throws IOException {
     List<Path> entries;
     try (var walk = Files.walk(tree)) {
       entries = walk.filter(path -> !path.equals(tree)).sorted().toList();
     }
-    Files.createDirectory(root);
-    remember(claimed, root, true);
-    try (var archive =
-        Files.newOutputStream(zip, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-      remember(claimed, zip, false);
+    claims.createDirectory(root);
+    try (var archive = claims.createFile(zip)) {
       for (Path source : entries) {
         Path destination = root.resolve(tree.relativize(source));
-        verifyDirectory(claimed, root);
-        verifyDirectory(claimed, destination.getParent());
-        copyEntry(source, destination, claimed);
+        claims.verifyParents(destination);
+        if (Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)) {
+          claims.createDirectory(destination);
+        } else {
+          try (var file = claims.createFile(destination)) {
+            Files.copy(source, file);
+          }
+        }
       }
       Files.copy(stagedZip, archive);
     }
   }
 
-  private static void copyEntry(Path source, Path destination, List<OwnedPath> claimed)
-      throws IOException {
-    if (Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)) {
-      Files.createDirectory(destination);
-      remember(claimed, destination, true);
-    } else {
-      try (var file =
-          Files.newOutputStream(
-              destination, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-        remember(claimed, destination, false);
-        Files.copy(source, file);
-      }
-    }
-  }
-
-  private static void rollbackOutput(List<OwnedPath> claimed, Path root, Throwable failure) {
-    for (OwnedPath entry : claimed.reversed()) {
-      try {
-        if (!entry.path().equals(root) && entry.path().startsWith(root)) {
-          verifyDirectory(claimed, root);
-          verifyDirectory(claimed, entry.path().getParent());
-        }
-        if (!entry.matches())
-          throw new IOException("Output identity changed or unavailable: " + entry.path());
-        Files.delete(entry.path());
-      } catch (IOException cleanupFailure) {
-        failure.addSuppressed(cleanupFailure);
-      }
-    }
-  }
-
   private static List<GeneratedResource> validatedManifest(
-      Iterable<? extends GeneratedResource> resources) {
+      Iterable<? extends GeneratedResource> resources) throws IOException {
     Map<Path, GeneratedResource> entries = new LinkedHashMap<>();
     for (GeneratedResource resource : resources) {
       Path path = resource.relativePath();
       GeneratedResource previous = entries.putIfAbsent(path, resource);
       if (previous != null
           && !(previous instanceof GeneratedDirectory && resource instanceof GeneratedDirectory)) {
-        throw new IllegalArgumentException("Duplicate generated path: " + path);
+        throw new IOException("Duplicate generated path: " + path);
       }
     }
     for (Path path : entries.keySet()) {
       for (Path parent = path.getParent(); parent != null; parent = parent.getParent()) {
         if (entries.containsKey(parent) && !(entries.get(parent) instanceof GeneratedDirectory)) {
-          throw new IllegalArgumentException("Generated file is also a parent: " + parent);
+          throw new IOException("Generated file is also a parent: " + parent);
         }
       }
     }
     return List.copyOf(entries.values());
-  }
-
-  private static void remember(List<OwnedPath> paths, Path path, boolean directory)
-      throws IOException {
-    paths.add(new OwnedPath(path, attributes(path).fileKey(), directory));
-  }
-
-  private static void verifyDirectory(List<OwnedPath> paths, Path directory) throws IOException {
-    for (OwnedPath path : paths.reversed()) {
-      if (path.path().equals(directory) && path.directory()) {
-        if (path.key() == null
-            ? Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)
-            : path.matches()) {
-          return;
-        }
-        break;
-      }
-    }
-    throw new IOException("Output parent identity changed: " + directory);
   }
 
   private static BasicFileAttributes attributes(Path path) throws IOException {
@@ -162,6 +115,75 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
     }
     try (var walk = Files.walk(staging)) {
       for (Path entry : walk.sorted(Comparator.reverseOrder()).toList()) Files.delete(entry);
+    }
+  }
+
+  /** Owns the paths claimed by a single publication, in creation order. */
+  private static final class OutputClaims {
+    private final Path root;
+    private final SequencedMap<Path, OwnedPath> paths = new LinkedHashMap<>();
+
+    OutputClaims(Path root) {
+      this.root = root;
+    }
+
+    void createDirectory(Path path) throws IOException {
+      Files.createDirectory(path);
+      remember(path, true);
+    }
+
+    OutputStream createFile(Path path) throws IOException {
+      var stream =
+          Files.newOutputStream(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+      try {
+        remember(path, false);
+        return stream;
+      } catch (IOException | RuntimeException e) {
+        try {
+          stream.close();
+        } catch (IOException closeFailure) {
+          e.addSuppressed(closeFailure);
+        }
+        throw e;
+      }
+    }
+
+    void verifyParents(Path path) throws IOException {
+      verifyDirectory(root);
+      if (!root.equals(path.getParent())) {
+        verifyDirectory(path.getParent());
+      }
+    }
+
+    void rollback(Throwable failure) {
+      for (var claim : paths.reversed().values()) {
+        try {
+          if (!claim.path().equals(root) && claim.path().startsWith(root)) {
+            verifyParents(claim.path());
+          }
+          if (!claim.matches()) {
+            throw new IOException("Output identity changed or unavailable: " + claim.path());
+          }
+          Files.delete(claim.path());
+        } catch (IOException | RuntimeException cleanupFailure) {
+          failure.addSuppressed(cleanupFailure);
+        }
+      }
+    }
+
+    private void remember(Path path, boolean directory) throws IOException {
+      paths.put(path, new OwnedPath(path, attributes(path).fileKey(), directory));
+    }
+
+    private void verifyDirectory(Path directory) throws IOException {
+      var claim = paths.get(directory);
+      if (claim == null
+          || !claim.directory()
+          || !(claim.key() == null
+              ? Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)
+              : claim.matches())) {
+        throw new IOException("Output parent identity changed: " + directory);
+      }
     }
   }
 

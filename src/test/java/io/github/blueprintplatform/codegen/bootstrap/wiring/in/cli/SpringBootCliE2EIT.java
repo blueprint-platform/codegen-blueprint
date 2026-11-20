@@ -20,6 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -221,6 +222,51 @@ class SpringBootCliE2EIT {
 
       assertThat(io.stderr()).contains(expectedErrorCode);
     }
+  }
+
+  @Test
+  void reportsInvalidMavenMetadataBeforePublishing() {
+    var io = generate("Greeting with ${project.version}");
+
+    assertThat(io.exitCode()).isEqualTo(3);
+    assertThat(io.stderr())
+        .contains("Project description must be literal Maven XML without property expressions.")
+        .contains("(code: adapter.pom.metadata.invalid)");
+    assertThat(tempDir.resolve("greeting")).doesNotExist();
+    assertThat(tempDir.resolve("greeting.zip")).doesNotExist();
+  }
+
+  @Test
+  void reportsOutputCollisionAndPreservesTheExistingArchive() throws IOException {
+    var archive = Files.writeString(tempDir.resolve("greeting.zip"), "user content");
+    var io = generate("Greeting example");
+
+    assertThat(io.exitCode()).isEqualTo(3);
+    assertThat(io.stderr())
+        .contains("Could not write project output")
+        .contains("(code: adapter.project.write.failed)");
+    assertThat(archive).hasContent("user content");
+    assertThat(tempDir.resolve("greeting")).doesNotExist();
+  }
+
+  private CapturedIo generate(String description) {
+    return captureIo(
+        cliExecutor,
+        new String[] {
+          "springboot",
+          "--group-id",
+          "com.example",
+          "--artifact-id",
+          "greeting",
+          "--name",
+          "Greeting",
+          "--description",
+          description,
+          "--package-name",
+          "com.example.greeting",
+          "--target-dir",
+          tempDir.toString()
+        });
   }
 
   private record CapturedIo(int exitCode, String stdout, String stderr) {}

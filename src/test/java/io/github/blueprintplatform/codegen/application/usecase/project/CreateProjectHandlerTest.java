@@ -2,6 +2,8 @@ package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution.Source;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
@@ -58,7 +60,8 @@ class CreateProjectHandlerTest {
               assertThat(artifact).isEqualTo("demo-app");
               var files = new ArrayList<ProjectOutputItem>();
               resources.forEach(
-                  resource -> files.add(new ProjectOutputItem(resource.relativePath(), false, false)));
+                  resource ->
+                      files.add(new ProjectOutputItem(resource.relativePath(), false, false)));
               return new ProjectPublisherPort.PublishedProject(
                   target.resolve(artifact), target.resolve(artifact + ".zip"), files);
             });
@@ -70,8 +73,10 @@ class CreateProjectHandlerTest {
     assertThat(result.archivePath()).hasFileName("demo-app.zip");
     assertThat(result.projectRoot()).isEqualTo(tempDir.resolve("demo-app"));
 
-    assertThat(result.versionSource()).isEqualTo("CENTRAL_LATEST");
-    assertThat(result.project().runtimeTarget().params()).containsEntry("springBootVersion", "4.2.0");
+    assertThat(result.bootResolution())
+        .isEqualTo(new BootResolution("4.2.0", Source.CENTRAL_LATEST, null));
+    assertThat(result.project().runtimeTarget().params())
+        .containsEntry("springBootVersion", "4.2.0");
 
     assertThat(result.project().metadata().groupId()).isEqualTo("com.acme");
     assertThat(result.project().metadata().artifactId()).isEqualTo("demo-app");
@@ -94,8 +99,7 @@ class CreateProjectHandlerTest {
 
   private CreateProjectCommand getCreateProjectCommand() {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    var platformTarget =
-        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
+    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
 
     return new CreateProjectCommand(
         "com.acme",

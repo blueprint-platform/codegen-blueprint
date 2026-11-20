@@ -5,12 +5,10 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactS
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.TestSourceEntrypointPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 
-public class TestSourceEntrypointAdapter extends AbstractJavaSourceFileAdapter
-    implements TestSourceEntrypointPort {
+public class TestSourceEntrypointAdapter extends AbstractJavaSourceFileAdapter {
 
   public static final String POSTFIX_APPLICATION_TESTS = "ApplicationTests";
 

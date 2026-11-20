@@ -6,7 +6,6 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.templating.Te
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
@@ -50,12 +49,7 @@ public class ArchitectureGovernanceAdapter {
     this.templateScanner = templateScanner;
   }
 
-  public ArtifactKey artifactKey() {
-    return ArtifactKey.ARCHITECTURE_GOVERNANCE;
-  }
-
-  public Iterable<GeneratedResource> generate(
-      ProjectBlueprint blueprint, boolean webSelected) {
+  public Iterable<GeneratedResource> generate(ProjectBlueprint blueprint, boolean webSelected) {
     GuardrailsMode mode = blueprint.getArchitecture().governance().mode();
     if (!mode.isEnabled()) {
       return List.of();

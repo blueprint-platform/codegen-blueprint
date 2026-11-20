@@ -78,7 +78,20 @@ class FileSystemProjectPublisherTest {
     Path absent = target.resolve("absent");
     var duplicateResources = List.of(file, file);
     assertThatThrownBy(() -> publisher.publish(absent, "demo", duplicateResources))
-        .isInstanceOf(IllegalArgumentException.class);
+        .isInstanceOf(ProjectWriteException.class)
+        .hasRootCauseMessage("Duplicate generated path: " + file.relativePath());
+    assertThat(absent).doesNotExist();
+  }
+
+  @Test
+  void rejectsAFileAsAParentBeforeCreatingTheTarget() {
+    Path absent = target.resolve("absent");
+    var parent = new GeneratedTextResource(Path.of("src"), "file", StandardCharsets.UTF_8);
+    var resources = List.of(file, parent);
+
+    assertThatThrownBy(() -> publisher.publish(absent, "demo", resources))
+        .isInstanceOf(ProjectWriteException.class)
+        .hasRootCauseMessage("Generated file is also a parent: src");
     assertThat(absent).doesNotExist();
   }
 

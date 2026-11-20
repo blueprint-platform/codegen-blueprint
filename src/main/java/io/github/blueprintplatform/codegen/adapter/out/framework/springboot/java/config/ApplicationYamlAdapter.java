@@ -4,7 +4,6 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractS
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ApplicationConfigurationPort;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
@@ -12,8 +11,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements ApplicationConfigurationPort {
+public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapter {
 
   public ApplicationYamlAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
     super(renderer, artifactSpec);

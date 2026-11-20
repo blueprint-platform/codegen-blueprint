@@ -42,13 +42,12 @@ class ProjectBlueprintMapperTest {
 
     var createProjectRequest = getCreateProjectCommand(dependencies);
 
-    return mapper.from(createProjectRequest);
+    return mapper.prepare(createProjectRequest).blueprint("4.2.0");
   }
 
   private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> dependencies) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    var platformTarget =
-        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
+    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
 
     return new CreateProjectCommand(
         "com.acme",

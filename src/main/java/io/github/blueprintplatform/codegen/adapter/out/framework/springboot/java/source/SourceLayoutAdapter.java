@@ -1,7 +1,7 @@
 package io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.source;
 
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.SourceLayoutPort;
+import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SourceLayoutAdapter implements SourceLayoutPort {
+public class SourceLayoutAdapter implements ArtifactPort {
 
   private static final Path SRC_MAIN_JAVA = Path.of("src", "main", "java");
   private static final Path SRC_TEST_JAVA = Path.of("src", "test", "java");

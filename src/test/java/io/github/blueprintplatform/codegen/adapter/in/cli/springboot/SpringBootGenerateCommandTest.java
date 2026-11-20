@@ -14,6 +14,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.Spri
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootSampleCodeOption;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootVersionOption;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
@@ -137,7 +138,11 @@ class SpringBootGenerateCommandTest {
           new ProjectSummary(
               metadata, techStack, runtimeTarget, architecture, List.of(), List.of());
 
-      return new CreateProjectResult(project, Path.of("."), Path.of("demo-app.zip"));
+      return new CreateProjectResult(
+          project,
+          Path.of("."),
+          Path.of("demo-app.zip"),
+          new BootResolution("4.2.0", BootResolution.Source.CENTRAL_LATEST, null));
     }
   }
 }

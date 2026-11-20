@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectOutputDiscoveryException;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
-import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.io.TempDir;
 @Tag("adapter")
 class FileSystemProjectOutputAdapterTest {
 
-  private final ProjectOutputPort outputPort = new FileSystemProjectOutputAdapter();
+  private final FileSystemProjectOutputAdapter outputPort = new FileSystemProjectOutputAdapter();
 
   @TempDir Path tempDir;
 

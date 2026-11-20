@@ -1,5 +1,7 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution.Source;
 import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchResolver;
 import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
@@ -13,21 +15,17 @@ public final class BootVersionSelection {
   public BootVersionSelection(
       SpringBootPatchResolver resolver, Map<SpringBootVersion, String> bundled) {
     this.resolver = resolver;
-    this.bundled = Map.copyOf(bundled);
     for (var line : SpringBootVersion.values()) {
-      if (!line.matchesPatch(this.bundled.get(line))) {
-        throw new IllegalArgumentException("Invalid bundled Spring Boot patch for " + line);
-      }
+      line.validatePatch(bundled.get(line));
     }
+    this.bundled = Map.copyOf(bundled);
   }
 
-  public Result select(SpringBootVersion line) {
+  public BootResolution select(SpringBootVersion line) {
     try {
-      return new Result(resolver.resolveLatest(line), "CENTRAL_LATEST", null);
+      return new BootResolution(resolver.resolveLatest(line), Source.CENTRAL_LATEST, null);
     } catch (SpringBootRepositoryUnavailableException e) {
-      return new Result(bundled.get(line), "BUNDLED_FALLBACK", e.getMessage());
+      return new BootResolution(bundled.get(line), Source.BUNDLED_FALLBACK, e.getMessage());
     }
   }
-
-  public record Result(String patch, String source, String warning) {}
 }

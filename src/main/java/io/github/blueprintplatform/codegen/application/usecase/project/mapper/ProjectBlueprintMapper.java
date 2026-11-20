@@ -18,16 +18,15 @@ import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDesc
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.policy.tech.CompatibilityPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ProjectBlueprintMapper {
-
-  public ProjectBlueprint from(CreateProjectCommand c) {
-    return prepare(c).blueprint(c.platformTarget());
-  }
 
   public PreparedProject prepare(CreateProjectCommand c) {
     ProjectMetadata metadata =
@@ -46,17 +45,26 @@ public class ProjectBlueprintMapper {
     Dependencies dependencies = mapDependencies(c.dependencies());
 
     CompatibilityPolicy.ensureCompatible(platform);
-    return new PreparedProject(metadata, platform, architecture, dependencies);
+    return switch (platform.platformTarget()) {
+      case SpringBootJvmTarget target ->
+          new PreparedProject(metadata, platform.techStack(), target, architecture, dependencies);
+    };
   }
 
   public record PreparedProject(
       ProjectMetadata metadata,
-      PlatformSpec platform,
+      TechStack techStack,
+      SpringBootJvmTarget target,
       ArchitectureSpec architecture,
       Dependencies dependencies) {
-    public ProjectBlueprint blueprint(PlatformTarget target) {
+    public SpringBootVersion bootLine() {
+      return target.springBoot();
+    }
+
+    public ProjectBlueprint blueprint(String patch) {
+      var resolved = new SpringBootJvmTarget(target.java(), bootLine(), patch);
       return ProjectBlueprint.of(
-          metadata, new PlatformSpec(platform.techStack(), target), architecture, dependencies);
+          metadata, new PlatformSpec(techStack, resolved), architecture, dependencies);
     }
   }
 
@@ -75,7 +83,7 @@ public class ProjectBlueprintMapper {
       DependencyScope scope =
           (d.scope() == null || d.scope().isBlank())
               ? null
-              : DependencyScope.valueOf(d.scope().trim().toUpperCase());
+              : DependencyScope.valueOf(d.scope().trim().toUpperCase(Locale.ROOT));
 
       items.add(
           new Dependency(

@@ -16,8 +16,8 @@ public record SpringBootJvmTarget(
     if (java == null || springBoot == null) {
       throw new DomainViolationException(TARGET_REQUIRED);
     }
-    if (patchVersion != null && !springBoot.matchesPatch(patchVersion)) {
-      throw new DomainViolationException(() -> "platform.springboot-patch.invalid", patchVersion);
+    if (patchVersion != null) {
+      springBoot.validatePatch(patchVersion);
     }
   }
 }

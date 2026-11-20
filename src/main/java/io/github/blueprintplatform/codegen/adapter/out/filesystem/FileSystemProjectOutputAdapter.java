@@ -2,7 +2,6 @@ package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectOutputDiscoveryException;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
-import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputPort;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,14 +10,13 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class FileSystemProjectOutputAdapter implements ProjectOutputPort {
+final class FileSystemProjectOutputAdapter {
 
   private static final Set<String> EXECUTABLE_FILE_NAMES = Set.of("mvnw", "gradlew");
   private static final Set<String> EXECUTABLE_EXTENSIONS = Set.of(".sh", ".cmd", ".bat");
   private static final Set<String> BINARY_EXTENSIONS =
       Set.of(".jar", ".zip", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".ico");
 
-  @Override
   public List<ProjectOutputItem> list(Path projectRoot) {
     if (projectRoot == null) {
       return List.of();

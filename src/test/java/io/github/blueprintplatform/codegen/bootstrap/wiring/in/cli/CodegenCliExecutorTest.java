@@ -6,6 +6,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import io.github.blueprintplatform.codegen.adapter.in.cli.mapper.CreateProjectCommandMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.SpringBootGenerateCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
@@ -130,7 +131,10 @@ class CodegenCliExecutorTest {
               metadata, techStack, runtimeTarget, architecture, List.of(), List.of());
 
       return new CreateProjectResult(
-          project, lastCreateProjectCommand.targetDirectory(), Path.of("demo-app.zip"));
+          project,
+          lastCreateProjectCommand.targetDirectory(),
+          Path.of("demo-app.zip"),
+          new BootResolution("4.2.0", BootResolution.Source.CENTRAL_LATEST, null));
     }
   }
 

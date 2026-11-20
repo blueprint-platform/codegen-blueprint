@@ -7,7 +7,7 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactS
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.SampleCodePort;
+import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SampleCodeAdapter implements SampleCodePort {
+public class SampleCodeAdapter implements ArtifactPort {
 
   private static final String PATH_SEPARATOR = "/";
   private static final String SAMPLE_ROOT_DIR = "sample";

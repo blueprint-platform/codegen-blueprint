@@ -1,5 +1,6 @@
 package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ArchitectureSpecSummary;
@@ -8,8 +9,8 @@ import io.github.blueprintplatform.codegen.application.port.in.project.model.sum
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectMetadataSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.RuntimeTargetSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.TechStackSummary;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort.PublishedProject;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
-import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
@@ -17,10 +18,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
 import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,15 +30,10 @@ public class CreateProjectResultMapper {
   private static final String PARAM_SPRING_BOOT_VERSION = "springBootVersion";
 
   public CreateProjectResult from(
-      ProjectBlueprint blueprint,
-      Path projectRoot,
-      List<ProjectOutputItem> projectOutputItems,
-      Path archivePath,
-      BootVersionSelection.Result selection) {
+      ProjectBlueprint blueprint, PublishedProject published, BootResolution selection) {
 
-    ProjectSummary project = toProjectSummary(blueprint, projectOutputItems);
-    return new CreateProjectResult(
-        project, projectRoot, archivePath, selection.source(), selection.warning());
+    ProjectSummary project = toProjectSummary(blueprint, published.files());
+    return new CreateProjectResult(project, published.root(), published.archive(), selection);
   }
 
   private ProjectSummary toProjectSummary(
@@ -94,26 +87,28 @@ public class CreateProjectResultMapper {
     String buildTool = stack.buildTool().key();
     String language = stack.language().key();
 
-    String frameworkVersion = null;
-    String languageVersion = null;
-
-    if (platform.platformTarget()
-        instanceof
-        SpringBootJvmTarget(JavaVersion java, SpringBootVersion springBoot, String patch)) {
-      frameworkVersion = patch;
-      languageVersion = java.asString();
-    }
-
-    return new TechStackSummary(
-        framework, frameworkVersion, buildTool, null, language, languageVersion);
+    return switch (platform.platformTarget()) {
+      case SpringBootJvmTarget target ->
+          new TechStackSummary(
+              framework,
+              target.patchVersion(),
+              buildTool,
+              null,
+              language,
+              target.java().asString());
+    };
   }
 
   private RuntimeTargetSummary toRuntimeTargetSummary(PlatformSpec platform) {
     return switch (platform.platformTarget()) {
-      case SpringBootJvmTarget(JavaVersion java, SpringBootVersion springBoot, String patch) ->
+      case SpringBootJvmTarget target ->
           new RuntimeTargetSummary(
               RUNTIME_TARGET_SPRING_BOOT_JVM,
-              Map.of(PARAM_JAVA_VERSION, java.asString(), PARAM_SPRING_BOOT_VERSION, patch));
+              Map.of(
+                  PARAM_JAVA_VERSION,
+                  target.java().asString(),
+                  PARAM_SPRING_BOOT_VERSION,
+                  target.patchVersion()));
     };
   }
 

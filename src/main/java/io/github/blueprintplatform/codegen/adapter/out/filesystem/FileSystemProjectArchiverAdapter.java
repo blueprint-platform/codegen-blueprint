@@ -2,7 +2,6 @@ package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectArchiveIOException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectArchiveInvalidRootException;
-import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -12,12 +11,11 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class FileSystemProjectArchiverAdapter implements ProjectArchiverPort {
+final class FileSystemProjectArchiverAdapter {
 
   private static final String ZIP_EXTENSION = ".zip";
   private static final char ZIP_SEPARATOR = '/';
 
-  @Override
   public Path archive(Path projectRoot, String artifactId) {
     if (projectRoot == null) {
       throw new ProjectArchiveInvalidRootException(null);

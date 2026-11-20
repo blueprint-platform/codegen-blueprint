@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.sun.net.httpserver.HttpServer;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution.Source;
 import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
@@ -44,7 +46,7 @@ class CentralSpringBootPatchResolverTest {
         "<project><parent><groupId>org.springframework.boot</groupId><version>4.1.10</version>"
             + "</parent><artifactId>spring-boot-starter-parent</artifactId></project>");
     assertThat(selection().select(V4_1))
-        .isEqualTo(new BootVersionSelection.Result("4.1.10", "CENTRAL_LATEST", null));
+        .isEqualTo(new BootResolution("4.1.10", Source.CENTRAL_LATEST, null));
   }
 
   @Test
@@ -68,13 +70,23 @@ class CentralSpringBootPatchResolverTest {
   }
 
   @Test
+  void oversizedResponseAfterHeadersDoesNotFallback() {
+    respond("/maven-metadata.xml", 200, " ".repeat(1024 * 1024 + 1));
+    var versions = selection();
+
+    assertThatThrownBy(() -> versions.select(V4_1))
+        .hasMessage("adapter.springboot.resolution.failed")
+        .hasRootCauseMessage("Central response exceeded byte limit");
+  }
+
+  @Test
   void unavailableConnectionSelectsBundledPatchForEachLine() {
     server.stop(0);
     var versions = selection();
     for (var entry : bundled().entrySet()) {
       var selected = versions.select(entry.getKey());
       assertThat(selected.patch()).isEqualTo(entry.getValue());
-      assertThat(selected.source()).isEqualTo("BUNDLED_FALLBACK");
+      assertThat(selected.source()).isEqualTo(Source.BUNDLED_FALLBACK);
       assertThat(selected.warning()).contains("metadata");
     }
   }

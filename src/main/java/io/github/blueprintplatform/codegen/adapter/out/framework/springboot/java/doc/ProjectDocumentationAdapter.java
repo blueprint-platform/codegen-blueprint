@@ -9,7 +9,6 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactS
 import io.github.blueprintplatform.codegen.adapter.out.shared.dependency.DependencyFeature;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ProjectDocumentationPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
@@ -21,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements ProjectDocumentationPort {
+public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactAdapter {
 
   private final BuildDependencyMapper buildDependencyMapper;
 

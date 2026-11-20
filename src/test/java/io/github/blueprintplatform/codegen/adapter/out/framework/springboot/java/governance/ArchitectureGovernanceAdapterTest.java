@@ -7,7 +7,6 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.templating.Ar
 import io.github.blueprintplatform.codegen.adapter.error.exception.templating.TemplateScanException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.FtlClasspathTemplateScanner;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -129,18 +128,6 @@ class ArchitectureGovernanceAdapterTest {
         return Thread.currentThread().getContextClassLoader();
       }
     };
-  }
-
-  @Test
-  @DisplayName("artifactKey() should return ARCHITECTURE_GOVERNANCE")
-  void artifactKey_shouldReturnArchitectureGovernance() {
-    ArchitectureGovernanceAdapter adapter =
-        new ArchitectureGovernanceAdapter(
-            new RecordingTemplateRenderer(),
-            DUMMY_ARTIFACT_SPEC,
-            new StubFtlClasspathTemplateScanner(List.of()));
-
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.ARCHITECTURE_GOVERNANCE);
   }
 
   @Test

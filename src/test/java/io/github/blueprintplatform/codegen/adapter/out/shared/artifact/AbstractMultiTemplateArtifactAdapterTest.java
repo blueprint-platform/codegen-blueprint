@@ -103,8 +103,8 @@ class AbstractMultiTemplateArtifactAdapterTest {
   }
 
   @Test
-  @DisplayName("default buildModel() should return empty model and require non-null blueprint")
-  void defaultBuildModel_shouldReturnEmptyModelAndRequireNonNull() {
+  @DisplayName("default buildModel() should return empty model")
+  void defaultBuildModel_shouldReturnEmptyModel() {
     GeneratedResource file =
         new GeneratedTextResource(Path.of("out/a.txt"), "a", StandardCharsets.UTF_8);
 

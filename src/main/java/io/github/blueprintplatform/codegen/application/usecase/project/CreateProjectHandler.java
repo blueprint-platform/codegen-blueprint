@@ -9,7 +9,6 @@ import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisher
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 
 public class CreateProjectHandler implements CreateProjectPort {
 
@@ -35,11 +34,8 @@ public class CreateProjectHandler implements CreateProjectPort {
   @Override
   public CreateProjectResult handle(CreateProjectCommand createProjectCommand) {
     var prepared = blueprintMapper.prepare(createProjectCommand);
-    var requested = (SpringBootJvmTarget) prepared.platform().platformTarget();
-    var selection = bootVersions.select(requested.springBoot());
-    var target =
-        new SpringBootJvmTarget(requested.java(), requested.springBoot(), selection.patch());
-    ProjectBlueprint blueprint = prepared.blueprint(target);
+    var selection = bootVersions.select(prepared.bootLine());
+    ProjectBlueprint blueprint = prepared.blueprint(selection.patch());
 
     String artifactId = blueprint.getMetadata().identity().artifactId().value();
 
@@ -50,7 +46,6 @@ public class CreateProjectHandler implements CreateProjectPort {
 
     var published =
         publisher.publish(createProjectCommand.targetDirectory(), artifactId, resources);
-    return responseMapper.from(
-        blueprint, published.root(), published.files(), published.archive(), selection);
+    return responseMapper.from(blueprint, published, selection);
   }
 }

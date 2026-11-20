@@ -2,52 +2,39 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static java.util.Map.entry;
 
-import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependency;
-import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
-import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
+import io.github.blueprintplatform.codegen.adapter.error.exception.templating.InvalidMavenMetadataException;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.BuildConfigurationPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements BuildConfigurationPort {
+public final class MavenPomBuildConfigurationAdapter {
 
-  private final BuildDependencyMapper buildDependencyMapper;
+  private final TemplateRenderer renderer;
+  private final ArtifactSpec artifactSpec;
 
-  public MavenPomBuildConfigurationAdapter(
-      TemplateRenderer renderer,
-      ArtifactSpec artifactSpec,
-      BuildDependencyMapper buildDependencyMapper) {
-    super(renderer, artifactSpec);
-    this.buildDependencyMapper = buildDependencyMapper;
+  public MavenPomBuildConfigurationAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
+    this.renderer = renderer;
+    this.artifactSpec = artifactSpec;
   }
 
-  @Override
-  public ArtifactKey artifactKey() {
-    return ArtifactKey.BUILD_CONFIG;
+  public Iterable<GeneratedResource> generate(ProjectBlueprint bp, MavenDependencyPlan plan) {
+    var template = artifactSpec.templates().getFirst();
+    return List.of(
+        renderer.renderUtf8(
+            Path.of(template.outputPath()),
+            artifactSpec.basePath() + template.template(),
+            buildModel(bp, plan)));
   }
 
-  @Override
-  protected Map<String, Object> buildModel(ProjectBlueprint bp) {
-    return buildModel(bp, effectiveDependencies(bp));
-  }
-
-  public Iterable<GeneratedResource> generate(
-      ProjectBlueprint bp, List<BuildDependency> dependencies) {
-    return render(buildModel(bp, dependencies));
-  }
-
-  private Map<String, Object> buildModel(ProjectBlueprint bp, List<BuildDependency> dependencies) {
-    requireLiteral(bp.getMetadata().name().value());
-    requireLiteral(bp.getMetadata().description().value());
+  private Map<String, Object> buildModel(ProjectBlueprint bp, MavenDependencyPlan plan) {
+    requireLiteral("name", bp.getMetadata().name().value());
+    requireLiteral("description", bp.getMetadata().description().value());
     ProjectIdentity id = bp.getMetadata().identity();
     SpringBootJvmTarget target = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
 
@@ -59,8 +46,8 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
         entry(MavenPomBuildModel.KEY_PROJECT_NAME, bp.getMetadata().name().value()),
         entry(MavenPomBuildModel.KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
         entry(MavenPomBuildModel.KEY_POM_PROPERTIES, governancePomProperties(bp)),
-        entry(MavenPomBuildModel.KEY_DEPENDENCIES, dependencies),
-        entry("sampleEnabled", isSampleEnabled(bp)));
+        entry(MavenPomBuildModel.KEY_DEPENDENCIES, plan.dependencies()),
+        entry("sampleEnabled", plan.sampleEnabled()));
   }
 
   private Map<String, String> governancePomProperties(ProjectBlueprint bp) {
@@ -70,40 +57,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     return Map.of(MavenPomBuildModel.ARCH_UNIT_VERSION_KEY, MavenPomBuildModel.ARCH_UNIT_VERSION);
   }
 
-  public List<BuildDependency> effectiveDependencies(ProjectBlueprint bp) {
-    List<BuildDependency> deps = new ArrayList<>();
-
-    deps.add(MavenPomBuildModel.CORE_STARTER);
-    deps.addAll(buildDependencyMapper.from(bp.getDependencies()));
-
-    if (isSampleEnabled(bp) && !isWebSelected(bp)) {
-      deps.add(MavenPomBuildModel.WEB_STARTER);
-    }
-
-    if (isJpaSelected(bp)) {
-      deps.add(MavenPomBuildModel.H2_DB);
-    }
-
-    if (bp.getArchitecture().governance().isEnabled()) {
-      deps.add(MavenPomBuildModel.ARCH_UNIT_TEST);
-    }
-
-    deps.add(MavenPomBuildModel.TEST_STARTER);
-    if (isSampleEnabled(bp)) {
-      deps.add(
-          BuildDependency.of(
-              "org.springframework.boot", "spring-boot-starter-webmvc-test", null, "test"));
-      if (deps.stream().anyMatch(d -> d.artifactId().equals("spring-boot-starter-security"))) {
-        deps.add(
-            BuildDependency.of(
-                "org.springframework.boot", "spring-boot-starter-security-test", null, "test"));
-      }
-    }
-
-    return List.copyOf(deps);
-  }
-
-  private static void requireLiteral(String value) {
+  private static void requireLiteral(String field, String value) {
     if (value.contains("${")
         || value
             .codePoints()
@@ -115,27 +69,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
                         || cp >= 32 && cp <= 0xD7FF
                         || cp >= 0xE000 && cp <= 0xFFFD
                         || cp >= 0x10000))) {
-      throw new IllegalArgumentException(
-          "Project metadata cannot be represented as literal Maven XML");
+      throw new InvalidMavenMetadataException(field);
     }
-  }
-
-  private boolean isSampleEnabled(ProjectBlueprint bp) {
-    var arch = bp.getArchitecture();
-    return arch != null && arch.sampleCodeOptions() != null && arch.sampleCodeOptions().isEnabled();
-  }
-
-  private boolean isWebSelected(ProjectBlueprint bp) {
-    var deps = bp.getDependencies();
-    return deps != null
-        && !deps.isEmpty()
-        && deps.asList().stream().anyMatch(MavenPomBuildModel.WEB_STARTER_FEATURE.matches());
-  }
-
-  private boolean isJpaSelected(ProjectBlueprint bp) {
-    var deps = bp.getDependencies();
-    return deps != null
-        && !deps.isEmpty()
-        && deps.asList().stream().anyMatch(MavenPomBuildModel.JPA_STARTER.matches());
   }
 }

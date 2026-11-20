@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectArchiveInvalidRootException;
-import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.io.TempDir;
 @Tag("adapter")
 class FileSystemProjectArchiverAdapterTest {
 
-  private final ProjectArchiverPort archiver = new FileSystemProjectArchiverAdapter();
+  private final FileSystemProjectArchiverAdapter archiver = new FileSystemProjectArchiverAdapter();
 
   private static List<String> zipEntries(ZipFile zipFile) {
     Enumeration<? extends ZipEntry> entries = zipFile.entries();

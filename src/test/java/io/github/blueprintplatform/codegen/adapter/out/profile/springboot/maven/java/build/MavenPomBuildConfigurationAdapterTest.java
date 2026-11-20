@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependency;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
@@ -36,7 +35,6 @@ import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedRes
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.build.RecordingBuildDependencyMapper;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
-import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -80,18 +78,6 @@ class MavenPomBuildConfigurationAdapterTest {
   }
 
   @Test
-  @DisplayName("artifactKey() should return BUILD_CONFIG")
-  void artifactKey_shouldReturnPom() {
-    MavenPomBuildConfigurationAdapter adapter =
-        new MavenPomBuildConfigurationAdapter(
-            new NoopTemplateRenderer(),
-            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml"))),
-            new RecordingBuildDependencyMapper(List.of()));
-
-    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_CONFIG);
-  }
-
-  @Test
   @DisplayName(
       "generate() should build model with base deps only when JPA not selected and governance"
           + " disabled")
@@ -105,7 +91,7 @@ class MavenPomBuildConfigurationAdapterTest {
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
     MavenPomBuildConfigurationAdapter adapter =
-        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec);
 
     ProjectBlueprint bp =
         blueprint(
@@ -116,9 +102,11 @@ class MavenPomBuildConfigurationAdapterTest {
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
-    Iterable<? extends GeneratedResource> result = adapter.generate(bp);
+    Iterable<? extends GeneratedResource> result =
+        adapter.generate(bp, MavenDependencyPlan.from(bp, mapper));
 
     assertThat(result).singleElement().isSameAs(renderer.nextFile);
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "pom.ftl");
 
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model)
@@ -139,9 +127,9 @@ class MavenPomBuildConfigurationAdapterTest {
         (List<BuildDependency>) model.get(MavenPomBuildModel.KEY_DEPENDENCIES);
     assertThat(deps).hasSize(3);
 
-    assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
+    assertThat(deps.get(0)).isEqualTo(MavenDependencyPlan.CORE_STARTER);
     assertThat(deps.get(1)).isSameAs(mapped.getFirst());
-    assertThat(deps.get(2)).isEqualTo(MavenPomBuildModel.TEST_STARTER);
+    assertThat(deps.get(2)).isEqualTo(MavenDependencyPlan.TEST_STARTER);
   }
 
   @Test
@@ -157,7 +145,7 @@ class MavenPomBuildConfigurationAdapterTest {
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
     MavenPomBuildConfigurationAdapter adapter =
-        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec);
 
     ProjectBlueprint bp =
         blueprint(
@@ -168,17 +156,17 @@ class MavenPomBuildConfigurationAdapterTest {
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
-    adapter.generate(bp);
+    adapter.generate(bp, MavenDependencyPlan.from(bp, mapper));
 
     @SuppressWarnings("unchecked")
     List<BuildDependency> deps =
         (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
     assertThat(deps).hasSize(5);
-    assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
+    assertThat(deps.get(0)).isEqualTo(MavenDependencyPlan.CORE_STARTER);
     assertThat(deps.get(1)).isSameAs(mapped.getFirst());
-    assertThat(deps.get(2)).isEqualTo(MavenPomBuildModel.WEB_STARTER);
-    assertThat(deps.get(3)).isEqualTo(MavenPomBuildModel.TEST_STARTER);
+    assertThat(deps.get(2)).isEqualTo(MavenDependencyPlan.WEB_STARTER);
+    assertThat(deps.get(3)).isEqualTo(MavenDependencyPlan.TEST_STARTER);
   }
 
   @Test
@@ -187,13 +175,16 @@ class MavenPomBuildConfigurationAdapterTest {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<BuildDependency> mapped =
-        List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(
+            BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"),
+            BuildDependency.of(
+                "org.springframework.boot", "spring-boot-starter-data-jpa", null, "runtime"));
     RecordingBuildDependencyMapper mapper = new RecordingBuildDependencyMapper(mapped);
 
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
     MavenPomBuildConfigurationAdapter adapter =
-        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec);
 
     Dependency jpaStarter =
         new Dependency(
@@ -212,17 +203,18 @@ class MavenPomBuildConfigurationAdapterTest {
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
-    adapter.generate(bp);
+    adapter.generate(bp, MavenDependencyPlan.from(bp, mapper));
 
     @SuppressWarnings("unchecked")
     List<BuildDependency> deps =
         (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
-    assertThat(deps).hasSize(4);
-    assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
+    assertThat(deps).hasSize(5);
+    assertThat(deps.get(0)).isEqualTo(MavenDependencyPlan.CORE_STARTER);
     assertThat(deps.get(1)).isSameAs(mapped.getFirst());
-    assertThat(deps.get(2)).isEqualTo(MavenPomBuildModel.H2_DB);
-    assertThat(deps.get(3)).isEqualTo(MavenPomBuildModel.TEST_STARTER);
+    assertThat(deps.get(2)).isSameAs(mapped.get(1));
+    assertThat(deps.get(3)).isEqualTo(MavenDependencyPlan.H2_DB);
+    assertThat(deps.get(4)).isEqualTo(MavenDependencyPlan.TEST_STARTER);
 
     @SuppressWarnings("unchecked")
     Map<String, String> props =
@@ -237,13 +229,16 @@ class MavenPomBuildConfigurationAdapterTest {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     List<BuildDependency> mapped =
-        List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+        List.of(
+            BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"),
+            BuildDependency.of(
+                "org.springframework.boot", "spring-boot-starter-data-jpa", null, "runtime"));
     RecordingBuildDependencyMapper mapper = new RecordingBuildDependencyMapper(mapped);
 
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
     MavenPomBuildConfigurationAdapter adapter =
-        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec, mapper);
+        new MavenPomBuildConfigurationAdapter(renderer, artifactSpec);
 
     Dependency jpaStarter =
         new Dependency(
@@ -262,7 +257,7 @@ class MavenPomBuildConfigurationAdapterTest {
     renderer.nextFile =
         new GeneratedTextResource(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8);
 
-    adapter.generate(bp);
+    adapter.generate(bp, MavenDependencyPlan.from(bp, mapper));
 
     @SuppressWarnings("unchecked")
     Map<String, String> props =
@@ -276,11 +271,12 @@ class MavenPomBuildConfigurationAdapterTest {
     List<BuildDependency> deps =
         (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
-    assertThat(deps).hasSize(5);
-    assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
+    assertThat(deps).hasSize(6);
+    assertThat(deps.get(0)).isEqualTo(MavenDependencyPlan.CORE_STARTER);
     assertThat(deps.get(1)).isSameAs(mapped.getFirst());
-    assertThat(deps.get(2)).isEqualTo(MavenPomBuildModel.H2_DB);
-    assertThat(deps.get(3)).isEqualTo(MavenPomBuildModel.ARCH_UNIT_TEST);
-    assertThat(deps.get(4)).isEqualTo(MavenPomBuildModel.TEST_STARTER);
+    assertThat(deps.get(2)).isSameAs(mapped.get(1));
+    assertThat(deps.get(3)).isEqualTo(MavenDependencyPlan.H2_DB);
+    assertThat(deps.get(4)).isEqualTo(MavenDependencyPlan.ARCH_UNIT_TEST);
+    assertThat(deps.get(5)).isEqualTo(MavenDependencyPlan.TEST_STARTER);
   }
 }

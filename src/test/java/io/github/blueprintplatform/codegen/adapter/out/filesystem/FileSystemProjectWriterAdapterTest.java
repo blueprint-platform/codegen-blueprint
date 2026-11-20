@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectWriteException;
-import io.github.blueprintplatform.codegen.domain.port.out.filesystem.ProjectWriterPort;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Test;
 @Tag("adapter")
 class FileSystemProjectWriterAdapterTest {
 
-  private final ProjectWriterPort writer = new FileSystemProjectWriterAdapter();
+  private final FileSystemProjectWriterAdapter writer = new FileSystemProjectWriterAdapter();
 
   @Test
   @DisplayName("writeBytes() should create parent directories and write file")

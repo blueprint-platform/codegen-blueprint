@@ -1,6 +1,7 @@
 package io.github.blueprintplatform.codegen.domain.model.value.tech.platform;
 
 import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
+import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.shared.KeyEnumParser;
 import io.github.blueprintplatform.codegen.domain.shared.KeyedEnum;
 
@@ -27,6 +28,12 @@ public enum SpringBootVersion implements KeyedEnum {
 
   public String majorMinor() {
     return key;
+  }
+
+  public void validatePatch(String patch) {
+    if (!matchesPatch(patch)) {
+      throw new DomainViolationException(() -> "platform.springboot-patch.invalid", patch);
+    }
   }
 
   public boolean matchesPatch(String patch) {
