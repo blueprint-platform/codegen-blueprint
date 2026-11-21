@@ -1,35 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title description">
   <title id="title">Codegen Blueprint</title>
-  <desc id="description">Architecture as an Executable Contract. Spring Boot scaffolds with build-time guardrails. A layered dependency diagram shows permitted adjacent links and a blocked shortcut.</desc>
+  <desc id="description">Architecture as an Executable Contract. Generate Spring Boot projects, enforce dependencies with Maven and reproduce a boundary failure. A three-stage diagram reads Generate, Enforce, Prove.</desc>
   <defs>
-    <linearGradient id="surface" x2="1" y2="1"><stop stop-color="#132c3b"/><stop offset="1" stop-color="#091923"/></linearGradient>
-    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#395566" opacity=".52"/></pattern>
-    <marker id="allowed" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="#3dedbf" stroke-width="1.4"/></marker>
+    <linearGradient id="surface" x2="1" y2="1"><stop stop-color="#101826"/><stop offset="1" stop-color="#172c40"/></linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="#69e6bd" stroke-width="1.4"/></marker>
   </defs>
   <rect width="1280" height="640" fill="url(#surface)"/>
-  <rect x="711" y="83" width="489" height="474" rx="16" fill="url(#grid)" stroke="#395566"/>
-  <g font-family="system-ui, sans-serif">
-    <text x="111" y="227" font-size="96" font-weight="750" fill="#ecfaf6">Codegen</text>
-    <text x="111" y="333" font-size="96" font-weight="750" fill="#3dedbf">Blueprint</text>
-    <text x="116" y="406" font-size="34" font-weight="650" fill="#ecfaf6">Architecture as an</text>
-    <text x="116" y="446" font-size="34" font-weight="650" fill="#ecfaf6">Executable Contract</text>
-    <text x="117" y="513" font-size="28" fill="#adc5cc">Spring Boot · Build-time guardrails</text>
+  <rect x="67" y="65" width="1146" height="510" rx="30" fill="#101826" stroke="#536c88" stroke-width="2"/>
+  <rect x="592" y="117" width="96" height="5" rx="2.5" fill="#69e6bd"/>
+  <g font-family="system-ui, sans-serif" text-anchor="middle">
+    <text x="640" y="230" font-size="91" font-weight="750" fill="#eff5ff">Codegen Blueprint</text>
+    <text x="640" y="301" font-size="43" font-weight="630" fill="#a1f1d5">Architecture as an Executable Contract</text>
+    <text x="640" y="359" font-size="31" fill="#c3cede">Spring Boot projects with build-time guardrails</text>
   </g>
-  <g fill="#16303d" stroke="#6b8d9c" stroke-width="2">
-    <rect x="752" y="139" width="275" height="76" rx="9"/>
-    <rect x="752" y="282" width="275" height="76" rx="9"/>
-    <rect x="752" y="425" width="275" height="76" rx="9"/>
+  <g fill="#22354a" stroke="#536c88" stroke-width="2">
+    <rect x="184" y="431" width="240" height="75" rx="12"/>
+    <rect x="520" y="431" width="240" height="75" rx="12"/>
+    <rect x="856" y="431" width="240" height="75" rx="12"/>
   </g>
-  <g fill="none" stroke="#3dedbf" stroke-width="3">
-    <path d="M889 215v65" marker-end="url(#allowed)"/>
-    <path d="M889 358v65" marker-end="url(#allowed)"/>
+  <g stroke="#69e6bd" stroke-width="3.5" fill="none">
+    <path d="M426 468h91" marker-end="url(#arrow)"/>
+    <path d="M762 468h91" marker-end="url(#arrow)"/>
   </g>
-  <path d="M1027 177h88v286h-88" fill="none" stroke="#ff969f" stroke-width="3" stroke-dasharray="10 7"/>
-  <circle cx="1115" cy="320" r="28" fill="#522e40" stroke="#ff969f" stroke-width="3"/>
-  <path d="m1104 309 22 22m0-22-22 22" stroke="#ffd0d2" stroke-width="4"/>
-  <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="27" fill="#ecfaf6" text-anchor="middle">
-    <text x="889" y="186">controller</text>
-    <text x="889" y="329">service</text>
-    <text x="889" y="472">repository</text>
+  <g font-family="ui-monospace, Menlo, Consolas, monospace" text-anchor="middle" font-size="31" fill="#eff5ff">
+    <text x="304" y="479">Generate</text><text x="640" y="479">Enforce</text><text x="976" y="479">Prove</text>
   </g>
 </svg>

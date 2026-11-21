@@ -1,33 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="408" viewBox="0 0 960 408" role="img" aria-labelledby="title description">
-  <title id="title">One compiling dependency fails ArchUnit</title>
-  <desc id="description">The generated Standard project passes. Adding a field of type LoggingGreetingAuditRepository to GreetingController compiles and fails the controllers_must_not_depend_on_repositories rule. Removing the field and import restores the passing Maven verification.</desc>
-  <defs>
-    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#24404c" opacity=".58"/></pattern>
-  </defs>
-  <rect width="960" height="408" rx="20" fill="#0b1d29"/>
-  <g font-family="system-ui, sans-serif" fill="#ecfaf6">
-    <text x="29" y="52" font-size="34" font-weight="700">One compiling dependency fails ArchUnit</text>
-    <text x="30" y="83" font-size="20" fill="#adc5cc">Standard layout · strict guardrails</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="564" viewBox="0 0 760 564" role="img" aria-labelledby="title description">
+  <title id="title">Executable architecture proof: green, red, green</title>
+  <desc id="description">The generated Standard Strict project passes Maven verification. Adding a private LoggingGreetingAuditRepository field to GreetingController compiles, then fails ArchUnit at controllers_must_not_depend_on_repositories. Removing the field and import restores a passing build.</desc>
+  <rect width="760" height="564" rx="24" fill="#101826"/>
+  <g font-family="system-ui, sans-serif">
+    <text x="32" y="54" font-size="36" font-weight="730" fill="#eff5ff">One field fails verification</text>
+    <text x="34" y="86" font-size="23" fill="#c3cede">Standard layout · Strict guardrails</text>
   </g>
-  <rect x="26" y="106" width="908" height="201" rx="12" fill="url(#grid)" stroke="#395566"/>
-  <g font-family="ui-monospace, Menlo, Consolas, monospace" fill="#ecfaf6">
-    <text x="53" y="147" font-size="26">GreetingController</text>
-    <text x="54" y="206" font-size="23">
-      <tspan x="54">private LoggingGreetingAuditRepository</tspan>
-      <tspan x="54" dy="30" xml:space="preserve">    __archViolation;</tspan>
-    </text>
-    <text x="53" y="283" font-size="23" fill="#ffbec2">controllers_must_not_depend_on_repositories</text>
+  <path d="M56 147v348" stroke="#536c88" stroke-width="3"/>
+  <g fill="#172436" stroke="#425670">
+    <rect x="91" y="112" width="641" height="83" rx="13"/>
+    <rect x="91" y="210" width="641" height="240" rx="13" stroke="#aa6469"/>
+    <rect x="91" y="465" width="641" height="73" rx="13"/>
   </g>
-  <path d="M54 166h854" stroke="#395566"/>
-  <path d="M54 257h854" stroke="#ff969f" stroke-dasharray="8 5" stroke-width="2"/>
-  <path d="M54 339h852" stroke="#395566" stroke-width="2"/>
-  <g font-family="system-ui, sans-serif" font-size="21" font-weight="700">
-    <circle cx="55" cy="339" r="7" fill="#3dedbf"/>
-    <text x="52" y="379" fill="#a5f6dd">Baseline passes</text>
-    <circle cx="480" cy="339" r="11" fill="#522e40" stroke="#ff969f" stroke-width="2"/>
-    <path d="m476 335 8 8m0-8-8 8" stroke="#ffd0d2" stroke-width="2"/>
-    <text x="480" y="379" text-anchor="middle" fill="#ffbec2">Compiles · ArchUnit fails</text>
-    <circle cx="906" cy="339" r="7" fill="#3dedbf"/>
-    <text x="909" y="379" text-anchor="end" fill="#a5f6dd">Restored build passes</text>
+  <g font-family="system-ui, sans-serif" font-size="25" font-weight="700">
+    <circle cx="56" cy="153" r="17" fill="#204336" stroke="#69e6bd" stroke-width="2"/>
+    <path d="m48 152 5 6 10-11" fill="none" stroke="#a1f1d5" stroke-width="2.6"/>
+    <text x="112" y="147" fill="#a1f1d5">Baseline passes</text>
+    <text x="112" y="178" fill="#c3cede" font-size="23" font-weight="400">Generated project verifies.</text>
+    <circle cx="56" cy="248" r="17" fill="#4b2934" stroke="#ff9f9e" stroke-width="2"/>
+    <path d="m50 242 12 12m0-12-12 12" stroke="#ffb9b6" stroke-width="2.6"/>
+    <text x="112" y="248" fill="#ffb9b6">Compiles · ArchUnit fails</text>
+    <circle cx="56" cy="502" r="17" fill="#204336" stroke="#69e6bd" stroke-width="2"/>
+    <path d="m48 501 5 6 10-11" fill="none" stroke="#a1f1d5" stroke-width="2.6"/>
+    <text x="112" y="496" fill="#a1f1d5">Restored build passes</text>
+    <text x="112" y="524" fill="#c3cede" font-size="23" font-weight="400">Remove the field and import.</text>
+  </g>
+  <rect x="111" y="266" width="600" height="100" rx="8" fill="#101826"/>
+  <g font-family="ui-monospace, Menlo, Consolas, monospace" fill="#eff5ff" font-size="24">
+    <text x="126" y="292" fill="#c3cede">GreetingController</text>
+    <text x="126" y="324">private LoggingGreetingAuditRepository</text>
+    <text x="168" y="352">__archViolation;</text>
+    <text x="112" y="401" fill="#ffb9b6" aria-label="controllers_must_not_depend_on_repositories"><tspan x="112">controllers_must_not_</tspan><tspan x="112" dy="29">depend_on_repositories</tspan></text>
   </g>
 </svg>

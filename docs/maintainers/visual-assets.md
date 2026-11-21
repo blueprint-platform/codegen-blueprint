@@ -8,7 +8,7 @@
 
 The proof graphic summarizes the standard controller-to-repository case. Update it only after rerunning the [proof](../examples/boundary-proof.md) and checking the corresponding verdict. Produce the portable record with `python3 scripts/proof-record.py path/to/proof-run > docs/examples/proof-2.0.txt`. The record keeps the artifact hash, JVM, resolved Boot patch and the failing rule names.
 
-Treat the SVGs as the editable sources. Review them at native and half size on light and dark backgrounds. Check text fit, contrast, arrow direction and accessible titles and descriptions. Solid edges indicate permitted dependencies and dashed edges indicate prohibited ones.
+Treat the SVGs as the editable sources. The architecture diagram compares source dependencies, the proof shows a tested failure and recovery, and the social card introduces the project. Review them at native and half size on light and dark backgrounds. Check both README diagrams at a 375 px viewport. Check text fit, contrast, arrow direction and accessible titles and descriptions. Solid edges indicate permitted dependencies and dashed edges indicate prohibited ones.
 
 Export the social PNG from the SVG at 1280 × 640. For example, set `CHROMIUM` to the path of a Chromium or Chrome executable and run from the repository root.
 

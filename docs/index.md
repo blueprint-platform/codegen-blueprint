@@ -1,25 +1,19 @@
 # Codegen Blueprint documentation
 
-## Learn
+## Generate a project
 
-- [Quickstart](quickstart.md) builds the generator, creates a sample project and runs its Maven wrapper.
-- [Generated project walkthroughs](examples/generated-projects.md) show the Standard and Hexagonal outputs.
+- [Quickstart](quickstart.md) walks through generation, wrapper verification and test reports.
 - [CLI reference](cli.md) covers options, dependency aliases and failure behavior.
+- [Generated walkthroughs](examples/generated-projects.md) show the Standard and Hexagonal outputs.
 
-## Understand
+## Understand and verify the boundaries
 
-- [Executable architecture contract](architecture/executable-architecture-contract.md) describes what the generator delivers and what the build enforces.
-- [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps each layout and enforcement mode to its ArchUnit assertions.
+- [Executable architecture contract](architecture/executable-architecture-contract.md) defines what the generator delivers and what the build enforces.
+- [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps each layout and mode to its ArchUnit assertions.
+- [Boundary proof](examples/boundary-proof.md) shows how to reproduce a compiling violation and identify the named assertion in the Maven report.
 
-![Representative Standard and Hexagonal source dependencies, with solid permitted edges and dashed prohibited edges](assets/architecture-2.0.svg)
+## Check compatibility or contribute
 
-## Contribute
-
-- [Contributing guide](../CONTRIBUTING.md) explains how to propose a change and verify it.
-- [Documentation tooling](maintainers/documentation.md) covers local Pages builds, quickstart checks and generated snapshot checks.
-
-## Trust the evidence
-
-- [Boundary proof](examples/boundary-proof.md) reproduces a compiling violation, a named ArchUnit failure and a restored passing build.
 - [Compatibility](compatibility.md) distinguishes supported targets, verified patches and bundled references.
-- [Release notes](release-notes.md) describe the unreleased 2.0 changes. [Release readiness](maintainers/release-discipline.md) lists the verification gates.
+- [Release notes](release-notes.md) cover the unreleased 2.0 changes. [Release readiness](maintainers/release-discipline.md) describes the verification gates.
+- [Contributing guide](../CONTRIBUTING.md) explains how to propose and verify a change. See [documentation tooling](maintainers/documentation.md) for Pages, quickstart and snapshot checks.
