@@ -21,10 +21,10 @@ SOURCE_REPO = os.environ.get("DOCS_SOURCE_REPOSITORY", "blueprint-platform/codeg
 SOURCE_REF = os.environ.get("DOCS_SOURCE_REF", "main")
 NAV = {
     "index": "Overview",
+    "examples/boundary-proof": "Proof",
     "quickstart": "Quickstart",
     "cli": "CLI",
     "architecture/executable-architecture-contract": "Architecture",
-    "examples/boundary-proof": "Proof",
 }
 PAGES = {
     **NAV,

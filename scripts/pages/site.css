@@ -1,30 +1,36 @@
 :root {
   color-scheme: light dark;
   --background: #fff;
-  --ink: #142b33;
-  --muted: #475e67;
-  --link: #096457;
-  --border: #d3e1df;
-  --surface: #f2f7f6;
-  --terminal: #10282e;
+  --ink: #0f172a;
+  --muted: #475569;
+  --link: #075985;
+  --border: #cbd5e1;
+  --surface: #f1f5f9;
+  --terminal: #0f172a;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #101b1f;
-    --ink: #eaf3f2;
-    --muted: #adc5c7;
-    --link: #83e1c4;
-    --border: #354d51;
-    --surface: #192a2f;
-    --terminal: #192a2f;
+    --background: #0b1120;
+    --ink: #e5e7eb;
+    --muted: #9ca3af;
+    --link: #7dd3fc;
+    --border: #334155;
+    --surface: #111827;
+    --terminal: #111827;
   }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--background); color: var(--ink); font: 1rem/1.65 system-ui, sans-serif; }
-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+header {
+  border-bottom: 1px solid #334155;
+  background: linear-gradient(120deg, #1e293b, #020617 70%);
+  color: #e5e7eb;
+}
+header a { color: #7dd3fc; }
+header a:focus-visible { outline-color: #7dd3fc; }
 .header-inner, nav, main, footer { max-width: 55rem; margin-inline: auto; padding-inline: clamp(1rem, 4vw, 2rem); }
 .header-inner { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-block: 1rem .55rem; }
-.brand { color: var(--ink); font-size: 1.2rem; font-weight: 720; text-decoration: none; }
+.brand { color: #e5e7eb; font-size: 1.2rem; font-weight: 720; text-decoration: none; }
 nav { display: flex; flex-wrap: wrap; gap: .25rem 1.2rem; padding-bottom: .8rem; }
 nav a { padding-block: .2rem; font-weight: 600; text-decoration: none; }
 nav a:hover, nav a[aria-current] { text-decoration: underline; text-underline-offset: .3rem; }
@@ -40,7 +46,7 @@ li + li { margin-top: .34em; }
 li > p { margin-block: .48em; }
 img { display: block; max-width: 100%; height: auto; }
 code { font: .9em ui-monospace, SFMono-Regular, Consolas, monospace; background: var(--surface); padding: .12em .3em; border-radius: 3px; }
-pre { padding: .9rem 1rem; background: var(--terminal); color: #e4f5f1; border-radius: .45rem; overflow: auto; }
+pre { padding: .9rem 1rem; background: var(--terminal); color: #e5e7eb; border-radius: .45rem; overflow: auto; }
 pre code { background: transparent; padding: 0; }
 table { border-collapse: collapse; font-size: .94rem; }
 th, td { text-align: left; vertical-align: top; padding: .55rem .65rem; border: 1px solid var(--border); }

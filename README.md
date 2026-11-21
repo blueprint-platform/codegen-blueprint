@@ -1,54 +1,48 @@
-<h1 align="center">Codegen Blueprint</h1>
+# Codegen Blueprint — Architecture-First Project Generator
 
-<p align="center"><strong>Architecture as an Executable Contract</strong></p>
+[![Build on main](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml?query=branch%3Amain) [![Codecov on main](https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg)](https://app.codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main)
 
 <p align="center">
-  <a href="https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml?query=branch%3Amain"><img alt="Build and Test on main" src="https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg?branch=main"></a>
-  <a href="https://app.codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main"><img alt="Codecov coverage on main" src="https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg"></a>
-</p>
-<p align="center">
-  <a href="docs/compatibility.md"><img alt="Generator: Java 25" src="https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk&logoColor=white"></a>
-  <a href="docs/compatibility.md"><img alt="Generated targets: Spring Boot 4.1 and 4.2" src="https://img.shields.io/badge/Spring%20Boot-4.1%20%2F%204.2-6DB33F?logo=springboot&logoColor=white"></a>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue"></a>
+  <img src="docs/images/cover/cover.png" alt="Codegen Blueprint cover with a Hexagonal project generation command in a terminal panel." width="700" />
 </p>
 
-Generate a **Standard or Hexagonal Spring Boot project** whose Maven build checks the architectural boundaries you select. Each project includes its own wrapper, source tree and, unless disabled, generated ArchUnit tests. The generator also delivers a sibling ZIP.
+> Version 2.0 generates a Maven project and a sibling ZIP. By default, the project's build checks the selected architecture with generated ArchUnit tests.
 
-**[Quickstart](docs/quickstart.md)** · [CLI options](docs/cli.md) · [Documentation](docs/index.md)
+---
 
-## Generate a project
+## 🧪 Executable architecture proof
 
-Build the unreleased 2.0 snapshot with **JDK 25** and **Maven 3.9.16**:
+A generated **Standard** project with **Strict** guardrails passed Maven verification on JDK 25 with Spring Boot 4.2.0. Adding a repository import and this field to `GreetingController` compiled successfully.
+
+```java
+private LoggingGreetingAuditRepository __archViolation = null;
+```
+
+Surefire reported `controllers_must_not_depend_on_repositories`. Removing the import and field restored the passing build. [Reproduce the GREEN → RED → GREEN run](docs/examples/boundary-proof.md).
+
+## ⚡ Quick start
+
+From the repository root, package the 2.0 snapshot with **JDK 25** and **Maven 3.9.16**.
 
 ```bash
 mvn -B -ntp clean package
 ```
 
-Then follow the [verified quickstart](docs/quickstart.md) to generate a Hexagonal sample with Strict guardrails and run `./mvnw clean verify`. The generated build exercises architecture assertions and, with the basic sample, real HTTP integration tests.
+Follow the [quickstart](docs/quickstart.md) to generate a runnable Hexagonal sample and verify it with the generated Maven wrapper. The walkthrough checks both the Strict architecture rules and the sample's HTTP integration tests.
 
-## Choose your architecture
+## 🧱 Choose the architecture
 
-| Layout | Structure | Guardrails |
-| --- | --- | --- |
-| **Standard** (default) | Controllers, services, repositories and domain code | Layer direction, cycles and schema; additional Strict boundaries |
-| **Hexagonal** | Application ports and use cases, domain code, adapters and bootstrap wiring | Inward dependencies, cycles and schema; additional Strict isolation |
+- **Standard** (default) gives each feature controller, service, repository and domain packages.
+- **Hexagonal** puts use cases behind application ports and wires concrete adapters in bootstrap.
 
-Choose `basic` (default) for core checks, `strict` for additional layout-specific rules, or `none` to generate the structure without ArchUnit. The [rulebook](docs/architecture/architecture-guardrails-rulebook.md) defines the exact assertions; the [architecture contract](docs/architecture/executable-architecture-contract.md) explains dependency directions and limitations.
+The default `--guardrails basic` checks core dependencies, package structure and cycles. Use `strict` for additional layout rules, including REST signature checks when Spring MVC is present, or `none` for the layout alone. [Guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
-## See an architectural violation fail the build
+## ⚙️ Choose the generated target
 
-A generated Standard project with Strict guardrails initially passes verification. Adding a repository-typed field to its controller **still compiles**, but ArchUnit rejects the dependency. Restoring the source makes the build pass again.
+The generator runs on **Java 25** with Spring Boot **4.2.0** internally. For the output project, select Spring Boot **4.1 or 4.2** and Java **21 or 25** with `--boot` and `--java`. The defaults are Boot **4.2** and Java **25**.
 
-![Architecture proof: passing baseline, compiling controller-to-repository violation rejected by ArchUnit, then passing restoration.](docs/assets/architecture-proof.png)
-
-[View the Java mutation, named assertion and reproduction steps](docs/examples/boundary-proof.md).
-
-## What's different in 2.0?
-
-**1.x already included executable architecture guardrails.** Version 2.0 changes the generation contract: the generator runs on Java 25 with Spring Boot 4.2.0 internally; generated projects target Spring Boot **4.1 or 4.2** and Java **21 or 25**. Boot 3.x and 4.0 are no longer targets. An exact Boot patch is resolved and pinned during generation, with a documented connection-failure fallback.
-
-This branch builds **`2.0.0-SNAPSHOT`**, not a published 2.0 release. See the [release notes](docs/release-notes.md) and [compatibility matrix](docs/compatibility.md).
+The CLI resolves and pins an exact Boot patch in the generated POM. Eligible connection failures emit a warning and select a bundled reference. [CLI options and patch resolution](docs/cli.md) · [Verified targets](docs/compatibility.md)
 
 ---
 
-[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT license](LICENSE)
+[Documentation](docs/index.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)

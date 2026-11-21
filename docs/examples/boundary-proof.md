@@ -2,20 +2,53 @@
 
 The proof runner verifies a **GREEN → RED → GREEN** sequence for generated projects with Strict guardrails: a passing baseline, a compiling mutation rejected by a named ArchUnit rule, and a passing build after restoring the source. Every phase uses `sh ./mvnw -q -ntp clean verify`.
 
+- [Run the proof](#run-the-proof)
+- [Walk through the controller-to-repository case](#standard-controller-depends-on-a-repository)
+- [Compare all five recorded scenarios](#recorded-results)
+- [Inspect the generated evidence](#inspect-a-run)
+- [Check Basic and Strict continuity](#prove-that-strict-keeps-the-basic-boundaries)
+
+## Run the proof
+
+From the repository root, use JDK 25 and Maven 3.9.16. On macOS, select an installed JDK 25 with `export JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
+
+```bash
+mvn -B -ntp clean package
+```
+
+Run the controller-to-repository case.
+
+```bash
+PROOF_MODE=standard bash ci/proof/proof-runner.sh
+```
+
+To match the historical environment, run all five cases with the bundled Boot patch.
+
+```bash
+PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
+  EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK bash ci/proof/proof-runner.sh
+```
+
+`EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK` blocks the generator’s Central connection for the proof and verifies the reported resolution source. The generated Maven build still needs access to dependencies. To reuse a packaged generator, pass its absolute path as `CODEGEN_JAR`. To target Java 21, set `JAVA_VERSION=21`, point `JAVA_HOME` at JDK 21 and set `GENERATOR_JAVA` to the absolute path of the JDK 25 `java` executable.
+
 ## Standard controller depends on a repository
 
-The runner adds the repository import and the following field to `GreetingController`. Java accepts the field type. ArchUnit inspects the compiled class and reports the forbidden dependency.
+**Baseline:** The generated Standard project with Strict guardrails passed Maven verification.
+
+**Mutation:** The runner adds the repository import and the following field to `GreetingController`. Java accepts the field type. ArchUnit inspects the compiled class and reports the forbidden dependency.
 
 ```java
 private LoggingGreetingAuditRepository __archViolation = null;
 ```
 
-These excerpts from `logs/STD_violation.log` identify the exact failing assertion and the injected field dependency:
+**Expected failure:** The excerpts from `logs/STD_violation.log` identify the assertion and the injected field dependency.
 
 ```text
 [ERROR] io.github.blueprintplatform.greeting.architecture.archunit.StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories -- Time elapsed: 0.007 s <<< FAILURE!
 Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingController.__archViolation> has type <io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository> in (GreetingController.java:0)
 ```
+
+**Restoration:** The runner removes the field and import. The same Maven verification passes again.
 
 ## Recorded results
 
@@ -49,32 +82,17 @@ Both REST cases use MVC enabled by the sample and a domain type nested in `Respo
 
 The run recorded on **21 November 2026** used JDK **25.0.4**, Maven **3.9.16** and Spring Boot **4.2.0** via `BUNDLED_FALLBACK`. The [original verification record](boundary-verification.txt) contains the generator JAR’s SHA-256, the full test class names and the logged field dependency.
 
-## Run the proof
-
-From the repository root, use JDK 25 and Maven 3.9.16. On macOS, select an installed JDK 25 with `export JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
-
-```bash
-mvn -B -ntp clean package
-```
-
-Run the controller-to-repository case.
-
-```bash
-PROOF_MODE=standard bash ci/proof/proof-runner.sh
-```
-
-To match the historical environment, run all five cases with the bundled Boot patch.
-
-```bash
-PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
-  EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK bash ci/proof/proof-runner.sh
-```
-
-`EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK` blocks the generator’s Central connection for the proof and verifies the reported resolution source. The generated Maven build still needs access to dependencies. To reuse a packaged generator, pass its absolute path as `CODEGEN_JAR`. To target Java 21, set `JAVA_VERSION=21`, point `JAVA_HOME` at JDK 21 and set `GENERATOR_JAVA` to the absolute path of the JDK 25 `java` executable.
-
 ## Inspect a run
 
-Open the directory printed by the runner under `target/architecture-proof/`. Start with `proof-summary.txt`, then inspect `logs/` and `excerpts/` for the failing case. Set `KEEP_WORK_DIR=1` before running to retain the restored generated projects for source and report inspection. The proof runner also accepts `PROOF_OUTPUT_ROOT` for a different output location.
+Open the run directory printed by the runner under `target/architecture-proof/`.
+
+| Artifact | What to check |
+| --- | --- |
+| `proof-summary.txt` | Baseline, expected failure and restoration verdicts |
+| `logs/` | Maven output for each phase |
+| `excerpts/` | Named assertion and the logged dependency for each expected failure |
+
+Set `KEEP_WORK_DIR=1` before running to retain the restored generated projects for source and report inspection. The proof runner also accepts `PROOF_OUTPUT_ROOT` for a different output location.
 
 After a successful full run, replace `RUN_DIRECTORY` with the printed run directory name to produce a portable record:
 

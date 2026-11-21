@@ -2,6 +2,11 @@
 
 Codegen Blueprint delivers a Spring Boot Maven project directory and a sibling ZIP. A blueprint selects the project structure, dependency inputs and architecture policy. The generated project runs its own tests and owns its later lifecycle.
 
+- [From blueprint to build](#from-blueprint-to-build)
+- [Layout dependencies](#choose-a-layout)
+- [What the evidence means](#what-the-evidence-means)
+- [Delivery and reproducibility](#delivery-and-reproducibility)
+
 ## From blueprint to build
 
 The CLI maps options to a generation command. The application validates the request, chooses a profile and resolves the target through a port. It then coordinates rendering and publication. The generated source tree, POM, wrapper and selected tests capture those decisions.

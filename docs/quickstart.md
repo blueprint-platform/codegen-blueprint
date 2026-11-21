@@ -12,14 +12,23 @@ mvn -B -ntp clean package
 
 ## 2. Generate a Hexagonal sample
 
-The command below creates a fresh output directory, generates a project with Strict architecture guardrails and runs the project's own Maven verification. The marked block is executed by the repository's quickstart verification script; keep its commands in sync with that test.
+The command below creates a fresh output directory, generates a project with Strict architecture guardrails and runs the project's own Maven verification. Set `CODEGEN_JAR` to an absolute path if the JAR is stored outside this checkout.
 
 <!-- quickstart:verified -->
 ```bash
 CODEGEN_JAR="${CODEGEN_JAR:-$PWD/target/codegen-blueprint-2.0.0-SNAPSHOT.jar}"
 OUTPUT_DIR="$(mktemp -d)"
 
-java -jar "$CODEGEN_JAR" --cli springboot   --group-id com.example   --artifact-id greeting   --name Greeting   --description "Greeting sample with executable architecture"   --package-name com.example.greeting   --layout hexagonal   --guardrails strict   --sample-code basic   --target-dir "$OUTPUT_DIR"
+java -jar "$CODEGEN_JAR" --cli springboot \
+  --group-id com.example \
+  --artifact-id greeting \
+  --name Greeting \
+  --description "Greeting sample with executable architecture" \
+  --package-name com.example.greeting \
+  --layout hexagonal \
+  --guardrails strict \
+  --sample-code basic \
+  --target-dir "$OUTPUT_DIR"
 
 cd "$OUTPUT_DIR/greeting"
 chmod +x mvnw

@@ -2,6 +2,13 @@
 
 Use this reference when choosing a mode or investigating a failing generated architecture test. Each rule name below is a generated Java field or method that can appear in a Surefire report. The source of truth is the [governance template tree](../../src/main/resources/templates/springboot/java/governance).
 
+- [Mode selection](#mode-selection)
+- [Standard rules](#standard-layered-layout)
+- [Hexagonal rules](#hexagonal-ports-and-adapters)
+- [Strict MVC boundary](#strict-mvc-transport-boundary)
+- [Scope and cycles](#scope-and-cycle-coverage)
+- [Reproduce and diagnose](#reproduce-and-diagnose)
+
 ## Mode selection
 
 | Mode | Generated POM | Generated architecture tests |

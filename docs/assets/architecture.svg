@@ -1,1 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="795" viewBox="0 0 1200 795" role="img" aria-labelledby="title desc"><title id="title">Standard and Hexagonal architecture source dependency overview</title><desc id="desc">Standard controller references service and service references repository; controller to repository is forbidden. Hexagonal inbound adapter and use case reference input port, use case references output port and domain, outbound adapter references output port; application to concrete adapter forbidden.</desc><defs><linearGradient id="paper" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#f0f8f8"/></linearGradient><linearGradient id="mint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaf9f4"/><stop offset="1" stop-color="#d9f0ee"/></linearGradient><linearGradient id="blue" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#eaf3ff"/><stop offset="1" stop-color="#e1e9ff"/></linearGradient><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#dce8ee" stroke-width=".7"/></pattern><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1l8 4-8 4" fill="none" stroke="#078d80" stroke-width="1.7"/></marker></defs><style>text{font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#11243e}.mono{font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace}.muted{fill:#536b85}.teal{fill:#078d80}.red{fill:#bf3549}.white{fill:white}.bold{font-weight:750}.line{stroke:#078d80;stroke-width:3;fill:none;marker-end:url(#arrow)}.thin{stroke:#d9e4ee;stroke-width:1.5}.node{fill:white;stroke:#cfdfec;stroke-width:1.5}.small{font-size:17px}.nodeText{font-size:21px;font-weight:650}</style><rect width="1200" height="795" rx="28" fill="url(#paper)"/><rect x="1" y="1" width="1198" height="793" rx="27" fill="none" stroke="#d9e7ed"/><text x="52" y="70" font-size="39" font-weight="760">Two layouts. Explicit boundaries.</text><text x="54" y="108" font-size="20" class="muted">Arrows show source dependencies: the arrow points to the type being referenced.</text><rect x="40" y="146" width="540" height="565" rx="20" fill="#f0f7ff" stroke="#d4e4f4"/><rect x="620" y="146" width="540" height="565" rx="20" fill="#f0faf6" stroke="#d4e8df"/><rect x="62" y="171" width="9" height="31" rx="4" fill="#3271c9"/><text x="88" y="196" font-size="28" font-weight="740">Standard</text><text x="62" y="226" font-size="17" class="muted">Layered architecture</text><rect x="125" y="263" width="370" height="75" rx="15" class="node"/><rect x="141" y="278" width="6" height="45" rx="3" fill="#3271c9"/><text x="165" y="295" class="nodeText">Controller</text><text x="165" y="319" font-size="16" class="muted">HTTP / API</text><rect x="125" y="375" width="370" height="75" rx="15" class="node"/><rect x="141" y="390" width="6" height="45" rx="3" fill="#3271c9"/><text x="165" y="407" class="nodeText">Service</text><text x="165" y="431" font-size="16" class="muted">Use-case coordination</text><rect x="125" y="487" width="370" height="75" rx="15" class="node"/><rect x="141" y="502" width="6" height="45" rx="3" fill="#3271c9"/><text x="165" y="519" class="nodeText">Repository</text><text x="165" y="543" font-size="16" class="muted">Persistence boundary</text><path d="M310 340v34" class="line"/><path d="M310 452v34" class="line"/><rect x="88" y="610" width="444" height="68" rx="13" fill="#fff5f5" stroke="#f1d0d6"/><circle cx="118" cy="644" r="13" fill="#fae0e4"/><path d="M113 639l10 10m0-10l-10 10" stroke="#ba3448" stroke-width="2.8" stroke-linecap="round"/><text x="143" y="639" font-size="17" font-weight="700" fill="#ae3046">Forbidden direct dependency</text><text x="143" y="661" font-size="16" class="muted">Controller → Repository</text><rect x="643" y="171" width="9" height="31" rx="4" fill="#078d80"/><text x="670" y="196" font-size="28" font-weight="740">Hexagonal</text><text x="643" y="226" font-size="17" class="muted">Ports &amp; adapters</text><rect x="650" y="266" width="207" height="67" rx="13" class="node"/><text x="667" y="294" font-size="19" font-weight="720">Inbound adapter</text><text x="667" y="317" font-size="15" class="muted">REST</text><rect x="904" y="266" width="222" height="67" rx="13" class="node"/><text x="921" y="294" font-size="19" font-weight="720">Input port</text><text x="921" y="317" font-size="15" class="muted">Application contract</text><rect x="904" y="365" width="222" height="67" rx="13" class="node"/><text x="921" y="393" font-size="19" font-weight="720">Use case</text><text x="921" y="416" font-size="15" class="muted">Application</text><rect x="650" y="470" width="207" height="67" rx="13" class="node"/><text x="667" y="498" font-size="19" font-weight="720">Outbound adapter</text><text x="667" y="521" font-size="15" class="muted">Infrastructure</text><rect x="904" y="470" width="222" height="67" rx="13" class="node"/><text x="921" y="498" font-size="19" font-weight="720">Output port</text><text x="921" y="521" font-size="15" class="muted">Application contract</text><rect x="904" y="571" width="222" height="67" rx="13" class="node"/><text x="921" y="599" font-size="19" font-weight="720">Domain</text><text x="921" y="622" font-size="15" class="muted">Business model</text><path d="M858 299h42" class="line"/><path d="M1015 366v-29" class="line"/><path d="M858 503h42" class="line"/><path d="M1015 434v32" class="line"/><path d="M1128 398h20v206h-18" class="line"/><rect x="649" y="607" width="207" height="69" rx="13" fill="#fff5f5" stroke="#f1d0d6"/><text x="667" y="636" font-size="17" font-weight="720" fill="#ae3046">Forbidden</text><text x="667" y="658" font-size="15" class="muted">App → concrete adapter</text><text x="54" y="756" font-size="17" class="muted">Selected relationships, not an exhaustive rule map. Exact enforcement: Architecture Guardrails Rulebook.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="394" viewBox="0 0 480 394" role="img" aria-labelledby="title desc">
+  <title id="title">Selected source dependencies in Standard and Hexagonal</title>
+  <desc id="desc">Standard: controller depends on service, and service on repository. The direct controller-to-repository edge is forbidden. Hexagonal: the inbound adapter and use case reference the inbound port. The use case and outbound adapter reference the outbound port. The use case can depend on the domain, and cannot depend on a concrete adapter.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1l8 4-8 4" fill="none" stroke="#38bdf8" stroke-width="1.6"/>
+    </marker>
+    <linearGradient id="panel" x2="100%" y2="100%">
+      <stop stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .panel { fill: url(#panel); stroke: #334155; }
+    .node { fill: #0f172a; stroke: #475569; }
+    .edge { fill: none; stroke: #38bdf8; stroke-width: 2; marker-end: url(#arrow); }
+    text { fill: #e5e7eb; font: 16px system-ui, sans-serif; }
+    .heading { fill: #7dd3fc; font-size: 20px; font-weight: 700; }
+    .label { font: 15px ui-monospace, Menlo, Consolas, monospace; text-anchor: middle; }
+    .blocked { fill: #fda4af; font-size: 16px; }
+  </style>
+  <rect class="panel" x=".5" y=".5" width="479" height="137" rx="10"/>
+  <text class="heading" x="18" y="30">Standard</text>
+  <rect class="node" x="18" y="48" width="124" height="36" rx="5"/>
+  <rect class="node" x="178" y="48" width="124" height="36" rx="5"/>
+  <rect class="node" x="338" y="48" width="124" height="36" rx="5"/>
+  <path class="edge" d="M144 66h31"/>
+  <path class="edge" d="M304 66h31"/>
+  <text class="label" x="80" y="71">controller</text>
+  <text class="label" x="240" y="71">service</text>
+  <text class="label" x="400" y="71">repository</text>
+  <text class="blocked" x="18" y="115">Forbidden: controller → repository</text>
+
+  <rect class="panel" x=".5" y="153.5" width="479" height="240" rx="10"/>
+  <text class="heading" x="18" y="184">Hexagonal</text>
+  <rect class="node" x="18" y="206" width="124" height="36" rx="5"/>
+  <rect class="node" x="178" y="206" width="124" height="36" rx="5"/>
+  <rect class="node" x="338" y="206" width="124" height="36" rx="5"/>
+  <rect class="node" x="18" y="282" width="124" height="36" rx="5"/>
+  <rect class="node" x="178" y="282" width="124" height="36" rx="5"/>
+  <rect class="node" x="338" y="282" width="124" height="36" rx="5"/>
+  <path class="edge" d="M144 224h31"/>
+  <path class="edge" d="M336 224h-31"/>
+  <path class="edge" d="M144 300h31"/>
+  <path class="edge" d="M400 244v35"/>
+  <path class="edge" d="M338 240l-96 39"/>
+  <text class="label" x="80" y="229">adapter.in</text>
+  <text class="label" x="240" y="229">port.in</text>
+  <text class="label" x="400" y="229">use case</text>
+  <text class="label" x="80" y="305">adapter.out</text>
+  <text class="label" x="240" y="305">port.out</text>
+  <text class="label" x="400" y="305">domain</text>
+  <text class="blocked" x="18" y="357">Forbidden: application → concrete adapter</text>
+</svg>
