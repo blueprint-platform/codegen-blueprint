@@ -8,10 +8,12 @@ import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScop
 import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_REPOSITORY;
 import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.FAMILY_SERVICE;
 
+import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import java.util.TreeSet;
 
 /**
  * Strict package cycle rules (STANDARD).
@@ -40,6 +42,9 @@ class StandardStrictPackageCyclesTest {
     private static final String REPOSITORY_SLICE = familySlicePattern(FAMILY_REPOSITORY);
     private static final String DOMAIN_SLICE = familySlicePattern(FAMILY_DOMAIN);
     private static final String CONFIG_SLICE = familySlicePattern(FAMILY_CONFIG);
+
+    <#assign schemaTest = "StandardPackageSchemaSanityTest">
+    <#include "../../_context-cycles.ftl">
 
     @ArchTest
     static final ArchRule controller_packages_must_be_free_of_cycles =

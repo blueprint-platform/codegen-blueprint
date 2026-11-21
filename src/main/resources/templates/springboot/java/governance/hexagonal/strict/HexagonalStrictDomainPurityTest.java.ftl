@@ -6,6 +6,7 @@ import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsSco
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_DOMAIN;
 
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.PackageMatcher;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -29,10 +30,8 @@ import com.tngtech.archunit.lang.ArchRule;
 class HexagonalStrictDomainPurityTest {
 
     private static final String DOMAIN_PATTERN = familyPattern(FAMILY_DOMAIN);
-    private static final String BASE_PREFIX = BASE_PACKAGE + ".";
 
-    // Implementation detail for robust detection (NOT contract).
-    private static final String DOMAIN_DOTTED_TOKEN = "." + FAMILY_DOMAIN + ".";
+    private static final PackageMatcher DOMAIN_PACKAGES = PackageMatcher.of(DOMAIN_PATTERN);
 
     @ArchTest
     static final ArchRule domain_must_depend_only_on_jdk_and_domain =
@@ -56,15 +55,7 @@ class HexagonalStrictDomainPurityTest {
         if (pkg.startsWith("java.")) {
             return true;
         }
-        return isUnderBasePackage(pkg) && isDomainType(pkg);
-    }
-
-    private static boolean isUnderBasePackage(String packageName) {
-        return packageName.startsWith(BASE_PREFIX);
-    }
-
-    private static boolean isDomainType(String packageName) {
-        return packageName.contains(DOMAIN_DOTTED_TOKEN);
+        return DOMAIN_PACKAGES.matches(pkg);
     }
 
     private static String familyPattern(String family) {

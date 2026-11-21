@@ -9,10 +9,12 @@ import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsSco
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_BOOTSTRAP;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_DOMAIN;
 
+import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import java.util.TreeSet;
 
 /**
  * Strict package cycle rules (HEXAGONAL).
@@ -41,6 +43,9 @@ class HexagonalStrictPackageCyclesTest {
 
     private static final String ADAPTER_IN_SLICE = adapterSubSlicePattern(ADAPTER_IN);
     private static final String ADAPTER_OUT_SLICE = adapterSubSlicePattern(ADAPTER_OUT);
+
+    <#assign schemaTest = "HexagonalPackageSchemaSanityTest">
+    <#include "../../_context-cycles.ftl">
 
     @ArchTest
     static final ArchRule adapter_packages_must_be_free_of_cycles =

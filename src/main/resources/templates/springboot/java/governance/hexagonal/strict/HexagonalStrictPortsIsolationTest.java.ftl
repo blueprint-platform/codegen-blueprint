@@ -8,6 +8,7 @@ import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsSco
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_APPLICATION;
 
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.PackageMatcher;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -30,9 +31,12 @@ import com.tngtech.archunit.lang.ArchRule;
 )
 class HexagonalStrictPortsIsolationTest {
 
-    private static final String APPLICATION_TOKEN = familyToken(FAMILY_APPLICATION);
-    private static final String PORT_TOKEN = "." + APPLICATION_PORT + ".";
+    private static final PackageMatcher APPLICATION_PACKAGES =
+            PackageMatcher.of(familyPattern(FAMILY_APPLICATION));
+    private static final PackageMatcher PORT_PACKAGES =
+            PackageMatcher.of(familyPattern(FAMILY_APPLICATION + "." + APPLICATION_PORT));
 
+    <#include "../_application-direction.ftl">
     @ArchTest
     static final ArchRule adapters_must_not_depend_on_application_implementation =
             noClasses()
@@ -49,17 +53,7 @@ class HexagonalStrictPortsIsolationTest {
 
     private static boolean isApplicationImplementationType(JavaClass c) {
         var pkg = c.getPackageName();
-        if (pkg == null || pkg.isBlank()) {
-            return false;
-        }
-
-        return pkg.startsWith(BASE_PACKAGE + ".")
-                && pkg.contains(APPLICATION_TOKEN)
-                && !pkg.contains(PORT_TOKEN);
-    }
-
-    private static String familyToken(String family) {
-        return "." + family + ".";
+        return APPLICATION_PACKAGES.matches(pkg) && !PORT_PACKAGES.matches(pkg);
     }
 
     private static String familyPattern(String family) {

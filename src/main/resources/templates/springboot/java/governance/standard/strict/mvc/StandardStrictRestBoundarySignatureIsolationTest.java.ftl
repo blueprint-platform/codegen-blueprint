@@ -8,6 +8,7 @@ import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScop
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaType;
+import com.tngtech.archunit.core.domain.PackageMatcher;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -38,10 +39,10 @@ import org.springframework.web.bind.annotation.RestController;
 class StandardStrictRestBoundarySignatureIsolationTest {
 
     private static final String CONTROLLER_PATTERN = familyPattern(FAMILY_CONTROLLER);
-    private static final String BASE_PREFIX = BASE_PACKAGE + ".";
 
     // Implementation detail for robust detection (NOT contract).
-    private static final String DOMAIN_DOTTED_TOKEN = "." + FAMILY_DOMAIN + ".";
+    private static final PackageMatcher DOMAIN_PACKAGES =
+            PackageMatcher.of(BASE_PACKAGE + ".." + FAMILY_DOMAIN + "..");
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
@@ -118,7 +119,7 @@ class StandardStrictRestBoundarySignatureIsolationTest {
             if (pkg == null || pkg.isBlank()) {
                 return false;
             }
-            return pkg.startsWith(BASE_PREFIX) && pkg.contains(DOMAIN_DOTTED_TOKEN);
+            return DOMAIN_PACKAGES.matches(pkg);
         }
 
         private static String message(JavaMethod method, String reason, Object type) {

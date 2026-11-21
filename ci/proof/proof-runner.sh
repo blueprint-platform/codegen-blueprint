@@ -120,15 +120,15 @@ main() {
 
   prove_controller_repository_boundary "$std_dir"
 
-  local probe
+  local probe probe_file
   probe="$(inject_rest_signature_violation "$hex_dir")"
   run_verify_expect_fail "$hex_dir" "HEX REST signature"
-  rm "$probe"
+  while IFS= read -r probe_file; do rm "$probe_file"; done <<< "$probe"
   run_verify "$hex_dir" "HEX REST fixed"
 
   probe="$(inject_rest_signature_violation "$std_dir")"
   run_verify_expect_fail "$std_dir" "STD REST signature"
-  rm "$probe"
+  while IFS= read -r probe_file; do rm "$probe_file"; done <<< "$probe"
   run_verify "$std_dir" "STD REST fixed"
 
   log "DONE: Proof completed successfully (GREEN → RED → GREEN)"

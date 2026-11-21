@@ -96,7 +96,7 @@ class HexagonalPackageSchemaSanityTest {
         Assertions.fail(buildViolationMessage(violations));
     }
 
-    private static Set<String> detectContexts(JavaClasses classes) {
+    static Set<String> detectContexts(JavaClasses classes) {
         var contexts = new TreeSet<String>();
 
         for (var c : classes) {

@@ -458,18 +458,28 @@ inject_rest_signature_violation() {
   package="$(sed -n 's/^package \(.*\);$/\1/p' "$controller")"
   local probe
   probe="$(dirname "$controller")/GuardrailsRestSignatureProbe.java"
+  local domain_probe package_path
+  package_path="$(printf '%s' "$PACKAGE_NAME" | tr . /)"
+  domain_probe="$project_dir/src/main/java/$package_path/domain/GuardrailsDomainProbe.java"
+  cat > "$domain_probe" <<JAVA || die "Could not write REST domain probe: $domain_probe"
+package $PACKAGE_NAME.domain;
+
+public record GuardrailsDomainProbe(String value) {}
+JAVA
   cat > "$probe" <<JAVA
 package $package;
 
-import $PACKAGE_NAME.bp.sample.domain.model.Greeting;
+import $PACKAGE_NAME.domain.GuardrailsDomainProbe;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 class GuardrailsRestSignatureProbe {
-    public Greeting leaksDomainType() {
+    public ResponseEntity<List<GuardrailsDomainProbe>> leaksDomainType() {
         return null;
     }
 }
 JAVA
-  echo "$probe"
+  printf '%s\n' "$probe" "$domain_probe"
 }

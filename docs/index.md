@@ -10,13 +10,13 @@ Choose **standard** when controllers, services and repositories express your tea
 
 The generator delivers the project and ZIP. The generated project's Maven lifecycle owns compilation, architecture checks and sample integration tests.
 
-![The generator validates and resolves a Spring Boot patch, the project delivers sources and tests, and the consumer runs those tests through Maven](assets/architecture-2.0.svg)
+![Allowed and prohibited source dependencies for Standard Layered and Hexagonal projects](assets/architecture-2.0.svg)
 
 ## Generate and verify
 
 Follow the [quickstart](quickstart.md) with JDK 25. Run the generated wrapper and look for the sample HTTP integration test and ArchUnit reports. The project targets **Boot 4.2 / Java 25** by default. Both Boot 4.1 and 4.2 can target Java 21 or 25. See [compatibility](compatibility.md) for the resolved patch and bundled-reference rules.
 
-Start with `basic` for layout-specific checks, choose `strict` for stronger rules, or use `none` for the layout without generated ArchUnit checks.
+Start with `basic` for layout-specific checks, choose `strict` to retain Basic guarantees and add stronger rules, or use `none` for the layout without generated ArchUnit checks.
 
 ## Break a boundary
 

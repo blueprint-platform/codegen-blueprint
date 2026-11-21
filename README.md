@@ -38,7 +38,7 @@ Expect a project directory and a sibling ZIP. The sample's Failsafe tests exerci
 | Guardrails | What gets generated |
 | --- | --- |
 | `none` | Project structure with no generated ArchUnit dependency or rules. |
-| `basic` (default) | Layout-specific scope checks and core dependency restrictions. |
+| `basic` (default) | Layout-specific scope checks, core dependency restrictions and cycle checks between package families within a context. |
 | `strict` | Basic coverage plus stronger layout-specific boundaries, including checks for REST signatures when MVC is present. |
 
 [Inspect both generated layouts](docs/examples/generated-projects.md) · [Read the rulebook](docs/architecture/architecture-guardrails-rulebook.md)
