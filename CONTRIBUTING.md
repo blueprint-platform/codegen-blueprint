@@ -12,7 +12,7 @@ mvn -B -ntp clean verify
 
 This runs generator unit, architecture and integration tests. For changes to generated output, run the affected [Standard or Full matrix](docs/maintainers/release-discipline.md#verification-levels) from the repository root with a matching target JDK. Run the [negative proof](docs/examples/boundary-proof.md) when modifying guardrails or build wiring.
 
-For documentation changes, run the Pages and quickstart checks described in the [documentation tooling guide](docs/maintainers/documentation.md). The quickstart check executes the fenced commands from the user-facing guide. See [visual assets](docs/maintainers/visual-assets.md) for source files and proof provenance.
+For documentation changes, follow the [documentation tooling guide](docs/maintainers/documentation.md) to render Pages, run the published quickstart and check snapshot drift. Use the [visual review guide](docs/maintainers/visual-assets.md) when changing diagrams or proof artwork.
 
 ## Submit a focused change
 

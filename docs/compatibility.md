@@ -7,7 +7,7 @@ Build and run the generator on **Java 25**. Its executable JAR targets Java 25 a
 | 4.1.x | Supported and verified | Supported and verified | 4.1.3 |
 | 4.2.x | Supported and verified | Supported and verified · default | 4.2.0 |
 
-The generated build uses Maven and includes a Maven **3.9.16** wrapper. The generator build uses Maven 3.9.16 as its CI reference. The public CLI accepts Boot minor selectors only. Boot 3.x and 4.0.x and Java versions other than 21 and 25 are outside the generation contract.
+Maven **3.9.16** is the generator’s CI reference and the version pinned by the generated wrapper. The [CLI reference](cli.md) lists the supported selectors.
 
 ## How versions are selected
 
@@ -19,6 +19,6 @@ Local verification built and ran the generator on JDK 25, then used that JAR acr
 
 Earlier compatibility runs observed **4.1.3** and **4.2.0** from live Central. They also verified the 4.1.0 edge on both target JDKs after substituting only the parent in a temporary generated project.
 
-The [proof record](examples/boundary-proof.md) covers the five Strict boundary mutations and the separate Basic/Strict continuity fixtures. The continuity fixtures exercised both layouts on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 using bundled resolution. The root build validates the generator. The separate generated-project build validates its output. The matrix samples the supported surface without claiming every patch or alias combination has been exercised.
+The [proof walkthrough](examples/boundary-proof.md) covers the five Strict boundary mutations and the separate Basic/Strict continuity fixtures. The continuity fixtures exercised both layouts on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 using bundled resolution. The root build validates the generator. The separate generated-project build validates its output. The matrix samples the supported surface without claiming every patch or alias combination has been exercised.
 
 See [verification levels](maintainers/release-discipline.md#verification-levels) for the blocking matrix, release checks and scheduled upstream candidates.

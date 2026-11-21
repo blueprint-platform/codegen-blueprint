@@ -1,209 +1,34 @@
-# Architecture Governance & AI Collaboration Protocol
+# Architecture governance and AI collaboration
 
-> **Executable Architecture requires explicit decisions and observable guardrails — not accidental code.**
+The human maintainer owns architectural intent, public contracts and merge decisions. AI can draft and verify changes within those boundaries. Architectural claims need observable build evidence, and each generated artifact needs an explicit purpose.
 
-This document defines how architectural decisions are made, **evaluated**, and protected in the Codegen Blueprint project — including **how AI is allowed to participate**.
+## Decision protocol
 
----
+Record these five items before a nontrivial change can merge.
 
-## 📑 Table of Contents
+1. **Intent.** State the problem in terms of observable behavior.
+2. **Boundary.** Identify the owning layer or profile and justify the placement.
+3. **Contract.** Define inputs, outputs and failure behavior. Keep application models and adapter DTOs separate and route dependencies through ports.
+4. **Proof.** Identify the test or generated rule that demonstrates the claim.
+5. **Drift check.** Describe the regression the evidence will catch.
 
-- [Core Principle](#1-core-principle)
-- [Roles & Responsibilities](#2-roles--responsibilities)
-- [Decision-Making Protocol](#3-decision-making-protocol)
-- [Architectural Boundaries](#4-architectural-boundaries-non-negotiable)
-- [Architecture Guardrails Philosophy](#5-architecture-guardrails-philosophy)
-- [AI Contribution Rules](#6-ai-contribution-rules)
-- [Merge Gate Checklist](#7-merge-gate-checklist)
-- [Guiding Belief](#8-guiding-belief)
+## Responsibility by layer
 
----
+- **Domain** owns aggregates, value objects, policies and invariant violations. Keep frameworks, I/O, templating and delivery out of the domain.
+- **Application** owns use-case sequencing and ports. It depends on the domain and delegates resolution, generation and publication.
+- **Adapters** own technology-specific operations. Inbound adapters call input ports, and outbound adapters implement output ports.
+- **Profiles** define artifact selection and order. Bootstrap binds the implementations and validates the configuration.
 
-## 1. Core Principle
+The [executable architecture contract](../architecture/executable-architecture-contract.md) describes the generation and enforcement boundaries. The [rulebook](../architecture/architecture-guardrails-rulebook.md) identifies the generated checks.
 
-**Architecture is not documentation. It is behavior.**
+## AI contributions
 
-Therefore:
+Follow established package boundaries and use names that express responsibilities. Keep changes small, explainable and reversible. Get a maintainer decision before introducing an architectural concept or renaming a public API. Keep frameworks out of core and preserve the existing guardrails.
 
-* Every architectural claim must map to an observable guardrails mechanism
-* Every generated artifact must be intentional
-* Nothing enters the repository by accident
+## Merge review
 
-> If we cannot explain *why* a piece of code exists, it does not belong here.
-
----
-
-## 2. Roles & Responsibilities
-
-### Human (Architect / Maintainer)
-
-* Owns **architectural intent**
-* Makes **final decisions**
-* Defines boundaries, policies, and invariants
-* Acts as the **merge gatekeeper**
-
-### AI (Collaborative Implementer)
-
-* Produces **draft implementations** only
-* Never makes architectural decisions autonomously
-* Must follow existing boundaries and contracts
-* Is expected to be questioned, challenged, and corrected
-
-> AI writes code. Humans own architecture.
-
----
-
-## 3. Decision-Making Protocol
-
-Every non-trivial change follows this explicit sequence:
-
-> **Skipping any step makes the change not eligible for merge — regardless of test results.**
-
-This protocol exists to ensure that architectural intent
-survives beyond individual implementations and tooling outcomes.
-
-### 3.1 Intent
-
-*What problem are we solving?*
-
-* Short, explicit statement
-* No implementation details
-
-### 3.2 Boundary
-
-*Where does this change live?*
-
-* Domain / Application / Adapter / Profile
-* Justification required
-
-### 3.3 Contract
-
-*What is the input/output shape?*
-
-* Ports over implementations
-* Application models ≠ Adapter DTOs
-* No framework leakage
-
-### 3.4 Proof
-
-*How is this guaranteed?*
-
-* Test, rule, or **guardrails mechanism**
-* Manual guarantees are not accepted
-
-### 3.5 Drift Check
-
-*What future mistake does this prevent?*
-
-* Explicit anti-drift rationale
-
----
-
-## 4. Architectural Boundaries (Non-Negotiable)
-
-### Domain
-
-* No framework dependencies
-* No IO, filesystem, templating, or delivery logic
-* Contains:
-
-  * Aggregates
-  * Value objects
-  * Policies
-  * Fail-fast domain violations
-
-### Application
-
-* Orchestrates use cases
-* Depends on domain only
-* Coordinates resolution, generation and publication through ports
-* Defines execution order — not content
-
-### Adapters
-
-* Contain all technology-specific code
-* Implement ports
-* Are replaceable without touching core logic
-
-### Profiles
-
-* Define **what** gets generated and **in which order**
-* Encode architectural policy as configuration
-* Are the single source of truth for generation pipelines
-* Prevent implicit coupling by making generation order explicit
-
----
-
-## 5. Architecture Guardrails Philosophy
-
-Architecture guardrails exist to make architectural intent
-**visible and enforceable at build time**.
-
-They are:
-
-* **default-enabled (opt-out)** — active unless explicitly disabled
-* **generated artifacts** — not hand-written conventions
-* **evaluated during the build** — not at runtime
-
-Supported guardrails modes are configurable at generation time:
-
-* `none` delivers the layout and optional sample with no generated ArchUnit checks.
-* `basic` is the default and checks core dependency directions, package structure and context-root cycles.
-* `strict` retains Basic guarantees and adds layout-specific checks. See the [guardrails rulebook](../architecture/architecture-guardrails-rulebook.md).
-
-> Guardrails are only claimed where violations
-> surface deterministically via the build.
-
----
-
-## 6. AI Contribution Rules
-
-AI-generated code **must**:
-
-* Respect existing package and layer boundaries
-* Use intent-driven naming
-* Avoid speculative abstractions
-* Be small, reviewable, and reversible
-* Be explainable in architectural terms, not just technical ones
-
-AI-generated code **must not**:
-
-* Introduce new architectural concepts
-* Rename public APIs without discussion
-* Add frameworks to core layers
-* Bypass existing guardrails mechanisms
-
----
-
-## 7. Merge Gate Checklist
-
-A change may be merged only if:
-
-* [ ] Architectural intent is explicit
-* [ ] Boundary placement is justified
-* [ ] Contracts are clear and minimal
-* [ ] Tests or guardrails mechanisms make the claim observable
-* [ ] README and docs remain truthful
-* [ ] No new drift vectors introduced
-* [ ] No architectural decision was delegated implicitly to tooling or frameworks
-
-> Passing tests alone is not sufficient.
-
----
-
-## 8. Guiding Belief
-
-This project intentionally resists:
-
-* Blind code generation
-* Magic scaffolding
-* Architecture-by-template
-
-Instead, it embraces:
-
-* Explicit decisions
-* Observable guardrails
-* Collaborative reasoning
-
-> **Architecture is a long-term asset.**
-> This governance exists to protect it.
+- [ ] The intent, owning boundary and observable contract are explicit.
+- [ ] Tests or generated rules exercise the claim.
+- [ ] The change addresses the stated drift risk without introducing another one.
+- [ ] README and reference documentation agree with observable behavior.
+- [ ] The maintainer has reviewed any architectural decision introduced by tooling or framework choices.

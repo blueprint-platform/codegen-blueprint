@@ -1,72 +1,36 @@
-<h1 align="center">Codegen Blueprint</h1>
+# Codegen Blueprint
 
-<p align="center">
-  <a href="https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml?query=branch%3Amain"><img alt="Build &amp; Test on main" title="Build &amp; Test on main" src="https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg?branch=main" /></a>
-  <a href="https://app.codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main"><img alt="Codecov coverage on main" title="Codecov coverage on main" src="https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg" /></a>
-</p>
-<p align="center">
-  <a href="docs/compatibility.md"><img alt="Java 25 generator runtime" src="https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk&amp;logoColor=white" /></a>
-  <a href="docs/compatibility.md"><img alt="Generated Spring Boot targets 4.1 and 4.2" src="https://img.shields.io/badge/Spring%20Boot-4.1%20%2F%204.2-6DB33F?logo=springboot&amp;logoColor=white" /></a>
-  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-blue" /></a>
-</p>
+[![Build & Test on main](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml?query=branch%3Amain) [![Codecov coverage on main](https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg)](https://app.codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main)
 
-<p align="center"><strong>Architecture as an Executable Contract</strong></p>
+Generate a Spring Boot Maven project whose build enforces the architecture you select. Codegen Blueprint delivers the project directory and a sibling ZIP with the Maven wrapper and, by default, ArchUnit tests.
 
-Generate a **Standard or Hexagonal Spring Boot project** with ArchUnit checks that run during Maven verification.
+## Generate and verify a sample
 
-[Quickstart](docs/quickstart.md) · [Documentation](docs/index.md) · [Executable proof](docs/examples/boundary-proof.md)
-
-## Generate and verify a project
-
-Use **JDK 25** and **Maven 3.9.16**. From the repository root, build the unreleased 2.0 snapshot and generate a Hexagonal project with Strict guardrails and a runnable HTTP sample.
+Build the 2.0 snapshot from the repository root with **JDK 25** and **Maven 3.9.16**.
 
 ```bash
 mvn -B -ntp clean package
-OUTPUT_DIR="$(mktemp -d)"
-
-java -jar target/codegen-blueprint-2.0.0-SNAPSHOT.jar --cli springboot \
-  --group-id com.example --artifact-id greeting --name Greeting \
-  --description 'Greeting sample with executable architecture' \
-  --package-name com.example.greeting --layout hexagonal \
-  --guardrails strict --sample-code basic --target-dir "$OUTPUT_DIR"
-
-cd "$OUTPUT_DIR/greeting"
-sh ./mvnw -B -ntp clean verify
 ```
 
-The output is a project directory and a sibling `greeting.zip`. Maven runs the generated architecture tests and the sample’s HTTP integration tests. See the [verified quickstart](docs/quickstart.md) for prerequisites and report locations.
+The [quickstart](docs/quickstart.md) takes that JAR through generation and wrapper verification. It runs the sample’s HTTP integration tests and checks the Hexagonal boundaries with Strict guardrails.
 
-## Choose the boundaries to enforce
+## See the build catch a boundary violation
 
-- **Standard** (default) organizes each feature into controllers, services, repositories and domain types.
-- **Hexagonal** routes inbound and outbound dependencies through application ports, keeps business types in the domain and wires implementations in bootstrap.
+The generated Standard sample uses Strict guardrails. A repository-typed field in `GreetingController` creates a dependency ArchUnit can detect in the compiled class.
 
-`basic` (default) checks core dependencies, package structure and cycles. `strict` retains those checks and adds layout-specific constraints, including REST signatures when MVC is present. `none` generates the layout without ArchUnit checks.
+![Recorded Standard Strict run. Baseline passed, the controller-to-repository change failed ArchUnit, and the restored build passed.](docs/assets/architecture-proof.png)
 
-[Generated walkthroughs](docs/examples/generated-projects.md) · [Guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md)
+[Inspect the Java change and named assertion, or reproduce the proof](docs/examples/boundary-proof.md).
 
-## See a compiling change fail verification
+## Choose a layout and guardrails
 
-**GREEN → RED → GREEN.** The generated Standard sample with Strict guardrails passes `clean verify`. The proof runner then adds this field and its import to `GreetingController`.
+- **Standard** (default) gives each feature controller, service, repository and domain packages.
+- **Hexagonal** gives use cases explicit ports and places framework wiring in bootstrap.
 
-```java
-private
-    LoggingGreetingAuditRepository
-        __archViolation = null;
-```
+Choose `basic` for core dependency, package and cycle checks, `strict` for additional boundary checks, or `none` for structure alone. See the [guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md) for the exact checks in each mode.
 
-The change compiles. Surefire reports a failure in the ArchUnit assertion `controllers_must_not_depend_on_repositories`. Removing the field and import makes the same Maven command pass again.
+## Upgrading from 1.x
 
-<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/architecture-proof.png" alt="Standard Strict proof. Baseline passes, Java compiles with the injected repository field, Surefire records the named rule failure, and the restored build passes." /></a></p>
+Executable guardrails already shipped in 1.x. The unreleased **2.0** changes the generator runtime to Java 25 and targets Spring Boot 4.1 or 4.2 projects on Java 21 or 25. Boot 4.2 and Java 25 are the generation defaults. The [2.0 release notes](docs/release-notes.md) cover selector and output changes to account for when upgrading.
 
-[Reproduce this case or run all five scenarios](docs/examples/boundary-proof.md) · [Inspect the historical proof record](docs/examples/proof-2.0.txt)
-
-## What makes 2.0 a major release
-
-Codegen Blueprint **1.x already shipped executable architecture guardrails**. The unreleased 2.0 changes the generation contract. The generator runs on Boot **4.2.0** and requires **Java 25**. Generated projects target **Boot 4.1 or 4.2** with **Java 21 or 25**. The default is **Boot 4.2 / Java 25**.
-
-Boot 3.x and 4.0 are outside the 2.0 target set. Pass a minor selector such as `--boot 4.1` and the generator pins the resolved patch in the output POM. Generation rejects an existing project directory or sibling ZIP.
-
-[2.0 release notes](docs/release-notes.md) · [Compatibility and verification coverage](docs/compatibility.md) · [CLI reference](docs/cli.md)
-
-[Architecture contract](docs/architecture/executable-architecture-contract.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
+[Documentation](docs/index.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)

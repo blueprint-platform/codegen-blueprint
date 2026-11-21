@@ -1,18 +1,16 @@
 # Executable architecture proof
 
-The proof runner generates Spring Boot samples with Strict guardrails and runs `sh ./mvnw -q -ntp clean verify` at baseline, after each source change and after restoration. The Standard controller example below is the same case shown in the README. The full run checks five scenarios across Standard and Hexagonal.
+The proof runner generates samples with Strict guardrails. For each mutation, it checks a passing baseline, a specific ArchUnit failure after compilation, and a passing build after restoration. Every phase uses `sh ./mvnw -q -ntp clean verify`.
 
 ## Standard controller depends on a repository
 
 The runner adds the repository import and the following field to `GreetingController`. Java accepts the field type. ArchUnit inspects the compiled class and reports the forbidden dependency.
 
 ```java
-private
-    LoggingGreetingAuditRepository
-        __archViolation = null;
+private LoggingGreetingAuditRepository __archViolation = null;
 ```
 
-These two lines from `logs/STD_violation.log` identify the assertion and the field. The elapsed time varies by run.
+The first line identifies the failed assertion. The second identifies the source field and its target type. Both are from `logs/STD_violation.log`.
 
 ```text
 [ERROR] io.github.blueprintplatform.greeting.architecture.archunit.StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories -- Time elapsed: 0.007 s <<< FAILURE!
@@ -27,13 +25,13 @@ From the repository root, use JDK 25 and Maven 3.9.16. On macOS, select an insta
 mvn -B -ntp clean package
 ```
 
-To reproduce only the README case:
+Run the controller-to-repository case.
 
 ```bash
 PROOF_MODE=standard bash ci/proof/proof-runner.sh
 ```
 
-To run both baselines and all five scenarios using the bundled Boot resolution in the historical record:
+To match the historical environment, run all five cases with the bundled Boot patch.
 
 ```bash
 PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
@@ -46,35 +44,16 @@ PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
 
 The [historical proof record](proof-2.0.txt) identifies the generator artifact by SHA-256 and records the JDK, Maven, exact Boot patch and assertion names. Both baselines passed. Each mutation produced its expected failure and each restoration passed Maven verification.
 
-- **Hexagonal adapter references an application implementation**
+### Standard
 
-    `HexagonalStrictPortsIsolationTest`
+- Renamed controller package — `StandardPackageSchemaSanityTest#each_standard_bounded_context_must_contain_required_canonical_families`
+- Controller depends on a repository — `StandardStrictLayerDependencyRulesTest#controllers_must_not_depend_on_repositories`
+- MVC response exposes a domain type — `StandardStrictRestBoundarySignatureIsolationTest#rest_controllers_must_not_expose_domain_types_in_signatures`
 
-    `adapters_must_not_depend_on_application_implementation`
+### Hexagonal
 
-- **Standard controller package is renamed to a near miss**
-
-    `StandardPackageSchemaSanityTest`
-
-    `each_standard_bounded_context_must_contain_required_canonical_families`
-
-- **Standard controller references a repository**
-
-    `StandardStrictLayerDependencyRulesTest`
-
-    `controllers_must_not_depend_on_repositories`
-
-- **Hexagonal MVC controller exposes a root-domain type in a generic response**
-
-    `HexagonalStrictRestBoundarySignatureIsolationTest`
-
-    `rest_controllers_must_not_expose_domain_types_in_signatures`
-
-- **Standard MVC controller exposes a root-domain type in a generic response**
-
-    `StandardStrictRestBoundarySignatureIsolationTest`
-
-    `rest_controllers_must_not_expose_domain_types_in_signatures`
+- Adapter depends on an application implementation — `HexagonalStrictPortsIsolationTest#adapters_must_not_depend_on_application_implementation`
+- MVC response exposes a domain type — `HexagonalStrictRestBoundarySignatureIsolationTest#rest_controllers_must_not_expose_domain_types_in_signatures`
 
 The runner checks the Surefire failure report and the named assertion in the Maven log before accepting an expected failure. Both REST cases exercise MVC enabled by the sample and types nested inside `ResponseEntity<List<…>>`.
 
@@ -96,7 +75,7 @@ Run the continuity fixtures against the same packaged JAR. Use a fresh output pa
 
 ```bash
 python3 ci/proof/guardrail-continuity.py \
-  target/codegen-blueprint-*.jar target/guardrail-continuity \
+  target/codegen-blueprint-2.0.0-SNAPSHOT.jar target/guardrail-continuity \
   --boot 4.2 --java 25
 ```
 

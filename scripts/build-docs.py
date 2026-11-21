@@ -5,6 +5,7 @@ import argparse
 from html import escape
 from html.parser import HTMLParser
 import os
+import re
 from pathlib import Path
 import shutil
 from urllib.parse import quote, unquote, urlsplit
@@ -16,17 +17,21 @@ from markdown.treeprocessors import Treeprocessor
 ROOT = Path(__file__).resolve().parents[1]
 STYLESHEET = "site.css"
 GITHUB = "https://github.com/blueprint-platform/codegen-blueprint"
+SOURCE_REPO = os.environ.get("DOCS_SOURCE_REPOSITORY", "blueprint-platform/codegen-blueprint")
+SOURCE_REF = os.environ.get("DOCS_SOURCE_REF", "main")
 NAV = {
     "index": "Overview",
     "quickstart": "Quickstart",
-    "examples/boundary-proof": "Proof",
-    "examples/generated-projects": "Examples",
-    "compatibility": "Compatibility",
     "cli": "CLI",
     "architecture/executable-architecture-contract": "Architecture",
+    "examples/boundary-proof": "Proof",
 }
 PAGES = {
     **NAV,
+    "compatibility": "Compatibility",
+    "examples/generated-projects": "Examples",
+    "examples/standard": "Standard example",
+    "examples/hexagonal": "Hexagonal example",
     "architecture/architecture-guardrails-rulebook": "Guardrails",
     "release-notes": "Release notes",
 }
@@ -56,8 +61,6 @@ class Links(Treeprocessor):
             raise ValueError(f"{self.source.relative_to(ROOT)}: missing local target {raw}")
         if tag == "img" and not target.is_file():
             raise ValueError(f"{self.source.relative_to(ROOT)}: image is not a file {raw}")
-        if self.route is None:
-            return None
 
         fragment = f"#{url.fragment}" if url.fragment else ""
         if target in ROUTES:
@@ -67,7 +70,8 @@ class Links(Treeprocessor):
             self.assets.add(destination)
         else:
             view = "tree" if target.is_dir() else "blob"
-            return f"{GITHUB}/{view}/main/{quote(str(target.relative_to(ROOT)))}{fragment}"
+            return (f"https://github.com/{quote(SOURCE_REPO)}/{view}/{quote(SOURCE_REF)}"
+                    f"/{quote(target.relative_to(ROOT).as_posix())}{fragment}")
         return quote(os.path.relpath(destination, self.route.parent)) + fragment
 
 
@@ -79,10 +83,20 @@ class LocalLinks(Extension):
         renderer.treeprocessors.register(self.processor, "local_links", 1)
 
 
+def heading_slug(value, separator):
+    # Keep the punctuation and spacing behavior of GitHub's Markdown anchors,
+    # including leading hyphens after emoji in the generated README headings.
+    return re.sub(r"[^\w\- ]", "", value.lower()).replace(" ", separator)
+
+
 def render(source, route, assets):
+    extensions = ["fenced_code", "tables", "toc"]
+    if route is not None:
+        extensions.append(LocalLinks(source, route, assets))
     return markdown.markdown(
         source.read_text(encoding="utf-8"),
-        extensions=["fenced_code", "tables", "toc", LocalLinks(source, route, assets)],
+        extensions=extensions,
+        extension_configs={"toc": {"slugify": heading_slug}},
         output_format="html",
     )
 
@@ -118,11 +132,24 @@ def check_site(site):
                 raise ValueError(f"{page.name}: missing rendered anchor {url.geturl()}")
 
 
+def check_markdown():
+    rendered = {}
+    for source in (*ROOT.glob("*.md"), *(ROOT / ".github").rglob("*.md"), *(ROOT / "docs").rglob("*.md")):
+        inspected = HtmlLinks()
+        inspected.feed(render(source, None, None))
+        rendered[source] = inspected
+    for source, inspected in rendered.items():
+        for url in inspected.links:
+            target = (source.parent / unquote(url.path)).resolve() if url.path else source
+            if not target.is_relative_to(ROOT) or not target.exists():
+                raise ValueError(f"{source.relative_to(ROOT)}: missing local target {url.geturl()}")
+            if url.fragment and target in rendered and unquote(url.fragment) not in rendered[target].ids:
+                raise ValueError(f"{source.relative_to(ROOT)}: missing Markdown anchor {url.geturl()}")
+
+
 def build(site):
     assets = set()
-    for source in (*ROOT.glob("*.md"), *(ROOT / ".github").glob("*.md"), *(ROOT / "docs").rglob("*.md")):
-        if source not in ROUTES:
-            render(source, None, assets)
+    check_markdown()
     for source, route in ROUTES.items():
         body = render(source, route, assets)
         key = route.with_suffix("").as_posix()
@@ -132,7 +159,7 @@ def build(site):
             current = ' aria-current="page"' if name == key else ""
             links.append(f'<a href="{href}"{current}>{escape(label)}</a>')
         stylesheet = os.path.relpath(STYLESHEET, route.parent)
-        page_class = ' class="home"' if key == "index" else ""
+        overview = os.path.relpath("index.html", route.parent)
         page = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -141,10 +168,10 @@ def build(site):
 <title>{escape(PAGES[key])} · Codegen Blueprint</title>
 <link rel="stylesheet" href="{stylesheet}">
 </head>
-<body{page_class}>
+<body>
 <a class="skip" href="#content">Skip to content</a>
 <header>
-<div class="header-inner"><strong>Codegen Blueprint</strong><a href="{GITHUB}">GitHub</a></div>
+<div class="header-inner"><a class="brand" href="{overview}">Codegen Blueprint</a><a href="{GITHUB}">GitHub</a></div>
 <nav aria-label="Documentation">{"".join(links)}</nav>
 </header>
 <main id="content">{body}</main>
@@ -166,7 +193,7 @@ def build(site):
     if unexpected := actual - expected:
         raise ValueError(f"Use a fresh output directory. Unexpected files: {sorted(unexpected)}")
     check_site(site)
-    print(f"Built and checked {len(ROUTES)} Pages routes and {len(assets)} linked assets")
+    print(f"Checked Markdown links and anchors; built {len(ROUTES)} Pages routes with {len(assets)} linked assets")
 
 
 if __name__ == "__main__":

@@ -1,14 +1,18 @@
 # 2.0.0 release notes
 
-Release candidate documentation for the current `2.0.0-SNAPSHOT` branch. The 2.0.0 binary has not been published.
+The current branch builds `2.0.0-SNAPSHOT`. The 2.0.0 binary is unpublished.
 
-- Generate Java/Maven projects for Spring Boot 4.1 or 4.2 using Java 21 or 25. The default is Boot 4.2 / Java 25.
-- Resolve stable Boot patches at generation time. The generated POM pins the resolved patch. Eligible connection failures are reported and use a bundled verified reference.
-- Continue to choose standard or hexagonal and basic, strict or no architecture guardrails. Strict REST checks now cover MVC enabled implicitly by the sample.
-- Generated verification runs sample integration tests, including real HTTP. Maven resolves the Mockito agent from the project’s dependencies.
-- Project publication protects existing output directories and sibling ZIPs. POM text is XML-escaped. Cleanup is best-effort for owned output.
-- The generator requires Java 25 and uses Spring Boot 4.2.0 internally.
+## Before upgrading from 1.x
 
-Breaking CLI changes include minor-only Boot selectors (`4.1` and `4.2`), removal of Boot 3.x/4.0 generation, and a Java 25 default. Existing output paths must be cleared or changed before generating again.
+- **Generator runtime** requires JDK 25 and uses Spring Boot 4.2.0 internally.
+- **Generated targets** move from Boot 3.x to Boot 4.1 or 4.2. Boot 4.0 is outside the supported target set. Use `--boot 4.1` or `--boot 4.2`. The selector takes a minor line and the generated POM pins the resolved patch. Eligible connection failures use a reported bundled reference.
+- **Generation defaults** are Boot 4.2 and Java 25. Use `--java 21` to keep a Java 21 target.
+- **Output paths** must be available. Choose a fresh target if a project directory or sibling ZIP already exists.
 
-See [compatibility](compatibility.md) and [release gates](maintainers/release-discipline.md).
+See [compatibility](compatibility.md) for verified targets and the [CLI reference](cli.md#spring-boot-patch-resolution) for patch selection and failures.
+
+## Generated build changes
+
+Standard and Hexagonal retain executable guardrails. Strict REST signature checks also run when the basic sample implicitly adds MVC. Maven verification includes the sample’s real HTTP integration tests and resolves the Mockito agent from the generated project’s dependencies.
+
+POM text is XML-escaped. Publication preserves existing outputs and attempts cleanup of owned paths on failure. The [delivery contract](architecture/executable-architecture-contract.md#delivery-and-reproducibility) describes filesystem limits.

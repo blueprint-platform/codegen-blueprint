@@ -16,7 +16,7 @@ The generator chooses the template family using the layout and mode. Strict REST
 
 ## Standard layered layout
 
-Read arrows as source dependencies. Controllers call application-facing services; services can use repositories and domain services. Repositories can use domain models. Configuration can wire those components. Packages in the examples are relative to the generated base or a recognized feature root.
+Read arrows as source dependencies. Configuration can wire controllers, services and repositories. Types in services can use domain services, and repositories can use domain models. Package names are relative to the generated base or a recognized feature root.
 
 | Dependency or property | Basic | Strict | Generated assertion or class |
 | --- | --- | --- | --- |
@@ -107,7 +107,7 @@ class OrderController {
 
 The rule works on imported bytecode and its declared type information. Composed annotations, other controller styles, inherited routing arrangements and serialized object graphs require separate evidence. Controllers may map domain objects internally; signature checks concern the declared transport surface.
 
-## Scope, cycles and false greens
+## Scope and cycle coverage
 
 - `*GuardrailsScopeSanityTest` requires a nonempty import under the generated base package. Imports exclude test classes.
 - `*PackageSchemaSanityTest` infers context roots from canonical package segments. Required families are controller/service/domain for Standard and adapter/application/domain for Hexagonal. It distinguishes a more specific recognized context from its parent.

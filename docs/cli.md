@@ -21,9 +21,11 @@ Invoke the generator with `java -jar /path/to/codegen-blueprint.jar --cli spring
 
 ## Spring Boot patch resolution
 
-`--boot` identifies a minor line. For example, `--boot 4.1` is valid and `--boot 4.1.3` is rejected. The generator reads Maven Central metadata for the newest stable numeric patch on that line and checks the selected parent POM’s coordinates. This lookup does not validate the project’s dependency graph. The CLI reports `CENTRAL_LATEST` and the exact selected patch. That patch is written to the generated POM.
+Pass a minor line such as `--boot 4.1`. An exact patch such as `--boot 4.1.3` is rejected. The generator reads Maven Central metadata, selects the newest stable numeric patch on that line and checks the parent POM’s coordinates. It pins the patch in the generated POM and reports `CENTRAL_LATEST`. Maven resolves the dependency graph when building the generated project.
 
-During either lookup (metadata or parent POM), DNS resolution errors, missing routes, refused connections and timeouts while awaiting response headers can trigger fallback. The warning identifies the request and connection failure, and the result reports `BUNDLED_FALLBACK`. Once the response arrives, HTTP errors, body read timeouts and oversized responses stop generation. Malformed data, missing or mismatched parents, TLS failures and interruption also stop generation. See [compatibility](compatibility.md) for bundled versions.
+**Fallback.** During metadata or parent lookup, DNS errors, missing routes, refused connections and timeouts awaiting response headers can select a bundled patch. The CLI warns with the failed request and cause, then reports `BUNDLED_FALLBACK`. See [compatibility](compatibility.md#how-versions-are-selected) for the bundled reference policy.
+
+**Generation failure.** HTTP errors, body read timeouts, oversized responses, malformed data, missing or mismatched parents, TLS failures and interruption stop generation.
 
 Online generation may select a newer patch on a later run. For the same generator, normalized inputs and resolved patch, the project tree and file contents repeat. Store the generated project in your own version control to retain a particular result. Wrapper downloads and Maven dependencies remain subject to the generated build’s network, mirror and cache settings.
 
