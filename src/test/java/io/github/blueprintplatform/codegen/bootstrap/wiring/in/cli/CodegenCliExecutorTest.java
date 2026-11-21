@@ -89,7 +89,7 @@ class CodegenCliExecutorTest {
 
   private int getExitCode(RecordingCreateProjectPort useCase) {
     CreateProjectCommandMapper mapper = new CreateProjectCommandMapper();
-    SpringBootGenerateCommand springBootCmd = new SpringBootGenerateCommand(mapper, useCase);
+    SpringBootGenerateCommand springBootCmd = new SpringBootGenerateCommand(mapper, useCase, new DummyMessageSource());
 
     CodegenCommand rootCommand = new CodegenCommand();
     CommandLine.IFactory factory = new TestPicocliFactory(springBootCmd);

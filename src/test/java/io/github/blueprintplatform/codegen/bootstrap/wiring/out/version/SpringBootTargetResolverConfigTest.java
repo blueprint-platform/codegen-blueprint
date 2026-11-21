@@ -8,12 +8,12 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-class SpringBootPatchResolverConfigTest {
+class SpringBootTargetResolverConfigTest {
   @Test
   void contextOwnsTheCentralClientLifecycle() {
     HttpClient client;
     try (var context =
-        new AnnotationConfigApplicationContext(SpringBootPatchResolverConfig.class)) {
+        new AnnotationConfigApplicationContext(SpringBootTargetResolverConfig.class)) {
       client = context.getBean("centralHttpClient", HttpClient.class);
       assertThat(context.getBean(ProjectTargetResolver.class)).isNotNull();
       assertThat(client.connectTimeout()).contains(Duration.ofSeconds(3));

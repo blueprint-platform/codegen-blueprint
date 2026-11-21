@@ -1,6 +1,9 @@
 package io.github.blueprintplatform.codegen.domain.model.value.dependency;
 
-public enum DependencyScope {
+import io.github.blueprintplatform.codegen.domain.shared.KeyEnumParser;
+import io.github.blueprintplatform.codegen.domain.shared.KeyedEnum;
+
+public enum DependencyScope implements KeyedEnum {
   COMPILE("compile"),
   PROVIDED("provided"),
   RUNTIME("runtime"),
@@ -12,6 +15,17 @@ public enum DependencyScope {
 
   DependencyScope(String value) {
     this.value = value;
+  }
+
+  public static DependencyScope fromOptionalKey(String raw) {
+    return raw == null || raw.isBlank()
+        ? null
+        : KeyEnumParser.parse(DependencyScope.class, raw, () -> "dependency.scope.unknown");
+  }
+
+  @Override
+  public String key() {
+    return value;
   }
 
   public String value() {

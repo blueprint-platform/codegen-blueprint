@@ -58,7 +58,7 @@ public class SampleCodeAdapter implements ArtifactPort {
     SampleCodeLevel level = blueprint.getArchitecture().sampleCodeOptions().level();
     ProjectLayout layout = blueprint.getArchitecture().layout();
 
-    if (SampleCodeLevel.BASIC != level) {
+    if (!level.isEnabled()) {
       return List.of();
     }
 

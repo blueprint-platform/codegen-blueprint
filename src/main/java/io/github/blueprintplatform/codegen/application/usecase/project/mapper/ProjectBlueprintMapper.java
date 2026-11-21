@@ -23,7 +23,6 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.Plat
 import io.github.blueprintplatform.codegen.domain.policy.tech.CompatibilityPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ProjectBlueprintMapper {
 
@@ -76,10 +75,7 @@ public class ProjectBlueprintMapper {
               ? null
               : new DependencyVersion(d.version());
 
-      DependencyScope scope =
-          (d.scope() == null || d.scope().isBlank())
-              ? null
-              : DependencyScope.valueOf(d.scope().trim().toUpperCase(Locale.ROOT));
+      DependencyScope scope = DependencyScope.fromOptionalKey(d.scope());
 
       items.add(
           new Dependency(

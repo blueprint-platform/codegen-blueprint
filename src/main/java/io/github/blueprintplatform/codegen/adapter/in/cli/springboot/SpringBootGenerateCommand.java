@@ -8,10 +8,12 @@ import io.github.blueprintplatform.codegen.application.port.in.project.CreatePro
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -26,6 +28,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
 
   private final CreateProjectCommandMapper mapper;
   private final CreateProjectPort createProjectPort;
+  private final MessageSource messages;
 
   @Option(
       names = {"--group-id"},
@@ -127,9 +130,10 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   Path targetDirectory;
 
   public SpringBootGenerateCommand(
-      CreateProjectCommandMapper mapper, CreateProjectPort createProjectPort) {
+      CreateProjectCommandMapper mapper, CreateProjectPort createProjectPort, MessageSource messages) {
     this.mapper = mapper;
     this.createProjectPort = createProjectPort;
+    this.messages = messages;
   }
 
   @Override
@@ -171,8 +175,13 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       case REMOTE_LATEST -> "CENTRAL_LATEST";
       case BUNDLED_FALLBACK -> "BUNDLED_FALLBACK";
     };
-    if (resolution.warning() != null) {
-      log.warn("{}: {}", source, resolution.warning());
+    var warning = resolution.warning();
+    if (warning != null) {
+      log.warn(
+          "{}: {}",
+          source,
+          messages.getMessage(
+              warning.messageKey(), warning.arguments().toArray(), Locale.getDefault()));
     }
     if (log.isInfoEnabled()) {
       log.info(

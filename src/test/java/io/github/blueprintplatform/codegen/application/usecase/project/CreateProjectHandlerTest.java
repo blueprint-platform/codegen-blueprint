@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.blueprintplatform.codegen.application.error.exception.InvalidProjectRequestException;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
+import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
 import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
 import io.github.blueprintplatform.codegen.application.port.model.TargetResolution.Source;
@@ -137,10 +138,25 @@ class CreateProjectHandlerTest {
     assertThatThrownBy(() -> handler.handle(createProjectCommand("demo-app", requested, null)))
         .isInstanceOf(InvalidProjectRequestException.class)
         .hasMessage("application.project.target-directory.required");
+    var invalidScope = List.of(new DependencyInput("com.acme", "library", null, "Bogus"));
+    assertThatThrownBy(
+            () -> handler.handle(createProjectCommand("demo-app", requested, tempDir, invalidScope)))
+        .isInstanceOfSatisfying(
+            DomainViolationException.class,
+            failure -> {
+              assertThat(failure.getMessageKey()).isEqualTo("dependency.scope.unknown");
+              assertThat(failure.getArgs()).containsExactly("bogus");
+            });
   }
 
   private CreateProjectCommand createProjectCommand(
       String artifactId, PlatformTarget platformTarget, Path targetDirectory) {
+    return createProjectCommand(artifactId, platformTarget, targetDirectory, List.of());
+  }
+
+  private CreateProjectCommand createProjectCommand(
+      String artifactId, PlatformTarget platformTarget, Path targetDirectory,
+      List<DependencyInput> dependencies) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     return new CreateProjectCommand(
@@ -153,7 +169,7 @@ class CreateProjectHandlerTest {
         ProjectLayout.STANDARD,
         GuardrailsMode.NONE,
         platformTarget,
-        List.of(),
+        dependencies,
         SampleCodeOptions.none(),
         targetDirectory);
   }

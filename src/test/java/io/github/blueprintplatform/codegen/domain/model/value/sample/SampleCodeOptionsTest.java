@@ -1,6 +1,9 @@
 package io.github.blueprintplatform.codegen.domain.model.value.sample;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -38,19 +41,9 @@ class SampleCodeOptionsTest {
   }
 
   @Test
-  @DisplayName("rich() factory should create enabled options with RICH level")
-  void richFactory_shouldCreateEnabledRichLevel() {
-    SampleCodeOptions options = SampleCodeOptions.rich();
-
-    assertThat(options.level()).isEqualTo(SampleCodeLevel.RICH);
-    assertThat(options.isEnabled()).isTrue();
-  }
-
-  @Test
-  @DisplayName("isEnabled should be false only for NONE")
-  void isEnabled_shouldBeFalseOnlyForNone() {
-    assertThat(SampleCodeOptions.none().isEnabled()).isFalse();
-    assertThat(SampleCodeOptions.basic().isEnabled()).isTrue();
-    assertThat(SampleCodeOptions.rich().isEnabled()).isTrue();
+  void rejectsRichLevelAtTheDomainBoundary() {
+    assertThatThrownBy(() -> SampleCodeLevel.fromKey("rich"))
+        .isInstanceOf(DomainViolationException.class)
+        .hasMessage("project.sample.level.unknown");
   }
 }

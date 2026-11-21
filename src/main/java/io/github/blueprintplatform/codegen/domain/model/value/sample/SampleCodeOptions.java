@@ -16,10 +16,6 @@ public record SampleCodeOptions(SampleCodeLevel level) {
     return new SampleCodeOptions(SampleCodeLevel.BASIC);
   }
 
-  public static SampleCodeOptions rich() {
-    return new SampleCodeOptions(SampleCodeLevel.RICH);
-  }
-
   public boolean isEnabled() {
     return level.isEnabled();
   }

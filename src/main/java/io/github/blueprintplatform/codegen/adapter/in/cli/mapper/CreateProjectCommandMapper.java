@@ -56,7 +56,9 @@ public class CreateProjectCommandMapper {
   }
 
   public String resolvedBootPatch(TargetResolution resolution) {
-    return ((SpringBootJvmTarget) resolution.target()).patchVersion();
+    return switch (resolution.target()) {
+      case SpringBootJvmTarget target -> target.patchVersion();
+    };
   }
 
   private TechStack toTechStack(CliTechStack cli) {

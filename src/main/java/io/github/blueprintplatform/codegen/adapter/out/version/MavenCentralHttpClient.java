@@ -1,6 +1,7 @@
 package io.github.blueprintplatform.codegen.adapter.out.version;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.version.MavenCentralUnavailableException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootVersionResolutionException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -16,19 +17,20 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 
 /** One bounded Central request, including the response body. */
-public final class CentralRepositoryHttp {
+final class MavenCentralHttpClient {
   private final URI base;
   private final HttpClient client;
 
-  public CentralRepositoryHttp(HttpClient client, URI base) {
+  MavenCentralHttpClient(HttpClient client, URI base) {
     this.client = client;
     this.base = base;
   }
 
   byte[] read(String phase, String path, int limit, long deadline) {
     long remaining = Math.min(Duration.ofSeconds(5).toNanos(), deadline - System.nanoTime());
-    if (remaining <= 0)
-      throw new SpringBootResolutionException("adapter.springboot.resolution.deadline");
+    if (remaining <= 0) {
+      throw new SpringBootVersionResolutionException("adapter.springboot.resolution.deadline");
+    }
     // The factory timeout covers headers and body. Configure it per request for the shared budget.
     var factory = new JdkClientHttpRequestFactory(client);
     factory.setReadTimeout(Duration.ofNanos(remaining));
@@ -37,10 +39,10 @@ public final class CentralRepositoryHttp {
       response = factory.createRequest(base.resolve(path), HttpMethod.GET).execute();
     } catch (IOException e) {
       if (Thread.currentThread().isInterrupted()) {
-        throw new SpringBootResolutionException("adapter.springboot.resolution.interrupted", e);
+        throw new SpringBootVersionResolutionException("adapter.springboot.resolution.interrupted", e);
       }
       if (isConnectionFailure(e)) {
-        throw new SpringBootRepositoryUnavailableException(phase, e);
+        throw new MavenCentralUnavailableException(phase, e);
       }
       throw failed(phase, e);
     }
@@ -50,12 +52,12 @@ public final class CentralRepositoryHttp {
         var body = response.getBody()) {
       int status = response.getStatusCode().value();
       if (status != 200) {
-        throw new SpringBootResolutionException(
+        throw new SpringBootVersionResolutionException(
             "adapter.springboot.resolution.http-status", phase, status);
       }
       byte[] bytes = body.readNBytes(limit + 1);
       if (bytes.length > limit) {
-        throw new SpringBootResolutionException("adapter.springboot.resolution.response-limit", phase);
+        throw new SpringBootVersionResolutionException("adapter.springboot.resolution.response-limit", phase);
       }
       return bytes;
     } catch (IOException e) {
@@ -63,20 +65,24 @@ public final class CentralRepositoryHttp {
     }
   }
 
-  private static SpringBootResolutionException failed(String phase, Throwable cause) {
-    return new SpringBootResolutionException(
+  private static SpringBootVersionResolutionException failed(String phase, Throwable cause) {
+    return new SpringBootVersionResolutionException(
         "adapter.springboot.resolution.phase-failed", cause, phase, cause.getMessage());
   }
 
   private static boolean isConnectionFailure(Throwable cause) {
-    if (cause instanceof SSLException) return false;
-    if (cause instanceof HttpTimeoutException
-        || cause instanceof ConnectException
-        || cause instanceof NoRouteToHostException
-        || cause instanceof UnknownHostException
-        || cause instanceof UnresolvedAddressException) {
-      return true;
+    boolean unavailable = false;
+    for (Throwable failure = cause; failure != null; failure = failure.getCause()) {
+      if (failure instanceof SSLException) {
+        return false;
+      }
+      unavailable |=
+          failure instanceof HttpTimeoutException
+              || failure instanceof ConnectException
+              || failure instanceof NoRouteToHostException
+              || failure instanceof UnknownHostException
+              || failure instanceof UnresolvedAddressException;
     }
-    return cause.getCause() != null && isConnectionFailure(cause.getCause());
+    return unavailable;
   }
 }

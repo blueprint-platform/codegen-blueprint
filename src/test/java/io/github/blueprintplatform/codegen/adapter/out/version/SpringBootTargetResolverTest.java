@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.sun.net.httpserver.HttpServer;
-import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootVersionResolutionException;
 import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
 import io.github.blueprintplatform.codegen.application.port.model.TargetResolution.Source;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
@@ -77,7 +77,7 @@ class SpringBootTargetResolverTest {
     var resolver = resolver();
     assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
         .isInstanceOfSatisfying(
-            SpringBootResolutionException.class,
+            SpringBootVersionResolutionException.class,
             failure ->
                 assertThat(localized(failure))
                     .endsWith("Central parent POM failed: Central parent POM returned HTTP 404"));
@@ -94,7 +94,7 @@ class SpringBootTargetResolverTest {
 
     assertThatThrownBy(() -> resolver().resolve(request(V4_1)))
         .isInstanceOfSatisfying(
-            SpringBootResolutionException.class,
+            SpringBootVersionResolutionException.class,
             failure ->
                 assertThat(localized(failure))
                     .endsWith("Unexpected Central parent POM coordinates"));
@@ -105,7 +105,7 @@ class SpringBootTargetResolverTest {
     respond("/maven-metadata.xml", 200, "<metadata>");
     var resolver = resolver();
     assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
-        .isInstanceOf(SpringBootResolutionException.class)
+        .isInstanceOf(SpringBootVersionResolutionException.class)
         .hasMessage("adapter.springboot.resolution.failed");
   }
 
@@ -116,7 +116,7 @@ class SpringBootTargetResolverTest {
 
     assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
         .isInstanceOfSatisfying(
-            SpringBootResolutionException.class,
+            SpringBootVersionResolutionException.class,
             failure -> assertThat(localized(failure)).endsWith("Central response exceeded byte limit"));
   }
 
@@ -138,12 +138,12 @@ class SpringBootTargetResolverTest {
             }
           }
         });
-    var repository = new CentralRepositoryHttp(client, endpoint);
+    var repository = new MavenCentralHttpClient(client, endpoint);
     long deadline = System.nanoTime() + Duration.ofSeconds(2).toNanos();
 
     try {
       assertThatThrownBy(() -> repository.read("metadata", "stall", 32, deadline))
-          .isInstanceOf(SpringBootResolutionException.class);
+          .isInstanceOf(SpringBootVersionResolutionException.class);
     } finally {
       releaseBody.countDown();
     }
@@ -158,7 +158,8 @@ class SpringBootTargetResolverTest {
       assertThat(selected.target())
           .isEqualTo(new SpringBootJvmTarget(JavaVersion.JAVA_21, entry.getKey(), entry.getValue()));
       assertThat(selected.source()).isEqualTo(Source.BUNDLED_FALLBACK);
-      assertThat(selected.warning()).contains("metadata");
+      assertThat(selected.warning().messageKey()).isEqualTo("adapter.springboot.repository.unavailable");
+      assertThat(selected.warning().arguments()).containsExactly("metadata", "ConnectException");
     }
   }
 
@@ -169,13 +170,25 @@ class SpringBootTargetResolverTest {
     var tlsClient = mock(HttpClient.class);
     when(tlsClient.sendAsync(any(), any()))
         .thenReturn(CompletableFuture.failedFuture(tlsFailure));
-    var repository = new CentralRepositoryHttp(tlsClient, endpoint);
-    var resolver =
-        new SpringBootTargetResolver(new CentralSpringBootPatchResolver(repository), bundled());
+    var resolver = new SpringBootTargetResolver(tlsClient, endpoint, bundled());
 
     assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
-        .isInstanceOf(SpringBootResolutionException.class)
+        .isInstanceOf(SpringBootVersionResolutionException.class)
         .hasCause(tlsFailure);
+  }
+
+  @Test
+  void connectionWrapperDoesNotHideTlsFailure() {
+    var connectionFailure = new ConnectException("Connection failed");
+    connectionFailure.initCause(new SSLHandshakeException("Certificate rejected"));
+    var tlsClient = mock(HttpClient.class);
+    when(tlsClient.sendAsync(any(), any()))
+        .thenReturn(CompletableFuture.failedFuture(connectionFailure));
+    var resolver = new SpringBootTargetResolver(tlsClient, endpoint, bundled());
+
+    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+        .isInstanceOf(SpringBootVersionResolutionException.class)
+        .hasCause(connectionFailure);
   }
 
   @Test
@@ -199,7 +212,7 @@ class SpringBootTargetResolverTest {
             () -> {
               assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
                   .isInstanceOfSatisfying(
-                      SpringBootResolutionException.class,
+                      SpringBootVersionResolutionException.class,
                       failure ->
                           assertThat(localized(failure)).endsWith("Central lookup interrupted"))
                   .hasRootCauseInstanceOf(InterruptedException.class);
@@ -216,15 +229,14 @@ class SpringBootTargetResolverTest {
     }
   }
 
-  private static String localized(SpringBootResolutionException failure) {
+  private static String localized(SpringBootVersionResolutionException failure) {
     var messages = new ResourceBundleMessageSource();
     messages.setBasename("messages");
     return messages.getMessage(failure.getMessageKey(), failure.getArgs(), Locale.ENGLISH);
   }
 
   private SpringBootTargetResolver resolver() {
-    var repository = new CentralRepositoryHttp(client, endpoint);
-    return new SpringBootTargetResolver(new CentralSpringBootPatchResolver(repository), bundled());
+    return new SpringBootTargetResolver(client, endpoint, bundled());
   }
 
   private static SpringBootJvmTarget request(SpringBootVersion line) {

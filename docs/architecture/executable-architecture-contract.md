@@ -14,7 +14,9 @@ Codegen Blueprint delivers a Spring Boot Maven project directory and a sibling Z
 
 The tests travel with the generated project. After generation, Maven can enforce the architecture with the delivered wrapper and dependencies. Follow the [quickstart](../quickstart.md) for the commands and the [proof](../examples/boundary-proof.md) to observe a named failure.
 
-The domain defines target compatibility and requires a resolved target in the blueprint. The selected generation profile checks its metadata constraints before the resolver can access the network. The Spring Boot outbound adapter owns Central lookup and bundled fallback, with references supplied by bootstrap. The CLI translates the generic resolution source to its public labels.
+The domain defines target compatibility and requires a resolved target in the blueprint. The selected generation profile checks its metadata constraints before the resolver can access the network. The Spring Boot outbound adapter owns Central lookup and bundled fallback, with references supplied by bootstrap. The CLI maps the generic resolution source to its public labels and renders fallback warnings from message keys.
+
+Bootstrap validates artifact order and fixed template definitions at startup. The sample and guardrails adapters select and scan templates for the requested layout and mode during generation.
 
 Engine ArchUnit tests enforce the application dependency boundary. Use case and CLI integration tests check that invalid metadata stops before resolution, and adapter tests verify which lookup failures permit fallback.
 

@@ -3,6 +3,7 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 import io.github.blueprintplatform.codegen.adapter.in.cli.mapper.CreateProjectCommandMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.SpringBootGenerateCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,8 +17,8 @@ public class SpringBootCliConfig {
 
   @Bean
   public SpringBootGenerateCommand springBootGenerateCommand(
-      CreateProjectCommandMapper mapper, CreateProjectPort createProjectPort) {
+      CreateProjectCommandMapper mapper, CreateProjectPort createProjectPort, MessageSource messages) {
 
-    return new SpringBootGenerateCommand(mapper, createProjectPort);
+    return new SpringBootGenerateCommand(mapper, createProjectPort, messages);
   }
 }

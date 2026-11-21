@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.version;
 
-import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootVersionResolutionException;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,16 +16,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public final class CentralSpringBootPatchResolver {
+final class MavenCentralSpringBootPatchLookup {
   private static final String GROUP = "org.springframework.boot";
   private static final String ARTIFACT = "spring-boot-starter-parent";
-  private final CentralRepositoryHttp repository;
+  private final MavenCentralHttpClient repository;
 
-  public CentralSpringBootPatchResolver(CentralRepositoryHttp repository) {
+  MavenCentralSpringBootPatchLookup(MavenCentralHttpClient repository) {
     this.repository = repository;
   }
 
-  public String resolveLatest(SpringBootVersion line) {
+  String findLatestPatch(SpringBootVersion line) {
     long deadline = System.nanoTime() + Duration.ofSeconds(8).toNanos();
     Element metadata = read("metadata", "maven-metadata.xml", 1024 * 1024, deadline);
     require(
@@ -50,7 +50,7 @@ public final class CentralSpringBootPatchResolver {
                     candidate -> Integer.parseInt(candidate.substring(line.key().length() + 1))))
             .orElseThrow(
                 () ->
-                    new SpringBootResolutionException(
+                    new SpringBootVersionResolutionException(
                         "adapter.springboot.resolution.stable-patch.missing", line));
     Element pom =
         read("parent POM", patch + "/" + ARTIFACT + "-" + patch + ".pom", 512 * 1024, deadline);
@@ -74,13 +74,14 @@ public final class CentralSpringBootPatchResolver {
       var parser = factory.newDocumentBuilder();
       parser.setErrorHandler(
           new DefaultHandler() {
-                      public void fatalError(SAXParseException e) throws SAXException {
+            @Override
+            public void fatalError(SAXParseException e) throws SAXException {
               throw e;
             }
           });
       return parser.parse(new ByteArrayInputStream(body)).getDocumentElement();
     } catch (ParserConfigurationException | SAXException | IOException e) {
-      throw new SpringBootResolutionException(
+      throw new SpringBootVersionResolutionException(
           "adapter.springboot.resolution.phase-failed", e, phase, e.getMessage());
     }
   }
@@ -104,6 +105,6 @@ public final class CentralSpringBootPatchResolver {
   }
 
   private static void require(boolean valid, String messageKey) {
-    if (!valid) throw new SpringBootResolutionException(messageKey);
+    if (!valid) throw new SpringBootVersionResolutionException(messageKey);
   }
 }

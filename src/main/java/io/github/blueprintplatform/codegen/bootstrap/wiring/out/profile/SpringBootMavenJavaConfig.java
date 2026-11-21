@@ -20,7 +20,9 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.Artifac
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
 import io.github.blueprintplatform.codegen.bootstrap.config.keys.ProfileKeys;
 import io.github.blueprintplatform.codegen.bootstrap.config.registry.CodegenProfilesRegistry;
+import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
 import io.github.blueprintplatform.codegen.bootstrap.mapper.ArtifactSpecMapper;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,42 +35,57 @@ public class SpringBootMavenJavaConfig {
   @Bean
   SpringBootMavenJavaArtifactsAdapter springBootMavenJavaArtifactsAdapter(
       TemplateRenderer renderer,
+      freemarker.template.Configuration templates,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper mapper,
       BuildDependencyMapper dependencies,
       StringCaseFormatter names,
       FtlClasspathTemplateScanner scanner) {
+    var profile = registry.requireValidatedProfile(PROFILE_KEY);
     var pom =
         new MavenPomBuildConfigurationAdapter(
-            renderer, spec(registry, mapper, ArtifactKey.BUILD_CONFIG));
+            renderer, spec(registry, mapper, templates, ArtifactKey.BUILD_CONFIG));
     var governance =
         new ArchitectureGovernanceAdapter(
-            renderer, spec(registry, mapper, ArtifactKey.ARCHITECTURE_GOVERNANCE), scanner);
+            renderer, spec(registry, mapper, templates, ArtifactKey.ARCHITECTURE_GOVERNANCE), scanner);
     List<ArtifactPort> standalone =
         List.of(
             new MavenWrapperBuildToolFilesAdapter(
-                renderer, spec(registry, mapper, ArtifactKey.BUILD_TOOL_FILES)),
-            new GitIgnoreAdapter(renderer, spec(registry, mapper, ArtifactKey.IGNORE_RULES)),
+                renderer, spec(registry, mapper, templates, ArtifactKey.BUILD_TOOL_FILES)),
+            new GitIgnoreAdapter(renderer, spec(registry, mapper, templates, ArtifactKey.IGNORE_RULES)),
             new SourceLayoutAdapter(),
-            new ApplicationYamlAdapter(renderer, spec(registry, mapper, ArtifactKey.APP_CONFIG)),
+            new ApplicationYamlAdapter(renderer, spec(registry, mapper, templates, ArtifactKey.APP_CONFIG)),
             new MainSourceEntrypointAdapter(
-                renderer, spec(registry, mapper, ArtifactKey.MAIN_SOURCE_ENTRY_POINT), names),
+                renderer, spec(registry, mapper, templates, ArtifactKey.MAIN_SOURCE_ENTRY_POINT), names),
             new TestSourceEntrypointAdapter(
-                renderer, spec(registry, mapper, ArtifactKey.TEST_SOURCE_ENTRY_POINT), names),
+                renderer, spec(registry, mapper, templates, ArtifactKey.TEST_SOURCE_ENTRY_POINT), names),
             new SampleCodeAdapter(
-                renderer, spec(registry, mapper, ArtifactKey.SAMPLE_CODE), scanner),
+                renderer, spec(registry, mapper, templates, ArtifactKey.SAMPLE_CODE), scanner),
             new ProjectDocumentationAdapter(
-                renderer, spec(registry, mapper, ArtifactKey.PROJECT_DOCUMENTATION), dependencies));
+                renderer, spec(registry, mapper, templates, ArtifactKey.PROJECT_DOCUMENTATION), dependencies));
     return new SpringBootMavenJavaArtifactsAdapter(
         pom,
         governance,
         dependencies,
-        registry.requireProfile(PROFILE_KEY).orderedArtifactKeys(),
+        profile.orderedArtifactKeys(),
         standalone);
   }
 
   private static ArtifactSpec spec(
-      CodegenProfilesRegistry registry, ArtifactSpecMapper mapper, ArtifactKey key) {
-    return mapper.from(registry.requireArtifact(PROFILE_KEY, key));
+      CodegenProfilesRegistry registry,
+      ArtifactSpecMapper mapper,
+      freemarker.template.Configuration templates,
+      ArtifactKey key) {
+    var definition = registry.requireArtifact(PROFILE_KEY, key);
+    for (var template : definition.templates()) {
+      String resource = definition.templateBasePath() + template.template();
+      try {
+        templates.getTemplate(resource);
+      } catch (IOException failure) {
+        throw new ProfileConfigurationException(
+            "bootstrap.artifact.template.unavailable", failure, PROFILE_KEY, key.key(), resource);
+      }
+    }
+    return mapper.from(definition);
   }
 }

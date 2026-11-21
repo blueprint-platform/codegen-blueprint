@@ -1,7 +1,5 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.out.version;
 
-import io.github.blueprintplatform.codegen.adapter.out.version.CentralRepositoryHttp;
-import io.github.blueprintplatform.codegen.adapter.out.version.CentralSpringBootPatchResolver;
 import io.github.blueprintplatform.codegen.adapter.out.version.SpringBootTargetResolver;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectTargetResolver;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
@@ -14,8 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-public class SpringBootPatchResolverConfig {
-  private static final URI CENTRAL_PARENT_DIRECTORY =
+public class SpringBootTargetResolverConfig {
+  private static final URI MAVEN_CENTRAL_PARENT_DIRECTORY =
       URI.create(
           "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-parent/");
 
@@ -30,9 +28,9 @@ public class SpringBootPatchResolverConfig {
   @Bean
   ProjectTargetResolver springBootTargetResolver(
       @Qualifier("centralHttpClient") HttpClient client) {
-    var repository = new CentralRepositoryHttp(client, CENTRAL_PARENT_DIRECTORY);
     return new SpringBootTargetResolver(
-        new CentralSpringBootPatchResolver(repository),
+        client,
+        MAVEN_CENTRAL_PARENT_DIRECTORY,
         Map.of(SpringBootVersion.V4_1, "4.1.3", SpringBootVersion.V4_2, "4.2.0"));
   }
 }

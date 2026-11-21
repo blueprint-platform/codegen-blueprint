@@ -38,6 +38,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 @Tag("unit")
 @Tag("adapter")
@@ -53,9 +54,11 @@ class SpringBootGenerateCommandTest {
   void call_shouldBuildRequestAndInvokeUseCase(
       Source source, String label, String warning, CapturedOutput output) {
     var mapper = new RecordingMapper();
-    var useCase = new StubCreateProjectPort(source, warning);
+    var useCase = new StubCreateProjectPort(source);
 
-    var cmd = new SpringBootGenerateCommand(mapper, useCase);
+    var messages = new ResourceBundleMessageSource();
+    messages.setBasename("messages");
+    var cmd = new SpringBootGenerateCommand(mapper, useCase, messages);
 
     cmd.groupId = "com.acme";
     cmd.artifactId = "demo-app";
@@ -133,12 +136,17 @@ class SpringBootGenerateCommandTest {
 
   static class StubCreateProjectPort implements CreateProjectPort {
     private final Source source;
-    private final String warning;
     private CreateProjectCommand lastCommand;
 
-    StubCreateProjectPort(Source source, String warning) {
+    StubCreateProjectPort(Source source) {
       this.source = source;
-      this.warning = warning;
+    }
+
+    private TargetResolution.Warning fallbackWarning() {
+      return source == Source.BUNDLED_FALLBACK
+          ? new TargetResolution.Warning(
+              "adapter.springboot.repository.unavailable", List.of("metadata", "ConnectException"))
+          : null;
     }
 
     @Override
@@ -163,7 +171,7 @@ class SpringBootGenerateCommandTest {
           project,
           Path.of("."),
           Path.of("demo-app.zip"),
-          new TargetResolution(target, source, warning));
+          new TargetResolution(target, source, fallbackWarning()));
     }
   }
 }

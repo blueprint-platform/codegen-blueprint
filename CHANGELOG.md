@@ -6,6 +6,7 @@
 - Resolve the latest stable patch at generation time with an explicit connection-failure fallback.
 - Align generated MVC dependencies and strict REST rules, run sample integration tests during verification, and protect existing output paths.
 - Run the generator on Spring Boot 4.2.0 with a Java 25 compile and runtime baseline.
+- Validate artifact order and fixed template configuration at startup. Reject invalid dependency scopes before platform resolution.
 
 See the [release notes](docs/release-notes.md).
 

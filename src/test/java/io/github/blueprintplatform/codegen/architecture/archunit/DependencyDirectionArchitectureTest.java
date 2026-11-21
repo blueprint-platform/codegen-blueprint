@@ -43,7 +43,8 @@ class DependencyDirectionArchitectureTest {
                   "Spring Boot or Maven Central types",
                   type ->
                       type.getSimpleName().contains("SpringBoot")
-                          || type.getSimpleName().contains("CentralRepository")
+                          || type.getPackageName().equals(BASE_PACKAGE + ".adapter.out.version")
+                          || type.getPackageName().equals(BASE_PACKAGE + ".adapter.error.exception.version")
                           || type.getPackageName().startsWith("org.springframework.boot")));
 
   @ArchTest

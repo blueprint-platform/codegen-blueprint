@@ -6,8 +6,7 @@ import io.github.blueprintplatform.codegen.domain.shared.KeyedEnum;
 
 public enum SampleCodeLevel implements KeyedEnum {
   NONE("none"),
-  BASIC("basic"),
-  RICH("rich");
+  BASIC("basic");
 
   private static final ErrorCode UNKNOWN = () -> "project.sample.level.unknown";
 

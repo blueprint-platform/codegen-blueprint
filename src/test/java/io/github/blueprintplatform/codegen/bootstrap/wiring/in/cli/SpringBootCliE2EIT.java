@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -263,10 +264,29 @@ class SpringBootCliE2EIT {
     assertThat(tempDir.resolve("greeting")).doesNotExist();
   }
 
-  private CapturedIo generate(String description) {
-    return captureIo(
-        cliExecutor,
-        new String[] {
+  @Test
+  void rejectsRichSampleWithoutResolvingOrPublishing() {
+    var io = generate("Greeting example", "--sample-code", "rich");
+
+    verifyNoInteractions(targetResolver);
+    assertThat(io.exitCode()).isEqualTo(2);
+    assertThat(io.stderr()).contains("adapter.cli.springboot.sample-code.unknown");
+    assertThat(tempDir.resolve("greeting.zip")).doesNotExist();
+  }
+
+  @Test
+  void rejectsScopedDependencySyntaxOnTheAliasOnlyCli() {
+    var io = generate("Greeting example", "--dependency", "web:test");
+
+    verifyNoInteractions(targetResolver);
+    assertThat(io.exitCode()).isEqualTo(2);
+    assertThat(io.stderr()).contains("adapter.cli.springboot.dependency.unknown");
+    assertThat(tempDir.resolve("greeting.zip")).doesNotExist();
+  }
+
+  private CapturedIo generate(String description, String... options) {
+    var args =
+        new ArrayList<>(List.of(
           "springboot",
           "--group-id",
           "com.example",
@@ -279,8 +299,9 @@ class SpringBootCliE2EIT {
           "--package-name",
           "com.example.greeting",
           "--target-dir",
-          tempDir.toString()
-        });
+          tempDir.toString()));
+    args.addAll(Arrays.asList(options));
+    return captureIo(cliExecutor, args.toArray(String[]::new));
   }
 
   private record CapturedIo(int exitCode, String stdout, String stderr) {}
