@@ -34,6 +34,12 @@ PAGES = {
     "examples/hexagonal": "Hexagonal example",
     "architecture/architecture-guardrails-rulebook": "Guardrails",
     "release-notes": "Release notes",
+    "guides/how-to-explore-hexagonal-architecture": "Generator architecture",
+    "policies/scope-and-responsibility": "Scope and responsibility",
+    "maintainers/architecture-governance-and-ai-protocol": "Architecture governance",
+    "maintainers/documentation": "Documentation tooling",
+    "maintainers/release-discipline": "Release readiness",
+    "maintainers/visual-assets": "Visual assets",
 }
 ROUTES = {ROOT / "docs" / f"{name}.md": Path(f"{name}.html") for name in PAGES}
 

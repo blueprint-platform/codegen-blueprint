@@ -17,6 +17,10 @@ A **bundled reference** is a patch with generated-project end-to-end evidence on
 
 The [patch resolution reference](cli.md#spring-boot-patch-resolution) explains warnings, hard failures and repeatability.
 
+### Supported lines, reference patches and tested edges
+
+The supported line is the public selector. The current Central candidate is a lookup result. The bundled reference is a release input exercised by the verification matrix. The separately tested `4.1.0` edge demonstrates selected scenarios against the oldest 4.1 parent and is exercised by replacing the parent in a temporary project. It is neither a public exact-patch selector nor the bundled fallback. Keep these four observations separate when recording a test run.
+
 ## Verification coverage
 
 Local verification packaged the generator with JDK 25 and exercised the JAR across all four Boot/Java target pairs. The tested surface included both layouts, all guardrails modes, optional samples, explicit and implicit MVC, and a JPA/H2 plus Security combination. The generated Maven wrapper ran architecture checks, HTTP integration tests, a negative architecture proof and JVM classfile checks.
@@ -24,5 +28,7 @@ Local verification packaged the generator with JDK 25 and exercised the JAR acro
 Earlier runs observed **4.1.3** and **4.2.0** from Maven Central. Temporary edge fixtures also verified Boot **4.1.0** on both JDKs by replacing only the generated parent version.
 
 The [boundary proof](examples/boundary-proof.md) documents five Strict violations and separate Basic/Strict continuity fixtures. Continuity ran both layouts on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 using bundled resolution.
+
+On 21 November 2026, a local documentation verification replay passed the four Standard CI cells using Maven 3.9.16, JDK 21.0.6 and JDK 25.0.4 with bundled Boot 4.1.3 and 4.2.0. The documented Hexagonal quickstart independently passed using Boot 4.2.0 from Central. The [five-case proof replay](examples/boundary-verification-restoration.txt) records the separate negative run.
 
 **Scope of the claim:** The root build verifies the generator; generated-project builds verify selected output combinations. The matrix does not cover every patch or dependency alias combination. See [verification levels](maintainers/release-discipline.md#verification-levels) for CI, release and upstream checks.

@@ -2,6 +2,8 @@
 
 The [architecture contract](../architecture/executable-architecture-contract.md) owns stable behavior. Record intentional breaking changes in release notes. Minor releases add compatible capabilities. Patch releases correct defects within the supported line.
 
+Review compatibility at three boundaries for each release: the generator's CLI and validation behavior, the generated structure and build inputs, and the meaning and coverage of generated assertions. A patch can fix a rule that failed to enforce its documented scope. Changes to the intended policy require an explicit contract decision and a documented upgrade path. An upstream Boot patch appearing in Central leaves the supported selector unchanged and needs its own build evidence before becoming a bundled reference.
+
 ## Verification levels
 
 | Level | When | Evidence |

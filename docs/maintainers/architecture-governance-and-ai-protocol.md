@@ -21,6 +21,10 @@ Record these five items before a nontrivial change can merge.
 
 The [executable architecture contract](../architecture/executable-architecture-contract.md) describes the generation and enforcement boundaries. The [rulebook](../architecture/architecture-guardrails-rulebook.md) identifies the generated checks.
 
+## Review an enforcement change
+
+A negative proof should compile the mutated Java source, fail the named assertion in the emitted test, and pass after restoration. A dependency download or compiler error establishes a different failure. When a rule selector changes, cover both the intended offending type and any optional family the rule should allow to be empty. The [proof walkthrough](../examples/boundary-proof.md) shows the evidence to review before changing a claim in the README or rulebook.
+
 ## AI contributions
 
 Follow established package boundaries and use names that express responsibilities. Keep changes small, explainable and reversible. Get a maintainer decision before introducing an architectural concept or renaming a public API. Keep frameworks out of core and preserve the existing guardrails.

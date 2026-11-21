@@ -1,6 +1,6 @@
 # Executable architecture proof
 
-The proof runner verifies a **GREEN → RED → GREEN** sequence for generated projects with Strict guardrails: a passing baseline, a compiling mutation rejected by a named ArchUnit rule, and a passing build after restoring the source. Every phase uses `sh ./mvnw -q -ntp clean verify`.
+The proof runner verifies a **GREEN → RED → GREEN** sequence for generated projects with Strict guardrails. The baseline passes, a compiling mutation fails at a named ArchUnit rule, and the build passes after source restoration. Every phase uses `sh ./mvnw -q -ntp clean verify`. A passing sample build also exercises HTTP through Failsafe. The architecture assertion inspects compiled code during Surefire.
 
 - [Run the proof](#run-the-proof)
 - [Walk through the controller-to-repository case](#standard-controller-depends-on-a-repository)
@@ -22,7 +22,7 @@ Run the controller-to-repository case.
 PROOF_MODE=standard bash ci/proof/proof-runner.sh
 ```
 
-To match the historical environment, run all five cases with the bundled Boot patch.
+To reproduce the bundled-reference run, run all five cases with the bundled Boot patch.
 
 ```bash
 PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
@@ -35,7 +35,13 @@ PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
 
 **Baseline:** The generated Standard project with Strict guardrails passed Maven verification.
 
-**Mutation:** The runner adds the repository import and the following field to `GreetingController`. Java accepts the field type. ArchUnit inspects the compiled class and reports the forbidden dependency.
+**Mutation:** In `bp.sample.controller.GreetingController`, the runner inserts the import below and adds the field inside the class body. The field alone introduces a bytecode dependency on the concrete repository.
+
+```java
+import io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository;
+```
+
+Java accepts the type reference. ArchUnit inspects the compiled class and reports the forbidden dependency.
 
 ```java
 private LoggingGreetingAuditRepository __archViolation = null;
@@ -48,7 +54,25 @@ private LoggingGreetingAuditRepository __archViolation = null;
 Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingController.__archViolation> has type <io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository> in (GreetingController.java:0)
 ```
 
+![2.0 Surefire output naming the controller-to-repository assertion and the field dependency](../images/architecture/standard-strict-proof.png)
+
 **Restoration:** The runner removes the field and import. The same Maven verification passes again.
+
+### What to look for in the other mutations
+
+**Hexagonal port bypass.** The greeting controller normally references `GetGreetingPort`. The runner imports `bp.sample.application.usecase.GetGreetingHandler` and adds `private GetGreetingHandler __archViolation = null;`. The concrete class is on the classpath and the change compiles. The rule rejects that field because an adapter now knows the use-case implementation. Bootstrap can still use the concrete handler to assemble the application.
+
+**Standard schema drift.** The runner moves the base `controller` directory to `controllers` and updates the package declaration. The greeting sample still has its own canonical families under `bp.sample`. The base rename is a separate case: the emitted schema check reports the missing canonical controller family. This proof protects rule discovery even when the compiler accepts the new package name.
+
+**REST transport leakage.** The runner adds a domain record named `GuardrailsDomainProbe` and a directly annotated `@RestController` beside the sample controller. Its method declares:
+
+```java
+public ResponseEntity<List<GuardrailsDomainProbe>> leaksDomainType() {
+    return null;
+}
+```
+
+The declared type is enough. The assertion inspects the generic signature in compiled bytecode and reports the domain type in both layouts. No HTTP request to the probe is required. Removing the two added source files restores the original transport surface.
 
 ## Recorded results
 
@@ -80,7 +104,15 @@ All five mutations compiled before failing their named architecture rule, and ea
 
 Both REST cases use MVC enabled by the sample and a domain type nested in `ResponseEntity<List<…>>`. The runner checks the Surefire failure report and the named assertion in the Maven log before accepting a failure.
 
-The run recorded on **21 November 2026** used JDK **25.0.4**, Maven **3.9.16** and Spring Boot **4.2.0** via `BUNDLED_FALLBACK`. The [original verification record](boundary-verification.txt) contains the generator JAR’s SHA-256, the full test class names and the logged field dependency.
+The original 2.0 run recorded on **21 November 2026** used JDK **25.0.4**, Maven **3.9.16** and Spring Boot **4.2.0** via `BUNDLED_FALLBACK`. The [original verification record](boundary-verification.txt) contains the generator JAR’s SHA-256, the full test class names and the logged field dependency.
+
+The documentation restoration replayed all five cases locally with the same JDK, Maven and Boot patch. The [replay record](boundary-verification-restoration.txt) identifies the independently packaged JAR and all baseline, failure and restoration verdicts.
+
+### Historical terminal capture
+
+This screenshot from the 1.x walkthrough shows the same Standard dependency rule in the earlier release. The 2.0 terminal excerpt and replay above establish the current result.
+
+![Historical 1.x terminal capture of the Standard controller-to-repository violation](../demo/images/mini-standard-controller-repository-failure.png)
 
 ## Inspect a run
 
@@ -90,6 +122,7 @@ Open the run directory printed by the runner under `target/architecture-proof/`.
 | --- | --- |
 | `proof-summary.txt` | Baseline, expected failure and restoration verdicts |
 | `logs/` | Maven output for each phase |
+| `env.txt` | JDK, Maven, generator and run context |
 | `excerpts/` | Named assertion and the logged dependency for each expected failure |
 
 Set `KEEP_WORK_DIR=1` before running to retain the restored generated projects for source and report inspection. The proof runner also accepts `PROOF_OUTPUT_ROOT` for a different output location.

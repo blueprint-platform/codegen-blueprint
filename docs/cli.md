@@ -19,6 +19,12 @@ Invoke the generator with `java -jar /path/to/codegen-blueprint.jar --cli spring
 | `--dependency` | | | Repeat an alias from the list below |
 | `--target-dir` | | `.` | Parent directory of the generated project and ZIP |
 
+## How input becomes a blueprint
+
+Picocli checks required options and converts selectors and aliases. The application then validates the request and the selected profile's metadata before contacting Maven Central. The group ID and base package normalize to lowercase dot-separated segments. The artifact ID normalizes to lowercase and uses hyphens for spaces and underscores. It must begin with a letter and determines both output names. Use a Java-safe base package such as `com.example.greeting`.
+
+The Maven profile treats the name and description as literal XML text. Values that include Maven interpolation syntax such as `${property}` or characters forbidden in XML fail metadata validation. The POM template escapes accepted text. Error messages identify the failing option or value policy, so fix input errors before investigating Central or the filesystem.
+
 ## Spring Boot patch resolution
 
 Pass a minor line such as `--boot 4.1`. An exact patch such as `--boot 4.1.3` is rejected. The generator reads Maven Central metadata, selects the newest stable numeric patch on that line and checks the parent POM’s coordinates. It pins the patch in the generated POM and reports `CENTRAL_LATEST`. Maven resolves the dependency graph when building the generated project.
@@ -41,6 +47,8 @@ All aliases select artifacts under `org.springframework.boot`. The generated par
 | `actuator` | `spring-boot-starter-actuator` |
 | `security` | `spring-boot-starter-security` |
 | `devtools` | `spring-boot-devtools` |
+
+For example, pass `--dependency web --dependency actuator` to select MVC and Actuator. The generated POM also includes a core Spring Boot starter and a test starter. Enabled guardrails add test-scope ArchUnit. The sample adds MVC test support and, when Security is selected, Security test support.
 
 The basic sample adds MVC when `web` is absent. Strict REST signature checks use the same effective MVC selection as the generated POM.
 

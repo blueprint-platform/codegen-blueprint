@@ -45,6 +45,23 @@ Generation creates the `greeting/` project and a sibling `greeting.zip`. The CLI
 | `target/surefire-reports/` | Generated ArchUnit checks, including `HexagonalStrictRestBoundarySignatureIsolationTest` |
 | `target/failsafe-reports/` | `GreetingSampleHttpIT`, which makes requests to a running HTTP server |
 
+The source under `src/main/java/com/example/greeting/bp/sample` puts the REST adapter, ports and use case in distinct packages. Follow `GreetingController` to the input port to see the intended source dependency. The sample activates MVC even though the command omits `--dependency web`. That is why its POM includes MVC and Surefire runs the Strict REST signature check.
+
+To call the same sample manually, start it in one terminal from the generated directory:
+
+```bash
+sh ./mvnw spring-boot:run
+```
+
+From another terminal:
+
+```bash
+curl -fsS http://localhost:8080/api/v1/sample/greetings/default
+curl -fsS 'http://localhost:8080/api/v1/sample/greetings?name=John'
+```
+
+Stop the app in the first terminal with Ctrl-C. The verified build already exercises HTTP through the sample integration test.
+
 ## Try another target
 
 Use `--boot 4.1` to select the other supported Spring Boot line. For Java 21 output, run the generator on JDK 25 with `--java 21`, then verify the generated project with JDK 21.

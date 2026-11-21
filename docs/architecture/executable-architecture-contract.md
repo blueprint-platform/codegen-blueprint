@@ -3,11 +3,14 @@
 Codegen Blueprint delivers a Spring Boot Maven project directory and a sibling ZIP. A blueprint selects the project structure, dependency inputs and architecture policy. The generated project runs its own tests and owns its later lifecycle.
 
 - [From blueprint to build](#from-blueprint-to-build)
+- [Generated project and ZIP](#generated-project-and-zip)
 - [Layout dependencies](#choose-a-layout)
 - [What the evidence means](#what-the-evidence-means)
 - [Delivery and reproducibility](#delivery-and-reproducibility)
 
 ## From blueprint to build
+
+An architecture decision survives handoff when a new contributor can see where a responsibility goes, make a change, and get an actionable build result. The blueprint captures the requested architecture and stack. The profile turns that intent into ordered artifacts. The project's own Maven build evaluates the emitted rules after compilation. These three steps let the team review generation inputs and enforcement independently.
 
 The CLI maps options to a generation command. The application validates the request, chooses a profile and resolves the target through a port. It then coordinates rendering and publication. The generated source tree, POM, wrapper and selected tests capture those decisions.
 
@@ -19,6 +22,12 @@ Bootstrap validates artifact order and fixed template definitions at startup. Th
 
 Engine ArchUnit tests enforce the application dependency boundary. Use case and CLI integration tests check that invalid metadata stops before resolution, and adapter tests verify which lookup failures permit fallback.
 
+## Generated project and ZIP
+
+The single-module Maven project includes a POM with the exact Boot parent and target Java version, Maven wrapper scripts and distribution properties, a Spring Boot main class and context test, application YAML, a Git ignore file, and a README. The source layout emits the canonical family directories and top-level package markers, including when the sample is disabled. Classes for the optional greeting slice live under `bp.sample`. The sample adds both HTTP code and integration tests. Enabled guardrails generate Java sources under `src/test/java/<package>/architecture/archunit/`.
+
+The wrapper invokes Maven 3.9.16. The generated build still needs its distribution and dependencies from an accessible repository or cache. The [generated READMEs](../examples/generated-projects.md) show what the next maintainer receives with each project.
+
 ## Choose a layout
 
 Arrows in the diagram point from dependent code to the code it references. The red lines of text identify selected dependencies that both Basic and Strict prohibit.
@@ -29,6 +38,8 @@ In **Standard**, each feature uses layered packages, with component wiring in co
 
 In **Hexagonal**, a use case calls an outbound port at runtime. The driven adapter implements that port and depends on its interface in source code; bootstrap wires the implementation into the use case. This follows [Cockburn’s Ports and Adapters](https://alistair.cockburn.us/hexagonal-architecture/).
 
+Standard keeps a direct service-to-repository dependency available and uses package rules to prevent common shortcuts. It fits a team that wants the familiar layered model and separate orchestration and transport. Hexagonal gives the use case an explicit input and output API and puts concrete technology decisions behind adapters. It makes substitutions possible at the composition root at the cost of more interfaces and explicit mapping in the sample.
+
 The [guardrails rulebook](architecture-guardrails-rulebook.md) defines what each mode enforces. Strict retains Basic guarantees and may report a violation under a different assertion.
 
 ## What the evidence means
@@ -37,8 +48,12 @@ ArchUnit inspects compiled types imported from the generated base package and ap
 
 A passing architecture test establishes the named constraint on the selected bytecode. The [boundary proof](../examples/boundary-proof.md) shows the corresponding evidence for a failure and recovery. Application correctness, dynamic wiring and runtime security need their own evidence. The consumer owns application code, dependency updates, deployment and any added architecture policies.
 
+For evidence about the engine itself, follow the [Hexagonal engine walkthrough](../guides/how-to-explore-hexagonal-architecture.md). For evidence still owned by the generated application's team, see [scope and responsibility](../policies/scope-and-responsibility.md).
+
 ## Delivery and reproducibility
 
 Use [compatibility](../compatibility.md) and the [CLI reference](../cli.md) for generator JVMs, target JDKs and Boot patch selection. With the same generator, normalized inputs and resolved patch, generation preserves the project tree and file contents. ZIP byte identity has no guarantee.
 
-Generation protects existing outputs and attempts to clean up owned paths on normal failures. The publisher uses a private staging directory and claims the destination directory, files and ZIP without overwriting existing entries. If filesystem identity is missing or changes, staging verification fails or rollback leaves the uncertain path in place. Keep the target and staging tree free from concurrent edits. Portable path operations leave a race between identity checks and access. The final directory and ZIP may be visible before publication finishes. A process interruption or crash can leave either output incomplete.
+Before staging, the publisher validates the ordered manifest and rejects file collisions and paths that descend through another file. It writes the tree and builds the ZIP in a private staging directory, then claims the destination directory, files and ZIP without overwriting existing entries. Rollback follows reverse creation order and the CLI can report cleanup uncertainty alongside the original failure.
+
+If filesystem identity is missing or changes, staging verification fails or rollback leaves the uncertain path in place. Keep the target and staging tree free from concurrent edits. Portable path operations leave a race between identity checks and access. The final directory and ZIP may be visible before publication finishes. A process interruption or crash can leave either output incomplete.

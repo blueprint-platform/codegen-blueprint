@@ -1,0 +1,28 @@
+Codegen Blueprint 2.0 executable proof
+timestamp: 2026-11-21T22:14:34+03:00
+java version "25.0.4" 2026-07-21 LTS
+JAR SHA-256: 970fe1efeeab9423e156fcd00a399487d25c01844c09deb0bdc6196ec0296964
+Apache Maven 3.9.16
+
+hex: bootSelector=4.2 bootVersion=4.2.0 source=BUNDLED_FALLBACK
+standard: bootSelector=4.2 bootVersion=4.2.0 source=BUNDLED_FALLBACK
+
+PASS: HEX baseline
+PASS: STD baseline
+EXPECTED_FAIL: HEX violation
+PASS: HEX fixed
+EXPECTED_FAIL: STD schema violation
+PASS: STD schema fixed
+EXPECTED_FAIL: STD violation
+PASS: STD fixed
+EXPECTED_FAIL: HEX REST signature
+PASS: HEX REST fixed
+EXPECTED_FAIL: STD REST signature
+PASS: STD REST fixed
+
+HexagonalStrictPortsIsolationTest.adapters_must_not_depend_on_application_implementation
+StandardPackageSchemaSanityTest.each_standard_bounded_context_must_contain_required_canonical_families
+StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories
+Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingController.__archViolation> has type <io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository> in (GreetingController.java:0)
+HexagonalStrictRestBoundarySignatureIsolationTest.rest_controllers_must_not_expose_domain_types_in_signatures
+StandardStrictRestBoundarySignatureIsolationTest.rest_controllers_must_not_expose_domain_types_in_signatures

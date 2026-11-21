@@ -26,3 +26,5 @@ bash scripts/refresh-generated-readmes.sh target/codegen-blueprint-2.0.0-SNAPSHO
 ```
 
 Omit `--check` to refresh the tracked snapshots. The snapshot script uses the bundled Boot patch for repeatable output. The [executable proof](../examples/boundary-proof.md) separately checks the named ArchUnit failure and restored build.
+
+For visual review, open the local Pages overview and proof at desktop and 375 px widths in light and dark mode. Review the README cover and proof at the same widths in a Markdown preview. Check command wrapping, long assertion names and image readability. The Markdown link check covers repository documents as well as Pages inputs, and the rendered site check covers copied assets and HTML anchors.

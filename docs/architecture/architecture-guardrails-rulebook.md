@@ -2,12 +2,17 @@
 
 Use this reference when choosing a mode or investigating a failing generated architecture test. Each rule name below is a generated Java field or method that can appear in a Surefire report. The source of truth is the [governance template tree](../../src/main/resources/templates/springboot/java/governance).
 
+- [What the rules protect](#what-the-rules-protect)
 - [Mode selection](#mode-selection)
 - [Standard rules](#standard-layered-layout)
 - [Hexagonal rules](#hexagonal-ports-and-adapters)
 - [Strict MVC boundary](#strict-mvc-transport-boundary)
 - [Scope and cycles](#scope-and-cycle-coverage)
 - [Reproduce and diagnose](#reproduce-and-diagnose)
+
+## What the rules protect
+
+Dependency rules catch source relationships such as a controller referring to a repository. Boundary rules look at delivery-facing types, for example a domain record exposed through a REST method. Schema rules protect the coverage of the other two: a package rename can leave code compiling while moving classes out of the family selected by a dependency rule. The tests distinguish an empty import, a missing canonical family inside a detected context and a suspicious rename at the base. Each answers a different failure mode.
 
 ## Mode selection
 
@@ -33,8 +38,8 @@ Read arrows as source dependencies. Configuration can wire controllers, services
 | `repository → controller` | Prohibited | Prohibited | `repositories_must_not_depend_on_controllers` in Basic; combined repository rule in Strict |
 | `repository → service` | No direct ban | Prohibited | `repositories_must_not_depend_on_services_or_controllers` |
 | `controller → domain.service` | Prohibited | Prohibited | `controllers_must_not_depend_on_domain_services` |
-| `domain → controller/service/repository` | Prohibited | Prohibited | Basic direction rule; Strict `StandardStrictDomainPurityTest` also limits domain targets to domain and `java.*` |
-| `controller.dto → domain` | No direct ban | Prohibited | `StandardStrictControllerDtoDomainIsolationTest` |
+| `domain → controller/service/repository` | Prohibited | Prohibited | Basic `domain_must_not_depend_on_controller_service_or_repository_layers`; Strict `domain_must_depend_only_on_jdk_and_domain` |
+| `controller.dto → domain` | No direct ban | Prohibited | `controller_dtos_must_not_depend_on_domain` |
 | MVC controller method exposes a domain type in its signature | No signature rule | Prohibited when MVC is enabled | `rest_controllers_must_not_expose_domain_types_in_signatures` |
 | Context-root sibling slices | Acyclic | Acyclic | `each_bounded_context_root_must_be_free_of_cycles` |
 | Immediate child slices within controller, service, repository, domain and config | No additional slice checks | Acyclic | `StandardStrictPackageCyclesTest` |
@@ -71,12 +76,12 @@ An inbound adapter can call an application port. A use case can call an outbound
 | `adapter.in → application.port.in` and `adapter.out → application.port.out` | Permitted | Permitted | Positive generated sample |
 | `application → adapter` | Prohibited | Prohibited | `application_must_not_depend_on_adapters` |
 | `domain → application/adapter/bootstrap` | Prohibited | Prohibited | `domain_must_not_depend_on_outer_families` in Basic; Strict domain purity encompasses these edges |
-| External targets from `domain` | No general framework whitelist | Domain packages and `java.*` | `HexagonalStrictDomainPurityTest` |
-| Non-bootstrap code `→ bootstrap` | Prohibited | Prohibited | Basic bootstrap-leaf rule and `HexagonalStrictBootstrapLeafTest` |
-| `adapter.in ↔ adapter.out` | No direct ban | Prohibited | `HexagonalStrictAdapterDirectionRulesTest` |
+| External targets from `domain` | No general framework whitelist | Domain packages and `java.*` | `domain_must_depend_only_on_jdk_and_domain` |
+| Non-bootstrap code `→ bootstrap` | Prohibited | Prohibited | `outside_packages_must_not_depend_on_bootstrap` in Basic; `non_bootstrap_packages_must_not_depend_on_bootstrap` in Strict |
+| `adapter.in ↔ adapter.out` | No direct ban | Prohibited | `inbound_adapters_must_not_depend_on_outbound_adapters` and `outbound_adapters_must_not_depend_on_inbound_adapters` |
 | Adapter `→` non-port application code, including the exact application root | No direct ban | Prohibited | `HexagonalStrictPortsIsolationTest#adapters_must_not_depend_on_application_implementation` |
-| Inbound adapter `→ domain.service` or `domain.port.out` | No direct ban | Prohibited | `HexagonalStrictInboundAdapterDomainIsolationTest`, `HexagonalStrictInboundAdapterOutboundPortIsolationTest` |
-| Inbound DTO package `→ domain` | No direct ban | Prohibited | `HexagonalStrictInboundDtoDomainIsolationTest` |
+| Inbound adapter `→ domain.service` or `domain.port.out` | No direct ban | Prohibited | `inbound_adapters_must_not_depend_on_domain_services`, `inbound_adapters_must_not_depend_on_domain_outbound_ports` |
+| Inbound DTO package `→ domain` | No direct ban | Prohibited | `inbound_adapter_dtos_must_not_depend_on_domain` |
 | MVC inbound adapter method exposes a domain type in its signature | No signature rule | Prohibited when MVC is enabled | `rest_controllers_must_not_expose_domain_types_in_signatures` |
 | Context-root sibling slices | Acyclic | Acyclic | `each_bounded_context_root_must_be_free_of_cycles` |
 | Child slices of adapter, application, domain, bootstrap and the two adapter directions | No additional slice checks | Acyclic | `HexagonalStrictPackageCyclesTest` |
@@ -116,14 +121,22 @@ The rule works on imported bytecode and its declared type information. Composed 
 
 ## Scope and cycle coverage
 
-- `*GuardrailsScopeSanityTest` requires a nonempty import under the generated base package. Imports exclude test classes.
-- `*PackageSchemaSanityTest` infers context roots from canonical package segments. Required families are controller/service/domain for Standard and adapter/application/domain for Hexagonal. It distinguishes a more specific recognized context from its parent.
+- `guardrails_scope_must_not_be_empty` in `*GuardrailsScopeSanityTest` requires a nonempty import under the generated base package. Imports exclude test classes.
+- `*PackageSchemaSanityTest` infers context roots from canonical package segments. Required families are controller/service/domain for Standard and adapter/application/domain for Hexagonal. The assertions are `each_standard_bounded_context_must_contain_required_canonical_families` and `each_hexagonal_bounded_context_must_contain_canonical_families`. A more specific recognized context contributes to its own family check.
 - `*GuardrailsAnchorDriftTest` checks suspicious near-miss family names when required base anchors are missing. The rename proof also exercises schema sanity. These checks address different failure modes.
 - Both modes use the schema's detected roots plus the project base for sibling-slice checks. At each root, `.(*)..` partitions the next package segment. Strict additionally partitions immediate child segments within its declared families. A one-way dependency between features can pass; a cycle crossing a selected partition fails.
 - Some rules allow empty selections so a fresh project with unused optional families still passes. Maven package markers express intended structure. Read the actual imported classes and the report before treating a passing rule as coverage of any particular package or endpoint.
 
+### Read the package vocabulary
+
+A **canonical family** is a package segment used by the emitted rules, such as `controller`, `adapter` or `application`. A **context root** is inferred from production class packages containing recognized family segments. It is an input to schema and slice selection, independent of the team's business definition of a bounded context. A source directory alone cannot tell you which classes ArchUnit discovered.
+
+Required families are designed to cover the core flow, while repository, configuration and bootstrap may be absent from a particular detected context. An **anchor** is a base-level family reference used when checking for near misses. Moving a class between recognized packages changes the selection the rule sees. Review that selection just as you would review an API change and check a representative violation before accepting a revised rule.
+
 These checks intentionally retain the `java.*` namespace policy. A broad `javax.*` exception would admit both JDK and external APIs. Teams extending the rule should test the exact exception they need. The explicit dependency and slice DSL expresses the repository's package policy. ArchUnit's layer and onion DSLs are available when a project's mappings and allowed dependencies fit those models. [ArchUnit guide](https://www.archunit.org/userguide/html/000_Index.html)
 
 ## Reproduce and diagnose
+
+Look under `src/test/java/<base-package-path>/architecture/archunit/` for the generated scope, schema and rule sources. Rules run in Surefire's test phase, which Maven reaches on the way to `verify`. Failsafe can exercise the sample HTTP behavior in the same full build.
 
 Generate with `--layout standard` or `--layout hexagonal` and `--guardrails basic` or `strict`. Run `sh ./mvnw clean verify`. Open the named ArchUnit XML in `target/surefire-reports`. Verify the source and target of the failed dependency before changing a package expression or an empty-selection setting. A compiling boundary mutation, a specific assertion failure, and a restored passing build are stronger evidence than a nonzero Maven exit alone. [Executable proof and continuity fixtures](../examples/boundary-proof.md)

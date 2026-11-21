@@ -16,6 +16,15 @@ Version 1.x already shipped Standard and Hexagonal layouts with executable archi
 
 The generator queries Maven Central for a stable patch. Eligible connection failures use a reported bundled reference; other lookup failures stop generation. See the [CLI resolution contract](cli.md#spring-boot-patch-resolution).
 
+## Migrate a generation recipe
+
+1. Run the generator with JDK 25. If deployment uses JDK 21, add `--java 21` and switch to JDK 21 before building the generated project.
+2. Replace Boot 3.x selectors with `--boot 4.1` or `--boot 4.2`. Inspect the resolved patch and source in the CLI output and check the generated POM into the consuming repository.
+3. Use a fresh target directory to compare an old scaffold with 2.0 output. Review the Boot parent, MVC dependencies, test phases and generated rule names as part of that comparison.
+4. Run the generated wrapper's `clean verify` and review Surefire and, with samples enabled, Failsafe reports. Apply framework migrations to an existing application in its own repository.
+
+Historical version entries are in the [changelog](../CHANGELOG.md). Publication readiness and the release matrix are recorded in the [maintainer checklist](maintainers/release-discipline.md).
+
 ## Generated build and delivery
 
 - Standard and Hexagonal retain generated ArchUnit guardrails. Strict REST signature rules also activate when the basic sample implicitly adds MVC.
