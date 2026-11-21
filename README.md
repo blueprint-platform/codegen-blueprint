@@ -6,7 +6,7 @@ Generate a Spring Boot Maven project whose build enforces the architecture you s
 
 ## Generate and verify a sample
 
-Build the 2.0 snapshot from the repository root with **JDK 25** and **Maven 3.9.16**.
+Build the generator from the repository root with **JDK 25** and **Maven 3.9.16**.
 
 ```bash
 mvn -B -ntp clean package
@@ -28,9 +28,5 @@ The generated Standard sample uses Strict guardrails. A repository-typed field i
 - **Hexagonal** gives use cases explicit ports and places framework wiring in bootstrap.
 
 Choose `basic` for core dependency, package and cycle checks, `strict` for additional boundary checks, or `none` for structure alone. See the [guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md) for the exact checks in each mode.
-
-## Upgrading from 1.x
-
-Executable guardrails already shipped in 1.x. The unreleased **2.0** changes the generator runtime to Java 25 and targets Spring Boot 4.1 or 4.2 projects on Java 21 or 25. Boot 4.2 and Java 25 are the generation defaults. The [2.0 release notes](docs/release-notes.md) cover selector and output changes to account for when upgrading.
 
 [Documentation](docs/index.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)
