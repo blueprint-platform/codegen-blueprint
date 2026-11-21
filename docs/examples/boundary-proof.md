@@ -1,6 +1,6 @@
 # Executable architecture proof
 
-The proof runner generates samples with Strict guardrails. For each mutation, it checks a passing baseline, a specific ArchUnit failure after compilation, and a passing build after restoration. Every phase uses `sh ./mvnw -q -ntp clean verify`.
+The proof runner verifies a **GREEN → RED → GREEN** sequence for generated projects with Strict guardrails: a passing baseline, a compiling mutation rejected by a named ArchUnit rule, and a passing build after restoring the source. Every phase uses `sh ./mvnw -q -ntp clean verify`.
 
 ## Standard controller depends on a repository
 
@@ -10,7 +10,7 @@ The runner adds the repository import and the following field to `GreetingContro
 private LoggingGreetingAuditRepository __archViolation = null;
 ```
 
-The first line identifies the failed assertion. The second identifies the source field and its target type. Both are from `logs/STD_violation.log`.
+These excerpts from `logs/STD_violation.log` identify the exact failing assertion and the injected field dependency:
 
 ```text
 [ERROR] io.github.blueprintplatform.greeting.architecture.archunit.StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories -- Time elapsed: 0.007 s <<< FAILURE!
@@ -19,7 +19,7 @@ Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingControl
 
 ## Recorded results
 
-**Baseline passed → ArchUnit rejected the change → Restored build passed.** Both baselines and all five restorations passed Maven verification. Each mutation compiled before failing the named rule.
+All five mutations compiled before failing their named architecture rule, and each restored project passed verification. The baseline, violation and restoration stages are recorded for every case.
 
 ### Standard
 

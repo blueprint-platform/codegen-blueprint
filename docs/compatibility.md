@@ -1,24 +1,28 @@
-# Compatibility
+# Compatibility and verification
 
-Build and run the generator on **Java 25**. Its executable JAR targets Java 25 and uses Spring Boot **4.2.0** internally. Generated projects select their own Java target and Boot patch.
+The **generator** is compiled for and runs on Java **25**, with Spring Boot **4.2.0** internally. The **projects it generates** choose their own supported Java and Spring Boot target.
 
-| Generated Spring Boot line | Java 21 | Java 25 | Bundled reference |
+| Generated Spring Boot | Java 21 | Java 25 | Bundled reference patch |
 | --- | --- | --- | --- |
-| 4.1.x | Supported and verified | Supported and verified | 4.1.3 |
-| 4.2.x | Supported and verified | Supported and verified · default | 4.2.0 |
+| 4.1.x | Supported and verified | Supported and verified | `4.1.3` |
+| 4.2.x | Supported and verified | Supported and verified (default) | `4.2.0` |
 
-Maven **3.9.16** is the generator’s CI reference and the version pinned by the generated wrapper. The [CLI reference](cli.md) lists the supported selectors.
+Maven **3.9.16** is the generator's CI reference and the version pinned by the generated wrapper. See the [CLI reference](cli.md) for all accepted selectors.
 
 ## How versions are selected
 
-The supported line is a product boundary. The newest stable patch visible in Maven Central can change independently of Codegen releases. A new patch can be selected before its candidate build has passed. A **bundled reference** is a patch with generated-project E2E evidence on both JDKs. It is used only for eligible connection failures and changes with a Codegen release. The [CLI reference](cli.md#spring-boot-patch-resolution) explains failures and reproducibility.
+The requested **minor line** is a supported product boundary. At generation time, the generator selects the newest eligible stable patch visible on Maven Central and verifies its parent POM. That patch can change between runs.
+
+A **bundled reference** is a patch with generated-project end-to-end evidence on both target JDKs. It changes with a Codegen release and is used only for eligible connection failures. Live latest resolution is not a claim that a newly published patch has already passed the full matrix.
+
+The [patch resolution reference](cli.md#spring-boot-patch-resolution) explains warnings, hard failures and repeatability.
 
 ## Verification coverage
 
-Local verification built and ran the generator on JDK 25, then used that JAR across all four generated Boot/JDK pairs. The matrix covered both layouts, all guardrails modes, optional samples, explicit and implicit MVC, and a representative dependency combination with JPA/H2 and Security. Wrapper verification included real HTTP, an ArchUnit failure round trip and JVM classfile checks.
+Local verification packaged the generator with JDK 25 and exercised the JAR across all four Boot/Java target pairs. The tested surface included both layouts, all guardrails modes, optional samples, explicit and implicit MVC, and a JPA/H2 plus Security combination. The generated Maven wrapper ran architecture checks, HTTP integration tests, a negative architecture proof and JVM classfile checks.
 
-Earlier compatibility runs observed **4.1.3** and **4.2.0** from live Central. They also verified the 4.1.0 edge on both target JDKs after substituting only the parent in a temporary generated project.
+Earlier runs observed **4.1.3** and **4.2.0** from Maven Central. Temporary edge fixtures also verified Boot **4.1.0** on both JDKs by replacing only the generated parent version.
 
-The [proof walkthrough](examples/boundary-proof.md) covers the five Strict boundary mutations and the separate Basic/Strict continuity fixtures. The continuity fixtures exercised both layouts on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 using bundled resolution. The root build validates the generator. The separate generated-project build validates its output. The matrix samples the supported surface without claiming every patch or alias combination has been exercised.
+The [boundary proof](examples/boundary-proof.md) documents five Strict violations and separate Basic/Strict continuity fixtures. Continuity ran both layouts on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 using bundled resolution.
 
-See [verification levels](maintainers/release-discipline.md#verification-levels) for the blocking matrix, release checks and scheduled upstream candidates.
+**Scope of the claim:** The root build verifies the generator; generated-project builds verify selected output combinations. The matrix does not cover every patch or dependency alias combination. See [verification levels](maintainers/release-discipline.md#verification-levels) for CI, release and upstream checks.

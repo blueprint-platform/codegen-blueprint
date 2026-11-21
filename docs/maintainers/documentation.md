@@ -1,6 +1,6 @@
 # Documentation tooling
 
-The Pages site renders the same Markdown files used by GitHub. The [documentation index](../index.md) defines the reader routes. The site includes the active reference pages, both generated walkthroughs and their linked assets.
+The Pages site builds from the repository’s Markdown source. Use the [documentation index](../index.md) to navigate the active reference pages, generated walkthroughs and linked assets.
 
 From the repository root with Python 3.12:
 

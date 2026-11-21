@@ -1,18 +1,25 @@
-# 2.0.0 release notes
+# Codegen Blueprint 2.0.0 — release notes
 
-The current branch builds `2.0.0-SNAPSHOT`. The 2.0.0 binary is unpublished.
+**Status:** `2.0.0-SNAPSHOT` on the development branch. The 2.0.0 binary has not been published.
 
-## Before upgrading from 1.x
+Version 1.x already shipped Standard and Hexagonal layouts with executable architecture guardrails. **2.0 changes the supported generation contract**, not the original guardrails concept.
 
-- **Generator runtime** requires JDK 25 and uses Spring Boot 4.2.0 internally.
-- **Generated targets** move from Boot 3.x to Boot 4.1 or 4.2. Boot 4.0 is outside the supported target set. Use `--boot 4.1` or `--boot 4.2`. The selector takes a minor line and the generated POM pins the resolved patch. Eligible connection failures use a reported bundled reference.
-- **Generation defaults** are Boot 4.2 and Java 25. Use `--java 21` to keep a Java 21 target.
-- **Output paths** must be available. Choose a fresh target if a project directory or sibling ZIP already exists.
+## Breaking changes from 1.x
 
-See [compatibility](compatibility.md) for verified targets and the [CLI reference](cli.md#spring-boot-patch-resolution) for patch selection and failures.
+| Area | 2.0 contract |
+| --- | --- |
+| Generator runtime | JDK 25; Spring Boot 4.2.0 internally |
+| Generated Spring Boot | 4.1.x or 4.2.x; Boot 3.x and 4.0 are not supported targets |
+| Generated Java | 21 or 25; default 25 |
+| Boot selection | Pass a minor line (`--boot 4.1` or `--boot 4.2`); the resolved exact patch is pinned in the generated POM |
+| Output location | Both the project directory and sibling ZIP must be available; existing outputs are not overwritten |
 
-## Generated build changes
+The generator queries Maven Central for a stable patch. Eligible connection failures use a reported bundled reference; other lookup failures stop generation. See the [CLI resolution contract](cli.md#spring-boot-patch-resolution).
 
-Standard and Hexagonal retain executable guardrails. Strict REST signature checks also run when the basic sample implicitly adds MVC. Maven verification includes the sample’s real HTTP integration tests and resolves the Mockito agent from the generated project’s dependencies.
+## Generated build and delivery
 
-POM text is XML-escaped. Publication preserves existing outputs and attempts cleanup of owned paths on failure. The [delivery contract](architecture/executable-architecture-contract.md#delivery-and-reproducibility) describes filesystem limits.
+- Standard and Hexagonal retain generated ArchUnit guardrails. Strict REST signature rules also activate when the basic sample implicitly adds MVC.
+- The basic sample includes real HTTP integration tests in Maven verification; the generated project resolves its Mockito agent through Maven dependencies.
+- Generated POM text is XML-escaped. Publication protects existing outputs and attempts ownership-aware cleanup on failure; it is not crash-atomic.
+
+Before upgrading, review the [compatibility matrix](compatibility.md), [CLI reference](cli.md) and [delivery limitations](architecture/executable-architecture-contract.md#delivery-and-reproducibility).

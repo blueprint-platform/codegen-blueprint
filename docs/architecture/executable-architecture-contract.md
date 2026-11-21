@@ -20,9 +20,9 @@ Arrows in the diagram point from dependent code to the code it references. The r
 
 ![Standard allows controller to service to repository. Hexagonal adapters and use cases point to their application ports, and use cases can reference the domain.](../assets/architecture.svg)
 
-Standard organizes each feature into layers and puts component wiring in configuration. [Fowler’s presentation, domain and data layering](https://martinfowler.com/bliki/PresentationDomainDataLayering.html)
+In **Standard**, each feature uses layered packages, with component wiring in configuration. This follows [Fowler’s presentation, domain and data layering](https://martinfowler.com/bliki/PresentationDomainDataLayering.html).
 
-In Hexagonal, a use case calls an outbound port at runtime. The driven adapter’s source depends on the same port, which it implements. Bootstrap wires that implementation into the use case. [Cockburn’s Ports and Adapters](https://alistair.cockburn.us/hexagonal-architecture/)
+In **Hexagonal**, a use case calls an outbound port at runtime. The driven adapter implements that port and depends on its interface in source code; bootstrap wires the implementation into the use case. This follows [Cockburn’s Ports and Adapters](https://alistair.cockburn.us/hexagonal-architecture/).
 
 The [guardrails rulebook](architecture-guardrails-rulebook.md) defines what each mode enforces. Strict retains Basic guarantees and may report a violation under a different assertion.
 

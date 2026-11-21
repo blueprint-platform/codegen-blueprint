@@ -1,23 +1,28 @@
-# Codegen Blueprint documentation
+# Documentation
 
-## Generate a project
+Start with a runnable project, then explore the architecture checks or the 2.0 migration. Reference material is separated from the hands-on walkthroughs so each page has one job.
 
-- [Quickstart](quickstart.md) generates and verifies a runnable sample.
-- [CLI reference](cli.md) lists options, dependency aliases and failure behavior.
-- [Generated project examples](examples/generated-projects.md) show both layouts with Strict guardrails.
+## Start building
 
-## Check what the build enforces
+| Guide | What you'll find |
+| --- | --- |
+| [Quickstart](quickstart.md) | Generate a Hexagonal project and verify it with its Maven wrapper |
+| [CLI reference](cli.md) | Selectors, dependency aliases, version resolution and failures |
+| [Generated walkthroughs](examples/generated-projects.md) | The generator's Standard and Hexagonal README snapshots |
 
-- [Architecture contract](architecture/executable-architecture-contract.md) explains the generated output, dependency directions and enforcement boundaries.
-- [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps the modes to their ArchUnit assertions.
-- [Executable proof](examples/boundary-proof.md) reproduces a compiling change that fails a named rule and passes after restoration.
+## Understand the architecture
 
-## Plan an upgrade
+| Reference | What you'll find |
+| --- | --- |
+| [Executable architecture contract](architecture/executable-architecture-contract.md) | Output guarantees, dependency directions and verification boundaries |
+| [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) | Exact Basic and Strict assertions and their scope |
+| [Boundary proof](examples/boundary-proof.md) | A compiling violation, the named ArchUnit failure and recovery |
 
-- [Compatibility](compatibility.md) lists supported Java and Boot targets, bundled patches and verification coverage.
-- [2.0 release notes](release-notes.md) explain the changes from 1.x.
+## Upgrade and maintain
 
-## Maintain the project
+- [Compatibility](compatibility.md) — supported Boot/Java combinations and verification coverage.
+- [2.0 release notes](release-notes.md) — migration changes from 1.x.
+- [Contributing](../CONTRIBUTING.md) — development and verification expectations.
+- [Release readiness](maintainers/release-discipline.md) — CI matrices and release checks.
 
-- [Contributing](../CONTRIBUTING.md) covers changes to code, generated output and documentation.
-- [Release readiness](maintainers/release-discipline.md) defines verification gates and release evidence.
+Return to the [project overview](../README.md).
