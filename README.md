@@ -2,64 +2,46 @@
 
 **Architecture as an Executable Contract**
 
-Start a Java/Maven Spring Boot project with package boundaries that Maven can enforce. Codegen Blueprint delivers the sources, the Maven wrapper and the ArchUnit tests selected for your layout. As the code evolves, a covered dependency can turn a successful compile into a failed build with a named architecture rule.
+Generate a Java/Maven Spring Boot project with the layout, Maven wrapper and ArchUnit tests you select. A forbidden dependency can compile successfully and still fail the generated build at a named architecture rule.
 
 **Generate → Enforce → Prove**
 
-[Generate your first project](docs/quickstart.md) · [Reproduce a boundary failure](docs/examples/boundary-proof.md) · [Explore the docs](docs/index.md)
+[Run the quickstart](docs/quickstart.md) · [Reproduce a boundary failure](docs/examples/boundary-proof.md) · [Explore the documentation](docs/index.md)
 
-[![The generated standard project passes, a controller-to-repository dependency fails its ArchUnit rule, and the restored project passes](docs/assets/proof-2.0.svg)](docs/examples/boundary-proof.md)
+## Try it from source
 
-## Generate a project
-
-From this checkout, use JDK 25 and Maven 3.9.16. The commands use the 2.0 development JAR. The [quickstart](docs/quickstart.md) is the example CI executes and also accepts a supplied JAR.
+Use **JDK 25** and **Maven 3.9.16**. From the repository root, run `mvn -B -ntp clean package` to build the 2.0 snapshot, then generate into a fresh directory.
 
 ```bash
-mvn -B -ntp clean package
 OUTPUT_DIR="$(mktemp -d)"
 java -jar target/codegen-blueprint-2.0.0-SNAPSHOT.jar --cli springboot \
   --group-id com.example --artifact-id greeting --name Greeting \
-  --description 'Greeting sample' --package-name com.example.greeting \
-  --layout standard --guardrails strict --sample-code basic \
-  --target-dir "$OUTPUT_DIR"
-cd "$OUTPUT_DIR/greeting"
-sh ./mvnw -B -ntp clean verify
+  --description 'Greeting sample with executable architecture' \
+  --package-name com.example.greeting --layout hexagonal \
+  --guardrails strict --sample-code basic --target-dir "$OUTPUT_DIR"
 ```
 
-Expect a project directory and a sibling ZIP. The sample's Failsafe tests exercise a real HTTP server. A first Maven build needs access to the wrapper distribution and dependencies.
+The generator writes a project directory and a sibling ZIP. The [verified quickstart](docs/quickstart.md) builds that project with its own wrapper and shows where to find the architecture and sample HTTP test reports.
 
-## Choose what the build enforces
+## Choose a layout and guardrails
 
-| Layout | How to structure a feature |
+| Layout | Package boundaries |
 | --- | --- |
-| **Standard** | Put HTTP entry points in `controller`, orchestration in `service` and persistence access in `repository`. |
-| **Hexagonal** | Put entry points in `adapter.in` and infrastructure in `adapter.out`. Define application ports and use cases in `application`, business types in `domain`, and wiring in `bootstrap`. |
+| **Standard** (default) | Controllers, services, repositories and domain types organize each feature. |
+| **Hexagonal** | Inbound and outbound adapters use application ports. Business types live in the domain and bootstrap wires the components. |
 
-| Guardrails | What gets generated |
-| --- | --- |
-| `none` | Project structure with no generated ArchUnit dependency or rules. |
-| `basic` (default) | Layout-specific scope checks, core dependency restrictions and cycle checks between package families within a context. |
-| `strict` | Basic coverage plus stronger layout-specific boundaries, including checks for REST signatures when MVC is present. |
+Use `basic` (default) for core layout, package and cycle checks, `strict` for additional layout-specific checks including REST signatures when MVC is present, or `none` for the layout without generated ArchUnit checks. [Generated examples](docs/examples/generated-projects.md) · [Guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
-[Inspect both generated layouts](docs/examples/generated-projects.md) · [Read the rulebook](docs/architecture/architecture-guardrails-rulebook.md)
+## See the build catch a boundary violation
 
-## Prove that a boundary holds
+In the generated Standard sample, a field in `GreetingController` with type `LoggingGreetingAuditRepository` compiles. Maven verification fails at `controllers_must_not_depend_on_repositories`. Remove the field and import to restore the passing build.
 
-In the generated Standard sample, add the following import and field to `GreetingController`.
+[![The baseline passes, a compiling dependency fails ArchUnit, and the restored build passes](docs/assets/proof-2.0.svg)](docs/examples/boundary-proof.md)
 
-```java
-import com.example.greeting.bp.sample.repository.LoggingGreetingAuditRepository;
-
-// Inside GreetingController
-private LoggingGreetingAuditRepository __archViolation;
-```
-
-The field compiles. During `clean verify` the rule `controllers_must_not_depend_on_repositories` fails because the field type couples the HTTP controller directly to persistence. Removing the field and its import restores the passing build.
-
-[Reproduce the proof](docs/examples/boundary-proof.md) · [Inspect the recorded results](docs/examples/proof-2.0.txt)
+[Run the proof](docs/examples/boundary-proof.md) · [Read the recorded results](docs/examples/proof-2.0.txt)
 
 ## Supported targets
 
-The generator runs on **Spring Boot 4.2.0** and requires **Java 25**. It generates Maven projects for **Spring Boot 4.1 or 4.2**, each with **Java 21 or 25**. Defaults are **Boot 4.2 / Java 25**. Pass `--boot 4.1` or `--java 21` to choose an alternative. The CLI reports the exact stable patch written to the POM and explicitly reports when a connection failure selects the bundled reference.
+The generator runs on **Spring Boot 4.2.0** and Java 25. It generates Maven projects for **Spring Boot 4.1 or 4.2** with **Java 21 or 25**. The default is **Boot 4.2 / Java 25**. The CLI reports the exact patch pinned in the generated POM and identifies bundled fallback when it applies. [Compatibility and verification coverage](docs/compatibility.md) · [CLI reference](docs/cli.md)
 
-[Compatibility](docs/compatibility.md) · [CLI reference](docs/cli.md) · [Architecture contract](docs/architecture/executable-architecture-contract.md) · [Release notes](docs/release-notes.md) · [Contributing](CONTRIBUTING.md)
+[Architecture contract](docs/architecture/executable-architecture-contract.md) · [2.0 release notes](docs/release-notes.md) · [Contributing](CONTRIBUTING.md)

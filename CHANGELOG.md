@@ -103,5 +103,5 @@ Generated projects are **single-module** and include:
 
 ### References
 
-* Binding contract: [Executable Architecture Contract](docs/architecture/executable-architecture-contract.md)
-* Guardrails semantics: [Architecture Guardrails Rulebook](docs/architecture/architecture-guardrails-rulebook.md)
+* Binding contract: [Executable Architecture Contract](https://github.com/blueprint-platform/codegen-blueprint/blob/68a959685612bc5e6595c8b8195d5d85ec6f9fff/docs/architecture/executable-architecture-contract.md)
+* Guardrails semantics: [Architecture Guardrails Rulebook](https://github.com/blueprint-platform/codegen-blueprint/blob/68a959685612bc5e6595c8b8195d5d85ec6f9fff/docs/architecture/architecture-guardrails-rulebook.md)

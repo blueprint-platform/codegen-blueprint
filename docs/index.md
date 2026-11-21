@@ -1,36 +1,25 @@
-# Architecture as an Executable Contract
+# Codegen Blueprint documentation
 
-Generate a Spring Boot project with Maven and make the intended dependency boundaries part of the build. Start with a working HTTP sample, cross one boundary, and see the exact architecture assertion that catches it.
+## Learn
 
-[Generate a project](quickstart.md) · [Run the boundary proof](examples/boundary-proof.md)
+- [Quickstart](quickstart.md) builds the generator, creates a sample project and runs its Maven wrapper.
+- [Generated project walkthroughs](examples/generated-projects.md) show the Standard and Hexagonal outputs.
+- [CLI reference](cli.md) covers options, dependency aliases and failure behavior.
 
-## Understand the layout
+## Understand
 
-Choose **standard** when controllers, services and repositories express your team's architecture. Choose **hexagonal** when you want inbound and outbound adapters to communicate through application ports, with business types in the domain and wiring in bootstrap.
+- [Executable architecture contract](architecture/executable-architecture-contract.md) describes what the generator delivers and what the build enforces.
+- [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps each layout and enforcement mode to its ArchUnit assertions.
 
-The generator delivers the project and ZIP. The generated project's Maven lifecycle owns compilation, architecture checks and sample integration tests.
+![Representative Standard and Hexagonal source dependencies, with solid permitted edges and dashed prohibited edges](assets/architecture-2.0.svg)
 
-![Allowed and prohibited source dependencies for Standard Layered and Hexagonal projects](assets/architecture-2.0.svg)
+## Contribute
 
-## Generate and verify
+- [Contributing guide](../CONTRIBUTING.md) explains how to propose a change and verify it.
+- [Documentation tooling](maintainers/documentation.md) covers local Pages builds, quickstart checks and generated snapshot checks.
 
-Follow the [quickstart](quickstart.md) with JDK 25. Run the generated wrapper and look for the sample HTTP integration test and ArchUnit reports. The project targets **Boot 4.2 / Java 25** by default. Both Boot 4.1 and 4.2 can target Java 21 or 25. See [compatibility](compatibility.md) for the resolved patch and bundled-reference rules.
+## Trust the evidence
 
-Start with `basic` for layout-specific checks, choose `strict` to retain Basic guarantees and add stronger rules, or use `none` for the layout without generated ArchUnit checks.
-
-## Break a boundary
-
-In the standard strict sample, let `GreetingController` declare a field of type `LoggingGreetingAuditRepository`. Java accepts the dependency. ArchUnit fails the rule that prohibits controllers from depending on repositories. Restore the controller and run the same Maven command again.
-
-[![Baseline passes, the architecture rule fails, and restoration passes](assets/proof-2.0.svg)](examples/boundary-proof.md)
-
-[Follow the proof steps](examples/boundary-proof.md) · [Read the exact rule failure](examples/proof-2.0.txt)
-
-## Explore the contract
-
-| Goal | Reference |
-| --- | --- |
-| Inspect what each layout delivers | [Generated project walkthroughs](examples/generated-projects.md) |
-| Choose a layout, target or dependency | [CLI reference](cli.md) · [Compatibility](compatibility.md) |
-| Check exactly what Maven enforces | [Architecture contract](architecture/executable-architecture-contract.md) · [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) |
-| Review release scope and evidence | [Release notes](release-notes.md) · [Release readiness](maintainers/release-discipline.md) |
+- [Boundary proof](examples/boundary-proof.md) reproduces a compiling violation, a named ArchUnit failure and a restored passing build.
+- [Compatibility](compatibility.md) distinguishes supported targets, verified patches and bundled references.
+- [Release notes](release-notes.md) describe the unreleased 2.0 changes. [Release readiness](maintainers/release-discipline.md) lists the verification gates.

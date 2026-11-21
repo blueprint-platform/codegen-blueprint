@@ -1,57 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="526" viewBox="0 0 960 526" role="img" aria-labelledby="title description">
-  <title id="title">Two generated layouts and the dependency directions they enforce</title>
-  <desc id="description">Standard separates controller, service and repository, with a forbidden direct controller-to-repository dependency. Hexagonal routes inbound adapters through application ports, and outbound adapters implement outbound ports. Application-to-adapter is prohibited. Domain is inside the boundary and bootstrap wires the components. The generator delivers both code and selected ArchUnit rules; the generated Maven build runs the rules.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="550" viewBox="0 0 960 550" role="img" aria-labelledby="title description">
+  <title id="title">Source dependency directions in Standard and Hexagonal layouts</title>
+  <desc id="description">Representative Basic and Strict edges. In Standard, controller depends on service, and service depends on repository. The direct controller-to-repository edge is blocked. In Hexagonal, inbound adapter depends on port.in, outbound adapter implements port.out, and the use case depends on port.out and domain. The application-to-adapter edge is blocked. Bootstrap wires the implementations.</desc>
   <defs>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="#3dedbf" stroke-width="1.4"/></marker>
-    <marker id="blocked" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="#ff969f" stroke-width="1.4"/></marker>
-    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#24404c" opacity=".48"/></pattern>
+    <marker id="allowed" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M1 1l5 2.5L1 6" fill="none" stroke="#3dedbf" stroke-width="1.4"/></marker>
+    <marker id="blocked" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M1 1l5 2.5L1 6" fill="none" stroke="#ff969f" stroke-width="1.4"/></marker>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#24404c" opacity=".55"/></pattern>
   </defs>
-  <rect width="960" height="526" rx="20" fill="#0b1d29"/>
-  <rect x="20" y="87" width="920" height="345" rx="12" fill="url(#grid)" stroke="#395566"/>
-  <path d="M480 106v306" stroke="#395566"/>
-  <g font-family="system-ui, sans-serif" fill="#ecfaf6">
-    <text x="30" y="46" font-size="30" font-weight="700">Two layouts. Different dependency boundaries.</text>
-    <text x="30" y="70" font-size="14" fill="#adc5cc">Code dependency direction · representative Basic and Strict checks</text>
-    <text x="43" y="130" font-size="22" font-weight="700">Standard</text>
-    <text x="503" y="130" font-size="22" font-weight="700">Hexagonal</text>
-    <text x="43" y="155" font-size="14" fill="#adc5cc">A layered feature</text>
-    <text x="503" y="155" font-size="14" fill="#adc5cc">Use cases depend on ports, adapters implement them</text>
-  </g>
-  <g fill="#16303d" stroke="#567485">
-    <rect x="55" y="178" width="214" height="49" rx="6"/>
-    <rect x="55" y="252" width="214" height="49" rx="6"/>
-    <rect x="55" y="326" width="214" height="49" rx="6"/>
-    <rect x="513" y="189" width="152" height="46" rx="6"/>
-    <rect x="749" y="189" width="153" height="46" rx="6"/>
-    <rect x="513" y="261" width="152" height="104" rx="7"/>
-    <rect x="749" y="261" width="153" height="104" rx="7"/>
-    <rect x="633" y="380" width="149" height="34" rx="6"/>
-  </g>
-  <g fill="none" stroke="#3dedbf" stroke-width="2.3" marker-end="url(#arrow)">
-    <path d="M162 227v25"/><path d="M162 301v25"/>
-    <path d="M589 235v26"/><path d="M825 235v26"/>
-    <path d="M665 336q42 0 84-22"/><path d="M640 365q20 17 58 15"/><path d="M589 323v-20"/>
-  </g>
-  <path d="M269 202h64q14 0 14 14v121q0 14-14 14h-64" fill="none" stroke="#ff969f" stroke-dasharray="7 5" stroke-width="2" marker-end="url(#blocked)"/>
-  <path d="M665 282l84-59" fill="none" stroke="#ff969f" stroke-dasharray="7 5" stroke-width="2" marker-end="url(#blocked)"/>
-  <path d="m700 248 12 12m0-12-12 12" stroke="#ff969f" stroke-width="2.5"/>
-  <path d="m338 268 18 18m0-18-18 18" stroke="#ff969f" stroke-width="3"/>
-  <g font-family="ui-monospace, monospace" font-size="16" fill="#ecfaf6" text-anchor="middle">
-    <text x="162" y="208">controller</text><text x="162" y="282">service</text><text x="162" y="356">repository</text>
-    <text x="589" y="218">adapter.in</text><text x="825" y="218">adapter.out</text>
-    <text x="589" y="294">port.in</text><text x="589" y="345">use case</text>
-    <text x="825" y="318">port.out</text><text x="707" y="402">domain</text>
-  </g>
-  <g font-family="system-ui, sans-serif" font-size="13">
-    <text x="367" y="282" fill="#ffbec2">Blocked</text>
-    <text x="706" y="279" fill="#adc5cc" text-anchor="middle">application</text>
-    <text x="705" y="315" fill="#adc5cc" text-anchor="middle">calls</text>
-    <text x="907" y="175" fill="#adc5cc" text-anchor="end">bootstrap wires the components</text>
-    <text x="53" y="406" fill="#adc5cc">Controller access goes through the service.</text>
-  </g>
-  <path d="M31 467h31m-9-8 9 8-9 8" fill="none" stroke="#3dedbf" stroke-width="2"/>
+  <rect width="960" height="550" rx="20" fill="#0b1d29"/>
   <g font-family="system-ui, sans-serif">
-    <text x="78" y="473" font-size="18" fill="#ecfaf6" font-weight="650">Generator delivers sources + selected ArchUnit rules</text>
-    <text x="78" y="499" font-size="16" fill="#adc5cc">The generated project runs those rules with its own Maven wrapper.</text>
+    <text x="28" y="52" font-size="36" font-weight="700" fill="#ecfaf6">Source dependency directions</text>
+    <text x="30" y="83" font-size="20" fill="#adc5cc">Representative edges from the Basic and Strict guardrails</text>
+  </g>
+  <g fill="url(#grid)" stroke="#395566">
+    <rect x="24" y="105" width="400" height="380" rx="12"/>
+    <rect x="438" y="105" width="498" height="380" rx="12"/>
+  </g>
+  <g font-family="system-ui, sans-serif">
+    <g font-size="26" font-weight="700" fill="#ecfaf6">
+      <text x="48" y="145">Standard</text>
+      <text x="465" y="145">Hexagonal</text>
+    </g>
+    <text x="48" y="176" font-size="19" fill="#adc5cc">Layered feature</text>
+    <text x="465" y="176" font-size="19" fill="#adc5cc">Bootstrap wires implementations</text>
+  </g>
+
+  <g fill="#16303d" stroke="#567485">
+    <rect x="57" y="205" width="230" height="48" rx="7"/>
+    <rect x="57" y="288" width="230" height="48" rx="7"/>
+    <rect x="57" y="371" width="230" height="48" rx="7"/>
+    <rect x="470" y="195" width="169" height="44" rx="7"/>
+    <rect x="718" y="195" width="169" height="44" rx="7"/>
+    <rect x="603" y="438" width="144" height="36" rx="6"/>
+  </g>
+  <rect x="457" y="269" width="444" height="138" rx="9" fill="#102735" stroke="#6b8d9c"/>
+  <g fill="#16303d" stroke="#567485">
+    <rect x="470" y="303" width="169" height="39" rx="6"/>
+    <rect x="718" y="303" width="169" height="39" rx="6"/>
+    <rect x="603" y="362" width="144" height="36" rx="6"/>
+  </g>
+  <text x="675" y="292" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" fill="#adc5cc">Application</text>
+
+  <g fill="none" stroke="#3dedbf" stroke-width="2.5">
+    <path d="M172 253v34" marker-end="url(#allowed)"/>
+    <path d="M172 336v34" marker-end="url(#allowed)"/>
+    <path d="M554 239v63" marker-end="url(#allowed)"/>
+    <path d="M802 239v63" marker-end="url(#allowed)"/>
+    <path d="M747 380h55v-37" marker-end="url(#allowed)"/>
+    <path d="M675 398v39" marker-end="url(#allowed)"/>
+  </g>
+  <g fill="none" stroke="#ff969f" stroke-width="2.5" stroke-dasharray="7 5">
+    <path d="M287 229h67v166h-66" marker-end="url(#blocked)"/>
+    <path d="M901 380h19V217h-32" marker-end="url(#blocked)"/>
+  </g>
+  <g stroke="#ff969f" stroke-width="3">
+    <path d="m346 304 16 16m0-16-16 16"/>
+    <path d="m913 292 14 14m0-14-14 14"/>
+  </g>
+  <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="21" fill="#ecfaf6" text-anchor="middle">
+    <text x="172" y="236">controller</text>
+    <text x="172" y="319">service</text>
+    <text x="172" y="402">repository</text>
+    <text x="554" y="224">adapter.in</text>
+    <text x="802" y="224">adapter.out</text>
+    <text x="554" y="329">port.in</text>
+    <text x="802" y="329">port.out</text>
+    <text x="675" y="387">use case</text>
+    <text x="675" y="463">domain</text>
+  </g>
+  <g font-family="system-ui, sans-serif" font-size="18">
+    <text x="48" y="456" fill="#ffbec2">Direct controller → repository blocked</text>
+    <text x="813" y="261" font-size="16" fill="#a5f6dd">implements</text>
+    <path d="M31 518h35" stroke="#3dedbf" stroke-width="2.5" marker-end="url(#allowed)"/>
+    <text x="81" y="524" fill="#ecfaf6">Permitted dependency</text>
+    <path d="M342 518h35" stroke="#ff969f" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#blocked)"/>
+    <text x="392" y="524" fill="#ffbec2">Prohibited dependency</text>
   </g>
 </svg>
