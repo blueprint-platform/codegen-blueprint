@@ -7,7 +7,7 @@ The [architecture contract](../architecture/executable-architecture-contract.md)
 | Level | When | Evidence |
 | --- | --- | --- |
 | Quick | During development | Run `mvn -B -ntp test` on JDK 25 for unit tests and engine ArchUnit. |
-| Standard | Pull requests and main | Engine `clean verify` on Java 25. Four generated cells use the same Java 25 JAR, run Maven and exercise real HTTP. A compact negative proof and the documented quickstart also run. |
+| Standard | Pull requests and main | Engine `clean verify` on Java 25 with the Spring Boot 4.2.0 runtime pinned in the root POM. Four generated cells use the same Java 25 JAR, run Maven and exercise real HTTP. A compact negative proof and the documented quickstart also run. |
 | Full | Manual Build & Test dispatch on the release candidate ref | Eight generated scenarios and five negative cases per cell, Boot 4.1.0 edge fixtures on both JDKs, and fresh wrapper and dependency caches on both Boot 4.2 cells. |
 | Upstream | Weekly | A single JAR checks live Central latest patches across the four supported Boot/Java pairs. Candidate failures surface in the failing jobs. Bundled references retain their own evidence. |
 

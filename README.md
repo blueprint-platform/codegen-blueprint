@@ -60,6 +60,6 @@ The field compiles. During `clean verify` the rule `controllers_must_not_depend_
 
 ## Supported targets
 
-The generator requires **Java 25**. It generates Maven projects for **Spring Boot 4.1 or 4.2**, each with **Java 21 or 25**. Defaults are **Boot 4.2 / Java 25**. Pass `--boot 4.1` or `--java 21` to choose an alternative. The CLI reports the exact stable patch written to the POM and explicitly reports when a connection failure selects the bundled reference.
+The generator runs on **Spring Boot 4.2.0** and requires **Java 25**. It generates Maven projects for **Spring Boot 4.1 or 4.2**, each with **Java 21 or 25**. Defaults are **Boot 4.2 / Java 25**. Pass `--boot 4.1` or `--java 21` to choose an alternative. The CLI reports the exact stable patch written to the POM and explicitly reports when a connection failure selects the bundled reference.
 
 [Compatibility](docs/compatibility.md) · [CLI reference](docs/cli.md) · [Architecture contract](docs/architecture/executable-architecture-contract.md) · [Release notes](docs/release-notes.md) · [Contributing](CONTRIBUTING.md)

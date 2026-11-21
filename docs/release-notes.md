@@ -7,7 +7,7 @@ Release candidate documentation for the current `2.0.0-SNAPSHOT` branch. The 2.0
 - Continue to choose standard or hexagonal and basic, strict or no architecture guardrails. Strict REST checks now cover MVC enabled implicitly by the sample.
 - Generated verification runs sample integration tests, including real HTTP. Maven resolves the Mockito agent from the project’s dependencies.
 - Project publication protects existing output directories and sibling ZIPs. POM text is XML-escaped. Cleanup is best-effort for owned output.
-- The generator requires Java 25 and uses its own Spring Boot 4.1.3 runtime.
+- The generator requires Java 25 and uses Spring Boot 4.2.0 internally.
 
 Breaking CLI changes include minor-only Boot selectors (`4.1` and `4.2`), removal of Boot 3.x/4.0 generation, and a Java 25 default. Existing output paths must be cleared or changed before generating again.
 

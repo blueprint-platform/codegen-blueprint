@@ -1,6 +1,6 @@
 # Compatibility
 
-Build and run the generator on **Java 25**. Its executable JAR targets Java 25 and uses Spring Boot **4.1.3** internally. Generated projects select their own Java target and Boot patch.
+Build and run the generator on **Java 25**. Its executable JAR targets Java 25 and uses Spring Boot **4.2.0** internally. Generated projects select their own Java target and Boot patch.
 
 | Generated Spring Boot line | Java 21 | Java 25 | Bundled reference |
 | --- | --- | --- | --- |
