@@ -1,36 +1,43 @@
-# Codegen Blueprint documentation
+# Architecture your build can check
 
-Architecture can drift while a service still compiles and answers requests. Codegen Blueprint generates a Spring Boot project whose Maven build can flag that drift at the selected boundaries.
+Codegen Blueprint turns a layout and a guardrail policy into a Spring Boot Maven project. From the first commit, the project's own build can show which dependency crossed an architectural boundary.
 
-![Codegen Blueprint cover showing a Hexagonal project generation command](images/cover/cover.png)
+[Generate a service](quickstart.md) · [Read the build proof](examples/boundary-proof.md)
 
-Start with a single failed assertion to evaluate the claim, or build a working sample and follow its dependencies from the HTTP boundary into the domain.
+## A failure you can explain
 
-## See the build enforce a boundary
+A Standard controller gains a field of type `LoggingGreetingAuditRepository`. Java compiles the field. The generated ArchUnit test then reports `controllers_must_not_depend_on_repositories`. Removing the field and import restores the passing build.
 
-- [Executable architecture proof](examples/boundary-proof.md) walks through a compiling Java change, the named ArchUnit failure and the passing build after restoration.
-- [Architecture contract](architecture/executable-architecture-contract.md) explains the generated output and shows the dependency directions in both layouts.
-- [Explore the generator's Hexagonal Architecture](guides/how-to-explore-hexagonal-architecture.md) follows a CLI request through the use case, ports and adapters.
-- [Scope and responsibility](policies/scope-and-responsibility.md) explains what a green build establishes and what the consuming application owns.
-- [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps Basic and Strict to their exact assertions.
+```text
+PASS: STD baseline
+EXPECTED_FAIL: STD violation
+PASS: STD fixed
+```
 
-![Original Blueprint diagram showing who benefits, how profiles drive the engine, and what teams receive](images/architecture/value-proposition.png)
+These are the three Standard proof verdicts from the recorded 2.0 run. The [walkthrough](examples/boundary-proof.md#standard-controller-depends-on-a-repository) shows the actual dependency and the Maven commands.
 
-## Generate and verify a project
+## Generate and use a project
 
-- [Quickstart](quickstart.md) generates a Hexagonal project and verifies it with its Maven wrapper.
-- [Generated project walkthroughs](examples/generated-projects.md) show the actual Standard and Hexagonal README output.
-- [CLI reference](cli.md) covers selectors, dependency aliases, version resolution and failures.
+- [Quickstart](quickstart.md) builds the generator and verifies a runnable Hexagonal service.
+- [CLI reference](cli.md) covers accepted options, validation, patch selection and retry behavior.
+- [Generated project examples](examples/generated-projects.md) compare how the same greeting is structured in the two layouts.
 
-## Choose a target or plan an upgrade
+## Understand the contract
 
-- [Compatibility](compatibility.md) lists supported Boot and Java pairs and their verification coverage.
-- [2.0 release notes](release-notes.md) describe the changes from 1.x.
+- [Executable architecture contract](architecture/executable-architecture-contract.md) explains what the generator delivers and where its guarantees end.
+- [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps the layouts and modes to the emitted checks.
+- [Generator architecture](guides/how-to-explore-hexagonal-architecture.md) follows a request through validation, ports, adapters and publication.
+- [Scope and responsibility](policies/scope-and-responsibility.md) explains which decisions stay with the consuming team.
 
-## Maintain the repository
+## Verify a target or an upgrade
 
-- [Contributing](../CONTRIBUTING.md) covers development and review expectations.
-- [Release readiness](maintainers/release-discipline.md) describes the CI matrices and release gates.
-- [Architecture governance](maintainers/architecture-governance-and-ai-protocol.md) records who owns contract decisions and what makes a change reviewable.
-- [Visual assets](maintainers/visual-assets.md) tracks the cover, diagrams and proof presentation.
-- [Documentation tooling](maintainers/documentation.md) covers Pages previews and generated snapshot checks.
+- [Compatibility](compatibility.md) distinguishes supported targets, bundled references, live candidates and tested minimum versions.
+- [2.0 release notes](release-notes.md) give a migration path for generation recipes from 1.x.
+
+## Maintain Codegen Blueprint
+
+- [Architecture governance](maintainers/architecture-governance-and-ai-protocol.md) explains ownership and evidence for a contract change.
+- [Release readiness](maintainers/release-discipline.md) describes matrix coverage and release gates.
+- [Documentation tooling](maintainers/documentation.md) covers Pages previews and snapshot drift checks.
+- [Visual assets](maintainers/visual-assets.md) records how to maintain the diagrams and historical proof.
+- [Contributing](../CONTRIBUTING.md) covers development and review.

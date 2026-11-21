@@ -32,13 +32,15 @@ The wrapper invokes Maven 3.9.16. The generated build still needs its distributi
 
 Arrows in the diagram point from dependent code to the code it references. The red lines of text identify selected dependencies that both Basic and Strict prohibit.
 
-![Standard allows controller to service to repository. Hexagonal adapters and use cases point to their application ports, and use cases can reference the domain.](../assets/architecture.svg)
+![Standard allows controller to service to repository. The Hexagonal handler and inbound adapter reference an application input port. The handler and outbound adapter reference a domain output port.](../assets/architecture.svg)
 
 In **Standard**, each feature uses layered packages, with component wiring in configuration. This follows [Fowler’s presentation, domain and data layering](https://martinfowler.com/bliki/PresentationDomainDataLayering.html).
 
 In **Hexagonal**, a use case calls an outbound port at runtime. The driven adapter implements that port and depends on its interface in source code; bootstrap wires the implementation into the use case. This follows [Cockburn’s Ports and Adapters](https://alistair.cockburn.us/hexagonal-architecture/).
 
-Standard keeps a direct service-to-repository dependency available and uses package rules to prevent common shortcuts. It fits a team that wants the familiar layered model and separate orchestration and transport. Hexagonal gives the use case an explicit input and output API and puts concrete technology decisions behind adapters. It makes substitutions possible at the composition root at the cost of more interfaces and explicit mapping in the sample.
+The diagram omits assembly and other sample dependencies. In Standard, configuration constructs the service and repository. In Hexagonal, the composition root can name concrete implementations and supply them to the handler. In both layouts, the transport maps application results into HTTP response types. These choices keep framework-specific assembly and response shape out of the business operation.
+
+Standard keeps a direct service-to-repository dependency available and uses package rules to prevent common shortcuts. It fits a team that wants the familiar layered model and separate orchestration and transport. Hexagonal exposes an application input API and keeps concrete technology decisions behind adapters. In the generated sample, `GetGreetingPort` belongs to `application.port.in` and `GreetingAuditPort` belongs to `domain.port.out`. It makes substitutions possible at the composition root at the cost of more interfaces and explicit mapping in the sample.
 
 The [guardrails rulebook](architecture-guardrails-rulebook.md) defines what each mode enforces. Strict retains Basic guarantees and may report a violation under a different assertion.
 

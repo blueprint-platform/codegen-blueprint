@@ -41,6 +41,22 @@ PAGES = {
     "maintainers/release-discipline": "Release readiness",
     "maintainers/visual-assets": "Visual assets",
 }
+SECTIONS = {
+    "Build a project": (
+        "quickstart", "cli", "examples/generated-projects",
+        "examples/standard", "examples/hexagonal",
+    ),
+    "Evaluate the architecture": (
+        "examples/boundary-proof", "architecture/executable-architecture-contract",
+        "architecture/architecture-guardrails-rulebook", "guides/how-to-explore-hexagonal-architecture",
+        "policies/scope-and-responsibility",
+    ),
+    "Verify and maintain": (
+        "compatibility", "release-notes", "maintainers/release-discipline",
+        "maintainers/architecture-governance-and-ai-protocol", "maintainers/documentation",
+        "maintainers/visual-assets",
+    ),
+}
 ROUTES = {ROOT / "docs" / f"{name}.md": Path(f"{name}.html") for name in PAGES}
 
 
@@ -159,11 +175,19 @@ def build(site):
     for source, route in ROUTES.items():
         body = render(source, route, assets)
         key = route.with_suffix("").as_posix()
-        links = []
-        for name, label in NAV.items():
+        def navigation_link(name, label):
             href = os.path.relpath(f"{name}.html", route.parent)
             current = ' aria-current="page"' if name == key else ""
-            links.append(f'<a href="{href}"{current}>{escape(label)}</a>')
+            return f'<a href="{href}"{current}>{escape(label)}</a>'
+
+        links = "".join(navigation_link(name, label) for name, label in NAV.items())
+        sidebar = "".join(
+            f'<div class="section"><p>{escape(title)}</p>'
+            + "".join(navigation_link(name, PAGES[name]) for name in names)
+            + "</div>"
+            for title, names in SECTIONS.items()
+        )
+        page_kind = "overview" if key == "index" else "reference"
         stylesheet = os.path.relpath(STYLESHEET, route.parent)
         overview = os.path.relpath("index.html", route.parent)
         page = f"""<!doctype html>
@@ -174,13 +198,20 @@ def build(site):
 <title>{escape(PAGES[key])} · Codegen Blueprint</title>
 <link rel="stylesheet" href="{stylesheet}">
 </head>
-<body>
+<body class="{page_kind}">
 <a class="skip" href="#content">Skip to content</a>
 <header>
 <div class="header-inner"><a class="brand" href="{overview}">Codegen Blueprint</a><a href="{GITHUB}">GitHub</a></div>
-<nav aria-label="Documentation">{"".join(links)}</nav>
+<nav class="primary" aria-label="Primary">{links}</nav>
+<details class="mobile-navigation">
+<summary>Browse documentation</summary>
+<nav aria-label="All documentation">{sidebar}</nav>
+</details>
 </header>
+<div class="documentation">
+<aside><nav aria-label="All documentation">{sidebar}</nav></aside>
 <main id="content">{body}</main>
+</div>
 <footer>Codegen Blueprint · <a href="{GITHUB}/blob/main/LICENSE">MIT</a></footer>
 </body>
 </html>

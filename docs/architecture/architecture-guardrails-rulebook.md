@@ -139,4 +139,15 @@ These checks intentionally retain the `java.*` namespace policy. A broad `javax.
 
 Look under `src/test/java/<base-package-path>/architecture/archunit/` for the generated scope, schema and rule sources. Rules run in Surefire's test phase, which Maven reaches on the way to `verify`. Failsafe can exercise the sample HTTP behavior in the same full build.
 
+### Read the failure before changing the rule
+
+| Failure appears in | First question |
+| --- | --- |
+| A dependency rule | Which source member creates the edge? A constructor parameter, implemented interface or field type can be enough, even when a code path never executes. |
+| A context-root cycle | Which sibling slice closes the loop? Read the dependency chain in the report before moving any type. A package rename changes the partition and may leave the dependency in place. |
+| A scope or schema assertion | Which production classes did ArchUnit import? Confirm the base package, the first canonical family segment and any more specific context root. A green optional rule can have an empty selection. |
+| A Strict REST signature assertion | Which declared parameter or return type exposes the domain? Inspect nested generics as well as top-level types, then map to a transport DTO at the HTTP boundary. |
+
+The test class tells you where to find the selector. The reported member or package tells you where to begin changing the source. For example, a Standard controller holding a repository field can delegate through the service. A Hexagonal inbound adapter holding a concrete handler can depend on its input port, with bootstrap supplying the implementation. If the policy itself has changed, demonstrate a passing baseline and a compiling counterexample against the revised selector.
+
 Generate with `--layout standard` or `--layout hexagonal` and `--guardrails basic` or `strict`. Run `sh ./mvnw clean verify`. Open the named ArchUnit XML in `target/surefire-reports`. Verify the source and target of the failed dependency before changing a package expression or an empty-selection setting. A compiling boundary mutation, a specific assertion failure, and a restored passing build are stronger evidence than a nonzero Maven exit alone. [Executable proof and continuity fixtures](../examples/boundary-proof.md)

@@ -54,7 +54,7 @@ private LoggingGreetingAuditRepository __archViolation = null;
 Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingController.__archViolation> has type <io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository> in (GreetingController.java:0)
 ```
 
-![2.0 Surefire output naming the controller-to-repository assertion and the field dependency](../images/architecture/standard-strict-proof.png)
+[View the rendered 2.0 Surefire excerpt](../images/architecture/standard-strict-proof.png).
 
 **Restoration:** The runner removes the field and import. The same Maven verification passes again.
 
@@ -78,29 +78,13 @@ The declared type is enough. The assertion inspects the generic signature in com
 
 All five mutations compiled before failing their named architecture rule, and each restored project passed verification. The baseline, violation and restoration stages are recorded for every case.
 
-### Standard
-
-- **Renamed controller package**
-
-    `each_standard_bounded_context_must_contain_required_canonical_families`
-
-- **Controller depended on a repository**
-
-    `controllers_must_not_depend_on_repositories`
-
-- **MVC response exposed a domain type**
-
-    `rest_controllers_must_not_expose_domain_types_in_signatures`
-
-### Hexagonal
-
-- **Adapter depended on an application implementation**
-
-    `adapters_must_not_depend_on_application_implementation`
-
-- **MVC response exposed a domain type**
-
-    `rest_controllers_must_not_expose_domain_types_in_signatures`
+| Layout | Mutation | Assertion |
+| --- | --- | --- |
+| Standard | Canonical controller package renamed | `StandardPackageSchemaSanityTest#each_standard_bounded_context_must_contain_required_canonical_families` |
+| Standard | Controller field references repository | `StandardStrictLayerDependencyRulesTest#controllers_must_not_depend_on_repositories` |
+| Standard | MVC signature exposes a domain type | `StandardStrictRestBoundarySignatureIsolationTest#rest_controllers_must_not_expose_domain_types_in_signatures` |
+| Hexagonal | Inbound adapter field references application implementation | `HexagonalStrictPortsIsolationTest#adapters_must_not_depend_on_application_implementation` |
+| Hexagonal | MVC signature exposes a domain type | `HexagonalStrictRestBoundarySignatureIsolationTest#rest_controllers_must_not_expose_domain_types_in_signatures` |
 
 Both REST cases use MVC enabled by the sample and a domain type nested in `ResponseEntity<List<…>>`. The runner checks the Surefire failure report and the named assertion in the Maven log before accepting a failure.
 

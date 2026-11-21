@@ -1,54 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="480" height="394" viewBox="0 0 480 394" role="img" aria-labelledby="title desc">
-  <title id="title">Selected source dependencies in Standard and Hexagonal</title>
-  <desc id="desc">Standard: controller depends on service, and service on repository. The direct controller-to-repository edge is forbidden. Hexagonal: the inbound adapter and use case reference the inbound port. The use case and outbound adapter reference the outbound port. The use case can depend on the domain, and cannot depend on a concrete adapter.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="390" viewBox="0 0 480 390" role="img" aria-labelledby="title desc">
+  <title id="title">Source dependencies in the generated greeting samples</title>
+  <desc id="desc">In Standard, controller references service and service references repository. A direct controller to repository reference is forbidden. In Hexagonal, the inbound adapter and handler reference the application input port; the handler and outbound adapter reference the domain output port. The handler references domain. Application references to concrete adapters are forbidden.</desc>
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M1 1l8 4-8 4" fill="none" stroke="#38bdf8" stroke-width="1.6"/>
+    <marker id="arrow" viewBox="0 0 9 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M1 1l7 4-7 4" fill="none" stroke="#306047" stroke-width="1.6"/>
     </marker>
-    <linearGradient id="panel" x2="100%" y2="100%">
-      <stop stop-color="#1e293b"/>
-      <stop offset="1" stop-color="#020617"/>
-    </linearGradient>
   </defs>
   <style>
-    .panel { fill: url(#panel); stroke: #334155; }
-    .node { fill: #0f172a; stroke: #475569; }
-    .edge { fill: none; stroke: #38bdf8; stroke-width: 2; marker-end: url(#arrow); }
-    text { fill: #e5e7eb; font: 16px system-ui, sans-serif; }
-    .heading { fill: #7dd3fc; font-size: 20px; font-weight: 700; }
-    .label { font: 15px ui-monospace, Menlo, Consolas, monospace; text-anchor: middle; }
-    .blocked { fill: #fda4af; font-size: 16px; }
+    .panel { fill: #f0f2e7; stroke: #aabbab; }
+    .node { fill: #e1ead5; stroke: #a1b39a; }
+    .port { fill: #d0e8a9; stroke: #8ca478; }
+    .edge { fill: none; stroke: #306047; stroke-width: 1.8; marker-end: url(#arrow); }
+    text { fill: #182d21; font: 16px system-ui, sans-serif; }
+    .heading { font-weight: 730; font-size: 21px; }
+    .label { font: 15px ui-monospace, Menlo, monospace; text-anchor: middle; }
+    .package { font-size: 13px; }
+    .blocked { fill: #8a301f; font-size: 15px; }
   </style>
-  <rect class="panel" x=".5" y=".5" width="479" height="137" rx="10"/>
+  <rect class="panel" x=".5" y=".5" width="479" height="132" rx="8"/>
   <text class="heading" x="18" y="30">Standard</text>
-  <rect class="node" x="18" y="48" width="124" height="36" rx="5"/>
-  <rect class="node" x="178" y="48" width="124" height="36" rx="5"/>
-  <rect class="node" x="338" y="48" width="124" height="36" rx="5"/>
-  <path class="edge" d="M144 66h31"/>
-  <path class="edge" d="M304 66h31"/>
-  <text class="label" x="80" y="71">controller</text>
-  <text class="label" x="240" y="71">service</text>
-  <text class="label" x="400" y="71">repository</text>
-  <text class="blocked" x="18" y="115">Forbidden: controller → repository</text>
+  <rect class="node" x="18" y="47" width="124" height="36" rx="4"/>
+  <rect class="node" x="178" y="47" width="124" height="36" rx="4"/>
+  <rect class="node" x="338" y="47" width="124" height="36" rx="4"/>
+  <path class="edge" d="M144 65h30"/>
+  <path class="edge" d="M304 65h30"/>
+  <text class="label" x="80" y="70">controller</text>
+  <text class="label" x="240" y="70">service</text>
+  <text class="label" x="400" y="70">repository</text>
+  <text class="blocked" x="18" y="111">Forbidden: controller → repository</text>
 
-  <rect class="panel" x=".5" y="153.5" width="479" height="240" rx="10"/>
-  <text class="heading" x="18" y="184">Hexagonal</text>
-  <rect class="node" x="18" y="206" width="124" height="36" rx="5"/>
-  <rect class="node" x="178" y="206" width="124" height="36" rx="5"/>
-  <rect class="node" x="338" y="206" width="124" height="36" rx="5"/>
-  <rect class="node" x="18" y="282" width="124" height="36" rx="5"/>
-  <rect class="node" x="178" y="282" width="124" height="36" rx="5"/>
-  <rect class="node" x="338" y="282" width="124" height="36" rx="5"/>
-  <path class="edge" d="M144 224h31"/>
-  <path class="edge" d="M336 224h-31"/>
-  <path class="edge" d="M144 300h31"/>
-  <path class="edge" d="M400 244v35"/>
-  <path class="edge" d="M338 240l-96 39"/>
-  <text class="label" x="80" y="229">adapter.in</text>
-  <text class="label" x="240" y="229">port.in</text>
-  <text class="label" x="400" y="229">use case</text>
-  <text class="label" x="80" y="305">adapter.out</text>
-  <text class="label" x="240" y="305">port.out</text>
-  <text class="label" x="400" y="305">domain</text>
-  <text class="blocked" x="18" y="357">Forbidden: application → concrete adapter</text>
+  <rect class="panel" x=".5" y="148.5" width="479" height="241" rx="8"/>
+  <text class="heading" x="18" y="180">Hexagonal</text>
+  <rect class="node" x="18" y="201" width="124" height="36" rx="4"/>
+  <rect class="port" x="178" y="201" width="124" height="36" rx="4"/>
+  <rect class="node" x="338" y="201" width="124" height="36" rx="4"/>
+  <rect class="node" x="18" y="277" width="124" height="36" rx="4"/>
+  <rect class="port" x="178" y="277" width="124" height="36" rx="4"/>
+  <rect class="node" x="338" y="277" width="124" height="36" rx="4"/>
+  <path class="edge" d="M144 219h30"/>
+  <path class="edge" d="M336 219h-30"/>
+  <path class="edge" d="M144 295h30"/>
+  <path class="edge" d="M400 239v34"/>
+  <path class="edge" d="M350 239l-62 34"/>
+  <text class="label" x="80" y="224">adapter.in</text>
+  <text class="label" x="240" y="224">app.port.in</text>
+  <text class="label" x="400" y="224">handler</text>
+  <text class="label" x="80" y="300">adapter.out</text>
+  <text class="label package" x="240" y="300">domain.port.out</text>
+  <text class="label" x="400" y="300">domain</text>
+  <text class="blocked" x="18" y="354">Forbidden: application → concrete adapter</text>
 </svg>

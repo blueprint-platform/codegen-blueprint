@@ -45,6 +45,8 @@ Generation creates the `greeting/` project and a sibling `greeting.zip`. The CLI
 | `target/surefire-reports/` | Generated ArchUnit checks, including `HexagonalStrictRestBoundarySignatureIsolationTest` |
 | `target/failsafe-reports/` | `GreetingSampleHttpIT`, which makes requests to a running HTTP server |
 
+Before changing the sample, locate `pom.xml`, `mvnw` and the generated `README.md`. The parent version in the POM is the exact patch the CLI selected. The wrapper version is independent of that patch. The README describes the layout and mode that were emitted in this run.
+
 The source under `src/main/java/com/example/greeting/bp/sample` puts the REST adapter, ports and use case in distinct packages. Follow `GreetingController` to the input port to see the intended source dependency. The sample activates MVC even though the command omits `--dependency web`. That is why its POM includes MVC and Surefire runs the Strict REST signature check.
 
 To call the same sample manually, start it in one terminal from the generated directory:
