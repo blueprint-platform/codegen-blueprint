@@ -4,8 +4,6 @@ The proof runner generates Spring Boot samples with Strict guardrails and runs `
 
 ## Standard controller depends on a repository
 
-![Standard Strict proof showing baseline PASS, a named Surefire failure after Java compilation and restored PASS](../assets/architecture-proof.svg)
-
 The runner adds the repository import and the following field to `GreetingController`. Java accepts the field type. ArchUnit inspects the compiled class and reports the forbidden dependency.
 
 ```java

@@ -1,7 +1,5 @@
 <h1 align="center">Codegen Blueprint</h1>
 
-<p align="center"><strong>Architecture as an Executable Contract</strong></p>
-
 <p align="center">
   <a href="https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml?query=branch%3Amain"><img alt="Build &amp; Test on main" title="Build &amp; Test on main" src="https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg?branch=main" /></a>
   <a href="https://app.codecov.io/gh/blueprint-platform/codegen-blueprint/tree/main"><img alt="Codecov coverage on main" title="Codecov coverage on main" src="https://codecov.io/gh/blueprint-platform/codegen-blueprint/branch/main/graph/badge.svg" /></a>
@@ -12,11 +10,9 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-blue" /></a>
 </p>
 
-<p align="center"><img src="docs/assets/social-preview.png" width="760" alt="Codegen Blueprint — Executable Architecture for Spring Boot" /></p>
+<p align="center"><strong>Architecture as an Executable Contract</strong></p>
 
-Codegen Blueprint generates **Spring Boot projects whose Maven build checks the architecture you select**. Choose Standard or Hexagonal and run the generated Maven wrapper to enforce the selected boundaries with ArchUnit.
-
-> **See the contract in action.** In the generated Standard sample, a controller-to-repository dependency compiles and fails ArchUnit. Removing it restores a passing Maven build. [See the single-case proof](#see-a-compiling-change-fail-verification).
+Generate a **Standard or Hexagonal Spring Boot project** with ArchUnit checks that run during Maven verification.
 
 [Quickstart](docs/quickstart.md) · [Documentation](docs/index.md) · [Executable proof](docs/examples/boundary-proof.md)
 
@@ -45,8 +41,6 @@ The output is a project directory and a sibling `greeting.zip`. Maven runs the g
 - **Standard** (default) organizes each feature into controllers, services, repositories and domain types.
 - **Hexagonal** routes inbound and outbound dependencies through application ports, keeps business types in the domain and wires implementations in bootstrap.
 
-<p align="center"><img src="docs/assets/architecture.svg" alt="Selected source dependencies in Standard and Hexagonal. Standard controllers reference services and services reference repositories. Hexagonal adapters reference application ports. Separate rows list forbidden dependencies." /></p>
-
 `basic` (default) checks core dependencies, package structure and cycles. `strict` retains those checks and adds layout-specific constraints, including REST signatures when MVC is present. `none` generates the layout without ArchUnit checks.
 
 [Generated walkthroughs](docs/examples/generated-projects.md) · [Guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md)
@@ -63,7 +57,7 @@ private
 
 The change compiles. Surefire reports a failure in the ArchUnit assertion `controllers_must_not_depend_on_repositories`. Removing the field and import makes the same Maven command pass again.
 
-<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/architecture-proof.svg" alt="Standard Strict proof. Baseline passes, Java compiles with the injected repository field, Surefire records the named rule failure, and the restored build passes." /></a></p>
+<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/architecture-proof.png" alt="Standard Strict proof. Baseline passes, Java compiles with the injected repository field, Surefire records the named rule failure, and the restored build passes." /></a></p>
 
 [Reproduce this case or run all five scenarios](docs/examples/boundary-proof.md) · [Inspect the historical proof record](docs/examples/proof-2.0.txt)
 
