@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="183" viewBox="0 0 480 183" role="img" aria-labelledby="title desc">
+  <title id="title">One added field crosses the Standard service boundary</title>
+  <desc id="desc">The controller already references the service and the service references an audit repository interface. A new field creates a direct source dependency from the controller to the concrete logging audit repository. Standard guardrails reject the added edge.</desc>
+  <defs>
+    <marker id="allowed" viewBox="0 0 8 9" refX="7" refY="4.5" markerWidth="6" markerHeight="7" orient="auto">
+      <path d="m1 1 6 3.5L1 8" fill="none" stroke="#315f47" stroke-width="1.4"/>
+    </marker>
+    <marker id="rejected" viewBox="0 0 8 9" refX="7" refY="4.5" markerWidth="6" markerHeight="7" orient="auto">
+      <path d="m1 1 6 3.5L1 8" fill="none" stroke="#973d31" stroke-width="1.4"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: system-ui, sans-serif; fill: #1a3327 }
+    .mono text { font-family: ui-monospace, Menlo, monospace; font-size: 15px }
+    .caption { font-size: 14px; font-weight: 680 }
+    .node { fill: #e1ead5; stroke: #9fb59f }
+    .red { fill: #862d24 }
+  </style>
+  <rect x=".5" y=".5" width="479" height="182" rx="10" fill="#f0f2e7" stroke="#aabbab"/>
+  <text class="caption" x="20" y="27">Existing source references</text>
+  <g class="mono" text-anchor="middle">
+    <rect class="node" x="20" y="39" width="122" height="33" rx="4"/>
+    <rect class="node" x="166" y="39" width="120" height="33" rx="4"/>
+    <rect class="node" x="310" y="39" width="150" height="33" rx="4"/>
+    <text x="81" y="60">Controller</text>
+    <text x="226" y="60">Service</text>
+    <text x="385" y="60">Audit interface</text>
+    <text class="red" x="81" y="130">Controller</text>
+    <rect x="209" y="109" width="251" height="33" rx="4" fill="#f2dbd3" stroke="#b66a5e"/>
+    <text class="red" x="334" y="130">Logging audit repository</text>
+  </g>
+  <path d="M289 55h17" fill="none" stroke="#315f47" stroke-width="2" marker-end="url(#allowed)"/>
+  <path d="M145 55h17" fill="none" stroke="#315f47" stroke-width="2" marker-end="url(#allowed)"/>
+  <path d="M121 126h83" fill="none" stroke="#973d31" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#rejected)"/>
+  <text class="caption red" x="20" y="164">Added field type · rejected by the architecture test</text>
+</svg>

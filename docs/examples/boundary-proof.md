@@ -2,61 +2,46 @@
 
 The proof runner verifies a **GREEN → RED → GREEN** sequence for generated projects with Strict guardrails. The baseline passes, a compiling mutation fails at a named ArchUnit rule, and the build passes after source restoration. Every phase uses `sh ./mvnw -q -ntp clean verify`. A passing sample build also exercises HTTP through Failsafe. The architecture assertion inspects compiled code during Surefire.
 
-- [Run the proof](#run-the-proof)
 - [Walk through the controller-to-repository case](#standard-controller-depends-on-a-repository)
 - [Compare all five recorded scenarios](#recorded-results)
+- [Run the proof](#run-the-proof)
 - [Inspect the generated evidence](#inspect-a-run)
 - [Check Basic and Strict continuity](#prove-that-strict-keeps-the-basic-boundaries)
 
-## Run the proof
-
-From the repository root, use JDK 25 and Maven 3.9.16. On macOS, select an installed JDK 25 with `export JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
-
-```bash
-mvn -B -ntp clean package
-```
-
-Run the controller-to-repository case.
-
-```bash
-PROOF_MODE=standard bash ci/proof/proof-runner.sh
-```
-
-To reproduce the bundled-reference run, run all five cases with the bundled Boot patch.
-
-```bash
-PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
-  EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK bash ci/proof/proof-runner.sh
-```
-
-`EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK` blocks the generator’s Central connection for the proof and verifies the reported resolution source. The generated Maven build still needs access to dependencies. To reuse a packaged generator, pass its absolute path as `CODEGEN_JAR`. To target Java 21, set `JAVA_VERSION=21`, point `JAVA_HOME` at JDK 21 and set `GENERATOR_JAVA` to the absolute path of the JDK 25 `java` executable.
-
 ## Standard controller depends on a repository
 
-**Baseline:** The generated Standard project with Strict guardrails passed Maven verification.
+### Green · verify the generated baseline
 
-**Mutation:** In `bp.sample.controller.GreetingController`, the runner inserts the import below and adds the field inside the class body. The field alone introduces a bytecode dependency on the concrete repository.
+The generated controller delegates to `GreetingService`. The service holds the audit repository interface and decides when to call it. The runner verifies the unmodified project with the wrapper before changing any source.
+
+### Red · add one dependency and identify the failing test
+
+In `bp.sample.controller.GreetingController`, the runner inserts this import:
 
 ```java
 import io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository;
 ```
 
-Java accepts the type reference. ArchUnit inspects the compiled class and reports the forbidden dependency.
+It then adds a field inside the class body. The field's declared type is enough to create a bytecode dependency. No call, bean wiring or HTTP request is required to expose that edge.
 
 ```java
 private LoggingGreetingAuditRepository __archViolation = null;
 ```
 
-**Expected failure:** The excerpts from `logs/STD_violation.log` identify the assertion and the injected field dependency.
+![The added controller field references the concrete repository directly. The existing controller-to-service relationship stays in place.](../assets/controller-boundary.svg)
+
+The excerpt below comes from `logs/STD_violation.log`. The runner accepts the red result only when the build log identifies the failed assertion and the corresponding Surefire XML contains a failure.
 
 ```text
 [ERROR] io.github.blueprintplatform.greeting.architecture.archunit.StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories -- Time elapsed: 0.007 s <<< FAILURE!
 Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingController.__archViolation> has type <io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository> in (GreetingController.java:0)
 ```
 
-[View the rendered 2.0 Surefire excerpt](../images/architecture/standard-strict-proof.png).
+[View the original rendered 2.0 Surefire excerpt](../images/architecture/standard-strict-proof.png).
 
-**Restoration:** The runner removes the field and import. The same Maven verification passes again.
+### Green · restore the source and rerun the same build
+
+The runner removes the field and import and runs the same verification again. The passing result is evidence that the source restoration was sufficient with the generated test still enabled.
 
 ### What to look for in the other mutations
 
@@ -98,6 +83,29 @@ This screenshot from the 1.x walkthrough shows the same Standard dependency rule
 
 ![Historical 1.x terminal capture of the Standard controller-to-repository violation](../demo/images/mini-standard-controller-repository-failure.png)
 
+## Run the proof
+
+From the repository root, use JDK 25 and Maven 3.9.16. On macOS, select an installed JDK 25 with `export JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
+
+```bash
+mvn -B -ntp clean package
+```
+
+Run the controller-to-repository case.
+
+```bash
+PROOF_MODE=standard bash ci/proof/proof-runner.sh
+```
+
+To reproduce the bundled-reference run, run all five cases with the bundled Boot patch.
+
+```bash
+PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
+  EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK bash ci/proof/proof-runner.sh
+```
+
+`EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK` blocks the generator’s Central connection for the proof and verifies the reported resolution source. The generated Maven build still needs access to dependencies. To reuse a packaged generator, pass its absolute path as `CODEGEN_JAR`. To target Java 21, set `JAVA_VERSION=21`, point `JAVA_HOME` at JDK 21 and set `GENERATOR_JAVA` to the absolute path of the JDK 25 `java` executable.
+
 ## Inspect a run
 
 Open the run directory printed by the runner under `target/architecture-proof/`.
@@ -109,7 +117,7 @@ Open the run directory printed by the runner under `target/architecture-proof/`.
 | `env.txt` | JDK, Maven, generator and run context |
 | `excerpts/` | Named assertion and the logged dependency for each expected failure |
 
-Set `KEEP_WORK_DIR=1` before running to retain the restored generated projects for source and report inspection. The proof runner also accepts `PROOF_OUTPUT_ROOT` for a different output location.
+Set `KEEP_WORK_DIR=1` before running to retain the restored generated projects for source and report inspection. The final `clean verify` replaces the project’s red XML reports. Read the saved log and excerpt for the failing phase. The proof runner also accepts `PROOF_OUTPUT_ROOT` for a different output location.
 
 After a successful full run, replace `RUN_DIRECTORY` with the printed run directory name to produce a portable record:
 

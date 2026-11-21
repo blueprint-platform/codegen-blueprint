@@ -89,3 +89,29 @@ footer { border-top: 1px solid var(--rule); padding-block: 1rem; color: var(--mu
   th { min-width: 7.5rem; overflow-wrap: normal; }
   td code { overflow-wrap: normal; }
 }
+
+
+.page-outline { display: none; }
+main img[src$="controller-boundary.svg"] { width: min(100%, 35rem); }
+.overview main pre { max-width: 35rem; }
+@media (min-width: 75rem) {
+  .documentation:has(.page-outline) {
+    grid-template-columns: 12rem minmax(0, 48rem) minmax(10rem, 13rem);
+    gap: clamp(1.5rem, 2.6vw, 2.6rem);
+  }
+  .page-outline {
+    display: block;
+    position: sticky;
+    top: 2rem;
+    margin-top: 4rem;
+    align-self: start;
+    border-left: 1px solid var(--rule);
+    padding-left: 1rem;
+    font-size: .85rem;
+    line-height: 1.45;
+  }
+  .page-outline p { margin: 0 0 .65rem; color: var(--muted); font: 650 .74rem/1.4 var(--mono); }
+  .page-outline ul { padding: 0; margin: 0; list-style: none; }
+  .page-outline a { display: block; text-decoration: none; }
+  .page-outline a:hover { text-decoration: underline; }
+}

@@ -111,16 +111,34 @@ def heading_slug(value, separator):
     return re.sub(r"[^\w\- ]", "", value.lower()).replace(" ", separator)
 
 
-def render(source, route, assets):
+def render_document(source, route, assets):
     extensions = ["fenced_code", "tables", "toc"]
     if route is not None:
         extensions.append(LocalLinks(source, route, assets))
-    return markdown.markdown(
-        source.read_text(encoding="utf-8"),
+    document = markdown.Markdown(
         extensions=extensions,
         extension_configs={"toc": {"slugify": heading_slug}},
         output_format="html",
     )
+    html = document.convert(source.read_text(encoding="utf-8"))
+    return html, document.toc_tokens
+
+
+def render(source, route, assets):
+    return render_document(source, route, assets)[0]
+
+
+def page_outline(tokens):
+    sections = [child for heading in tokens if heading["level"] == 1
+                for child in heading["children"] if child["level"] == 2]
+    if len(sections) < 3:
+        return ""
+    links = "".join(
+        f'<li><a href="#{escape(section["id"], quote=True)}">'
+        f'{escape(section["name"])}</a></li>'
+        for section in sections
+    )
+    return f'<nav class="page-outline" aria-label="On this page"><p>On this page</p><ul>{links}</ul></nav>'
 
 
 class HtmlLinks(HTMLParser):
@@ -173,7 +191,7 @@ def build(site):
     assets = set()
     check_markdown()
     for source, route in ROUTES.items():
-        body = render(source, route, assets)
+        body, headings = render_document(source, route, assets)
         key = route.with_suffix("").as_posix()
         def navigation_link(name, label):
             href = os.path.relpath(f"{name}.html", route.parent)
@@ -211,6 +229,7 @@ def build(site):
 <div class="documentation">
 <aside><nav aria-label="All documentation">{sidebar}</nav></aside>
 <main id="content">{body}</main>
+{page_outline(headings)}
 </div>
 <footer>Codegen Blueprint · <a href="{GITHUB}/blob/main/LICENSE">MIT</a></footer>
 </body>

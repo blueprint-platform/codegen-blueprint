@@ -4,6 +4,7 @@ The documentation uses a small set of technical figures. The same source-depende
 
 | Asset | Source and review |
 | --- | --- |
+| [Controller boundary diagram](../assets/controller-boundary.svg) | Shows the original service path and the field dependency introduced by the Standard proof. Check its two destinations against the [source mutation](../examples/boundary-proof.md#standard-controller-depends-on-a-repository). |
 | [Source-dependency diagram](../assets/architecture.svg) | Edit the SVG directly. Arrows point from dependent code toward the type it references. Check the paths against the [generated layout contract](../architecture/executable-architecture-contract.md#choose-a-layout). |
 | [2.0 Surefire excerpt](../images/architecture/standard-strict-proof.png) | Uses the assertion line, rule description and field dependency from `excerpts/STD_violation.excerpt.txt`. The [run record](../examples/boundary-verification-restoration.txt) identifies the generator and environment. |
 | [1.x terminal capture](../demo/images/mini-standard-controller-repository-failure.png) | Historical evidence displayed with its release context in the [proof walkthrough](../examples/boundary-proof.md#historical-terminal-capture). |

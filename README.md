@@ -14,7 +14,9 @@ In a generated Standard service, the greeting controller delegates to a service.
 private LoggingGreetingAuditRepository __archViolation = null;
 ```
 
-The field is valid Java. Maven reaches Surefire, where the generated ArchUnit test rejects the bytecode dependency. This excerpt is from the recorded 2.0 run:
+![The Standard controller delegates through a service. The added field points directly to the concrete audit repository, bypassing the service.](docs/assets/controller-boundary.svg)
+
+The field is valid Java. During Surefire, the generated ArchUnit test rejects the bytecode dependency. The recorded 2.0 run names the rule:
 
 ```text
 StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories
@@ -40,8 +42,6 @@ Generated projects target **Java 21 or 25** and **Spring Boot 4.1 or 4.2** indep
 | --- | --- |
 | **Standard** | The controller translates HTTP, the service orchestrates, the repository handles the audit side effect, and domain logic lives in its own package. Choose this layout for conventional layering with guardrails against upward dependencies and service bypass. |
 | **Hexagonal** | The inbound adapter uses an input port, the handler uses an output port, and the outbound adapter implements it. Choose this layout when you want an explicit use-case API and an infrastructure adapter that implements a core-owned contract. |
-
-![Selected Standard and Hexagonal source dependencies](docs/assets/architecture.svg)
 
 **Basic**, the default, checks core dependencies, context-root cycles and schema. **Strict** adds layout-specific isolation, family-local cycle checks and REST signature checks when MVC is effective. **None** emits the layout without architecture tests. Check the rule selectors before relying on a specific boundary. [Architecture contract](docs/architecture/executable-architecture-contract.md) · [Guardrails rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 

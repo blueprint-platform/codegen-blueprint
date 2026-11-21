@@ -18,7 +18,9 @@ The key source dependency is from the command adapter to the input port. A parse
 4. Ask the selected `ProjectArtifactsPort` to produce ordered resources.
 5. Pass the resources to `ProjectPublisherPort` and map the published paths and resolution source into the result.
 
-The order determines observable failure precedence. Invalid metadata fails before Central access. Filesystem publication follows rendering. The use case needs neither Spring's HTTP request factory nor the filesystem classes that claim output paths.
+The order determines observable failure precedence. For example, when the Maven profile rejects the description, the resolver and publisher are never called. A resolver failure also stops the request before the artifact adapter renders files. Test these boundaries through the application ports so a provider change cannot silently reorder them. [Use case tests](../../src/test/java/io/github/blueprintplatform/codegen/application/usecase/project/CreateProjectHandlerTest.java)
+
+The handler’s port types also show the difference between execution and source dependencies. At runtime, resolving a target invokes the configured Spring Boot resolver. In the source, the handler calls the application-owned `ProjectTargetResolver`, and the outbound implementation depends on that interface. The publisher uses the same arrangement. Bootstrap supplies both implementations at assembly time.
 
 ## Place ports where the decision lives
 

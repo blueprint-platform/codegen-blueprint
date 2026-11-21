@@ -6,7 +6,7 @@ Codegen Blueprint turns a layout and a guardrail policy into a Spring Boot Maven
 
 ## A failure you can explain
 
-A Standard controller gains a field of type `LoggingGreetingAuditRepository`. Java compiles the field. The generated ArchUnit test then reports `controllers_must_not_depend_on_repositories`. Removing the field and import restores the passing build.
+![A new controller field creates a direct dependency on the concrete repository alongside the existing controller-to-service relationship.](assets/controller-boundary.svg)
 
 ```text
 PASS: STD baseline
@@ -14,7 +14,7 @@ EXPECTED_FAIL: STD violation
 PASS: STD fixed
 ```
 
-These are the three Standard proof verdicts from the recorded 2.0 run. The [walkthrough](examples/boundary-proof.md#standard-controller-depends-on-a-repository) shows the actual dependency and the Maven commands.
+These are the runner’s Standard verdicts from the recorded 2.0 run. The red build compiles the new field and fails the generated dependency assertion. Follow the [walkthrough](examples/boundary-proof.md#standard-controller-depends-on-a-repository) to see the source change and the exact report.
 
 ## Generate and use a project
 

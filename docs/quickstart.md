@@ -45,9 +45,25 @@ Generation creates the `greeting/` project and a sibling `greeting.zip`. The CLI
 | `target/surefire-reports/` | Generated ArchUnit checks, including `HexagonalStrictRestBoundarySignatureIsolationTest` |
 | `target/failsafe-reports/` | `GreetingSampleHttpIT`, which makes requests to a running HTTP server |
 
-Before changing the sample, locate `pom.xml`, `mvnw` and the generated `README.md`. The parent version in the POM is the exact patch the CLI selected. The wrapper version is independent of that patch. The README describes the layout and mode that were emitted in this run.
+### Trace the output from the build to the source
 
-The source under `src/main/java/com/example/greeting/bp/sample` puts the REST adapter, ports and use case in distinct packages. Follow `GreetingController` to the input port to see the intended source dependency. The sample activates MVC even though the command omits `--dependency web`. That is why its POM includes MVC and Surefire runs the Strict REST signature check.
+These are selected paths in the generated directory. The full tree also contains the application entrypoint, configuration and tests.
+
+```text
+greeting/
+├── pom.xml
+├── .mvn/wrapper/maven-wrapper.properties
+├── src/main/java/com/example/greeting/bp/sample/
+│   ├── adapter/in/rest/GreetingController.java
+│   ├── application/port/in/GetGreetingPort.java
+│   └── domain/port/out/GreetingAuditPort.java
+└── src/test/java/com/example/greeting/architecture/archunit/
+    └── HexagonalStrictRestBoundarySignatureIsolationTest.java
+```
+
+The parent in `pom.xml` is the exact Boot patch reported by the CLI. The wrapper version is pinned separately in `maven-wrapper.properties`. The generated README records the selected layout and mode.
+
+Follow `GreetingController` to the input port, then open the rule under `architecture/archunit` to see what the build checks. The command omits `--dependency web`. The basic sample adds MVC, which activates the Strict REST rule as part of the same dependency decision.
 
 To call the same sample manually, start it in one terminal from the generated directory:
 
