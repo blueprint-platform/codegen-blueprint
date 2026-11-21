@@ -8,7 +8,7 @@ Codegen Blueprint delivers a Spring Boot Maven project directory and a sibling Z
 
 | Stage | Responsible component | Observable evidence |
 | --- | --- | --- |
-| Generate | The CLI validates the blueprint, resolves an exact Boot patch and renders the ordered profile artifacts. | Generated source tree, POM, wrapper and selected test sources. |
+| Generate | The CLI maps options to a generation command. The use case prepares the blueprint inputs, resolves a Boot patch and delegates rendering and publication through ports. | Generated source tree, POM, wrapper and selected test sources. |
 | Enforce | The consumer runs `sh ./mvnw clean verify`. Maven compiles classes and Surefire executes generated ArchUnit assertions. | Surefire XML under `target/surefire-reports`. The optional sample executes separate Failsafe integration tests, including HTTP. |
 | Prove | A compiling source change crosses a known dependency boundary. The same command runs before the change, with the change, and after restoration. | Passing baseline, named rule and concrete edge in a failing test report, then a passing rebuild. |
 
@@ -38,4 +38,4 @@ The sample HTTP integration tests prove the delivered sample can respond through
 
 Use [compatibility](../compatibility.md) and the [CLI reference](../cli.md) for generator JVMs, target JDKs and Boot patch selection. With the same generator, normalized inputs and resolved patch, generation preserves the project tree and file contents. ZIP byte identity has no guarantee.
 
-Generation protects existing outputs and attempts to clean up owned paths on normal failures. If the filesystem cannot identify the staging directory, generation reports its retained path and fails. Rollback leaves outputs with uncertain identity in place and reports them. Keep the target and private staging directory free from concurrent edits. Portable filesystem operations leave a race between identity checks and access. Directory and ZIP publication are separate operations and have no joint atomicity guarantee on interruption or crash.
+Generation protects existing outputs and attempts to clean up owned paths on normal failures. The publisher uses a private staging directory and claims the destination directory, files and ZIP without overwriting existing entries. If filesystem identity is missing or changes, staging verification fails or rollback leaves the uncertain path in place. Keep the target and staging tree free from concurrent edits. Portable path operations leave a race between identity checks and access. The final directory and ZIP may be visible before publication finishes. A process interruption or crash can leave either output incomplete.

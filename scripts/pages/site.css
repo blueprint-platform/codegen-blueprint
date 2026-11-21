@@ -33,7 +33,8 @@ pre { padding: 1rem; background: #142b33; color: #e4f5f1; border-radius: .6rem; 
 pre code { background: transparent; padding: 0; }
 table { border-collapse: collapse; width: 100%; }
 th, td { text-align: left; vertical-align: top; padding: .55rem .7rem; border: 1px solid var(--border); }
-th { background: var(--surface); }
+th { background: var(--surface); overflow-wrap: normal; }
+td:first-child { overflow-wrap: break-word; }
 blockquote { border-left: 3px solid var(--teal); margin-inline: 0; padding-inline: 1rem; color: var(--muted); }
 footer { border-top: 1px solid var(--border); padding-block: 1rem; color: var(--muted); }
 .skip { position: absolute; left: 1rem; top: -10rem; background: #fff; padding: .5rem; }
@@ -41,4 +42,5 @@ footer { border-top: 1px solid var(--border); padding-block: 1rem; color: var(--
 @media (max-width: 36rem) {
   .header-inner, nav, main, footer { padding-inline: 1rem; }
   table { display: block; overflow-x: auto; }
+  th { min-width: 6rem; }
 }

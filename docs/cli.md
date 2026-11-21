@@ -7,7 +7,7 @@ Invoke the generator with `java -jar /path/to/codegen-blueprint.jar --cli spring
 | `--group-id` | Yes | | Maven group ID |
 | `--artifact-id` | Yes | | Project artifact ID and output basename |
 | `--name` | Yes | | Project name |
-| `--description` | Yes | | Project description, 10–280 characters |
+| `--description` | Yes | | Project description, 10–280 characters after whitespace normalization |
 | `--package-name` | Yes | | Java base package |
 | `--build-tool` | | `maven` | `maven` |
 | `--language` | | `java` | `java` |
@@ -21,16 +21,27 @@ Invoke the generator with `java -jar /path/to/codegen-blueprint.jar --cli spring
 
 ## Spring Boot patch resolution
 
-`--boot` identifies a minor line. For example, `--boot 4.1` is valid and `--boot 4.1.3` is rejected. The generator checks Maven Central for the newest stable patch on that line and verifies its parent POM. The CLI reports `CENTRAL_LATEST` and the exact selected patch. That patch is written to the generated POM.
+`--boot` identifies a minor line. For example, `--boot 4.1` is valid and `--boot 4.1.3` is rejected. The generator reads Maven Central metadata for the newest stable numeric patch on that line and checks the selected parent POM’s coordinates. This lookup does not validate the project’s dependency graph. The CLI reports `CENTRAL_LATEST` and the exact selected patch. That patch is written to the generated POM.
 
-DNS, routing, connection refusal and timeout before receiving an HTTP response can trigger automatic fallback. The warning includes the lookup phase and failure category, and the result reports `BUNDLED_FALLBACK`. HTTP errors, missing parent artifacts, malformed data and TLS failures stop generation. See [compatibility](compatibility.md) for bundled versions.
+During either lookup (metadata or parent POM), DNS resolution errors, missing routes, refused connections and timeouts while awaiting response headers can trigger fallback. The warning identifies the request and connection failure, and the result reports `BUNDLED_FALLBACK`. Once the response arrives, HTTP errors, body read timeouts and oversized responses stop generation. Malformed data, missing or mismatched parents, TLS failures and interruption also stop generation. See [compatibility](compatibility.md) for bundled versions.
 
 Online generation may select a newer patch on a later run. For the same generator, normalized inputs and resolved patch, the project tree and file contents repeat. Store the generated project in your own version control to retain a particular result. Wrapper downloads and Maven dependencies remain subject to the generated build’s network, mirror and cache settings.
 
 ## Dependency aliases
 
-`web` enables MVC, `data_jpa` adds JPA with H2, and `validation`, `actuator`, `security`, `devtools` select their Spring Boot capabilities. The basic sample also enables MVC when `web` is absent. Boot manages the starter dependencies in the generated build.
+All aliases select artifacts under `org.springframework.boot`. The generated parent manages their versions.
+
+| Alias | Artifact |
+| --- | --- |
+| `web` | `spring-boot-starter-webmvc` |
+| `data_jpa` | `spring-boot-starter-data-jpa`, with `com.h2database:h2` added separately |
+| `validation` | `spring-boot-starter-validation` |
+| `actuator` | `spring-boot-starter-actuator` |
+| `security` | `spring-boot-starter-security` |
+| `devtools` | `spring-boot-devtools` |
+
+The basic sample adds MVC when `web` is absent. Strict REST signature checks use the same effective MVC selection as the generated POM.
 
 ## Output and retry
 
-Generation creates `<target-dir>/<artifact-id>` and `<target-dir>/<artifact-id>.zip`. An existing directory or ZIP is a conflict. Inspect reported leftover paths if a write or cleanup fails, then select another target or clear only the failed attempt’s files. On POSIX systems, `chmod +x mvnw` may be needed after extraction.
+Generation creates `<target-dir>/<artifact-id>` and `<target-dir>/<artifact-id>.zip`. An existing directory or ZIP is a conflict. If publication or cleanup fails, inspect the reported paths before retrying. Use another target when ownership of an existing path is uncertain. See the [delivery contract](architecture/executable-architecture-contract.md#delivery-and-reproducibility) for filesystem limits. On POSIX systems, `chmod +x mvnw` may be needed after extraction.

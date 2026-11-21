@@ -116,7 +116,7 @@ survives beyond individual implementations and tooling outcomes.
 
 * Orchestrates use cases
 * Depends on domain only
-* Owns delivery coordination (ZIP, filesystem, pipelines)
+* Coordinates resolution, generation and publication through ports
 * Defines execution order — not content
 
 ### Adapters
@@ -147,9 +147,9 @@ They are:
 
 Supported guardrails modes are configurable at generation time:
 
-* `none` — generation only (guardrails disabled)
-* `basic` — structural and dependency boundaries (default)
-* `strict` — architecture drift prevention
+* `none` delivers the layout and optional sample with no generated ArchUnit checks.
+* `basic` is the default and checks core dependency directions, package structure and context-root cycles.
+* `strict` retains Basic guarantees and adds layout-specific checks. See the [guardrails rulebook](../architecture/architecture-guardrails-rulebook.md).
 
 > Guardrails are only claimed where violations
 > surface deterministically via the build.

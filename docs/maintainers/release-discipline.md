@@ -27,7 +27,7 @@ BOOT_VERSION=4.2 JAVA_VERSION=25 bash ci/verify-generated.sh standard
 BOOT_VERSION=4.2 JAVA_VERSION=25 bash ci/verify-generated.sh full
 ```
 
-Run the other cells one at a time on a laptop. Set `CODEGEN_JAR` to reuse the artifact and `GENERATOR_JAVA` to run it on the other JVM. For the five negative cases alone, run `bash ci/proof/proof-runner.sh`. Set `PROOF_MODE=standard` for the compact proof.
+Run the other cells one at a time on a laptop. Set `CODEGEN_JAR` to reuse the artifact and `GENERATOR_JAVA` to run it on the other JVM. For the five negative cases alone, run `bash ci/proof/proof-runner.sh`. Set `PROOF_MODE=standard` for the compact proof. When changing Basic or Strict rules, also run the [continuity fixtures](../examples/boundary-proof.md#prove-that-strict-keeps-the-basic-boundaries) to check both modes in both layouts. The fixtures are a separate local check.
 
 ## 2.0 release checklist
 

@@ -45,7 +45,7 @@ Expect a project directory and a sibling ZIP. The sample's Failsafe tests exerci
 
 ## Prove that a boundary holds
 
-The proof adds this field to the standard sample's `GreetingController`, using the repository import from the example above. Add the import and this field to the existing controller:
+In the generated Standard sample, add the following import and field to `GreetingController`.
 
 ```java
 import com.example.greeting.bp.sample.repository.LoggingGreetingAuditRepository;

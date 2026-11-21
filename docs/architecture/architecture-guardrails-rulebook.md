@@ -7,7 +7,7 @@ Use this reference when choosing a mode or investigating a failing generated arc
 | Mode | Generated POM | Generated architecture tests |
 | --- | --- | --- |
 | `none` | No generated ArchUnit dependency or version property | No ArchUnit sources. The layout and optional sample still build. |
-| `basic` (default) | ArchUnit JUnit 6 engine in test scope | Layout dependency rules, context-root cycles, scope, schema and anchor checks |
+| `basic` (default) | `com.tngtech.archunit:archunit-junit6` in test scope | Layout dependency rules, context-root cycles, scope, schema and anchor checks |
 | `strict` | Same test dependency | Every Basic guarantee plus layout-specific restrictions. The equivalent assertion may live in a different test class. MVC adds the REST signature rule. |
 
 The generator chooses the template family using the layout and mode. Strict REST templates come from the `mvc/` group when the effective dependency plan includes MVC. Explicit `web` and the MVC starter added by the basic sample both activate that group. Strict MVC generation fails if the required template group is missing.
@@ -28,6 +28,7 @@ Read arrows as source dependencies. Controllers call application-facing services
 | `controller → domain.service` | Prohibited | Prohibited | `controllers_must_not_depend_on_domain_services` |
 | `domain → controller/service/repository` | Prohibited | Prohibited | Basic direction rule; Strict `StandardStrictDomainPurityTest` also limits domain targets to domain and `java.*` |
 | `controller.dto → domain` | No direct ban | Prohibited | `StandardStrictControllerDtoDomainIsolationTest` |
+| MVC controller method exposes a domain type in its signature | No signature rule | Prohibited when MVC is enabled | `rest_controllers_must_not_expose_domain_types_in_signatures` |
 | Context-root sibling slices | Acyclic | Acyclic | `each_bounded_context_root_must_be_free_of_cycles` |
 | Immediate child slices within controller, service, repository, domain and config | No additional slice checks | Acyclic | `StandardStrictPackageCyclesTest` |
 
@@ -69,6 +70,7 @@ An inbound adapter can call an application port. A use case can call an outbound
 | Adapter `→` non-port application code, including the exact application root | No direct ban | Prohibited | `HexagonalStrictPortsIsolationTest#adapters_must_not_depend_on_application_implementation` |
 | Inbound adapter `→ domain.service` or `domain.port.out` | No direct ban | Prohibited | `HexagonalStrictInboundAdapterDomainIsolationTest`, `HexagonalStrictInboundAdapterOutboundPortIsolationTest` |
 | Inbound DTO package `→ domain` | No direct ban | Prohibited | `HexagonalStrictInboundDtoDomainIsolationTest` |
+| MVC inbound adapter method exposes a domain type in its signature | No signature rule | Prohibited when MVC is enabled | `rest_controllers_must_not_expose_domain_types_in_signatures` |
 | Context-root sibling slices | Acyclic | Acyclic | `each_bounded_context_root_must_be_free_of_cycles` |
 | Child slices of adapter, application, domain, bootstrap and the two adapter directions | No additional slice checks | Acyclic | `HexagonalStrictPackageCyclesTest` |
 
