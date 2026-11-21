@@ -296,6 +296,7 @@ class MavenPomBuildConfigurationAdapterTest {
         MavenDependencyPlan.from(
             blueprint(disabled, Dependencies.of(List.of(realStarter)), samples), mapper);
     assertThat(unrelated.dependencies())
+        .isNotEmpty()
         .extracting(BuildDependency::artifactId)
         .doesNotContain("spring-boot-starter-security-test");
     assertThat(security.dependencies())

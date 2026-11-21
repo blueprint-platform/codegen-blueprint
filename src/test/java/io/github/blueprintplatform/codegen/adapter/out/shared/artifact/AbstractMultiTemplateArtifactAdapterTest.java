@@ -129,7 +129,7 @@ class AbstractMultiTemplateArtifactAdapterTest {
     }
 
     @Override
-    protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+    protected Map<String, Object> buildModel() {
       return Map.of("key", "value");
     }
 

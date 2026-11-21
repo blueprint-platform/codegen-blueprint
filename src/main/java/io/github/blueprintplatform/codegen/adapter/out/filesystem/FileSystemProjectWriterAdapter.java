@@ -16,12 +16,11 @@ public final class FileSystemProjectWriterAdapter {
   void write(Path projectRoot, Iterable<? extends GeneratedResource> resources) {
     for (var resource : resources) {
       switch (resource) {
-        case GeneratedBinaryResource file ->
-            writeBytes(projectRoot, file.relativePath(), file.content().bytes());
-        case GeneratedTextResource file ->
-            writeText(projectRoot, file.relativePath(), file.content(), file.charset());
-        case GeneratedDirectory directory ->
-            createDirectories(projectRoot, directory.relativePath());
+        case GeneratedBinaryResource(var path, var content) ->
+            writeBytes(projectRoot, path, content.bytes());
+        case GeneratedTextResource(var path, var content, var charset) ->
+            writeText(projectRoot, path, content, charset);
+        case GeneratedDirectory(var path) -> createDirectories(projectRoot, path);
       }
     }
   }

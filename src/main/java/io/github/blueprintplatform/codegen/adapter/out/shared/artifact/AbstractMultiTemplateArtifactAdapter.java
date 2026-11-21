@@ -24,7 +24,7 @@ public abstract class AbstractMultiTemplateArtifactAdapter implements ArtifactPo
   public final Iterable<GeneratedResource> generate(ProjectBlueprint blueprint) {
     List<TemplateSpec> templates = artifactSpec.templates();
 
-    Map<String, Object> model = buildModel(blueprint);
+    Map<String, Object> model = buildModel();
 
     List<GeneratedResource> files = new ArrayList<>(templates.size());
     for (TemplateSpec templateSpec : templates) {
@@ -36,7 +36,7 @@ public abstract class AbstractMultiTemplateArtifactAdapter implements ArtifactPo
     return List.copyOf(files);
   }
 
-  protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+  protected Map<String, Object> buildModel() {
     return Map.of();
   }
 }
