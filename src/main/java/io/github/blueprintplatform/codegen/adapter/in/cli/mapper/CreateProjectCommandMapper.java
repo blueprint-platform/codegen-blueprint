@@ -8,6 +8,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliRunti
 import io.github.blueprintplatform.codegen.adapter.in.cli.request.model.CliTechStack;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
@@ -52,6 +53,10 @@ public class CreateProjectCommandMapper {
         dependencies,
         sampleCodeOptions,
         request.targetDirectory());
+  }
+
+  public String resolvedBootPatch(TargetResolution resolution) {
+    return ((SpringBootJvmTarget) resolution.target()).patchVersion();
   }
 
   private TechStack toTechStack(CliTechStack cli) {

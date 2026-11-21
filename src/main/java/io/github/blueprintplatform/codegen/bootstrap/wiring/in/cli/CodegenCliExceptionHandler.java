@@ -5,6 +5,7 @@ import io.github.blueprintplatform.codegen.application.error.exception.Applicati
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.BootstrapException;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,13 +81,26 @@ public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
 
   private void printCleanupFailures(CommandLine cmd, Throwable failure) {
     for (Throwable suppressed : failure.getSuppressed()) {
-      cmd.getErr().println("codegen: cleanup: " + suppressed.getMessage());
+      Object detail = suppressed instanceof AdapterException ? suppressed : suppressed.getMessage();
+      cmd.getErr().println("codegen: cleanup: " + localizeArgument(detail));
     }
   }
 
   private void printLocalizedError(CommandLine cmd, String key, Object[] args) {
-    String resolved = messageSource.getMessage(key, args, key, Locale.getDefault());
-    cmd.getErr().println("codegen: error: " + resolved);
+    cmd.getErr().println("codegen: error: " + localize(key, args));
     cmd.getErr().println("(code: " + key + ")");
+  }
+
+  private String localize(String key, Object[] args) {
+    Object[] localized =
+        args == null ? null : Arrays.stream(args).map(this::localizeArgument).toArray();
+    return messageSource.getMessage(key, localized, key, Locale.getDefault());
+  }
+
+  private Object localizeArgument(Object argument) {
+    if (argument instanceof AdapterException failure) {
+      return localize(failure.getMessageKey(), failure.getArgs());
+    }
+    return argument;
   }
 }

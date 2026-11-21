@@ -166,16 +166,20 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
     CreateProjectResult result = createProjectPort.handle(command);
 
     log.info("Spring Boot project generated successfully.");
-    var boot = result.bootResolution();
-    if (boot.warning() != null) {
-      log.warn("{}: {}", boot.source(), boot.warning());
+    var resolution = result.targetResolution();
+    var source = switch (resolution.source()) {
+      case REMOTE_LATEST -> "CENTRAL_LATEST";
+      case BUNDLED_FALLBACK -> "BUNDLED_FALLBACK";
+    };
+    if (resolution.warning() != null) {
+      log.warn("{}: {}", source, resolution.warning());
     }
     if (log.isInfoEnabled()) {
       log.info(
           "bootSelector={} bootVersion={} source={}",
           bootVersion.key(),
-          boot.patch(),
-          boot.source());
+          mapper.resolvedBootPatch(resolution),
+          source);
     }
     log.info("Archive path: {}", result.archivePath());
 

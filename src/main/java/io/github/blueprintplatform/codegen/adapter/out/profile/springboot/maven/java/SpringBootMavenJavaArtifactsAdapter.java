@@ -1,5 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java;
 
+import io.github.blueprintplatform.codegen.adapter.error.exception.artifact.ArtifactBindingException;
 import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.governance.ArchitectureGovernanceAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenDependencyPlan;
@@ -8,6 +9,7 @@ import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifacts
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -38,7 +40,7 @@ public final class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifac
       if (key == ArtifactKey.BUILD_CONFIG
           || key == ArtifactKey.ARCHITECTURE_GOVERNANCE
           || byKey.putIfAbsent(key, artifact) != null) {
-        throw new IllegalArgumentException("Duplicate Spring Boot Maven artifact: " + key.key());
+        throw new ArtifactBindingException("adapter.artifact.binding.duplicate", key.key());
       }
     }
     this.standalone = Map.copyOf(byKey);
@@ -46,8 +48,15 @@ public final class SpringBootMavenJavaArtifactsAdapter implements ProjectArtifac
       if (key != ArtifactKey.BUILD_CONFIG
           && key != ArtifactKey.ARCHITECTURE_GOVERNANCE
           && !this.standalone.containsKey(key)) {
-        throw new IllegalArgumentException("Unbound Spring Boot Maven artifact: " + key.key());
+        throw new ArtifactBindingException("adapter.artifact.binding.missing", key.key());
       }
+    }
+  }
+
+  @Override
+  public void validateMetadata(ProjectMetadata metadata) {
+    if (order.contains(ArtifactKey.BUILD_CONFIG)) {
+      pom.validateMetadata(metadata);
     }
   }
 

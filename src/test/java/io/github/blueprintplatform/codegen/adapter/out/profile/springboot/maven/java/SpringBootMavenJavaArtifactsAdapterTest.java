@@ -1,8 +1,10 @@
 package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+import io.github.blueprintplatform.codegen.adapter.error.exception.artifact.ArtifactBindingException;
 import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.governance.ArchitectureGovernanceAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenDependencyPlan;
@@ -92,6 +94,29 @@ class SpringBootMavenJavaArtifactsAdapterTest {
     assertThat(plan.getValue().mvcPresent()).isTrue();
     assertThat(plan.getValue().dependencies())
         .anyMatch(d -> d.artifactId().equals("spring-boot-starter-webmvc"));
+  }
+
+  @Test
+  void rejectsDuplicateAndMissingArtifactBindings() {
+    var pom = mock(MavenPomBuildConfigurationAdapter.class);
+    var governance = mock(ArchitectureGovernanceAdapter.class);
+    var dependencies = mock(BuildDependencyMapper.class);
+    var layout = mock(ArtifactPort.class);
+    when(layout.artifactKey()).thenReturn(ArtifactKey.SOURCE_LAYOUT);
+    var order = List.of(ArtifactKey.SOURCE_LAYOUT);
+
+    assertThatThrownBy(
+            () ->
+                new SpringBootMavenJavaArtifactsAdapter(
+                    pom, governance, dependencies, order, List.of(layout, layout)))
+        .isInstanceOf(ArtifactBindingException.class)
+        .hasMessage("adapter.artifact.binding.duplicate");
+    assertThatThrownBy(
+            () ->
+                new SpringBootMavenJavaArtifactsAdapter(
+                    pom, governance, dependencies, order, List.of()))
+        .isInstanceOf(ArtifactBindingException.class)
+        .hasMessage("adapter.artifact.binding.missing");
   }
 
   private static GeneratedDirectory resource(String name) {

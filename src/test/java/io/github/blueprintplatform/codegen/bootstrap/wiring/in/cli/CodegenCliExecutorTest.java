@@ -2,28 +2,34 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.error.exception.base.AdapterException;
+import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectWriteException;
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import io.github.blueprintplatform.codegen.adapter.in.cli.mapper.CreateProjectCommandMapper;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.SpringBootGenerateCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ArchitectureSpecSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectMetadataSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.RuntimeTargetSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.TechStackSummary;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import picocli.CommandLine;
 
 @Tag("unit")
@@ -58,6 +64,27 @@ class CodegenCliExecutorTest {
     var dep = cmd.dependencies().getFirst();
     assertThat(dep.groupId()).isEqualTo("org.springframework.boot");
     assertThat(dep.artifactId()).isEqualTo("spring-boot-starter-webmvc");
+  }
+
+  @Test
+  void localizesOutputIntegrityAndCleanupDetails() {
+    var messages = new ResourceBundleMessageSource();
+    messages.setBasename("messages");
+    var handler = new CodegenCliExceptionHandler(messages);
+    var command = new CommandLine(new CodegenCommand());
+    var err = new StringWriter();
+    command.setErr(new PrintWriter(err, true));
+
+    var duplicate = new AdapterException("adapter.project.output.duplicate", "src/main.txt") {};
+    duplicate.addSuppressed(
+        new AdapterException("adapter.project.staging.identity.changed", "staging") {});
+    var failure = new ProjectWriteException(Path.of("demo"), duplicate);
+
+    assertThat(handler.handleExecutionException(failure, command, null)).isEqualTo(3);
+    assertThat(err.toString())
+        .contains("Could not write project output at demo: Duplicate generated path: src/main.txt")
+        .contains("(code: adapter.project.write.failed)")
+        .contains("codegen: cleanup: Staging directory identity changed or unavailable: staging");
   }
 
   private int getExitCode(RecordingCreateProjectPort useCase) {
@@ -111,14 +138,8 @@ class CodegenCliExecutorTest {
               lastCreateProjectCommand.projectDescription(),
               lastCreateProjectCommand.packageName());
 
-      var techStack = new TechStackSummary("spring-boot", "4.2.0", "maven", null, "java", "21");
-
-      var runtimeTarget =
-          new RuntimeTargetSummary(
-              "spring-boot-jvm",
-              Map.of(
-                  "javaVersion", "21",
-                  "springBootVersion", "4.2.0"));
+      var target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
+      var platform = new PlatformSpec(createProjectCommand.techStack(), target);
 
       var architecture =
           new ArchitectureSpecSummary(
@@ -128,13 +149,13 @@ class CodegenCliExecutorTest {
 
       var project =
           new ProjectSummary(
-              metadata, techStack, runtimeTarget, architecture, List.of(), List.of());
+              metadata, platform, architecture, List.of(), List.of());
 
       return new CreateProjectResult(
           project,
           lastCreateProjectCommand.targetDirectory(),
           Path.of("demo-app.zip"),
-          new BootResolution("4.2.0", BootResolution.Source.CENTRAL_LATEST, null));
+          new TargetResolution(target, TargetResolution.Source.REMOTE_LATEST, null));
     }
   }
 

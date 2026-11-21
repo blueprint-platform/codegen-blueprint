@@ -14,30 +14,46 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.Spri
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootSampleCodeOption;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.option.SpringBootVersionOption;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ArchitectureSpecSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectMetadataSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.RuntimeTargetSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.TechStackSummary;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution.Source;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 @Tag("unit")
 @Tag("adapter")
+@ExtendWith(OutputCaptureExtension.class)
 class SpringBootGenerateCommandTest {
 
-  @Test
+  @ParameterizedTest
+  @CsvSource({
+    "REMOTE_LATEST, CENTRAL_LATEST,",
+    "BUNDLED_FALLBACK, BUNDLED_FALLBACK, metadata: ConnectException"
+  })
   @DisplayName("call() should build CliProjectRequest and invoke use case with mapped command")
-  void call_shouldBuildRequestAndInvokeUseCase() {
+  void call_shouldBuildRequestAndInvokeUseCase(
+      Source source, String label, String warning, CapturedOutput output) {
     var mapper = new RecordingMapper();
-    var useCase = new StubCreateProjectPort();
+    var useCase = new StubCreateProjectPort(source, warning);
 
     var cmd = new SpringBootGenerateCommand(mapper, useCase);
 
@@ -64,6 +80,10 @@ class SpringBootGenerateCommandTest {
     Integer exitCode = cmd.call();
 
     assertThat(exitCode).isZero();
+    assertThat(output.getAll()).contains("bootSelector=4.2 bootVersion=4.2.0 source=" + label);
+    if (warning != null) {
+      assertThat(output.getAll()).contains(label + ": " + warning);
+    }
 
     assertThat(mapper.lastRequest).isNotNull();
 
@@ -112,37 +132,38 @@ class SpringBootGenerateCommandTest {
   }
 
   static class StubCreateProjectPort implements CreateProjectPort {
+    private final Source source;
+    private final String warning;
+    private CreateProjectCommand lastCommand;
 
-    CreateProjectCommand lastCommand;
+    StubCreateProjectPort(Source source, String warning) {
+      this.source = source;
+      this.warning = warning;
+    }
 
     @Override
     public CreateProjectResult handle(CreateProjectCommand command) {
       this.lastCommand = command;
-
       var metadata =
           new ProjectMetadataSummary(
               "com.acme", "demo-app", "Demo App", "Demo application for Acme", "com.acme.demo");
 
-      var techStack = new TechStackSummary("spring-boot", "4.2.0", "maven", null, "java", "21");
-
-      var runtimeTarget =
-          new RuntimeTargetSummary(
-              "spring-boot-jvm",
-              Map.of(
-                  "javaVersion", "21",
-                  "springBootVersion", "4.2.0"));
+      var target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
+      var platform =
+          new PlatformSpec(
+              new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA), target);
 
       var architecture = new ArchitectureSpecSummary("standard", "none", "none");
 
       var project =
           new ProjectSummary(
-              metadata, techStack, runtimeTarget, architecture, List.of(), List.of());
+              metadata, platform, architecture, List.of(), List.of());
 
       return new CreateProjectResult(
           project,
           Path.of("."),
           Path.of("demo-app.zip"),
-          new BootResolution("4.2.0", BootResolution.Source.CENTRAL_LATEST, null));
+          new TargetResolution(target, source, warning));
     }
   }
 }

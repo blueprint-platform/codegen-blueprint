@@ -33,6 +33,20 @@ class DependencyDirectionArchitectureTest {
           .allowEmptyShould(true);
 
   @ArchTest
+  static final ArchRule application_must_not_know_spring_boot_or_maven_central =
+      noClasses()
+          .that()
+          .resideInAnyPackage(APPLICATION_ROOT)
+          .should()
+          .dependOnClassesThat(
+              describe(
+                  "Spring Boot or Maven Central types",
+                  type ->
+                      type.getSimpleName().contains("SpringBoot")
+                          || type.getSimpleName().contains("CentralRepository")
+                          || type.getPackageName().startsWith("org.springframework.boot")));
+
+  @ArchTest
   static final ArchRule adapters_must_not_depend_on_application_implementation =
       noClasses()
           .that()

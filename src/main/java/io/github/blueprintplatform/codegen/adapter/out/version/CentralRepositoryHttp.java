@@ -1,7 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.version;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
-import io.github.blueprintplatform.codegen.application.port.out.SpringBootRepositoryUnavailableException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
@@ -29,7 +28,7 @@ public final class CentralRepositoryHttp {
   byte[] read(String phase, String path, int limit, long deadline) {
     long remaining = Math.min(Duration.ofSeconds(5).toNanos(), deadline - System.nanoTime());
     if (remaining <= 0)
-      throw new SpringBootResolutionException("Central resolution deadline exceeded");
+      throw new SpringBootResolutionException("adapter.springboot.resolution.deadline");
     // The factory timeout covers headers and body. Configure it per request for the shared budget.
     var factory = new JdkClientHttpRequestFactory(client);
     factory.setReadTimeout(Duration.ofNanos(remaining));
@@ -38,7 +37,7 @@ public final class CentralRepositoryHttp {
       response = factory.createRequest(base.resolve(path), HttpMethod.GET).execute();
     } catch (IOException e) {
       if (Thread.currentThread().isInterrupted()) {
-        throw new SpringBootResolutionException("Central lookup interrupted", e);
+        throw new SpringBootResolutionException("adapter.springboot.resolution.interrupted", e);
       }
       if (isConnectionFailure(e)) {
         throw new SpringBootRepositoryUnavailableException(phase, e);
@@ -51,11 +50,12 @@ public final class CentralRepositoryHttp {
         var body = response.getBody()) {
       int status = response.getStatusCode().value();
       if (status != 200) {
-        throw new IOException("Central " + phase + " returned HTTP " + status);
+        throw new SpringBootResolutionException(
+            "adapter.springboot.resolution.http-status", phase, status);
       }
       byte[] bytes = body.readNBytes(limit + 1);
       if (bytes.length > limit) {
-        throw new IOException("Central response exceeded byte limit");
+        throw new SpringBootResolutionException("adapter.springboot.resolution.response-limit", phase);
       }
       return bytes;
     } catch (IOException e) {
@@ -65,7 +65,7 @@ public final class CentralRepositoryHttp {
 
   private static SpringBootResolutionException failed(String phase, Throwable cause) {
     return new SpringBootResolutionException(
-        "Central " + phase + " failed: " + cause.getMessage(), cause);
+        "adapter.springboot.resolution.phase-failed", cause, phase, cause.getMessage());
   }
 
   private static boolean isConnectionFailure(Throwable cause) {

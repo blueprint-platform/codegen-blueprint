@@ -8,11 +8,15 @@ Codegen Blueprint delivers a Spring Boot Maven project directory and a sibling Z
 
 | Stage | Responsible component | Observable evidence |
 | --- | --- | --- |
-| Generate | The CLI maps options to a generation command. The use case prepares the blueprint inputs, resolves a Boot patch and delegates rendering and publication through ports. | Generated source tree, POM, wrapper and selected test sources. |
+| Generate | The CLI maps options to a generation command. The use case validates the request, selects the profile and resolves the platform target through an outbound port before building the blueprint. It delegates rendering and publication through ports. | Generated source tree, POM, wrapper and selected test sources. |
 | Enforce | The consumer runs `sh ./mvnw clean verify`. Maven compiles classes and Surefire executes generated ArchUnit assertions. | Surefire XML under `target/surefire-reports`. The optional sample executes separate Failsafe integration tests, including HTTP. |
 | Prove | A compiling source change crosses a known dependency boundary. The same command runs before the change, with the change, and after restoration. | Passing baseline, named rule and concrete edge in a failing test report, then a passing rebuild. |
 
 The tests travel with the generated project. After generation, Maven can enforce the architecture with the delivered wrapper and dependencies. Follow the [quickstart](../quickstart.md) for the commands and the [proof](../examples/boundary-proof.md) to observe a named failure.
+
+The domain defines target compatibility and requires a resolved target in the blueprint. The selected generation profile checks its metadata constraints before the resolver can access the network. The Spring Boot outbound adapter owns Central lookup and bundled fallback, with references supplied by bootstrap. The CLI translates the generic resolution source to its public labels.
+
+Engine ArchUnit tests enforce the application dependency boundary. Use case and CLI integration tests check that invalid metadata stops before resolution, and adapter tests verify which lookup failures permit fallback.
 
 ## Choose a layout
 

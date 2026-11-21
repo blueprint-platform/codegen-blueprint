@@ -65,7 +65,8 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
           failure.addSuppressed(cleanupFailure);
         }
       }
-      if (failure instanceof AdapterException adapterFailure) {
+      if (failure instanceof AdapterException adapterFailure
+          && !(failure instanceof OutputIntegrityFailure)) {
         throw adapterFailure;
       }
       throw new ProjectWriteException(root, failure);
@@ -99,20 +100,20 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
   }
 
   private static List<GeneratedResource> validatedManifest(
-      Iterable<? extends GeneratedResource> resources) throws IOException {
+      Iterable<? extends GeneratedResource> resources) {
     Map<Path, GeneratedResource> entries = new LinkedHashMap<>();
     for (GeneratedResource resource : resources) {
       Path path = resource.relativePath();
       GeneratedResource previous = entries.putIfAbsent(path, resource);
       if (previous != null
           && !(previous instanceof GeneratedDirectory && resource instanceof GeneratedDirectory)) {
-        throw new IOException("Duplicate generated path: " + path);
+        throw new OutputIntegrityFailure("adapter.project.output.duplicate", path);
       }
     }
     for (Path path : entries.keySet()) {
       for (Path parent = path.getParent(); parent != null; parent = parent.getParent()) {
         if (entries.containsKey(parent) && !(entries.get(parent) instanceof GeneratedDirectory)) {
-          throw new IOException("Generated file is also a parent: " + parent);
+          throw new OutputIntegrityFailure("adapter.project.output.file-parent", parent);
         }
       }
     }
@@ -125,7 +126,7 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
 
   private static void verifyStaging(Path staging, Object stagingKey) throws IOException {
     if (!new OwnedPath(staging, stagingKey, true).matches()) {
-      throw new IOException("Staging directory identity changed or unavailable: " + staging);
+      throw new OutputIntegrityFailure("adapter.project.staging.identity.changed", staging);
     }
   }
 
@@ -189,7 +190,7 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
             verifyParents(claim.path());
           }
           if (!claim.matches()) {
-            throw new IOException("Output identity changed or unavailable: " + claim.path());
+            throw new OutputIntegrityFailure("adapter.project.output.identity.changed", claim.path());
           }
           Files.delete(claim.path());
         } catch (IOException | RuntimeException cleanupFailure) {
@@ -205,8 +206,14 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
     private void verifyDirectory(Path directory) throws IOException {
       var claim = paths.get(directory);
       if (claim == null || !claim.directory() || !claim.matches()) {
-        throw new IOException("Output parent identity changed: " + directory);
+        throw new OutputIntegrityFailure("adapter.project.output.parent.changed", directory);
       }
+    }
+  }
+
+  private static final class OutputIntegrityFailure extends AdapterException {
+    OutputIntegrityFailure(String messageKey, Path path) {
+      super(messageKey, path);
     }
   }
 

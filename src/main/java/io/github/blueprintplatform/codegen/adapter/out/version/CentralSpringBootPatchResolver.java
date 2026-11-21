@@ -1,7 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.version;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
-import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchResolver;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,7 +16,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public final class CentralSpringBootPatchResolver implements SpringBootPatchResolver {
+public final class CentralSpringBootPatchResolver {
   private static final String GROUP = "org.springframework.boot";
   private static final String ARTIFACT = "spring-boot-starter-parent";
   private final CentralRepositoryHttp repository;
@@ -26,7 +25,6 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
     this.repository = repository;
   }
 
-  @Override
   public String resolveLatest(SpringBootVersion line) {
     long deadline = System.nanoTime() + Duration.ofSeconds(8).toNanos();
     Element metadata = read("metadata", "maven-metadata.xml", 1024 * 1024, deadline);
@@ -34,7 +32,7 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
         "metadata".equals(metadata.getTagName())
             && GROUP.equals(value(metadata, "groupId"))
             && ARTIFACT.equals(value(metadata, "artifactId")),
-        "Unexpected Central metadata coordinates");
+        "adapter.springboot.resolution.metadata.coordinates");
     Element versions = child(child(metadata, "versioning"), "versions");
     var candidates = new ArrayList<String>();
     for (Node node = versions == null ? null : versions.getFirstChild();
@@ -53,7 +51,7 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
             .orElseThrow(
                 () ->
                     new SpringBootResolutionException(
-                        "No stable Central Spring Boot patch for " + line));
+                        "adapter.springboot.resolution.stable-patch.missing", line));
     Element pom =
         read("parent POM", patch + "/" + ARTIFACT + "-" + patch + ".pom", 512 * 1024, deadline);
     Element parent = child(pom, "parent");
@@ -62,7 +60,7 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
             && ARTIFACT.equals(value(pom, "artifactId"))
             && GROUP.equals(inherited(pom, parent, "groupId"))
             && patch.equals(inherited(pom, parent, "version")),
-        "Unexpected Central parent POM coordinates");
+        "adapter.springboot.resolution.parent.coordinates");
     return patch;
   }
 
@@ -76,14 +74,14 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
       var parser = factory.newDocumentBuilder();
       parser.setErrorHandler(
           new DefaultHandler() {
-            @Override
-            public void fatalError(SAXParseException e) throws SAXException {
+                      public void fatalError(SAXParseException e) throws SAXException {
               throw e;
             }
           });
       return parser.parse(new ByteArrayInputStream(body)).getDocumentElement();
     } catch (ParserConfigurationException | SAXException | IOException e) {
-      throw new SpringBootResolutionException("Central " + phase + " failed: " + e.getMessage(), e);
+      throw new SpringBootResolutionException(
+          "adapter.springboot.resolution.phase-failed", e, phase, e.getMessage());
     }
   }
 
@@ -105,7 +103,7 @@ public final class CentralSpringBootPatchResolver implements SpringBootPatchReso
     return direct == null ? value(parent, name) : direct;
   }
 
-  private static void require(boolean valid, String message) {
-    if (!valid) throw new SpringBootResolutionException(message);
+  private static void require(boolean valid, String messageKey) {
+    if (!valid) throw new SpringBootResolutionException(messageKey);
   }
 }

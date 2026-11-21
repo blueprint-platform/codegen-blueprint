@@ -3,29 +3,38 @@ package io.github.blueprintplatform.codegen.adapter.out.version;
 import static io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion.V4_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.sun.net.httpserver.HttpServer;
 import io.github.blueprintplatform.codegen.adapter.error.exception.version.SpringBootResolutionException;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution.Source;
-import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution.Source;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLHandshakeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
-class CentralSpringBootPatchResolverTest {
+class SpringBootTargetResolverTest {
   private HttpServer server;
   private HttpClient client;
   private URI endpoint;
@@ -54,24 +63,48 @@ class CentralSpringBootPatchResolverTest {
         200,
         "<project><parent><groupId>org.springframework.boot</groupId><version>4.1.10</version>"
             + "</parent><artifactId>spring-boot-starter-parent</artifactId></project>");
-    assertThat(selection().select(V4_1))
-        .isEqualTo(new BootResolution("4.1.10", Source.CENTRAL_LATEST, null));
+    assertThat(resolver().resolve(request(V4_1)))
+        .isEqualTo(
+            new TargetResolution(
+                new SpringBootJvmTarget(JavaVersion.JAVA_21, V4_1, "4.1.10"),
+                Source.REMOTE_LATEST,
+                null));
   }
 
   @Test
   void missingParentDoesNotFallback() {
     metadata("<version>4.1.3</version>");
-    var versions = selection();
-    assertThatThrownBy(() -> versions.select(V4_1))
-        .isInstanceOf(SpringBootResolutionException.class)
-        .hasRootCauseMessage("Central parent POM returned HTTP 404");
+    var resolver = resolver();
+    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+        .isInstanceOfSatisfying(
+            SpringBootResolutionException.class,
+            failure ->
+                assertThat(localized(failure))
+                    .endsWith("Central parent POM failed: Central parent POM returned HTTP 404"));
+  }
+
+  @Test
+  void wrongParentCoordinatesDoNotFallback() {
+    metadata("<version>4.1.3</version>");
+    respond(
+        "/4.1.3/spring-boot-starter-parent-4.1.3.pom",
+        200,
+        "<project><groupId>org.springframework.boot</groupId><version>4.1.4</version>"
+            + "<artifactId>spring-boot-starter-parent</artifactId></project>");
+
+    assertThatThrownBy(() -> resolver().resolve(request(V4_1)))
+        .isInstanceOfSatisfying(
+            SpringBootResolutionException.class,
+            failure ->
+                assertThat(localized(failure))
+                    .endsWith("Unexpected Central parent POM coordinates"));
   }
 
   @Test
   void malformedMetadataDoesNotFallback() {
     respond("/maven-metadata.xml", 200, "<metadata>");
-    var versions = selection();
-    assertThatThrownBy(() -> versions.select(V4_1))
+    var resolver = resolver();
+    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
         .isInstanceOf(SpringBootResolutionException.class)
         .hasMessage("adapter.springboot.resolution.failed");
   }
@@ -79,11 +112,12 @@ class CentralSpringBootPatchResolverTest {
   @Test
   void oversizedResponseAfterHeadersDoesNotFallback() {
     respond("/maven-metadata.xml", 200, " ".repeat(1024 * 1024 + 1));
-    var versions = selection();
+    var resolver = resolver();
 
-    assertThatThrownBy(() -> versions.select(V4_1))
-        .hasMessage("adapter.springboot.resolution.failed")
-        .hasRootCauseMessage("Central response exceeded byte limit");
+    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+        .isInstanceOfSatisfying(
+            SpringBootResolutionException.class,
+            failure -> assertThat(localized(failure)).endsWith("Central response exceeded byte limit"));
   }
 
   @Test
@@ -118,13 +152,30 @@ class CentralSpringBootPatchResolverTest {
   @Test
   void unavailableConnectionSelectsBundledPatchForEachLine() {
     server.stop(0);
-    var versions = selection();
+    var resolver = resolver();
     for (var entry : bundled().entrySet()) {
-      var selected = versions.select(entry.getKey());
-      assertThat(selected.patch()).isEqualTo(entry.getValue());
+      var selected = resolver.resolve(request(entry.getKey()));
+      assertThat(selected.target())
+          .isEqualTo(new SpringBootJvmTarget(JavaVersion.JAVA_21, entry.getKey(), entry.getValue()));
       assertThat(selected.source()).isEqualTo(Source.BUNDLED_FALLBACK);
       assertThat(selected.warning()).contains("metadata");
     }
+  }
+
+  @Test
+  void tlsFailureDoesNotFallbackEvenWithNestedConnectionError() {
+    var tlsFailure = new SSLHandshakeException("Certificate rejected");
+    tlsFailure.initCause(new ConnectException("Connection failed"));
+    var tlsClient = mock(HttpClient.class);
+    when(tlsClient.sendAsync(any(), any()))
+        .thenReturn(CompletableFuture.failedFuture(tlsFailure));
+    var repository = new CentralRepositoryHttp(tlsClient, endpoint);
+    var resolver =
+        new SpringBootTargetResolver(new CentralSpringBootPatchResolver(repository), bundled());
+
+    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+        .isInstanceOf(SpringBootResolutionException.class)
+        .hasCause(tlsFailure);
   }
 
   @Test
@@ -142,15 +193,15 @@ class CentralSpringBootPatchResolverTest {
             Thread.currentThread().interrupt();
           }
         });
-    var versions = selection();
+    var resolver = resolver();
     var result =
         new FutureTask<>(
             () -> {
-              assertThatThrownBy(() -> versions.select(V4_1))
+              assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
                   .isInstanceOfSatisfying(
                       SpringBootResolutionException.class,
                       failure ->
-                          assertThat(failure.getArgs()).containsExactly("Central lookup interrupted"))
+                          assertThat(localized(failure)).endsWith("Central lookup interrupted"))
                   .hasRootCauseInstanceOf(InterruptedException.class);
               return Thread.currentThread().isInterrupted();
             });
@@ -165,9 +216,19 @@ class CentralSpringBootPatchResolverTest {
     }
   }
 
-  private BootVersionSelection selection() {
+  private static String localized(SpringBootResolutionException failure) {
+    var messages = new ResourceBundleMessageSource();
+    messages.setBasename("messages");
+    return messages.getMessage(failure.getMessageKey(), failure.getArgs(), Locale.ENGLISH);
+  }
+
+  private SpringBootTargetResolver resolver() {
     var repository = new CentralRepositoryHttp(client, endpoint);
-    return new BootVersionSelection(new CentralSpringBootPatchResolver(repository), bundled());
+    return new SpringBootTargetResolver(new CentralSpringBootPatchResolver(repository), bundled());
+  }
+
+  private static SpringBootJvmTarget request(SpringBootVersion line) {
+    return new SpringBootJvmTarget(JavaVersion.JAVA_21, line);
   }
 
   private static Map<SpringBootVersion, String> bundled() {

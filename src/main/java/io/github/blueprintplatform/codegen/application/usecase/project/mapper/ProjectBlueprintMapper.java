@@ -1,5 +1,6 @@
 package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
+import io.github.blueprintplatform.codegen.application.error.exception.InvalidProjectRequestException;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
@@ -18,9 +19,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDesc
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.policy.tech.CompatibilityPolicy;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.Locale;
 
 public class ProjectBlueprintMapper {
 
-  public PreparedProject prepare(CreateProjectCommand c) {
+  public ValidatedProject validate(CreateProjectCommand c) {
     ProjectMetadata metadata =
         new ProjectMetadata(
             new ProjectIdentity(new GroupId(c.groupId()), new ArtifactId(c.artifactId())),
@@ -38,35 +37,32 @@ public class ProjectBlueprintMapper {
 
     PlatformSpec platform = new PlatformSpec(c.techStack(), c.platformTarget());
 
-    ArchitectureGovernance architectureGovernance = new ArchitectureGovernance(c.guardrailsMode());
-    ArchitectureSpec architecture =
-        new ArchitectureSpec(c.layout(), architectureGovernance, c.sampleCodeOptions());
-
     Dependencies dependencies = mapDependencies(c.dependencies());
 
     CompatibilityPolicy.ensureCompatible(platform);
-    return switch (platform.platformTarget()) {
-      case SpringBootJvmTarget target ->
-          new PreparedProject(metadata, platform.techStack(), target, architecture, dependencies);
-    };
+    if (c.layout() == null) {
+      throw new InvalidProjectRequestException("application.project.layout.required");
+    }
+    if (c.sampleCodeOptions() == null) {
+      throw new InvalidProjectRequestException("application.project.sample-code.required");
+    }
+    var architecture =
+        new ArchitectureSpec(
+            c.layout(), new ArchitectureGovernance(c.guardrailsMode()), c.sampleCodeOptions());
+    return new ValidatedProject(metadata, platform, architecture, dependencies);
   }
 
-  public record PreparedProject(
+  public ProjectBlueprint from(ValidatedProject project, PlatformTarget resolvedTarget) {
+    var platform = new PlatformSpec(project.platform().techStack(), resolvedTarget);
+    return ProjectBlueprint.of(
+        project.metadata(), platform, project.architecture(), project.dependencies());
+  }
+
+  public record ValidatedProject(
       ProjectMetadata metadata,
-      TechStack techStack,
-      SpringBootJvmTarget target,
+      PlatformSpec platform,
       ArchitectureSpec architecture,
-      Dependencies dependencies) {
-    public SpringBootVersion bootLine() {
-      return target.springBoot();
-    }
-
-    public ProjectBlueprint blueprint(String patch) {
-      var resolved = new SpringBootJvmTarget(target.java(), bootLine(), patch);
-      return ProjectBlueprint.of(
-          metadata, new PlatformSpec(techStack, resolved), architecture, dependencies);
-    }
-  }
+      Dependencies dependencies) {}
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {
     if (raw == null || raw.isEmpty()) {

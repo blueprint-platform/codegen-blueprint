@@ -2,10 +2,13 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.out.version;
 
 import io.github.blueprintplatform.codegen.adapter.out.version.CentralRepositoryHttp;
 import io.github.blueprintplatform.codegen.adapter.out.version.CentralSpringBootPatchResolver;
-import io.github.blueprintplatform.codegen.application.port.out.SpringBootPatchResolver;
+import io.github.blueprintplatform.codegen.adapter.out.version.SpringBootTargetResolver;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectTargetResolver;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +28,11 @@ public class SpringBootPatchResolverConfig {
   }
 
   @Bean
-  SpringBootPatchResolver springBootPatchResolver(
+  ProjectTargetResolver springBootTargetResolver(
       @Qualifier("centralHttpClient") HttpClient client) {
-    return new CentralSpringBootPatchResolver(
-        new CentralRepositoryHttp(client, CENTRAL_PARENT_DIRECTORY));
+    var repository = new CentralRepositoryHttp(client, CENTRAL_PARENT_DIRECTORY);
+    return new SpringBootTargetResolver(
+        new CentralSpringBootPatchResolver(repository),
+        Map.of(SpringBootVersion.V4_1, "4.1.3", SpringBootVersion.V4_2, "4.2.0"));
   }
 }

@@ -7,6 +7,7 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactS
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.nio.file.Path;
@@ -23,6 +24,11 @@ public final class MavenPomBuildConfigurationAdapter {
     this.artifactSpec = artifactSpec;
   }
 
+  public void validateMetadata(ProjectMetadata metadata) {
+    requireLiteral("name", metadata.name().value());
+    requireLiteral("description", metadata.description().value());
+  }
+
   public Iterable<GeneratedResource> generate(ProjectBlueprint bp, MavenDependencyPlan plan) {
     var template = artifactSpec.templates().getFirst();
     return List.of(
@@ -33,8 +39,7 @@ public final class MavenPomBuildConfigurationAdapter {
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp, MavenDependencyPlan plan) {
-    requireLiteral("name", bp.getMetadata().name().value());
-    requireLiteral("description", bp.getMetadata().description().value());
+    validateMetadata(bp.getMetadata());
     ProjectIdentity id = bp.getMetadata().identity();
     SpringBootJvmTarget target = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
 

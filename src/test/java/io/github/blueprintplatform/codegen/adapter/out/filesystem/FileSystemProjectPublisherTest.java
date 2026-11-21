@@ -94,7 +94,7 @@ class FileSystemProjectPublisherTest {
     var duplicateResources = List.of(file, file);
     assertThatThrownBy(() -> publisher.publish(absent, "demo", duplicateResources))
         .isInstanceOf(ProjectWriteException.class)
-        .hasRootCauseMessage("Duplicate generated path: " + file.relativePath());
+        .hasRootCauseMessage("adapter.project.output.duplicate");
     assertThat(absent).doesNotExist();
   }
 
@@ -106,7 +106,7 @@ class FileSystemProjectPublisherTest {
 
     assertThatThrownBy(() -> publisher.publish(absent, "demo", resources))
         .isInstanceOf(ProjectWriteException.class)
-        .hasRootCauseMessage("Generated file is also a parent: src");
+        .hasRootCauseMessage("adapter.project.output.file-parent");
     assertThat(absent).doesNotExist();
   }
 
@@ -122,7 +122,7 @@ class FileSystemProjectPublisherTest {
       assertThatThrownBy(() -> publisher.publish(root, "demo", resources))
           .isInstanceOf(ProjectWriteException.class)
           .rootCause()
-          .hasMessageContaining("Staging directory identity changed or unavailable");
+          .hasMessage("adapter.project.staging.identity.changed");
       assertThat(Files.readString(existing)).isEqualTo("user content");
       assertThat(Files.notExists(root.resolve("demo"))).isTrue();
       assertThat(Files.notExists(root.resolve("demo.zip"))).isTrue();
@@ -160,9 +160,7 @@ class FileSystemProjectPublisherTest {
                     .singleElement()
                     .satisfies(
                         cleanup ->
-                            assertThat(cleanup)
-                                .hasMessageContaining(
-                                    "Staging directory identity changed or unavailable")));
+                            assertThat(cleanup).hasMessage("adapter.project.staging.identity.changed")));
     try (var paths = Files.list(target)) {
       assertThat(
               paths

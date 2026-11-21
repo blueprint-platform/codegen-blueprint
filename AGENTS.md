@@ -9,9 +9,9 @@ The human architect owns product scope, architectural intent and publication. Us
 | Area | Owns |
 | --- | --- |
 | `domain` | `ProjectBlueprint`, value objects, invariants and compatibility policy. Pure Java, without framework or IO implementations. |
-| `application` | Use-case ordering and ports. `CreateProjectHandler` coordinates resolution, generation and publication through those ports. |
+| `application` | Use-case ordering and ports. `CreateProjectHandler` validates the request, selects the artifact profile, and coordinates target resolution, generation and publication through framework-independent ports. |
 | `adapter.in` | Picocli options and aliases. Map requests through `CreateProjectCommandMapper` to `CreateProjectPort`. |
-| `adapter.out` | Central transport, profile-specific generation, template rendering and filesystem publication. |
+| `adapter.out` | Platform-specific resolution and Central transport, profile-specific generation, template rendering and filesystem publication. |
 | `bootstrap` | Spring/Picocli wiring and profile bindings. Keep framework types and adapter implementations out of core. |
 
 Use an existing seam before adding one. Follow the complete change path from the input or registry to the generated output and the test that exercises it.

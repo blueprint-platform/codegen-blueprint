@@ -1,8 +1,13 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
-import io.github.blueprintplatform.codegen.application.usecase.project.BootVersionSelection;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
+import io.github.blueprintplatform.codegen.application.port.out.ProjectTargetResolver;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -27,30 +33,36 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 @Tag("integration")
 @Tag("cli-e2e")
 class SpringBootCliE2EIT {
 
-  @TestConfiguration
-  static class FixedVersions {
-    @Bean
-    @Primary
-    BootVersionSelection fixedVersions() {
-      var versions =
-          Map.of(
-              SpringBootVersion.V4_1, "4.1.3",
-              SpringBootVersion.V4_2, "4.2.0");
-      return new BootVersionSelection(versions::get, versions);
-    }
-  }
-
   @TempDir Path tempDir;
   @Autowired private CodegenCliExecutor cliExecutor;
+
+  @MockitoBean(name = "springBootTargetResolver", enforceOverride = true)
+  private ProjectTargetResolver targetResolver;
+
+  @BeforeEach
+  void resolveFixedVersions() {
+    var versions =
+        Map.of(
+            SpringBootVersion.V4_1, "4.1.3",
+            SpringBootVersion.V4_2, "4.2.0");
+    when(targetResolver.resolve(any()))
+        .thenAnswer(
+            invocation -> {
+              SpringBootJvmTarget target = invocation.getArgument(0);
+              return new TargetResolution(
+                  new SpringBootJvmTarget(
+                      target.java(), target.springBoot(), versions.get(target.springBoot())),
+                  TargetResolution.Source.REMOTE_LATEST,
+                  null);
+            });
+  }
 
   static Stream<Arguments> scenarios() {
     return Stream.of(
@@ -225,8 +237,10 @@ class SpringBootCliE2EIT {
   }
 
   @Test
-  void reportsInvalidMavenMetadataBeforePublishing() {
+  void reportsInvalidMavenMetadataBeforeResolvingOrPublishing() {
     var io = generate("Greeting with ${project.version}");
+
+    verifyNoInteractions(targetResolver);
 
     assertThat(io.exitCode()).isEqualTo(3);
     assertThat(io.stderr())

@@ -1,22 +1,25 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution.Source;
+import io.github.blueprintplatform.codegen.application.error.exception.InvalidProjectRequestException;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution.Source;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
-import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResultMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
+import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.GuardrailsMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
@@ -29,7 +32,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -41,21 +43,36 @@ class CreateProjectHandlerTest {
   @TempDir Path tempDir;
 
   @Test
-  void resolvesPatchPublishesArtifactsAndReturnsSummary() {
+  void resolvesTargetAfterProfileSelectionAndPublishesArtifacts() {
     var blueprintMapper = new ProjectBlueprintMapper();
     var resultMapper = new CreateProjectResultMapper();
     var fakeArtifacts = new FakeArtifactsPort();
-    var fakeSelector = new FakeSelector(fakeArtifacts);
+    var requested = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
+    var command = createProjectCommand("demo-app", requested, tempDir);
+    var resolved = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
+    var resolution = new TargetResolution(resolved, Source.REMOTE_LATEST, null);
+    List<String> calls = new ArrayList<>();
 
     var handler =
         new CreateProjectHandler(
             blueprintMapper,
             resultMapper,
-            fakeSelector,
-            new BootVersionSelection(
-                line -> "4.2.0",
-                Map.of(SpringBootVersion.V4_1, "4.1.3", SpringBootVersion.V4_2, "4.2.0")),
+            stack -> {
+              assertThat(stack).isEqualTo(command.techStack());
+              calls.add("profile");
+              return blueprint -> {
+                assertThat(blueprint.getPlatform().platformTarget()).isSameAs(resolved);
+                calls.add("generate");
+                return fakeArtifacts.generate(blueprint);
+              };
+            },
+            target -> {
+              assertThat(target).isSameAs(requested);
+              calls.add("resolve");
+              return resolution;
+            },
             (target, artifact, resources) -> {
+              calls.add("publish");
               assertThat(target).isEqualTo(tempDir);
               assertThat(artifact).isEqualTo("demo-app");
               var files = new ArrayList<ProjectOutputItem>();
@@ -66,17 +83,14 @@ class CreateProjectHandlerTest {
                   target.resolve(artifact), target.resolve(artifact + ".zip"), files);
             });
 
-    var createProjectCommand = getCreateProjectCommand();
-
-    var result = handler.handle(createProjectCommand);
+    var result = handler.handle(command);
+    assertThat(calls).containsExactly("profile", "resolve", "generate", "publish");
 
     assertThat(result.archivePath()).hasFileName("demo-app.zip");
     assertThat(result.projectRoot()).isEqualTo(tempDir.resolve("demo-app"));
 
-    assertThat(result.bootResolution())
-        .isEqualTo(new BootResolution("4.2.0", Source.CENTRAL_LATEST, null));
-    assertThat(result.project().runtimeTarget().params())
-        .containsEntry("springBootVersion", "4.2.0");
+    assertThat(result.targetResolution()).isSameAs(resolution);
+    assertThat(result.project().platform().platformTarget()).isSameAs(resolved);
 
     assertThat(result.project().metadata().groupId()).isEqualTo("com.acme");
     assertThat(result.project().metadata().artifactId()).isEqualTo("demo-app");
@@ -97,13 +111,41 @@ class CreateProjectHandlerTest {
     assertThat(result.project().files()).allSatisfy(f -> assertThat(f.binary()).isFalse());
   }
 
-  private CreateProjectCommand getCreateProjectCommand() {
+  @Test
+  void rejectsInvalidRequestsBeforeSelectingProfileOrResolvingTarget() {
+    var handler =
+        new CreateProjectHandler(
+            new ProjectBlueprintMapper(),
+            new CreateProjectResultMapper(),
+            stack -> {
+              throw new AssertionError("Profile selection must follow validation");
+            },
+            target -> {
+              throw new AssertionError("Invalid requests must not resolve a target");
+            },
+            (directory, artifact, resources) -> {
+              throw new AssertionError("Unexpected publication");
+            });
+
+    assertThatThrownBy(() -> handler.handle(createProjectCommand("invalid/id", null, tempDir)))
+        .isInstanceOf(DomainViolationException.class)
+        .hasMessage("project.artifact-id.invalid.chars");
+    assertThatThrownBy(() -> handler.handle(createProjectCommand("demo-app", null, tempDir)))
+        .isInstanceOf(DomainViolationException.class)
+        .hasMessage("platform.target.missing");
+    var requested = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
+    assertThatThrownBy(() -> handler.handle(createProjectCommand("demo-app", requested, null)))
+        .isInstanceOf(InvalidProjectRequestException.class)
+        .hasMessage("application.project.target-directory.required");
+  }
+
+  private CreateProjectCommand createProjectCommand(
+      String artifactId, PlatformTarget platformTarget, Path targetDirectory) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
 
     return new CreateProjectCommand(
         "com.acme",
-        "demo-app",
+        artifactId,
         "Demo App",
         "Demo project",
         "com.acme.demo",
@@ -113,20 +155,7 @@ class CreateProjectHandlerTest {
         platformTarget,
         List.of(),
         SampleCodeOptions.none(),
-        tempDir);
-  }
-
-  static class FakeSelector implements ProjectArtifactsSelector {
-    private final ProjectArtifactsPort delegate;
-
-    FakeSelector(ProjectArtifactsPort delegate) {
-      this.delegate = delegate;
-    }
-
-    @Override
-    public ProjectArtifactsPort select(TechStack options) {
-      return delegate;
-    }
+        targetDirectory);
   }
 
   static class FakeArtifactsPort implements ProjectArtifactsPort {

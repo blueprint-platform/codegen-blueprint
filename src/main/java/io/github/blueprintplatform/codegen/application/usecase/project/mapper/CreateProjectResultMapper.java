@@ -1,14 +1,12 @@
 package io.github.blueprintplatform.codegen.application.usecase.project.mapper;
 
-import io.github.blueprintplatform.codegen.application.port.in.project.model.BootResolution;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.ProjectSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ArchitectureSpecSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectDependencySummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectFileSummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.ProjectMetadataSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.RuntimeTargetSummary;
-import io.github.blueprintplatform.codegen.application.port.in.project.model.summary.TechStackSummary;
+import io.github.blueprintplatform.codegen.application.port.model.TargetResolution;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort.PublishedProject;
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
@@ -17,35 +15,25 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
 import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class CreateProjectResultMapper {
 
-  private static final String RUNTIME_TARGET_SPRING_BOOT_JVM = "spring-boot-jvm";
-  private static final String PARAM_JAVA_VERSION = "javaVersion";
-  private static final String PARAM_SPRING_BOOT_VERSION = "springBootVersion";
-
   public CreateProjectResult from(
-      ProjectBlueprint blueprint, PublishedProject published, BootResolution selection) {
+      ProjectBlueprint blueprint, PublishedProject published, TargetResolution resolution) {
 
     ProjectSummary project = toProjectSummary(blueprint, published.files());
-    return new CreateProjectResult(project, published.root(), published.archive(), selection);
+    return new CreateProjectResult(project, published.root(), published.archive(), resolution);
   }
 
   private ProjectSummary toProjectSummary(
       ProjectBlueprint blueprint, List<ProjectOutputItem> projectOutputItems) {
     ProjectMetadata metadata = blueprint.getMetadata();
-    PlatformSpec platform = blueprint.getPlatform();
     ArchitectureSpec architecture = blueprint.getArchitecture();
     Dependencies dependencies = blueprint.getDependencies();
 
     ProjectMetadataSummary metadataSummary = toMetadataSummary(metadata);
-    TechStackSummary techStackSummary = toTechStackSummary(platform);
-    RuntimeTargetSummary runtimeTargetSummary = toRuntimeTargetSummary(platform);
     ArchitectureSpecSummary architectureSummary = toArchitectureSummary(architecture);
 
     List<ProjectDependencySummary> dependencySummaries =
@@ -56,8 +44,7 @@ public class CreateProjectResultMapper {
 
     return new ProjectSummary(
         metadataSummary,
-        techStackSummary,
-        runtimeTargetSummary,
+        blueprint.getPlatform(),
         architectureSummary,
         dependencySummaries,
         files);
@@ -78,38 +65,6 @@ public class CreateProjectResultMapper {
     String sampleCode = architecture.sampleCodeOptions().level().key();
 
     return new ArchitectureSpecSummary(layout, guardrailsMode, sampleCode);
-  }
-
-  private TechStackSummary toTechStackSummary(PlatformSpec platform) {
-    var stack = platform.techStack();
-
-    String framework = stack.framework().key();
-    String buildTool = stack.buildTool().key();
-    String language = stack.language().key();
-
-    return switch (platform.platformTarget()) {
-      case SpringBootJvmTarget target ->
-          new TechStackSummary(
-              framework,
-              target.patchVersion(),
-              buildTool,
-              null,
-              language,
-              target.java().asString());
-    };
-  }
-
-  private RuntimeTargetSummary toRuntimeTargetSummary(PlatformSpec platform) {
-    return switch (platform.platformTarget()) {
-      case SpringBootJvmTarget target ->
-          new RuntimeTargetSummary(
-              RUNTIME_TARGET_SPRING_BOOT_JVM,
-              Map.of(
-                  PARAM_JAVA_VERSION,
-                  target.java().asString(),
-                  PARAM_SPRING_BOOT_VERSION,
-                  target.patchVersion()));
-    };
   }
 
   private ProjectFileSummary toProjectFileSummary(ProjectOutputItem item) {

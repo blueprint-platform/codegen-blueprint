@@ -1,7 +1,9 @@
 package io.github.blueprintplatform.codegen.application.usecase.project;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import io.github.blueprintplatform.codegen.application.error.exception.InvalidProjectRequestException;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.CreateProjectCommand;
 import io.github.blueprintplatform.codegen.application.port.in.project.model.DependencyInput;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
@@ -40,12 +42,17 @@ class ProjectBlueprintMapperTest {
             new DependencyInput("org.acme", "gamma", "  ", "  "),
             new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt"));
 
-    var createProjectRequest = getCreateProjectCommand(dependencies);
+    var createProjectRequest =
+        getCreateProjectCommand(dependencies, ProjectLayout.STANDARD, SampleCodeOptions.none());
 
-    return mapper.prepare(createProjectRequest).blueprint("4.2.0");
+    var resolved = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2, "4.2.0");
+    var blueprint = mapper.from(mapper.validate(createProjectRequest), resolved);
+    assertThat(blueprint.getPlatform().platformTarget()).isSameAs(resolved);
+    return blueprint;
   }
 
-  private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> dependencies) {
+  private static CreateProjectCommand getCreateProjectCommand(
+      List<DependencyInput> dependencies, ProjectLayout layout, SampleCodeOptions sample) {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
 
@@ -56,12 +63,26 @@ class ProjectBlueprintMapperTest {
         "Demo project",
         "com.acme.demo",
         techStack,
-        ProjectLayout.STANDARD,
+        layout,
         GuardrailsMode.NONE,
         platformTarget,
         dependencies,
-        SampleCodeOptions.none(),
+        sample,
         Path.of("."));
+  }
+
+  @Test
+  void requiresLayoutAndSampleOptionsBeforeResolvingTarget() {
+    var mapper = new ProjectBlueprintMapper();
+    var missingLayout = getCreateProjectCommand(List.of(), null, SampleCodeOptions.none());
+    var missingSample = getCreateProjectCommand(List.of(), ProjectLayout.STANDARD, null);
+
+    assertThatThrownBy(() -> mapper.validate(missingLayout))
+        .isInstanceOf(InvalidProjectRequestException.class)
+        .hasMessage("application.project.layout.required");
+    assertThatThrownBy(() -> mapper.validate(missingSample))
+        .isInstanceOf(InvalidProjectRequestException.class)
+        .hasMessage("application.project.sample-code.required");
   }
 
   @Test
