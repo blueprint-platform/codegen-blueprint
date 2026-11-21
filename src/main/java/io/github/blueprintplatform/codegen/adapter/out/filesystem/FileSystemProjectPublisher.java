@@ -1,5 +1,6 @@
 package io.github.blueprintplatform.codegen.adapter.out.filesystem;
 
+import io.github.blueprintplatform.codegen.adapter.error.exception.base.AdapterException;
 import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.ProjectWriteException;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectPublisherPort;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
@@ -16,7 +17,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.SequencedMap;
 
 public final class FileSystemProjectPublisher implements ProjectPublisherPort {
@@ -47,9 +47,11 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
       Files.createDirectories(target);
       staging = Files.createTempDirectory(target, ".codegen-");
       stagingKey = attributes(staging).fileKey();
+      verifyStaging(staging, stagingKey);
       Path tree = Files.createDirectory(staging.resolve(name));
       writer.write(tree, manifest);
       Path stagedZip = archiver.archive(tree, name);
+      verifyStaging(staging, stagingKey);
       publishStaged(tree, stagedZip, root, zip, claims);
       var result = new PublishedProject(root, zip, output.list(root));
       deleteStaging(staging, stagingKey);
@@ -59,9 +61,12 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
       if (staging != null) {
         try {
           deleteStaging(staging, stagingKey);
-        } catch (IOException cleanupFailure) {
+        } catch (IOException | RuntimeException cleanupFailure) {
           failure.addSuppressed(cleanupFailure);
         }
+      }
+      if (failure instanceof AdapterException adapterFailure) {
+        throw adapterFailure;
       }
       throw new ProjectWriteException(root, failure);
     }
@@ -81,12 +86,15 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
         if (Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)) {
           claims.createDirectory(destination);
         } else {
-          try (var file = claims.createFile(destination)) {
-            Files.copy(source, file);
+          try (var input = Files.newInputStream(source, LinkOption.NOFOLLOW_LINKS);
+              var file = claims.createFile(destination)) {
+            input.transferTo(file);
           }
         }
       }
-      Files.copy(stagedZip, archive);
+      try (var input = Files.newInputStream(stagedZip, LinkOption.NOFOLLOW_LINKS)) {
+        input.transferTo(archive);
+      }
     }
   }
 
@@ -115,15 +123,20 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
     return Files.readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
   }
 
-  private static void deleteStaging(Path staging, Object stagingKey) throws IOException {
-    if (!Files.exists(staging, LinkOption.NOFOLLOW_LINKS)) return;
-    var current = attributes(staging);
-    if (!current.isDirectory()
-        || stagingKey != null && !Objects.equals(stagingKey, current.fileKey())) {
-      throw new IOException("Staging directory identity changed: " + staging);
+  private static void verifyStaging(Path staging, Object stagingKey) throws IOException {
+    if (!new OwnedPath(staging, stagingKey, true).matches()) {
+      throw new IOException("Staging directory identity changed or unavailable: " + staging);
     }
+  }
+
+  private static void deleteStaging(Path staging, Object stagingKey) throws IOException {
+    if (Files.notExists(staging, LinkOption.NOFOLLOW_LINKS)) return;
+    verifyStaging(staging, stagingKey);
     try (var walk = Files.walk(staging)) {
-      for (Path entry : walk.sorted(Comparator.reverseOrder()).toList()) Files.delete(entry);
+      for (Path entry : walk.sorted(Comparator.reverseOrder()).toList()) {
+        verifyStaging(staging, stagingKey);
+        Files.delete(entry);
+      }
     }
   }
 
@@ -158,10 +171,15 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
     }
 
     void verifyParents(Path path) throws IOException {
-      verifyDirectory(root);
-      if (!root.equals(path.getParent())) {
-        verifyDirectory(path.getParent());
+      // Validate from the root down, before reading attributes through any nested directory.
+      verifyAncestors(path.getParent());
+    }
+
+    private void verifyAncestors(Path directory) throws IOException {
+      if (!root.equals(directory)) {
+        verifyAncestors(directory.getParent());
       }
+      verifyDirectory(directory);
     }
 
     void rollback(Throwable failure) {
@@ -186,11 +204,7 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
 
     private void verifyDirectory(Path directory) throws IOException {
       var claim = paths.get(directory);
-      if (claim == null
-          || !claim.directory()
-          || !(claim.key() == null
-              ? Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)
-              : claim.matches())) {
+      if (claim == null || !claim.directory() || !claim.matches()) {
         throw new IOException("Output parent identity changed: " + directory);
       }
     }
@@ -198,9 +212,9 @@ public final class FileSystemProjectPublisher implements ProjectPublisherPort {
 
   private record OwnedPath(Path path, Object key, boolean directory) {
     boolean matches() throws IOException {
+      if (key == null) return false;
       var actual = attributes(path);
-      return key != null
-          && Objects.equals(key, actual.fileKey())
+      return key.equals(actual.fileKey())
           && (directory ? actual.isDirectory() : actual.isRegularFile());
     }
   }

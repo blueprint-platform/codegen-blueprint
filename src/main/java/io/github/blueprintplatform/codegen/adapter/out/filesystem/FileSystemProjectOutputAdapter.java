@@ -4,6 +4,7 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.Pr
 import io.github.blueprintplatform.codegen.application.port.out.output.ProjectOutputItem;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -29,7 +30,10 @@ public final class FileSystemProjectOutputAdapter {
     }
 
     try (Stream<Path> paths = Files.walk(normalizedRoot)) {
-      return paths.filter(Files::isRegularFile).map(path -> toItem(normalizedRoot, path)).toList();
+      return paths
+          .filter(path -> Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
+          .map(path -> toItem(normalizedRoot, path))
+          .toList();
     } catch (IOException e) {
       throw new ProjectOutputDiscoveryException(normalizedRoot, e);
     }

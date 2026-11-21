@@ -54,10 +54,10 @@ class ArchitectureGovernanceAdapterTest {
       GOV_HEX_STRICT + "/DomainPurityTest.java.ftl";
 
   private static final String HEX_REST_SIGNATURE_TEMPLATE =
-      GOV_HEX_STRICT + "/HexagonalStrictRestBoundarySignatureIsolationTest.java.ftl";
+      GOV_HEX_STRICT + "/mvc/HexagonalStrictRestBoundarySignatureIsolationTest.java.ftl";
 
   private static final String STD_REST_SIGNATURE_TEMPLATE =
-      GOV_HEX_STRICT + "/StandardStrictRestBoundarySignatureIsolationTest.java.ftl";
+      GOV_HEX_STRICT + "/mvc/StandardStrictRestBoundarySignatureIsolationTest.java.ftl";
 
   private static final ArtifactSpec DUMMY_ARTIFACT_SPEC = new ArtifactSpec(BASE_PATH, List.of());
 
@@ -209,6 +209,19 @@ class ArchitectureGovernanceAdapterTest {
 
     assertThat(renderer.capturedTemplateNames).isEmpty();
     assertThat(renderer.capturedOutPaths).isEmpty();
+  }
+
+  @Test
+  void strictMvcFailsWhenOnlyTheUnconditionalRulesArePresent() {
+    var renderer = new RecordingTemplateRenderer();
+    var adapter =
+        new ArchitectureGovernanceAdapter(
+            renderer, DUMMY_ARTIFACT_SPEC, scannerWithTemplates(DOMAIN_PURITY_TEMPLATE));
+    var project = blueprint(GuardrailsMode.STRICT);
+
+    assertThatThrownBy(() -> adapter.generate(project, true))
+        .isInstanceOf(ArchitectureGovernanceTemplatesNotFoundException.class);
+    assertThat(renderer.capturedTemplateNames).isEmpty();
   }
 
   private static final class StubFtlClasspathTemplateScanner extends FtlClasspathTemplateScanner {

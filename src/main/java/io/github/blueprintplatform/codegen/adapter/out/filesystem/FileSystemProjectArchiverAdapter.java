@@ -5,6 +5,7 @@ import io.github.blueprintplatform.codegen.adapter.error.exception.filesystem.Pr
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
@@ -82,7 +83,7 @@ public final class FileSystemProjectArchiverAdapter {
       entryName.append(rel);
     }
 
-    boolean directory = Files.isDirectory(current);
+    boolean directory = Files.isDirectory(current, LinkOption.NOFOLLOW_LINKS);
     if (directory && entryName.charAt(entryName.length() - 1) != ZIP_SEPARATOR) {
       entryName.append(ZIP_SEPARATOR);
     }
@@ -91,7 +92,9 @@ public final class FileSystemProjectArchiverAdapter {
     zos.putNextEntry(entry);
 
     if (!directory) {
-      Files.copy(current, zos);
+      try (var input = Files.newInputStream(current, LinkOption.NOFOLLOW_LINKS)) {
+        input.transferTo(zos);
+      }
     }
 
     zos.closeEntry();

@@ -3,6 +3,7 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependency;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
@@ -278,5 +279,28 @@ class MavenPomBuildConfigurationAdapterTest {
     assertThat(deps.get(3)).isEqualTo(MavenDependencyPlan.H2_DB);
     assertThat(deps.get(4)).isEqualTo(MavenDependencyPlan.ARCH_UNIT_TEST);
     assertThat(deps.get(5)).isEqualTo(MavenDependencyPlan.TEST_STARTER);
+  }
+
+  @Test
+  void securityTestStarterRequiresMatchingGroupAndArtifact() {
+    var samples = SampleCodeOptions.basic();
+    var disabled = ArchitectureGovernance.none();
+    var mapper = new BuildDependencyMapper();
+    var sameName = dep("org.acme", "spring-boot-starter-security");
+    var realStarter = dep("org.springframework.boot", "spring-boot-starter-security");
+
+    var unrelated =
+        MavenDependencyPlan.from(
+            blueprint(disabled, Dependencies.of(List.of(sameName)), samples), mapper);
+    var security =
+        MavenDependencyPlan.from(
+            blueprint(disabled, Dependencies.of(List.of(realStarter)), samples), mapper);
+    assertThat(unrelated.dependencies())
+        .extracting(BuildDependency::artifactId)
+        .doesNotContain("spring-boot-starter-security-test");
+    assertThat(security.dependencies())
+        .contains(
+            BuildDependency.of(
+                "org.springframework.boot", "spring-boot-starter-security-test", null, "test"));
   }
 }

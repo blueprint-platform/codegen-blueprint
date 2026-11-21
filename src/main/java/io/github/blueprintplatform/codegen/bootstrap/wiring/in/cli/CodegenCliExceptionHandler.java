@@ -54,11 +54,9 @@ public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
       }
       case AdapterException adapterException -> {
         printLocalizedError(cmd, adapterException.getMessageKey(), adapterException.getArgs());
-        for (Throwable suppressed :
-            adapterException.getCause() == null
-                ? new Throwable[0]
-                : adapterException.getCause().getSuppressed()) {
-          cmd.getErr().println("codegen: cleanup: " + suppressed.getMessage());
+        printCleanupFailures(cmd, adapterException);
+        if (adapterException.getCause() != null) {
+          printCleanupFailures(cmd, adapterException.getCause());
         }
         yield 3;
       }
@@ -78,6 +76,12 @@ public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
         yield 99;
       }
     };
+  }
+
+  private void printCleanupFailures(CommandLine cmd, Throwable failure) {
+    for (Throwable suppressed : failure.getSuppressed()) {
+      cmd.getErr().println("codegen: cleanup: " + suppressed.getMessage());
+    }
   }
 
   private void printLocalizedError(CommandLine cmd, String key, Object[] args) {

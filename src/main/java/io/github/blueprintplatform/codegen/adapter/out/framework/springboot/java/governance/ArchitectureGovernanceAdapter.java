@@ -14,9 +14,9 @@ import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedRes
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ArchitectureGovernanceAdapter {
 
@@ -31,10 +31,7 @@ public class ArchitectureGovernanceAdapter {
   private static final String OUT_SEGMENT_ARCHITECTURE = "architecture";
   private static final String OUT_SEGMENT_ARCH_UNIT = "archunit";
 
-  private static final Set<String> WEB_REQUIRED_GOVERNANCE_TEMPLATES =
-      Set.of(
-          "HexagonalStrictRestBoundarySignatureIsolationTest.java.ftl",
-          "StandardStrictRestBoundarySignatureIsolationTest.java.ftl");
+  private static final String MVC_TEMPLATE_GROUP = "mvc/";
 
   private final TemplateRenderer renderer;
   private final ArtifactSpec artifactSpec;
@@ -58,8 +55,15 @@ public class ArchitectureGovernanceAdapter {
     ProjectLayout layout = blueprint.getArchitecture().layout();
     String templateRoot = resolveTemplateRoot(layout, mode);
 
-    List<String> templatePaths = scanTemplates(templateRoot);
-    if (templatePaths.isEmpty()) {
+    var templates =
+        scanTemplates(templateRoot).stream()
+            .filter(path -> path.endsWith(JAVA_FTL_SUFFIX))
+            .map(path -> new GovernanceTemplate(path, path.substring(templateRoot.length() + 1)))
+            .toList();
+    if (templates.stream().noneMatch(template -> !template.requiresMvc())
+        || mode == GuardrailsMode.STRICT
+            && webSelected
+            && templates.stream().noneMatch(GovernanceTemplate::requiresMvc)) {
       throw new ArchitectureGovernanceTemplatesNotFoundException(
           templateRoot, layout.key(), mode.key());
     }
@@ -75,40 +79,27 @@ public class ArchitectureGovernanceAdapter {
 
     Map<String, Object> model = Map.of(MODEL_KEY_PROJECT_PACKAGE_NAME, pkg.value());
 
-    List<String> renderableTemplates =
-        templatePaths.stream()
-            .filter(p -> p.endsWith(JAVA_FTL_SUFFIX))
-            .filter(p -> !shouldSkipTemplateBecauseWebNotSelected(p, webSelected))
-            .toList();
-
-    List<GeneratedResource> generated = new ArrayList<>(renderableTemplates.size());
-
-    for (String fullTemplatePath : renderableTemplates) {
-      String relativeUnderRoot = fullTemplatePath.substring(templateRoot.length() + 1);
-      String javaRelative = stripSuffix(relativeUnderRoot);
-
-      Path outPath = outBase.resolve(javaRelative);
-      generated.add(renderer.renderUtf8(outPath, fullTemplatePath, model));
-    }
-
+    List<GeneratedResource> generated = new ArrayList<>();
+    templates.stream()
+        .filter(template -> webSelected || !template.requiresMvc())
+        .sorted(Comparator.comparing(GovernanceTemplate::outputName))
+        .forEach(
+            template ->
+                generated.add(
+                    renderer.renderUtf8(
+                        outBase.resolve(template.outputName()), template.resourcePath(), model)));
     return List.copyOf(generated);
   }
 
-  private boolean shouldSkipTemplateBecauseWebNotSelected(
-      String fullTemplatePath, boolean webSelected) {
-    if (webSelected) {
-      return false;
+  private record GovernanceTemplate(String resourcePath, String relativePath) {
+    boolean requiresMvc() {
+      return relativePath.startsWith(MVC_TEMPLATE_GROUP);
     }
-    String fileName = fileNameOf(fullTemplatePath);
-    return WEB_REQUIRED_GOVERNANCE_TEMPLATES.contains(fileName);
-  }
 
-  private String fileNameOf(String path) {
-    int idx = path.lastIndexOf(PATH_SEPARATOR);
-    if (idx < 0) {
-      return path;
+    String outputName() {
+      int start = requiresMvc() ? MVC_TEMPLATE_GROUP.length() : 0;
+      return relativePath.substring(start, relativePath.length() - FTL_SUFFIX.length());
     }
-    return path.substring(idx + 1);
   }
 
   private String resolveTemplateRoot(ProjectLayout layout, GuardrailsMode mode) {
@@ -131,12 +122,5 @@ public class ArchitectureGovernanceAdapter {
     } catch (TemplateScanException e) {
       throw new ArchitectureGovernanceTemplatesScanException(templateRoot, e);
     }
-  }
-
-  private String stripSuffix(String value) {
-    if (value.endsWith(FTL_SUFFIX)) {
-      return value.substring(0, value.length() - FTL_SUFFIX.length());
-    }
-    return value;
   }
 }

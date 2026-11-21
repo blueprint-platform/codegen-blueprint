@@ -10,7 +10,7 @@ Codegen Blueprint 2.0 delivers a Spring Boot project directory, a sibling ZIP an
 - `basic` is the default. `strict` applies a layout-specific set of additional rules. `none` omits ArchUnit tests and the ArchUnit dependency. [Guardrails rulebook](architecture-guardrails-rulebook.md)
 - `./mvnw clean verify` evaluates applicable ArchUnit rules against compiled classes. Sample-enabled output also executes the generated integration tests. These tests are delivered with the project and need no generator installation.
 - The generated tree and file contents repeat for the same generator, normalized inputs and resolved patch. ZIP byte identity is outside the contract.
-- The generator protects existing outputs and attempts to clean up files it owns on normal errors. It reports uncertainty or leftover paths. The directory and ZIP are separate filesystem operations, with no cross-path atomicity guarantee on interruption or crash.
+- The generator protects existing outputs and attempts to clean up files it owns on normal errors. If the filesystem cannot identify the staging directory, publication fails and reports its retained path. Rollback leaves outputs with uncertain identity in place and reports them. Avoid modifying the target or private staging directory during generation. Identity checks reduce replacement risk; portable filesystem operations leave a race between checks and path access. The directory and ZIP are separate filesystem operations, with no cross-path atomicity guarantee on interruption or crash.
 
 ## Boundaries
 

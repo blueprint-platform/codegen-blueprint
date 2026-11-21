@@ -15,10 +15,13 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 class CentralSpringBootPatchResolverTest {
   private HttpServer server;
@@ -79,6 +82,35 @@ class CentralSpringBootPatchResolverTest {
     assertThatThrownBy(() -> versions.select(V4_1))
         .hasMessage("adapter.springboot.resolution.failed")
         .hasRootCauseMessage("Central response exceeded byte limit");
+  }
+
+  @Test
+  @Timeout(8)
+  void stalledBodyUsesRemainingBudgetWithoutFallback() {
+    var releaseBody = new CountDownLatch(1);
+    server.createContext(
+        "/stall",
+        exchange -> {
+          try (exchange) {
+            exchange.sendResponseHeaders(200, 32);
+            exchange.getResponseBody().write(1);
+            exchange.getResponseBody().flush();
+            try {
+              releaseBody.await();
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          }
+        });
+    var repository = new CentralRepositoryHttp(client, endpoint);
+    long deadline = System.nanoTime() + Duration.ofSeconds(2).toNanos();
+
+    try {
+      assertThatThrownBy(() -> repository.read("metadata", "stall", 32, deadline))
+          .isInstanceOf(SpringBootResolutionException.class);
+    } finally {
+      releaseBody.countDown();
+    }
   }
 
   @Test

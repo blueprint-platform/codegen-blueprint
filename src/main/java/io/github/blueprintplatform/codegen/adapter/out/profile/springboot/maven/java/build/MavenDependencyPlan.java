@@ -59,7 +59,7 @@ public final class MavenDependencyPlan {
       dependencies.add(
           BuildDependency.of(
               SPRING_BOOT_GROUP_ID, "spring-boot-starter-webmvc-test", null, "test"));
-      if (selected.stream().anyMatch(d -> "spring-boot-starter-security".equals(d.artifactId()))) {
+      if (includesBootStarter(selected, "spring-boot-starter-security")) {
         dependencies.add(
             BuildDependency.of(
                 SPRING_BOOT_GROUP_ID, "spring-boot-starter-security-test", null, "test"));
