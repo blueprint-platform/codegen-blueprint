@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -122,6 +124,44 @@ class CentralSpringBootPatchResolverTest {
       assertThat(selected.patch()).isEqualTo(entry.getValue());
       assertThat(selected.source()).isEqualTo(Source.BUNDLED_FALLBACK);
       assertThat(selected.warning()).contains("metadata");
+    }
+  }
+
+  @Test
+  @Timeout(8)
+  void interruptionBeforeHeadersPreservesTheFlagAndDoesNotFallback() throws Exception {
+    var requestArrived = new CountDownLatch(1);
+    var releaseHeaders = new CountDownLatch(1);
+    server.createContext(
+        "/maven-metadata.xml",
+        exchange -> {
+          try (exchange) {
+            requestArrived.countDown();
+            releaseHeaders.await();
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+        });
+    var versions = selection();
+    var result =
+        new FutureTask<>(
+            () -> {
+              assertThatThrownBy(() -> versions.select(V4_1))
+                  .isInstanceOfSatisfying(
+                      SpringBootResolutionException.class,
+                      failure ->
+                          assertThat(failure.getArgs()).containsExactly("Central lookup interrupted"))
+                  .hasRootCauseInstanceOf(InterruptedException.class);
+              return Thread.currentThread().isInterrupted();
+            });
+    var worker = Thread.startVirtualThread(result);
+
+    try {
+      assertThat(requestArrived.await(3, TimeUnit.SECONDS)).isTrue();
+      worker.interrupt();
+      assertThat(result.get(3, TimeUnit.SECONDS)).isTrue();
+    } finally {
+      releaseHeaders.countDown();
     }
   }
 
