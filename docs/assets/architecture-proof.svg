@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="684" viewBox="0 0 760 684" role="img" aria-labelledby="title description">
+  <title id="title">One dependency fails the build</title>
+  <desc id="description">The generated Standard project passes Maven verify. Adding a LoggingGreetingAuditRepository field to GreetingController compiles, then ArchUnit fails controllers_must_not_depend_on_repositories. Removing the field and import restores a passing Maven build.</desc>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; }
+    .code { font-family: Menlo, Consolas, "Liberation Mono", monospace; }
+  </style>
+  <rect x="0.5" y="0.5" width="759" height="683" rx="16" fill="#F8FAFC" stroke="#D4DEE7"/>
+  <text x="30" y="55" font-size="38" font-weight="700" fill="#192B45">One dependency fails the build</text>
+  <text x="30" y="94" font-size="26" font-weight="400" fill="#475D73">Generated Standard project · Strict guardrails</text>
+  <rect x="16" y="118" width="728" height="549" rx="10" fill="#FFFFFF" stroke="none"/>
+  <path d="M49 166V587" fill="none" stroke="#D4DEE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="49" cy="166" r="17" fill="#E8F5F1"/>
+  <path d="M41 166l5 5 10-11" fill="none" stroke="#087F73" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="82" y="175" font-size="30" font-weight="700" fill="#087F73">Baseline passes</text>
+  <text x="82" y="210" font-size="26" font-weight="400" fill="#475D73">Maven verify succeeds.</text>
+  <circle cx="49" cy="265" r="17" fill="#FCEDEF"/>
+  <path d="M44 260l10 10m0-10-10 10" fill="none" stroke="#A63540" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="82" y="274" font-size="30" font-weight="700" fill="#A63540">Architecture check fails</text>
+  <text x="82" y="312" font-size="26" font-weight="400" fill="#475D73">Add a repository field to</text>
+  <text x="82" y="347" font-size="26" font-weight="400" fill="#192B45" class="code">GreetingController</text>
+  <rect x="82" y="363" width="642" height="87" rx="6" fill="#FCEDEF" stroke="none"/>
+  <text x="95" y="397" font-size="24" font-weight="400" fill="#A63540" class="code">+ private LoggingGreetingAuditRepository</text>
+  <text x="153" y="428" font-size="24" font-weight="400" fill="#A63540" class="code">__archViolation = null;</text>
+  <text x="82" y="488" font-size="26" font-weight="400" fill="#475D73">Java compiles. ArchUnit reports</text>
+  <text x="82" y="524" font-size="24" font-weight="700" fill="#A63540" class="code">controllers_must_not_depend_on_repositories</text>
+  <circle cx="49" cy="587" r="17" fill="#E8F5F1"/>
+  <path d="M41 587l5 5 10-11" fill="none" stroke="#087F73" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="82" y="596" font-size="30" font-weight="700" fill="#087F73">Restored build passes</text>
+  <text x="82" y="634" font-size="25" font-weight="400" fill="#475D73">Remove the field and import. Maven verify succeeds.</text>
+</svg>

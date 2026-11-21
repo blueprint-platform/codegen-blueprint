@@ -2,7 +2,7 @@
 
 The proof starts from two generated Spring Boot projects. It runs Maven verification, introduces one compilable boundary violation at a time, checks the failing ArchUnit rule, restores the change and verifies again.
 
-![Three verified states for a standard controller-to-repository dependency](../assets/proof-2.0.svg)
+![Three verified states for a standard controller-to-repository dependency](../assets/architecture-proof.svg)
 
 ## Run the proof
 

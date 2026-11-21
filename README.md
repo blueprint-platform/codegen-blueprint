@@ -12,9 +12,9 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-blue" /></a>
 </p>
 
-Codegen Blueprint generates **Spring Boot projects whose Maven build checks the architecture you select**. A package layout gives the team a place to start. Generated ArchUnit tests keep the selected dependency boundaries executable as the code evolves.
+Codegen Blueprint generates **Spring Boot projects whose Maven build checks the architecture you select**. Choose Standard or Hexagonal and run the generated Maven wrapper to enforce the selected boundaries with ArchUnit.
 
-**Generate → Enforce → Prove.** Choose Standard or Hexagonal, run the generated Maven wrapper, and reproduce a compiling dependency that fails at a named architecture rule.
+> **See the contract in action.** In the generated Standard sample, a controller-to-repository dependency compiles and fails ArchUnit. Removing it restores a passing Maven build. [Inspect the recorded build](docs/examples/proof-2.0.txt).
 
 [Quickstart](docs/quickstart.md) · [Documentation](docs/index.md) · [Executable proof](docs/examples/boundary-proof.md)
 
@@ -43,7 +43,7 @@ The output is a project directory and a sibling `greeting.zip`. Maven runs the g
 - **Standard** (default) organizes each feature into controllers, services, repositories and domain types.
 - **Hexagonal** routes inbound and outbound dependencies through application ports, keeps business types in the domain and wires implementations in bootstrap.
 
-<p align="center"><img src="docs/assets/architecture-2.0.svg" alt="Representative source dependencies. Standard routes controller through service to repository. Hexagonal adapters depend on application ports. Dashed paths mark prohibited dependencies." /></p>
+<p align="center"><img src="docs/assets/architecture.svg" alt="Selected source dependencies in Standard and Hexagonal. Standard controllers reference services and services reference repositories. Hexagonal adapters reference application ports. Separate rows list forbidden dependencies." /></p>
 
 `basic` (default) checks core dependencies, package structure and cycles. `strict` retains those checks and adds layout-specific constraints, including REST signatures when MVC is present. `none` generates the layout without ArchUnit checks.
 
@@ -53,7 +53,7 @@ The output is a project directory and a sibling `greeting.zip`. Maven runs the g
 
 In the generated Standard sample, adding a `LoggingGreetingAuditRepository` field to `GreetingController` compiles. Maven fails at `controllers_must_not_depend_on_repositories`. Removing the field and import restores the passing build.
 
-<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/proof-2.0.svg" alt="Green, red, green. The baseline passes, a compiling dependency fails the named ArchUnit assertion, and the restored build passes." /></a></p>
+<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/architecture-proof.svg" alt="Green, red, green. The baseline passes, a compiling dependency fails the named ArchUnit assertion, and the restored build passes." /></a></p>
 
 [Reproduce the proof](docs/examples/boundary-proof.md) · [Inspect the recorded result](docs/examples/proof-2.0.txt)
 

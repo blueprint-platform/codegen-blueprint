@@ -2,7 +2,7 @@
 
 Codegen Blueprint delivers a Spring Boot Maven project directory and a sibling ZIP. A blueprint selects the project structure, dependency inputs and architecture policy. The generated project runs its own tests and owns its later lifecycle.
 
-![A layered dependency sequence and ports-and-adapters code dependencies with prohibited edges](../assets/architecture-2.0.svg)
+![A layered dependency sequence and ports-and-adapters code dependencies with prohibited edges](../assets/architecture.svg)
 
 ## Generate, enforce, prove
 

@@ -1,28 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title description">
   <title id="title">Codegen Blueprint</title>
-  <desc id="description">Architecture as an Executable Contract. Generate Spring Boot projects, enforce dependencies with Maven and reproduce a boundary failure. A three-stage diagram reads Generate, Enforce, Prove.</desc>
-  <defs>
-    <linearGradient id="surface" x2="1" y2="1"><stop stop-color="#101826"/><stop offset="1" stop-color="#172c40"/></linearGradient>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="#69e6bd" stroke-width="1.4"/></marker>
-  </defs>
-  <rect width="1280" height="640" fill="url(#surface)"/>
-  <rect x="67" y="65" width="1146" height="510" rx="30" fill="#101826" stroke="#536c88" stroke-width="2"/>
-  <rect x="592" y="117" width="96" height="5" rx="2.5" fill="#69e6bd"/>
-  <g font-family="system-ui, sans-serif" text-anchor="middle">
-    <text x="640" y="230" font-size="91" font-weight="750" fill="#eff5ff">Codegen Blueprint</text>
-    <text x="640" y="301" font-size="43" font-weight="630" fill="#a1f1d5">Architecture as an Executable Contract</text>
-    <text x="640" y="359" font-size="31" fill="#c3cede">Spring Boot projects with build-time guardrails</text>
-  </g>
-  <g fill="#22354a" stroke="#536c88" stroke-width="2">
-    <rect x="184" y="431" width="240" height="75" rx="12"/>
-    <rect x="520" y="431" width="240" height="75" rx="12"/>
-    <rect x="856" y="431" width="240" height="75" rx="12"/>
-  </g>
-  <g stroke="#69e6bd" stroke-width="3.5" fill="none">
-    <path d="M426 468h91" marker-end="url(#arrow)"/>
-    <path d="M762 468h91" marker-end="url(#arrow)"/>
-  </g>
-  <g font-family="ui-monospace, Menlo, Consolas, monospace" text-anchor="middle" font-size="31" fill="#eff5ff">
-    <text x="304" y="479">Generate</text><text x="640" y="479">Enforce</text><text x="976" y="479">Prove</text>
-  </g>
+  <desc id="description">Architecture as an Executable Contract. Spring Boot projects with build-time guardrails.</desc>
+  <style>
+    text { font-family: Arial, Helvetica, sans-serif; }
+    .code { font-family: Menlo, Consolas, "Liberation Mono", monospace; }
+  </style>
+  <rect x="0" y="0" width="1280" height="640" rx="0" fill="#F8FAFC" stroke="none"/>
+  <rect x="84" y="97" width="48" height="5" rx="2" fill="#087F73" stroke="none"/>
+  <text x="84" y="157" font-size="64" font-weight="700" fill="#192B45">Codegen Blueprint</text>
+  <text x="84" y="281" font-size="74" font-weight="700" fill="#192B45">Architecture as an</text>
+  <text x="84" y="371" font-size="74" font-weight="700" fill="#087F73">Executable Contract</text>
+  <text x="87" y="431" font-size="31" font-weight="400" fill="#475D73">Spring Boot projects with build-time guardrails</text>
+  <path d="M86 488H1194" fill="none" stroke="#D4DEE7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="86" y="547" font-size="36" font-weight="700" fill="#192B45">Generate</text>
+  <path d="M269 535h30m-8 -7 8 7-8 7" fill="none" stroke="#087F73" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="327" y="547" font-size="36" font-weight="700" fill="#192B45">Enforce</text>
+  <path d="M480 535h30m-8 -7 8 7-8 7" fill="none" stroke="#087F73" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="538" y="547" font-size="36" font-weight="700" fill="#192B45">Prove</text>
+  <circle cx="1022" cy="291" r="146" fill="#E8F5F1"/>
+  <path d="M944 229l-43 62 43 62m156-124 43 62-43 62" fill="none" stroke="#087F73" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M975 292l34 34 63-73" fill="none" stroke="#087F73" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

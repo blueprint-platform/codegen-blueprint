@@ -12,7 +12,7 @@ Use this reference when choosing a mode or investigating a failing generated arc
 
 The generator chooses the template family using the layout and mode. Strict REST templates come from the `mvc/` group when the effective dependency plan includes MVC. Explicit `web` and the MVC starter added by the basic sample both activate that group. Strict MVC generation fails if the required template group is missing.
 
-![Source dependencies in Standard and Hexagonal layouts, with prohibited edges dashed](../assets/architecture-2.0.svg)
+![Source dependencies in Standard and Hexagonal layouts, with prohibited dependencies listed separately](../assets/architecture.svg)
 
 ## Standard layered layout
 
