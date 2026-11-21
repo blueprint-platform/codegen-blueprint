@@ -117,7 +117,7 @@ generate_project() {
   "$JAVA_BIN" "${generator_options[@]}" "$CODEGEN_JAR" \
     --cli springboot \
     --boot "${BOOT_VERSION:-4.2}" \
-    --java "${JAVA_VERSION:-25}" \
+    --java "$JAVA_VERSION" \
     --group-id "$GROUP_ID" \
     --artifact-id "$artifact_id" \
     --name "$name" \

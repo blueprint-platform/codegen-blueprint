@@ -40,7 +40,6 @@ on_exit() {
 
   exit "$rc"
 }
-trap on_exit EXIT
 
 prove_controller_repository_boundary() {
   local std_dir="$1"
@@ -57,10 +56,12 @@ main() {
     standard|full) ;;
     *) echo "PROOF_MODE must be standard or full" >&2; exit 2 ;;
   esac
+  require_proof_jdk
+  require_cmd "$JAVA_BIN"
+  trap on_exit EXIT
   init_runtime_context
 
   require_file "$CODEGEN_JAR"
-  require_cmd "$JAVA_BIN"
 
   log "Workspace (temp): ${WORK_DIR}"
   log "Using CODEGEN_JAR: ${CODEGEN_JAR}"

@@ -5,7 +5,8 @@
 # -------------------------
 GROUP_ID="${GROUP_ID:-io.github.blueprintplatform}"
 PACKAGE_NAME="${PACKAGE_NAME:-io.github.blueprintplatform.greeting}"
-JAVA_BIN="${JAVA_BIN:-java}"
+JAVA_VERSION="${JAVA_VERSION:-25}"
+JAVA_BIN="${JAVA_BIN:-${GENERATOR_JAVA:-${JAVA_HOME:+$JAVA_HOME/bin/}java}}"
 
 KEEP_WORK_DIR="${KEEP_WORK_DIR:-0}"
 PROOF_EXPORT_DIR="${PROOF_EXPORT_DIR:-}"
@@ -71,6 +72,34 @@ ensure_repo_root() {
 # -------------------------
 # Context init
 # -------------------------
+require_proof_jdk() {
+  case "$JAVA_VERSION" in
+    21|25) ;;
+    *) die "Unsupported proof target JAVA_VERSION=$JAVA_VERSION. Choose 21 or 25." ;;
+  esac
+
+  # Match the generated Maven wrapper: JAVA_HOME takes precedence over PATH.
+  local bin="${JAVA_HOME:+$JAVA_HOME/bin/}" runtime compiler
+  local selected="${JAVA_HOME:+JAVA_HOME=$JAVA_HOME}"
+  selected="${selected:-PATH}"
+  local guidance="Set JAVA_HOME to an installed JDK $JAVA_VERSION for this invocation, or choose JAVA_VERSION=21 for a Java 21 proof."
+  if ! runtime="$("${bin}java" -version 2>&1)" || ! compiler="$("${bin}javac" -version 2>&1)"; then
+    die "Proof targeting Java $JAVA_VERSION requires a JDK. Could not run java and javac using $selected. $guidance"
+  fi
+  local runtime_pattern='(openjdk|java) version "([0-9]+)'
+  local compiler_pattern='javac ([0-9]+)'
+  if [[ ! $runtime =~ $runtime_pattern ]]; then
+    die "Cannot determine Maven's Java version using $selected. $guidance"
+  fi
+  local runtime_major="${BASH_REMATCH[2]}"
+  if [[ ! $compiler =~ $compiler_pattern ]]; then
+    die "Cannot determine the compiler version using $selected. $guidance"
+  fi
+  if (( runtime_major < JAVA_VERSION || BASH_REMATCH[1] < JAVA_VERSION )); then
+    die "Proof targets Java $JAVA_VERSION, but Maven would use Java $runtime_major via $selected ($compiler). $guidance"
+  fi
+}
+
 init_runtime_context() {
   # This file lives under: ci/proof/lib
 

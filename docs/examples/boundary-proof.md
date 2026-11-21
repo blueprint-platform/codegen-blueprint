@@ -6,13 +6,15 @@ The proof starts from two generated Spring Boot projects. It runs Maven verifica
 
 ## Run the proof
 
-Build the snapshot from the repository root, then run with JDK 25.
+Build the snapshot from the repository root with JDK 21 or 25. The proof targets Java 25 by default, so its generated Maven builds need JDK 25. The wrapper uses `JAVA_HOME` when set, otherwise it uses `PATH`. On macOS, select an installed JDK 25 for this invocation with `JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
 
 ```bash
 mvn -B -ntp clean package
 CODEGEN_JAR="$PWD/target/codegen-blueprint-2.0.0-SNAPSHOT.jar" \
   bash ci/proof/proof-runner.sh
 ```
+
+To run the proof with JDK 21, set `JAVA_VERSION=21` and point `JAVA_HOME` at that JDK. This generates Java 21 projects. Set `GENERATOR_JAVA` to a separate Java 21 or 25 executable when you want to run the generator and generated Maven builds on different JDKs.
 
 The runner prints its evidence directory under `target/architecture-proof/`. Set `PROOF_OUTPUT_ROOT` for another location. To reproduce the bundled-reference test run, set `EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK`. That proof-only setting blocks the generator’s Central connection and checks the source reported by the CLI. The generated Maven build still needs access to dependencies.
 
