@@ -19,4 +19,4 @@ To check the documented commands with JDK 25 and a packaged JAR:
 python3 scripts/verify-quickstart.py target/codegen-blueprint-2.0.0-SNAPSHOT.jar
 ```
 
-Build & Test reuses the Java 21 engine artifact on JDK 25 and executes the fenced block from the [quickstart](../quickstart.md). CI also compares the generated walkthrough snapshots with fresh output from the same JAR. The executable proof is separate and checks the named ArchUnit failure and restored build.
+Build & Test reuses the Java 25 engine artifact on JDK 25 and executes the fenced block from the [quickstart](../quickstart.md). CI also compares the generated walkthrough snapshots with fresh output from the same JAR. The executable proof is separate and checks the named ArchUnit failure and restored build.

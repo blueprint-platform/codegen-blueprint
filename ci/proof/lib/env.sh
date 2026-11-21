@@ -79,7 +79,7 @@ require_proof_jdk() {
   esac
 
   # Match the generated Maven wrapper: JAVA_HOME takes precedence over PATH.
-  local bin="${JAVA_HOME:+$JAVA_HOME/bin/}" runtime compiler
+  local bin="${JAVA_HOME:+$JAVA_HOME/bin/}" runtime compiler generator
   local selected="${JAVA_HOME:+JAVA_HOME=$JAVA_HOME}"
   selected="${selected:-PATH}"
   local guidance="Set JAVA_HOME to an installed JDK $JAVA_VERSION for this invocation, or choose JAVA_VERSION=21 for a Java 21 proof."
@@ -97,6 +97,10 @@ require_proof_jdk() {
   fi
   if (( runtime_major < JAVA_VERSION || BASH_REMATCH[1] < JAVA_VERSION )); then
     die "Proof targets Java $JAVA_VERSION, but Maven would use Java $runtime_major via $selected ($compiler). $guidance"
+  fi
+  if ! generator="$("$JAVA_BIN" -version 2>&1)" ||
+    [[ ! $generator =~ $runtime_pattern ]] || (( BASH_REMATCH[2] < 25 )); then
+    die "Codegen Blueprint requires Java 25. Set GENERATOR_JAVA to a JDK 25 java executable (current generator command: $JAVA_BIN)."
   fi
 }
 

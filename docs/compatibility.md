@@ -1,6 +1,6 @@
 # Compatibility
 
-The generator runs on Java **21** or **25**. Its executable JAR is compiled for Java 21 and uses Spring Boot **4.1.3** internally. Generated projects choose their own Boot patch independently.
+Build and run the generator on **Java 25**. Its executable JAR targets Java 25 and uses Spring Boot **4.1.3** internally. Generated projects select their own Java target and Boot patch.
 
 | Generated Spring Boot line | Java 21 | Java 25 | Bundled reference |
 | --- | --- | --- | --- |
@@ -15,7 +15,9 @@ The supported line is a product boundary. The newest stable patch visible in Mav
 
 ## Verification coverage
 
-The 2.0 local verification ran the generator tests on both JDKs and generated real projects from the same JAR across all four Boot/JDK pairs. The matrix covered both layouts, all guardrails modes, optional samples, explicit and implicit MVC, and a representative dependency combination with JPA/H2 and Security. Wrapper verification included real HTTP, an ArchUnit failure round trip and JVM classfile checks. Live Central selected **4.1.3** and **4.2.0** during the recorded run. The 4.1.0 edge build passed with both JDKs after substituting only the parent in a temporary generated project.
+Local verification built and ran the generator on JDK 25, then used that JAR across all four generated Boot/JDK pairs. The matrix covered both layouts, all guardrails modes, optional samples, explicit and implicit MVC, and a representative dependency combination with JPA/H2 and Security. Wrapper verification included real HTTP, an ArchUnit failure round trip and JVM classfile checks.
+
+Earlier compatibility runs observed **4.1.3** and **4.2.0** from live Central. They also verified the 4.1.0 edge on both target JDKs after substituting only the parent in a temporary generated project.
 
 The [proof record](examples/boundary-proof.md) covers the five Strict boundary mutations and the separate Basic/Strict continuity fixtures. The continuity fixtures exercised both layouts on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 using bundled resolution. The root build validates the generator. The separate generated-project build validates its output. The matrix samples the supported surface without claiming every patch or alias combination has been exercised.
 

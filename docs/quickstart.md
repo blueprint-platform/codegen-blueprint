@@ -34,6 +34,6 @@ chmod +x mvnw
 
 The CLI prints the selected Boot patch and its source. The output contains the project directory and a sibling `greeting.zip`. Maven runs the generated ArchUnit tests and the greeting sample integration tests, including requests to a real HTTP server. The first build needs access to Maven dependencies and the wrapper distribution, or a cache that already contains them.
 
-For a Java 21 generated project, pass `--java 21` and build with JDK 21. To use the older supported Boot line, pass `--boot 4.1`. See the [CLI reference](cli.md) for the other options.
+For a Java 21 generated project, run the generator on Java 25 with `--java 21`, then run the generated wrapper with JDK 21. To use the older supported Boot line, pass `--boot 4.1`. See the [CLI reference](cli.md) for the other options.
 
 To see a build fail on a specific architecture rule, follow the [green → red → green proof](examples/boundary-proof.md).

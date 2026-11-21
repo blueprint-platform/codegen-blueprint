@@ -4,7 +4,7 @@ Use [issues](https://github.com/blueprint-platform/codegen-blueprint/issues) for
 
 ## Verify a change
 
-Build with Java 21 or 25 and Maven 3.9.16.
+Build and run the generator with JDK 25 and Maven 3.9.16. Generated projects can target Java 21 or 25.
 
 ```bash
 mvn -B -ntp clean verify
