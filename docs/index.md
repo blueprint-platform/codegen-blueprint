@@ -10,7 +10,7 @@
 
 - [Executable architecture contract](architecture/executable-architecture-contract.md) defines what the generator delivers and what the build enforces.
 - [Guardrails rulebook](architecture/architecture-guardrails-rulebook.md) maps each layout and mode to its ArchUnit assertions.
-- [Boundary proof](examples/boundary-proof.md) shows how to reproduce a compiling violation and identify the named assertion in the Maven report.
+- [Boundary proof](examples/boundary-proof.md) shows the actual Java change and Surefire failure, then gives commands to reproduce the single example or all five scenarios.
 
 ## Check compatibility or contribute
 

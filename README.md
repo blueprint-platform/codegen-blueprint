@@ -12,9 +12,11 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-blue" /></a>
 </p>
 
+<p align="center"><img src="docs/assets/social-preview.png" width="760" alt="Codegen Blueprint — Executable Architecture for Spring Boot" /></p>
+
 Codegen Blueprint generates **Spring Boot projects whose Maven build checks the architecture you select**. Choose Standard or Hexagonal and run the generated Maven wrapper to enforce the selected boundaries with ArchUnit.
 
-> **See the contract in action.** In the generated Standard sample, a controller-to-repository dependency compiles and fails ArchUnit. Removing it restores a passing Maven build. [Inspect the recorded build](docs/examples/proof-2.0.txt).
+> **See the contract in action.** In the generated Standard sample, a controller-to-repository dependency compiles and fails ArchUnit. Removing it restores a passing Maven build. [See the single-case proof](#see-a-compiling-change-fail-verification).
 
 [Quickstart](docs/quickstart.md) · [Documentation](docs/index.md) · [Executable proof](docs/examples/boundary-proof.md)
 
@@ -51,11 +53,19 @@ The output is a project directory and a sibling `greeting.zip`. Maven runs the g
 
 ## See a compiling change fail verification
 
-In the generated Standard sample, adding a `LoggingGreetingAuditRepository` field to `GreetingController` compiles. Maven fails at `controllers_must_not_depend_on_repositories`. Removing the field and import restores the passing build.
+**GREEN → RED → GREEN.** The generated Standard sample with Strict guardrails passes `clean verify`. The proof runner then adds this field and its import to `GreetingController`.
 
-<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/architecture-proof.svg" alt="Green, red, green. The baseline passes, a compiling dependency fails the named ArchUnit assertion, and the restored build passes." /></a></p>
+```java
+private
+    LoggingGreetingAuditRepository
+        __archViolation = null;
+```
 
-[Reproduce the proof](docs/examples/boundary-proof.md) · [Inspect the recorded result](docs/examples/proof-2.0.txt)
+The change compiles. Surefire reports a failure in the ArchUnit assertion `controllers_must_not_depend_on_repositories`. Removing the field and import makes the same Maven command pass again.
+
+<p align="center"><a href="docs/examples/boundary-proof.md"><img src="docs/assets/architecture-proof.svg" alt="Standard Strict proof. Baseline passes, Java compiles with the injected repository field, Surefire records the named rule failure, and the restored build passes." /></a></p>
+
+[Reproduce this case or run all five scenarios](docs/examples/boundary-proof.md) · [Inspect the historical proof record](docs/examples/proof-2.0.txt)
 
 ## What makes 2.0 a major release
 

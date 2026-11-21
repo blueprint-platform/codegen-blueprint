@@ -1,38 +1,96 @@
 # Executable architecture proof
 
-The proof starts from two generated Spring Boot projects. It runs Maven verification, introduces one compilable boundary violation at a time, checks the failing ArchUnit rule, restores the change and verifies again.
+The proof runner generates Spring Boot samples with Strict guardrails and runs `sh ./mvnw -q -ntp clean verify` at baseline, after each source change and after restoration. The Standard controller example below is the same case shown in the README. The full run checks five scenarios across Standard and Hexagonal.
 
-![Three verified states for a standard controller-to-repository dependency](../assets/architecture-proof.svg)
+## Standard controller depends on a repository
+
+![Standard Strict proof showing baseline PASS, a named Surefire failure after Java compilation and restored PASS](../assets/architecture-proof.svg)
+
+The runner adds the repository import and the following field to `GreetingController`. Java accepts the field type. ArchUnit inspects the compiled class and reports the forbidden dependency.
+
+```java
+private
+    LoggingGreetingAuditRepository
+        __archViolation = null;
+```
+
+These two lines from `logs/STD_violation.log` identify the assertion and the field. The elapsed time varies by run.
+
+```text
+[ERROR] io.github.blueprintplatform.greeting.architecture.archunit.StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories -- Time elapsed: 0.007 s <<< FAILURE!
+Field <io.github.blueprintplatform.greeting.bp.sample.controller.GreetingController.__archViolation> has type <io.github.blueprintplatform.greeting.bp.sample.repository.LoggingGreetingAuditRepository> in (GreetingController.java:0)
+```
 
 ## Run the proof
 
-Build and run the generator with JDK 25. The proof targets Java 25 by default, so its generated Maven builds need JDK 25. The wrapper uses `JAVA_HOME` when set, otherwise it uses `PATH`. On macOS, select an installed JDK 25 for this invocation with `JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
+From the repository root, use JDK 25 and Maven 3.9.16. On macOS, select an installed JDK 25 with `export JAVA_HOME="$(/usr/libexec/java_home -v 25)"`.
 
 ```bash
 mvn -B -ntp clean package
-CODEGEN_JAR="$PWD/target/codegen-blueprint-2.0.0-SNAPSHOT.jar" \
-  bash ci/proof/proof-runner.sh
 ```
 
-To verify Java 21 projects on JDK 21, set `JAVA_VERSION=21`, point `JAVA_HOME` at JDK 21 and set `GENERATOR_JAVA` to the absolute path of the JDK 25 `java` executable. The generator and the generated Maven builds then run on their respective JDKs. The continuity fixture below also accepts `GENERATOR_JAVA`.
+To reproduce only the README case:
 
-The runner prints its evidence directory under `target/architecture-proof/`. Set `PROOF_OUTPUT_ROOT` for another location. To reproduce the bundled-reference test run, set `EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK`. That proof-only setting blocks the generator’s Central connection and checks the source reported by the CLI. The generated Maven build still needs access to dependencies.
+```bash
+PROOF_MODE=standard bash ci/proof/proof-runner.sh
+```
 
-## Recorded 2.0 result
+To run both baselines and all five scenarios using the bundled Boot resolution in the historical record:
 
-The Java 25 / Boot 4.2 run passed both baselines, detected all five violations and passed each restored build. The recorded checkout produced a snapshot artifact. Its hash and the named assertions are available in the [portable proof record](proof-2.0.txt).
+```bash
+PROOF_MODE=full BOOT_VERSION=4.2 JAVA_VERSION=25 \
+  EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK bash ci/proof/proof-runner.sh
+```
 
-| Change introduced | Rule family that must fail |
-| --- | --- |
-| Hexagonal adapter depends on an application implementation | Ports isolation |
-| Standard controller package renamed to a near-miss family | Package schema sanity |
-| Standard controller depends on a repository | Layer dependency |
-| Hexagonal MVC controller exposes a root-domain type inside a generic response | REST signature isolation |
-| Standard MVC controller exposes a root-domain type inside a generic response | REST signature isolation |
+`EXPECT_BOOT_SOURCE=BUNDLED_FALLBACK` blocks the generator’s Central connection for the proof and verifies the reported resolution source. The generated Maven build still needs access to dependencies. To reuse a packaged generator, pass its absolute path as `CODEGEN_JAR`. To target Java 21, set `JAVA_VERSION=21`, point `JAVA_HOME` at JDK 21 and set `GENERATOR_JAVA` to the absolute path of the JDK 25 `java` executable.
 
-The harness requires the named failure in the ArchUnit report and log. A compilation, download or unrelated test failure fails the proof itself. The REST cases rely on MVC added by the sample, exercising the generated guardrail without an explicit `web` alias.
+## Five recorded scenarios
 
-See [compatibility](../compatibility.md#verification-coverage) for the broader matrix and the [rulebook](../architecture/architecture-guardrails-rulebook.md) for scope.
+The [historical proof record](proof-2.0.txt) identifies the generator artifact by SHA-256 and records the JDK, Maven, exact Boot patch and assertion names. Both baselines passed. Each mutation produced its expected failure and each restoration passed Maven verification.
+
+- **Hexagonal adapter references an application implementation**
+
+    `HexagonalStrictPortsIsolationTest`
+
+    `adapters_must_not_depend_on_application_implementation`
+
+- **Standard controller package is renamed to a near miss**
+
+    `StandardPackageSchemaSanityTest`
+
+    `each_standard_bounded_context_must_contain_required_canonical_families`
+
+- **Standard controller references a repository**
+
+    `StandardStrictLayerDependencyRulesTest`
+
+    `controllers_must_not_depend_on_repositories`
+
+- **Hexagonal MVC controller exposes a root-domain type in a generic response**
+
+    `HexagonalStrictRestBoundarySignatureIsolationTest`
+
+    `rest_controllers_must_not_expose_domain_types_in_signatures`
+
+- **Standard MVC controller exposes a root-domain type in a generic response**
+
+    `StandardStrictRestBoundarySignatureIsolationTest`
+
+    `rest_controllers_must_not_expose_domain_types_in_signatures`
+
+The runner checks the Surefire failure report and the named assertion in the Maven log before accepting an expected failure. Both REST cases exercise MVC enabled by the sample and types nested inside `ResponseEntity<List<…>>`.
+
+## Inspect a run
+
+Open the directory printed by the runner under `target/architecture-proof/`. Start with `proof-summary.txt`, then inspect `logs/` and `excerpts/` for the failing case. Set `KEEP_WORK_DIR=1` before running to retain the restored generated projects for source and report inspection. The proof runner also accepts `PROOF_OUTPUT_ROOT` for a different output location.
+
+After a successful full run, replace `RUN_DIRECTORY` with the printed run directory name to produce a portable record:
+
+```bash
+python3 scripts/proof-record.py "target/architecture-proof/RUN_DIRECTORY"
+```
+
+See [compatibility](../compatibility.md#verification-coverage) for the broader matrix and the [rulebook](../architecture/architecture-guardrails-rulebook.md) for rule scope.
 
 ## Prove that Strict keeps the Basic boundaries
 
@@ -40,7 +98,7 @@ Run the continuity fixtures against the same packaged JAR. Use a fresh output pa
 
 ```bash
 python3 ci/proof/guardrail-continuity.py \
-  target/codegen-blueprint-2.0.0-SNAPSHOT.jar target/guardrail-continuity \
+  target/codegen-blueprint-*.jar target/guardrail-continuity \
   --boot 4.2 --java 25
 ```
 
@@ -54,5 +112,3 @@ python3 ci/proof/guardrail-continuity.py \
 | Hexagonal adapter references a class directly in `application` | No separate port rule | Adapter implementation-isolation assertion |
 
 The previous Strict templates accepted two compiling counterexamples under Boot 4.2 and Java 25: the Standard context-root cycle and the Hexagonal application-to-adapter edge. With the revised templates, the four continuity projects passed before mutation, reported all applicable assertions after mutation, and passed again after source restoration. The Standard cycle was reported as `Cycle detected: Slice config`; the Hexagonal application edge identified `Inward.next` referencing `adapter.out.Concrete`. The same four fixtures passed on Boot 4.1.3 / Java 21 and Boot 4.2.0 / Java 25 with bundled resolution.
-
-The separate REST proof puts the probe type directly in `domain` and exposes it through `ResponseEntity<List<…>>` on a directly annotated controller. This exercises generic signature scanning and the exact package-root boundary in both layouts.
