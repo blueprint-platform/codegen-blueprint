@@ -2,7 +2,7 @@
 
 | Asset | Purpose | Review against |
 | --- | --- | --- |
-| [README proof PNG](../assets/architecture-proof.png) | Shows the injected Java dependency and the three observed verdicts | [Proof procedure](../examples/boundary-proof.md) and [historical run](../examples/proof-2.0.txt) |
+| [README proof PNG](../assets/architecture-proof.png) | Shows the injected Java dependency and the three observed verdicts | [Proof procedure](../examples/boundary-proof.md) and [recorded results](../examples/boundary-proof.md#recorded-results) |
 | [Architecture SVG](../assets/architecture.svg) | Shows selected source dependencies in both layouts | [Guardrails rulebook](../architecture/architecture-guardrails-rulebook.md) |
 | [Social preview SVG](../assets/social-preview.svg) and [PNG](../assets/social-preview.png) | Identifies the project when a repository link is shared | Repository social preview crop |
 
