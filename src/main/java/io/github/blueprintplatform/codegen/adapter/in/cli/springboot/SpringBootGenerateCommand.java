@@ -176,7 +176,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       case BUNDLED_FALLBACK -> "BUNDLED_FALLBACK";
     };
     var warning = resolution.warning();
-    if (warning != null) {
+    if (warning != null && log.isWarnEnabled()) {
       log.warn(
           "{}: {}",
           source,

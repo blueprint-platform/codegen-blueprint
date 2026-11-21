@@ -11,6 +11,7 @@ import io.github.blueprintplatform.codegen.domain.policy.file.GeneratedFilePolic
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Component;
 
@@ -37,18 +38,7 @@ public class CodegenProfilesRegistry {
 
   public ProfileProperties requireValidatedProfile(String profileKey) {
     var profile = requireProfile(profileKey);
-    var order = profile.orderedArtifactKeys();
-    if (order.isEmpty()) {
-      throw new ProfileConfigurationException("bootstrap.profile.artifact-order.empty", profileKey);
-    }
-    Set<ArtifactKey> ordered = new HashSet<>();
-    for (var key : order) {
-      if (!ordered.add(key)) {
-        throw new ProfileConfigurationException(
-            "bootstrap.profile.artifact-order.duplicate", profileKey, key.key());
-      }
-      requireArtifact(profileKey, key);
-    }
+    var ordered = validateArtifactOrder(profileKey, profile.orderedArtifactKeys());
 
     Set<Path> outputs = new HashSet<>();
     for (var entry : profile.artifacts().entrySet()) {
@@ -73,6 +63,26 @@ public class CodegenProfilesRegistry {
         }
       }
     }
+    validateOutputParents(profileKey, outputs);
+    return profile;
+  }
+
+  private Set<ArtifactKey> validateArtifactOrder(String profileKey, List<ArtifactKey> order) {
+    if (order.isEmpty()) {
+      throw new ProfileConfigurationException("bootstrap.profile.artifact-order.empty", profileKey);
+    }
+    Set<ArtifactKey> ordered = new HashSet<>();
+    for (var key : order) {
+      if (!ordered.add(key)) {
+        throw new ProfileConfigurationException(
+            "bootstrap.profile.artifact-order.duplicate", profileKey, key.key());
+      }
+      requireArtifact(profileKey, key);
+    }
+    return ordered;
+  }
+
+  private static void validateOutputParents(String profileKey, Set<Path> outputs) {
     for (Path output : outputs) {
       for (Path parent = output.getParent(); parent != null; parent = parent.getParent()) {
         if (outputs.contains(parent)) {
@@ -81,7 +91,6 @@ public class CodegenProfilesRegistry {
         }
       }
     }
-    return profile;
   }
 
   public ArtifactDefinition requireArtifact(String profileKey, ArtifactKey artifactKey) {

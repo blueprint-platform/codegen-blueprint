@@ -193,7 +193,8 @@ class CodegenProfilesRegistryTest {
     messages.setBasename("messages");
     var profile = profileWith(ARTIFACT_KEY,
         new ArtifactDefinition(basePath, List.of(template("pom.xml"))));
-    assertThatThrownBy(() -> registry(profile).requireValidatedProfile(PROFILE_KEY))
+    var profiles = registry(profile);
+    assertThatThrownBy(() -> profiles.requireValidatedProfile(PROFILE_KEY))
         .isInstanceOfSatisfying(
             ProfileConfigurationException.class,
             failure -> {
@@ -226,7 +227,8 @@ class CodegenProfilesRegistryTest {
   }
 
   private static void assertInvalid(ProfileProperties profile, String messageKey) {
-    assertThatThrownBy(() -> registry(profile).requireValidatedProfile(PROFILE_KEY))
+    var profiles = registry(profile);
+    assertThatThrownBy(() -> profiles.requireValidatedProfile(PROFILE_KEY))
         .isInstanceOf(ProfileConfigurationException.class)
         .hasMessage(messageKey);
   }

@@ -128,19 +128,22 @@ class CreateProjectHandlerTest {
               throw new AssertionError("Unexpected publication");
             });
 
-    assertThatThrownBy(() -> handler.handle(createProjectCommand("invalid/id", null, tempDir)))
+    var invalidArtifact = createProjectCommand("invalid/id", null, tempDir);
+    assertThatThrownBy(() -> handler.handle(invalidArtifact))
         .isInstanceOf(DomainViolationException.class)
         .hasMessage("project.artifact-id.invalid.chars");
-    assertThatThrownBy(() -> handler.handle(createProjectCommand("demo-app", null, tempDir)))
+    var missingPlatform = createProjectCommand("demo-app", null, tempDir);
+    assertThatThrownBy(() -> handler.handle(missingPlatform))
         .isInstanceOf(DomainViolationException.class)
         .hasMessage("platform.target.missing");
     var requested = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V4_2);
-    assertThatThrownBy(() -> handler.handle(createProjectCommand("demo-app", requested, null)))
+    var missingDirectory = createProjectCommand("demo-app", requested, null);
+    assertThatThrownBy(() -> handler.handle(missingDirectory))
         .isInstanceOf(InvalidProjectRequestException.class)
         .hasMessage("application.project.target-directory.required");
     var invalidScope = List.of(new DependencyInput("com.acme", "library", null, "Bogus"));
-    assertThatThrownBy(
-            () -> handler.handle(createProjectCommand("demo-app", requested, tempDir, invalidScope)))
+    var invalidDependency = createProjectCommand("demo-app", requested, tempDir, invalidScope);
+    assertThatThrownBy(() -> handler.handle(invalidDependency))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             failure -> {

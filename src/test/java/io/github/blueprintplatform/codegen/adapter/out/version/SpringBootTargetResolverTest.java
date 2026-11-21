@@ -75,7 +75,8 @@ class SpringBootTargetResolverTest {
   void missingParentDoesNotFallback() {
     metadata("<version>4.1.3</version>");
     var resolver = resolver();
-    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+    var requested = request(V4_1);
+    assertThatThrownBy(() -> resolver.resolve(requested))
         .isInstanceOfSatisfying(
             SpringBootVersionResolutionException.class,
             failure ->
@@ -92,7 +93,9 @@ class SpringBootTargetResolverTest {
         "<project><groupId>org.springframework.boot</groupId><version>4.1.4</version>"
             + "<artifactId>spring-boot-starter-parent</artifactId></project>");
 
-    assertThatThrownBy(() -> resolver().resolve(request(V4_1)))
+    var resolver = resolver();
+    var requested = request(V4_1);
+    assertThatThrownBy(() -> resolver.resolve(requested))
         .isInstanceOfSatisfying(
             SpringBootVersionResolutionException.class,
             failure ->
@@ -104,7 +107,8 @@ class SpringBootTargetResolverTest {
   void malformedMetadataDoesNotFallback() {
     respond("/maven-metadata.xml", 200, "<metadata>");
     var resolver = resolver();
-    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+    var requested = request(V4_1);
+    assertThatThrownBy(() -> resolver.resolve(requested))
         .isInstanceOf(SpringBootVersionResolutionException.class)
         .hasMessage("adapter.springboot.resolution.failed");
   }
@@ -114,7 +118,8 @@ class SpringBootTargetResolverTest {
     respond("/maven-metadata.xml", 200, " ".repeat(1024 * 1024 + 1));
     var resolver = resolver();
 
-    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+    var requested = request(V4_1);
+    assertThatThrownBy(() -> resolver.resolve(requested))
         .isInstanceOfSatisfying(
             SpringBootVersionResolutionException.class,
             failure -> assertThat(localized(failure)).endsWith("Central response exceeded byte limit"));
@@ -133,7 +138,7 @@ class SpringBootTargetResolverTest {
             exchange.getResponseBody().flush();
             try {
               releaseBody.await();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException _) {
               Thread.currentThread().interrupt();
             }
           }
@@ -172,7 +177,8 @@ class SpringBootTargetResolverTest {
         .thenReturn(CompletableFuture.failedFuture(tlsFailure));
     var resolver = new SpringBootTargetResolver(tlsClient, endpoint, bundled());
 
-    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+    var requested = request(V4_1);
+    assertThatThrownBy(() -> resolver.resolve(requested))
         .isInstanceOf(SpringBootVersionResolutionException.class)
         .hasCause(tlsFailure);
   }
@@ -186,7 +192,8 @@ class SpringBootTargetResolverTest {
         .thenReturn(CompletableFuture.failedFuture(connectionFailure));
     var resolver = new SpringBootTargetResolver(tlsClient, endpoint, bundled());
 
-    assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+    var requested = request(V4_1);
+    assertThatThrownBy(() -> resolver.resolve(requested))
         .isInstanceOf(SpringBootVersionResolutionException.class)
         .hasCause(connectionFailure);
   }
@@ -202,15 +209,16 @@ class SpringBootTargetResolverTest {
           try (exchange) {
             requestArrived.countDown();
             releaseHeaders.await();
-          } catch (InterruptedException e) {
+          } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
           }
         });
     var resolver = resolver();
+    var requested = request(V4_1);
     var result =
         new FutureTask<>(
             () -> {
-              assertThatThrownBy(() -> resolver.resolve(request(V4_1)))
+              assertThatThrownBy(() -> resolver.resolve(requested))
                   .isInstanceOfSatisfying(
                       SpringBootVersionResolutionException.class,
                       failure ->

@@ -104,17 +104,19 @@ class SpringBootMavenJavaArtifactsAdapterTest {
     var layout = mock(ArtifactPort.class);
     when(layout.artifactKey()).thenReturn(ArtifactKey.SOURCE_LAYOUT);
     var order = List.of(ArtifactKey.SOURCE_LAYOUT);
+    var duplicateBindings = List.of(layout, layout);
+    List<ArtifactPort> missingBindings = List.of();
 
     assertThatThrownBy(
             () ->
                 new SpringBootMavenJavaArtifactsAdapter(
-                    pom, governance, dependencies, order, List.of(layout, layout)))
+                    pom, governance, dependencies, order, duplicateBindings))
         .isInstanceOf(ArtifactBindingException.class)
         .hasMessage("adapter.artifact.binding.duplicate");
     assertThatThrownBy(
             () ->
                 new SpringBootMavenJavaArtifactsAdapter(
-                    pom, governance, dependencies, order, List.of()))
+                    pom, governance, dependencies, order, missingBindings))
         .isInstanceOf(ArtifactBindingException.class)
         .hasMessage("adapter.artifact.binding.missing");
   }

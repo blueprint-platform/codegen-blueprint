@@ -210,7 +210,7 @@ class FileSystemProjectPublisherTest {
             start.await();
             try {
               return publish();
-            } catch (ProjectWriteException e) {
+            } catch (ProjectWriteException _) {
               return false;
             }
           };
